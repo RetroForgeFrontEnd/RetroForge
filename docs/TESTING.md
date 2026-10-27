@@ -14,9 +14,10 @@ Run: `./gradlew testDebugUnitTest` (JVM, no device needed, no ROMs needed).
 | `SettingsRepositoryTest` | core-settings | 2 | DataStore defaults and persistence |
 | `RomPatcherTest` | retro-patch | 17 | IPS (records, RLE, grow, truncate, missing EOF); UPS (grow/shrink targets, wrong ROM, damaged patch); BPS (all four commands incl. overlapping target copy, negative offsets, metadata, out-of-range copy); SNES copier-header retry; patch chains (order, failing-step index, output naming); originals never modified |
 | `ArchiveInputTest` | retro-patch | 12 | ROM/patch selection inside .zip and .7z, choosing one of several patches, readme extraction (UTF-8/Latin-1, size cap), corrupt archives |
+| `CatalogueTest` | retro-hacks | 7 | Catalogue parsing (unknown fields, wrong format/version, HTML pages, unsafe ids), per-entry rejection (http:// and javascript: links, bad checksums, duplicates, missing requires), built-in catalogue validity, store add/update/remove/order, de-duplication by page |
 | `RealPatchTest` | retro-patch | 1 (skipped unless `patch-test/` has `.base` files) | Applies real patches or patch chains from the git-ignored `patch-test/` folder and prints SHA-1 for cross-checking |
 
-Last run: 2026-10-27, **39 passed, 0 failed** (+1 real-patch chain test that ran locally). `lintDebug`: 0 errors, 2 accepted warnings (TV banner vector is 320×180 by Android TV requirement; `allowBackup=false` already covers pre-Android-12).
+Last run: 2026-10-27, **46 passed, 0 failed** (+1 real-patch chain test that ran locally). `lintDebug`: 0 errors, 2 accepted warnings (TV banner vector is 320×180 by Android TV requirement; `allowBackup=false` already covers pre-Android-12).
 
 No instrumented (on-device) automated UI tests exist yet. Planned for Milestone B alongside the scanner.
 
@@ -58,5 +59,18 @@ Input was sent with `adb shell input keyevent` (simulated gamepad/D-pad key code
 | Chain SMB (World) → Giant Mario v1.2 (Level unchanged) → 2B, saved via Create Document | Pass: 65,552 bytes, SHA-1 76a4ac56… identical on device, desktop engine and independent Python reference |
 | Gameplay | **Pass**: boots in RetroArch/FCEUmm; HUD reads "TWO B"; Start (touch overlay) begins World 1-1, timer counts, the giant 2B sprite moves right under input |
 | Controller focus | Pass: focus jumps to the first archive option when the chooser opens, then to "Add another patch on top" after choosing |
+
+### 2026-10-27: Hacks tab on emulator
+
+| Check | Result |
+|---|---|
+| Built-in catalogue shows NES and SNES carousels with filter chips | Pass |
+| D-pad flicks through a carousel; A opens a hack | Pass |
+| Detail page: summary, authors, version, tags, source | Pass |
+| Add catalogue from a file (1 bad http:// entry inside) | Pass: added, "1 entry was skipped: …page link must be an https:// address" |
+| Duplicate page across catalogues shown once | Pass |
+| `requires` link resolves even when the target was merged as a duplicate | Pass after a fix (it first showed a disabled raw id) |
+| Add from link: confirmation required, then fetch | Pass: example.com returned HTML, now reported as "That's a web page, not a catalogue file" (message improved after this test) |
+| Open official page | Hand-off to Chrome works; Chrome stopped at its own first-run screen on this fresh emulator |
 
 Not tested: physical gamepad, Android TV device or TV emulator image, tablet, light theme visuals, "System" theme switching, opening the DroidDeck releases page (browser), DroidDeck-installed state, the real Adreno GPU path.

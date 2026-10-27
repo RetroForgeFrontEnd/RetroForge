@@ -14,6 +14,7 @@ This file is the single source of truth for what exists, what has been verified 
 | 4 — Retro library (Milestone B) | Next |
 | Emulation path check (RetroArch, outside RetroForge) | 6 ROMs from your collection launch-tested on the emulator (SNES ×3 incl. `.7z`, Mega Drive, GBA, NES with gameplay): [EMULATOR_COMPATIBILITY.md](EMULATOR_COMPATIBILITY.md) |
 | ROM Patcher (IPS/BPS/UPS, zip/7z input) | **Built; 29 unit tests; emulator tested.** Patch chains, readmes and multi-patch archives work; a real 2-patch hack chain (Giant Mario → 2B) is gameplay-tested. Next: download a patch from a link. [FEATURE_PROPOSAL_ROM_TOOLS.md](FEATURE_PROPOSAL_ROM_TOOLS.md) |
+| Hacks tab (catalogues) | **Built; 7 unit tests; emulator tested.** Built-in starter catalogue (5 hacks, links to romhacking.net pages); add catalogues from file or https link. [hack-catalogue-format.md](hack-catalogue-format.md). romhacking.net isn't scraped: it is read-only since Aug 2024 and its robots.txt disallows its download and listing pages |
 | ROM sorting | Proposal only |
 | Systems up to PS2 | Requested; test pass planned (RetroArch cores on emulator; ARM64-only emulators such as PS2 need a real phone). Obtainium + emulation pack JSON suggested as the install route, to be evaluated |
 

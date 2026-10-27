@@ -2,6 +2,9 @@ package com.retroforge.app
 
 import android.app.Application
 import android.content.ContentResolver
+import com.retroforge.app.ui.hacks.CatalogueFetcher
+import com.retroforge.hacks.CatalogueStore
+import java.io.File
 import com.retroforge.core.settings.SettingsRepository
 import com.retroforge.core.settings.createSettingsRepository
 import com.retroforge.pc.DroidDeckBridge
@@ -13,6 +16,11 @@ class AppContainer(application: Application) {
     val droidDeck = DroidDeckBridge(application)
     val pcStatus = PcStatusRepository(droidDeck)
     val contentResolver: ContentResolver = application.contentResolver
+    val catalogues = CatalogueStore(
+        dir = File(application.filesDir, "catalogues"),
+        builtIn = { application.assets.open("catalogues/retroforge-starter.json").bufferedReader().use { it.readText() } },
+    )
+    val catalogueFetcher = CatalogueFetcher("RetroForge/${BuildConfig.VERSION_NAME}")
 }
 
 class RetroForgeApplication : Application() {

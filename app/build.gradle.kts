@@ -38,6 +38,7 @@ dependencies {
     implementation(project(":core-settings"))
     implementation(project(":pc"))
     implementation(project(":retro-patch"))
+    implementation(project(":retro-hacks"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

@@ -1,0 +1,66 @@
+{
+  "format": "retroforge-hack-catalogue",
+  "version": 1,
+  "id": "retroforge-starter",
+  "name": "RetroForge starter picks",
+  "description": "A small hand-picked list. Every entry links to the hack's official page; RetroForge does not host or download these patches.",
+  "maintainer": "RetroForge",
+  "updated": "2026-10-27",
+  "hacks": [
+    {
+      "id": "metroid-rogue-dawn",
+      "title": "Metroid: Rogue Dawn",
+      "system": "nes",
+      "baseGame": "Metroid",
+      "authors": ["snarfblam", "Optomon", "Grimlock"],
+      "version": "1.21",
+      "released": "2017-01-14",
+      "tags": ["prequel", "new maps", "action"],
+      "summary": "A fan-made prequel to the original Metroid with a new story, new areas and reworked graphics, built on the NES game.",
+      "pageUrl": "https://www.romhacking.net/hacks/3280/"
+    },
+    {
+      "id": "smb3-3mix",
+      "title": "Super Mario Bros. 3Mix",
+      "system": "nes",
+      "baseGame": "Super Mario Bros. 3",
+      "authors": ["Southbird"],
+      "released": "2014",
+      "tags": ["new levels", "new power-ups", "platformer"],
+      "summary": "A large Super Mario Bros. 3 remix with all-new levels, extra power-ups, collectable star coins and new bosses.",
+      "pageUrl": "https://www.romhacking.net/hacks/2068/"
+    },
+    {
+      "id": "smb-giant-mario",
+      "title": "Giant Mario Bros.",
+      "system": "nes",
+      "baseGame": "Super Mario Bros.",
+      "authors": ["N·K"],
+      "version": "1.2",
+      "tags": ["graphics", "platformer"],
+      "summary": "Super Mario Bros. with a much bigger Mario. The download includes a version that keeps the original levels, which some add-on hacks build on.",
+      "pageUrl": "https://www.romhacking.net/hacks/6142/"
+    },
+    {
+      "id": "super-metroid-redesign",
+      "title": "Super Metroid: Redesign",
+      "system": "snes",
+      "baseGame": "Super Metroid",
+      "authors": ["Drewseph", "Kejardon", "MathOnNapkins", "Jathys"],
+      "version": "2.1 FINAL",
+      "released": "2006-06-01",
+      "tags": ["total overhaul", "hard", "exploration"],
+      "summary": "A complete overhaul of Super Metroid with a redesigned world and a much tougher challenge, aimed at players who know the original well.",
+      "pageUrl": "https://www.romhacking.net/hacks/131/"
+    },
+    {
+      "id": "zelda3-parallel-remodel",
+      "title": "Zelda3 Parallel Remodel",
+      "system": "snes",
+      "baseGame": "The Legend of Zelda: A Link to the Past",
+      "tags": ["new world", "adventure"],
+      "summary": "A reworked, more approachable version of the famous Parallel Worlds hack, with less backtracking and fewer obscure tricks required.",
+      "pageUrl": "https://www.romhacking.net/hacks/956/"
+    }
+  ]
+}

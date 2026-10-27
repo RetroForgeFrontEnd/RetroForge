@@ -38,6 +38,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.retroforge.app.AppContainer
 import com.retroforge.app.R
+import com.retroforge.app.ui.hacks.CatalogueSourcesScreen
+import com.retroforge.app.ui.hacks.HackDetailScreen
+import com.retroforge.app.ui.hacks.HacksScreen
+import com.retroforge.app.ui.hacks.HacksViewModel
 import com.retroforge.app.ui.home.HomeScreen
 import com.retroforge.app.ui.pc.PcScreen
 import com.retroforge.app.ui.patcher.PatcherScreen
@@ -58,11 +62,14 @@ import kotlinx.coroutines.flow.Flow
 enum class Section(val route: String, val label: String, @DrawableRes val icon: Int) {
     HOME("home", "Home", R.drawable.ic_section_home),
     RETRO("retro", "Retro", R.drawable.ic_section_retro),
+    HACKS("hacks", "Hacks", R.drawable.ic_section_hacks),
     PC("pc", "PC", R.drawable.ic_section_pc),
     SETTINGS("settings", "Settings", R.drawable.ic_section_settings),
 }
 
 private const val PATCHER_ROUTE = "retro/patcher"
+private const val HACK_DETAIL_ROUTE = "hacks/detail/{source}/{hack}"
+private const val HACK_SOURCES_ROUTE = "hacks/sources"
 
 @Composable
 fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
@@ -79,7 +86,14 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
         val sections = Section.entries.filter { it != Section.PC || settings.showPcSection }
         val backStack by nav.currentBackStackEntryAsState()
         val route = backStack?.destination?.route
-        val current = sections.firstOrNull { it.route == route } ?: if (route == PATCHER_ROUTE) Section.RETRO else Section.HOME
+        val current = sections.firstOrNull { it.route == route } ?: when {
+            route == PATCHER_ROUTE -> Section.RETRO
+            route?.startsWith("hacks/") == true -> Section.HACKS
+            else -> Section.HOME
+        }
+        val hacksViewModel: HacksViewModel = viewModel(
+            factory = HacksViewModel.factory(container.catalogues, container.catalogueFetcher, container.contentResolver),
+        )
 
         val latestSections by rememberUpdatedState(sections)
         val latestCurrent by rememberUpdatedState(current)
@@ -110,6 +124,23 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                             val patcherViewModel: PatcherViewModel = viewModel(factory = PatcherViewModel.factory(container.contentResolver))
                             PatcherScreen(patcherViewModel)
                         }
+                        composable(Section.HACKS.route) {
+                            HacksScreen(
+                                hacksViewModel,
+                                onOpenHack = { key -> nav.navigate("hacks/detail/$key") },
+                                onOpenSources = { nav.navigate(HACK_SOURCES_ROUTE) },
+                            )
+                        }
+                        composable(HACK_DETAIL_ROUTE) { entry ->
+                            val key = "${entry.arguments?.getString("source")}/${entry.arguments?.getString("hack")}"
+                            HackDetailScreen(
+                                hacksViewModel,
+                                key,
+                                onOpenPatcher = { nav.navigate(PATCHER_ROUTE) },
+                                onOpenHack = { other -> nav.navigate("hacks/detail/$other") },
+                            )
+                        }
+                        composable(HACK_SOURCES_ROUTE) { CatalogueSourcesScreen(hacksViewModel) }
                         composable(Section.PC.route) {
                             val pcViewModel: PcViewModel = viewModel(factory = PcViewModel.factory(container.pcStatus))
                             PcScreen(pcViewModel, container.droidDeck)
