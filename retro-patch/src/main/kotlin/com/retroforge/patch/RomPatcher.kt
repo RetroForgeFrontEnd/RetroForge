@@ -27,6 +27,13 @@ sealed interface PatchOutcome {
     data class Failure(val error: PatchError) : PatchOutcome
 }
 
+sealed interface ChainOutcome {
+    /** [stepNotes] holds the notes of each patch, in the order applied. */
+    data class Success(val output: ByteArray, val stepNotes: List<Set<PatchNote>>) : ChainOutcome
+    /** [step] is the zero-based index of the patch that failed; earlier steps applied cleanly. */
+    data class Failure(val step: Int, val error: PatchError) : ChainOutcome
+}
+
 object RomPatcher {
 
     private const val COPIER_HEADER = 512
@@ -73,6 +80,25 @@ object RomPatcher {
         }
     }
 
+    /**
+     * Applies [patches] in order, each to the previous result, as add-on hacks require
+     * (e.g. a sprite hack that must go on top of another hack). BPS/UPS checks run against each intermediate ROM.
+     */
+    fun applyChain(rom: ByteArray, patches: List<ByteArray>): ChainOutcome {
+        var current = rom
+        val notes = ArrayList<Set<PatchNote>>(patches.size)
+        patches.forEachIndexed { index, patch ->
+            when (val outcome = apply(current, patch)) {
+                is PatchOutcome.Success -> {
+                    current = outcome.output
+                    notes += outcome.notes
+                }
+                is PatchOutcome.Failure -> return ChainOutcome.Failure(index, outcome.error)
+            }
+        }
+        return ChainOutcome.Success(current, notes)
+    }
+
     private fun applyChecksummed(rom: ByteArray, patch: ByteArray, format: PatchFormat): PatchOutcome {
         val engine = if (format == PatchFormat.UPS) Ups else Bps
         return try {
@@ -93,10 +119,13 @@ object RomPatcher {
     private fun hasCopierHeader(rom: ByteArray) = rom.size > COPIER_HEADER && rom.size % 1024 == COPIER_HEADER
 
     /** "Super Mario World (USA).sfc" + "Kaizo.bps" → "Super Mario World (USA) [Kaizo].sfc". */
-    fun outputName(romName: String, patchName: String): String {
+    fun outputName(romName: String, patchName: String): String = outputName(romName, listOf(patchName))
+
+    /** For a chain the last patch names the result, since it is usually the hack the user is after. */
+    fun outputName(romName: String, patchNames: List<String>): String {
         val romBase = romName.substringBeforeLast('.', romName)
         val romExt = romName.substringAfterLast('.', "")
-        val patchBase = patchName.substringBeforeLast('.', patchName)
+        val patchBase = patchNames.lastOrNull()?.substringBeforeLast('.') ?: ""
         val safePatch = patchBase.replace(Regex("""[\\/:*?"<>|\[\]]"""), "_").trim().ifEmpty { "patched" }
         return if (romExt.isEmpty()) "$romBase [$safePatch]" else "$romBase [$safePatch].$romExt"
     }

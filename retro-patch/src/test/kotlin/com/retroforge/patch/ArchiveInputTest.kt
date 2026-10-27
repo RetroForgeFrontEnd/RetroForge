@@ -67,6 +67,46 @@ class ArchiveInputTest {
     }
 
     @Test
+    fun patchArchiveReadmesAreReturnedForDisplay() {
+        val patch = TestPatches.ips(0 to TestPatches.bytes(1))
+        val readme = "Apply Giant Mario v1.2 first.\r\nBase: Super Mario Bros. (World).nes"
+        val result = ArchiveInput.readPatch("Hack.zip", zip("Hack.txt" to readme.toByteArray(), "Hack.ips" to patch)) as ArchiveResult.Ok
+        assertEquals(listOf(TextFile("Hack.txt", "Apply Giant Mario v1.2 first.\nBase: Super Mario Bros. (World).nes")), result.readmes)
+    }
+
+    @Test
+    fun legacyReadmesFallBackToLatin1AndDropControlCharacters() {
+        val dosText = byteArrayOf(0x43, 0x61, 0x66, 0xE9.toByte(), 0x07, 0x0A, 0x4F, 0x4B)
+        assertEquals("Café\nOK", ArchiveInput.decodeText(dosText))
+    }
+
+    @Test
+    fun aPatchCanBeChosenFromAnArchiveHoldingSeveral() {
+        val a = TestPatches.ips(0 to TestPatches.bytes(1))
+        val b = TestPatches.ips(0 to TestPatches.bytes(2))
+        val archive = zip("Giant Mario.ips" to a, "Giant Mario (Level unchanged).ips" to b)
+        val ambiguous = ArchiveInput.readPatch("GM.zip", archive) as ArchiveResult.Ambiguous
+        assertEquals(listOf("Giant Mario.ips", "Giant Mario (Level unchanged).ips"), ambiguous.candidates)
+        val chosen = ArchiveInput.readPatch("GM.zip", archive, entryName = "Giant Mario (Level unchanged).ips") as ArchiveResult.Ok
+        assertArrayEquals(b, chosen.file.bytes)
+    }
+
+    @Test
+    fun oversizedReadmeIsSkippedWithoutFailingThePatch() {
+        val patch = TestPatches.ips(0 to TestPatches.bytes(1))
+        val result = ArchiveInput.readPatch("Hack.zip", zip("huge.txt" to ByteArray(70_000) { 'a'.code.toByte() }, "Hack.ips" to patch))
+        val ok = result as ArchiveResult.Ok
+        assertArrayEquals(patch, ok.file.bytes)
+        assertTrue(ok.readmes.isEmpty())
+    }
+
+    @Test
+    fun romArchivesDoNotCollectReadmes() {
+        val result = ArchiveInput.readRom("Game.zip", zip("readme.txt" to "x".toByteArray(), "Game.sfc" to romBytes)) as ArchiveResult.Ok
+        assertTrue(result.readmes.isEmpty())
+    }
+
+    @Test
     fun sevenZipRomsAreRead() {
         val result = ArchiveInput.readRom("Game.7z", sevenZip("Game.sfc" to romBytes)) as ArchiveResult.Ok
         assertArrayEquals(romBytes, result.file.bytes)

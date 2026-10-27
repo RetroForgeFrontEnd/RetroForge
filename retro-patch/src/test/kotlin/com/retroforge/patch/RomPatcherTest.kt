@@ -133,6 +133,35 @@ class RomPatcherTest {
         assertEquals(RomMatch.MISMATCH, RomPatcher.checkRom(wrong, RomPatcher.inspect(patch).getOrThrow()))
     }
 
+    // --- chains ---
+
+    @Test
+    fun chainAppliesEachPatchToThePreviousResult() {
+        // Step 1 (IPS) changes byte 0; step 2 (BPS) was built against step 1's output, so its source check must pass.
+        val step1 = rom.copyOf().also { it[0] = 0x55 }
+        val step2 = step1.copyOf().also { it[1000] = 0x66 }
+        val chain = RomPatcher.applyChain(rom, listOf(TestPatches.ips(0 to bytes(0x55)), TestPatches.ups(step1, step2)))
+        val success = chain as ChainOutcome.Success
+        assertArrayEquals(step2, success.output)
+        assertEquals(listOf(setOf(PatchNote.SOURCE_NOT_VERIFIABLE), emptySet()), success.stepNotes)
+    }
+
+    @Test
+    fun chainInWrongOrderReportsTheFailingStep() {
+        val step1 = rom.copyOf().also { it[0] = 0x55 }
+        val step2 = step1.copyOf().also { it[1000] = 0x66 }
+        // The UPS patch expects step 1's output; given the original ROM first it must fail at index 0.
+        val chain = RomPatcher.applyChain(rom, listOf(TestPatches.ups(step1, step2), TestPatches.ips(0 to bytes(0x55))))
+        val failure = chain as ChainOutcome.Failure
+        assertEquals(0, failure.step)
+        assertTrue(failure.error is PatchError.WrongSourceRom)
+    }
+
+    @Test
+    fun chainOutputIsNamedAfterTheLastPatch() {
+        assertEquals("SMB [2B].nes", RomPatcher.outputName("SMB.nes", listOf("Giant Mario.ips", "2B.ips")))
+    }
+
     // --- general ---
 
     @Test
