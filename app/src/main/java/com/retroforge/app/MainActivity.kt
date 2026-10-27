@@ -1,0 +1,57 @@
+package com.retroforge.app
+
+import android.os.Bundle
+import android.view.KeyEvent
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import com.retroforge.app.ui.RetroForgeRoot
+import com.retroforge.core.ui.ControllerKeys
+import com.retroforge.core.ui.NavCommand
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+
+class MainActivity : ComponentActivity() {
+
+    private val sectionCommands = MutableSharedFlow<NavCommand>(
+        extraBufferCapacity = 4,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        val container = (application as RetroForgeApplication).container
+        setContent { RetroForgeRoot(container, sectionCommands) }
+    }
+
+    // Gamepad buttons the UI did not consume are translated here rather than relying on each
+    // device's key-character-map fallbacks, which differ between vendors.
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean = when (val command = ControllerKeys.commandFor(keyCode)) {
+        NavCommand.CONFIRM -> window.superDispatchKeyEvent(event.asDpadCenter()) || super.onKeyDown(keyCode, event)
+        NavCommand.BACK -> {
+            event.startTracking()
+            true
+        }
+        NavCommand.PREVIOUS_SECTION, NavCommand.NEXT_SECTION -> {
+            if (event.repeatCount == 0) sectionCommands.tryEmit(command)
+            true
+        }
+        null -> super.onKeyDown(keyCode, event)
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean = when (ControllerKeys.commandFor(keyCode)) {
+        NavCommand.CONFIRM -> window.superDispatchKeyEvent(event.asDpadCenter()) || super.onKeyUp(keyCode, event)
+        NavCommand.BACK -> {
+            if (event.isTracking && !event.isCanceled) onBackPressedDispatcher.onBackPressed()
+            true
+        }
+        NavCommand.PREVIOUS_SECTION, NavCommand.NEXT_SECTION -> true
+        null -> super.onKeyUp(keyCode, event)
+    }
+
+    private fun KeyEvent.asDpadCenter() = KeyEvent(
+        downTime, eventTime, action, KeyEvent.KEYCODE_DPAD_CENTER,
+        repeatCount, metaState, deviceId, scanCode, flags, source,
+    )
+}

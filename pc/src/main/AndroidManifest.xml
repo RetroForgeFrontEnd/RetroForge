@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <queries>
+        <package android:name="com.droiddeck.launcher" />
+        <intent>
+            <action android:name="com.droiddeck.launcher.LAUNCH_GAME" />
+        </intent>
+    </queries>
+</manifest>
