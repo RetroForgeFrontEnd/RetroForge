@@ -56,7 +56,7 @@ This file is the single source of truth for what exists, what has been verified 
 
 ## Open items needing your input
 
-1. **Target Android device** model, or connect it with USB debugging. This decides PC support, and Milestone D (first real emulator launch) needs it.
+1. **Target devices** (answered 2026-10-27): all Android device types, including dual-screen handhelds such as the AYN Thor; possibly iOS later. Still needed: **one physical device** for real testing (PC/GPU check, emulator performance, controllers).
 2. **How the device reaches your ROMs:** USB drive, SD-card subset, or network share ([ROM_PORTABILITY.md](ROM_PORTABILITY.md)).
 3. **Licence for RetroForge itself**, still open.
 4. **Key art file:** to show the artwork in the app, save it in `F:\RetroForge\branding\` and confirm you have the right to use it (e.g. you made or commissioned it).
