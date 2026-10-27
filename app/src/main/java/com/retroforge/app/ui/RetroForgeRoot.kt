@@ -40,6 +40,8 @@ import com.retroforge.app.AppContainer
 import com.retroforge.app.R
 import com.retroforge.app.ui.home.HomeScreen
 import com.retroforge.app.ui.pc.PcScreen
+import com.retroforge.app.ui.patcher.PatcherScreen
+import com.retroforge.app.ui.patcher.PatcherViewModel
 import com.retroforge.app.ui.pc.PcViewModel
 import com.retroforge.app.ui.retro.RetroScreen
 import com.retroforge.app.ui.settings.SettingsScreen
@@ -60,6 +62,8 @@ enum class Section(val route: String, val label: String, @DrawableRes val icon: 
     SETTINGS("settings", "Settings", R.drawable.ic_section_settings),
 }
 
+private const val PATCHER_ROUTE = "retro/patcher"
+
 @Composable
 fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
     val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.factory(container.settings))
@@ -74,7 +78,8 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
         val nav = rememberNavController()
         val sections = Section.entries.filter { it != Section.PC || settings.showPcSection }
         val backStack by nav.currentBackStackEntryAsState()
-        val current = sections.firstOrNull { it.route == backStack?.destination?.route } ?: Section.HOME
+        val route = backStack?.destination?.route
+        val current = sections.firstOrNull { it.route == route } ?: if (route == PATCHER_ROUTE) Section.RETRO else Section.HOME
 
         val latestSections by rememberUpdatedState(sections)
         val latestCurrent by rememberUpdatedState(current)
@@ -100,7 +105,11 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         composable(Section.HOME.route) {
                             HomeScreen(showPc = settings.showPcSection, onOpen = { nav.goTo(it) })
                         }
-                        composable(Section.RETRO.route) { RetroScreen() }
+                        composable(Section.RETRO.route) { RetroScreen(onOpenPatcher = { nav.navigate(PATCHER_ROUTE) }) }
+                        composable(PATCHER_ROUTE) {
+                            val patcherViewModel: PatcherViewModel = viewModel(factory = PatcherViewModel.factory(container.contentResolver))
+                            PatcherScreen(patcherViewModel)
+                        }
                         composable(Section.PC.route) {
                             val pcViewModel: PcViewModel = viewModel(factory = PcViewModel.factory(container.pcStatus))
                             PcScreen(pcViewModel, container.droidDeck)

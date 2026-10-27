@@ -11,8 +11,13 @@ import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
 
 @Composable
-fun RetroScreen() {
+fun RetroScreen(onOpenPatcher: () -> Unit) {
     ScreenFrame(title = "Retro", subtitle = "Your consoles, arcade and computer games.") {
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenPatcher) {
+            CardTitle("ROM Patcher")
+            StatusPill("Available", StatusTone.GOOD)
+            CardBody("Apply IPS, BPS or UPS patches (ROM hacks, translations) to make a new copy. Originals are never changed.")
+        }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("Game library")
             StatusPill("Not built yet", StatusTone.NEUTRAL)

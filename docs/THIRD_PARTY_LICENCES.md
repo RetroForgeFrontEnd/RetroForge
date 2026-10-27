@@ -12,6 +12,8 @@ Licences below are the standard licences of these projects; versions are pinned 
 | Jetpack Compose (BOM) | 2026.09.00 | Apache-2.0 |
 | Kotlin standard library | 2.4.21 | Apache-2.0 |
 | kotlinx.coroutines | 1.11.0 | Apache-2.0 |
+| Apache Commons Compress (7z reading) | 1.28.0 | Apache-2.0 |
+| XZ for Java (LZMA for 7z) | 1.12 | 0BSD / public domain (verify the exact statement in the artifact before release) |
 
 Test-only (not shipped): JUnit 4.13.2 (EPL-1.0), kotlinx-coroutines-test (Apache-2.0).
 

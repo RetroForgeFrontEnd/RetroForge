@@ -13,7 +13,9 @@ This file is the single source of truth for what exists, what has been verified 
 | 3 — Android foundation (Milestone A) | **Done: build verified, unit tested, emulator tested.** Physical device / TV / gamepad not tested. |
 | 4 — Retro library (Milestone B) | Next |
 | Emulation path check (RetroArch, outside RetroForge) | 6 ROMs from your collection launch-tested on the emulator (SNES ×3 incl. `.7z`, Mega Drive, GBA, NES with gameplay): [EMULATOR_COMPATIBILITY.md](EMULATOR_COMPATIBILITY.md) |
-| ROM sorting + ROM hacks | Proposal written: [FEATURE_PROPOSAL_ROM_TOOLS.md](FEATURE_PROPOSAL_ROM_TOOLS.md) |
+| ROM Patcher (IPS/BPS/UPS, zip/7z input) | **Built; unit tested (21); emulator tested.** Real IPS verified against an independent implementation. Next: patch chains, readme display, link download. [FEATURE_PROPOSAL_ROM_TOOLS.md](FEATURE_PROPOSAL_ROM_TOOLS.md) |
+| ROM sorting | Proposal only |
+| Systems up to PS2 | Requested; test pass planned (RetroArch cores on emulator; ARM64-only emulators such as PS2 need a real phone). Obtainium + emulation pack JSON suggested as the install route, to be evaluated |
 
 ## Milestone A — what exists
 

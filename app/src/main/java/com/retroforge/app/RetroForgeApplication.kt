@@ -1,6 +1,7 @@
 package com.retroforge.app
 
 import android.app.Application
+import android.content.ContentResolver
 import com.retroforge.core.settings.SettingsRepository
 import com.retroforge.core.settings.createSettingsRepository
 import com.retroforge.pc.DroidDeckBridge
@@ -11,6 +12,7 @@ class AppContainer(application: Application) {
     val settings: SettingsRepository = createSettingsRepository(application)
     val droidDeck = DroidDeckBridge(application)
     val pcStatus = PcStatusRepository(droidDeck)
+    val contentResolver: ContentResolver = application.contentResolver
 }
 
 class RetroForgeApplication : Application() {

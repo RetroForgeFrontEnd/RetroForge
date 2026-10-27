@@ -37,6 +37,7 @@ dependencies {
     implementation(project(":core-ui"))
     implementation(project(":core-settings"))
     implementation(project(":pc"))
+    implementation(project(":retro-patch"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

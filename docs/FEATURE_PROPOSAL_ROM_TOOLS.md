@@ -1,6 +1,11 @@
 # Proposal: ROM Sorting Tool and ROM Hacks Section
 
-Requested 2026-10-27. Status: **proposal, not started.** Both features depend on the library database from Milestone B.
+Requested 2026-10-27. Status: **ROM Patcher (local files) built and emulator-tested**, see [TESTING.md](TESTING.md). Sorting and online sources not started.
+
+Lessons from the first real patch ("2B in Super Mario Bros", IPS): it is an add-on that must be applied *after* another patch (Giant Mario v1.2), and only its readme says so. So:
+- **Patch chains** are needed: apply A, then B, in one go (next patcher task).
+- **Show the readme** that ships in a patch .zip before applying.
+- These matter even more for in-app downloads.
 
 ## 1. ROM sorting
 

@@ -8,3 +8,6 @@ build/
 captures/
 .externalNativeBuild/
 .cxx/
+
+# Real-world patch files and ROMs used for manual testing
+/patch-test/
