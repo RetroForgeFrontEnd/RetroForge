@@ -12,6 +12,8 @@ This file is the single source of truth for what exists, what has been verified 
 | 2 — PC runtime proof of concept | Blocked on a physical device (see [pc-runtime-proof-of-concept.md](pc-runtime-proof-of-concept.md)) |
 | 3 — Android foundation (Milestone A) | **Done: build verified, unit tested, emulator tested.** Physical device / TV / gamepad not tested. |
 | 4 — Retro library (Milestone B) | Next |
+| Emulation path check (RetroArch, outside RetroForge) | 6 ROMs from your collection launch-tested on the emulator (SNES ×3 incl. `.7z`, Mega Drive, GBA, NES with gameplay): [EMULATOR_COMPATIBILITY.md](EMULATOR_COMPATIBILITY.md) |
+| ROM sorting + ROM hacks | Proposal written: [FEATURE_PROPOSAL_ROM_TOOLS.md](FEATURE_PROPOSAL_ROM_TOOLS.md) |
 
 ## Milestone A — what exists
 

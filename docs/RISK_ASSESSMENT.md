@@ -6,7 +6,7 @@
 | 2 | DroidDeck's `LAUNCH_GAME` intent changes or is removed (undocumented contract, very active repo) | Medium | Medium | Isolate in `pc` module; version-check DroidDeck; fallback "Open DroidDeck" |
 | 3 | External emulators can't open SAF `content://` URIs; need real file paths | High for some emulators | High | Test per emulator; support `MANAGE_EXTERNAL_STORAGE` as opt-in for sideload builds; document per emulator |
 | 4 | USB drive filesystem (NTFS?) not mountable on device | Medium | High | Check filesystem; offer SD/subset or exFAT guidance (never reformat for the user) |
-| 5 | `.7z` ROMs (≈60 % of SNES) unsupported by some Android cores | Medium | Medium | Test in Milestone D; report per core; never auto-convert |
+| 5 | `.7z` ROMs (≈60 % of SNES) unsupported by some Android cores | **Lower**: RetroArch 1.22.2 + snes9x loaded a `.7z` on the emulator (2026-10-27) | Medium | Re-test per core and on device; never auto-convert |
 | 6 | GPL obligations if any GPL emulator/DroidDeck code is embedded | Certain if embedded | High | Launch external apps instead; choose RetroForge licence early |
 | 7 | Metadata provider terms (ScreenScraper etc.) | Medium | Medium | Start offline with your existing gamelist.xml; add providers with their terms later |
 | 8 | Theme import from ES themes (XML + licences vary) | High complexity | Low-Medium | Native format first; importer scoped later |
