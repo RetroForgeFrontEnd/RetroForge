@@ -16,6 +16,20 @@ import com.retroforge.retro.Core
 import com.retroforge.retro.LaunchPlan
 import com.retroforge.retro.LaunchProblem
 import com.retroforge.retro.RetroArchLauncher
+import com.retroforge.retro.StandaloneLauncher
+import com.retroforge.retro.RetroArchHotkeys
+import com.retroforge.retro.HotkeyCombo
+import com.retroforge.retro.StoragePaths
+import com.retroforge.library.LaunchCommand
+import com.retroforge.library.LaunchVars
+import com.retroforge.library.StandaloneEmulator
+import com.retroforge.library.StandaloneEmulators
+import com.retroforge.library.StandaloneOption
+import com.retroforge.library.UnsupportedCommandException
+import com.retroforge.core.settings.SettingsRepository
+import android.provider.DocumentsContract
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import com.retroforge.core.library.RootEntity
 import com.retroforge.core.library.ScanState
 import kotlinx.coroutines.FlowPreview
@@ -36,7 +50,47 @@ class LibraryViewModel(
     private val repository: LibraryRepository,
     private val retroArch: RetroArchLauncher,
     val covers: CoverRepository,
+    private val standalone: StandaloneLauncher,
+    private val settings: SettingsRepository,
+    private val hotkeys: RetroArchHotkeys,
 ) : ViewModel() {
+
+    private val emulators = StandaloneEmulators.bundled()
+
+    /** Chosen emulator per system ("RETROARCH" or a standalone id); absent means RetroArch. */
+    val emulatorChoices: StateFlow<Map<String, String>> = settings.settings.map { it.emulatorChoices }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
+    fun standaloneOptions(system: String): List<Pair<StandaloneOption, StandaloneEmulator>> = emulators.optionsFor(system)
+
+    fun installedComponent(emulator: StandaloneEmulator) = standalone.installed(emulator)
+
+    fun hasObtainium() = standalone.hasObtainium()
+
+    fun setEmulatorChoice(system: String, emulator: String?) {
+        viewModelScope.launch { settings.setEmulatorChoice(system, emulator) }
+    }
+
+    fun getEmulator(emulator: StandaloneEmulator) = standalone.openDownload(emulator)
+
+    /** Starts [game] in a standalone emulator; history is recorded only when it opened. */
+    fun playStandalone(game: GameEntity, root: RootEntity?, option: StandaloneOption, emulator: StandaloneEmulator): LaunchProblem? {
+        if (root == null) return LaunchProblem.LocationNotSupported
+        val component = standalone.installed(emulator) ?: return LaunchProblem.StartFailed("${emulator.name} isn't installed.")
+        val romPath = StoragePaths.filePath(root.treeUri, game.documentId)
+        val vars = LaunchVars(
+            romUri = repository.documentUri(root, game.documentId).toString(),
+            romPath = romPath,
+            gameDirPath = romPath?.substringBeforeLast('/'),
+            romsPath = StoragePaths.filePath(root.treeUri, DocumentsContract.getTreeDocumentId(Uri.parse(root.treeUri))),
+        )
+        val spec = try {
+            LaunchCommand.parse(option.command, vars)
+        } catch (e: UnsupportedCommandException) {
+            return LaunchProblem.StartFailed("${emulator.name} can't open this game: ${e.message}.")
+        }
+        return standalone.launch(component, spec).also { if (it == null) repository.recordPlay(game, emulator.id) }
+    }
 
     /** Chosen covers by (folder, path); these take priority over gamelist artwork. */
     val chosenCovers: StateFlow<Map<Pair<Long, String>, File>> = covers.covers
@@ -70,9 +124,20 @@ class LibraryViewModel(
         if (root == null) LaunchPlan.NotPossible(LaunchProblem.LocationNotSupported)
         else retroArch.plan(game.system, root.treeUri, game.documentId)
 
+    private val appSettings = settings.settings.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
     /** Starts the game; history is recorded only when RetroArch actually opened. */
-    fun play(game: GameEntity, plan: LaunchPlan.Ready, core: Core): LaunchProblem? =
-        retroArch.launch(plan.install, plan.romPath, core).also { if (it == null) repository.recordPlay(game, core.id) }
+    fun play(game: GameEntity, plan: LaunchPlan.Ready, core: Core): LaunchProblem? {
+        val s = appSettings.value
+        val config = if (s?.retroArchHotkeys != false) {
+            hotkeys.prepare(
+                plan.install, HotkeyCombo.of(s?.menuCombo ?: 9), HotkeyCombo.of(s?.quitCombo ?: 4),
+                fastForwardOnR2 = s?.fastForwardOnR2 != false && game.system in RetroArchHotkeys.NO_R2_SYSTEMS,
+                resume = s?.resumeGames != false,
+            )
+        } else null
+        return retroArch.launch(plan.install, plan.romPath, core, config).also { if (it == null) repository.recordPlay(game, core.id) }
+    }
 
     fun openRetroArch(plan: LaunchPlan.Ready) = retroArch.openRetroArch(plan.install)
 
@@ -92,8 +157,15 @@ class LibraryViewModel(
         documentId?.let { id -> rootsById[rootId]?.let { repository.documentUri(it, id) } }
 
     companion object {
-        fun factory(repository: LibraryRepository, retroArch: RetroArchLauncher, covers: CoverRepository): ViewModelProvider.Factory = viewModelFactory {
-            initializer { LibraryViewModel(repository, retroArch, covers) }
+        fun factory(
+            repository: LibraryRepository,
+            retroArch: RetroArchLauncher,
+            covers: CoverRepository,
+            standalone: StandaloneLauncher,
+            settings: SettingsRepository,
+            hotkeys: RetroArchHotkeys,
+        ): ViewModelProvider.Factory = viewModelFactory {
+            initializer { LibraryViewModel(repository, retroArch, covers, standalone, settings, hotkeys) }
         }
     }
 }

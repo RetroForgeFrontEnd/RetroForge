@@ -6,5 +6,40 @@
         <package android:name="com.retroarch" />
         <package android:name="com.retroarch.aarch64" />
         <package android:name="com.retroarch.ra32" />
+        <!-- Free standalone emulators (retro-library standalone.json) and Obtainium -->
+        <package android:name="aenu.aps3e" />
+        <package android:name="aenu.aps3e.premium" />
+        <package android:name="com.armsx2" />
+        <package android:name="com.armsx2.nightly" />
+        <package android:name="com.explusalpha.Snes9xPlus" />
+        <package android:name="com.flycast.emulator" />
+        <package android:name="com.github.stenzek.duckstation" />
+        <package android:name="com.hydra.noods" />
+        <package android:name="com.seleuco.mame4d2024" />
+        <package android:name="com.sky.SkyEmu" />
+        <package android:name="com.virtualapplications.play" />
+        <package android:name="come.nanodata.armsx2" />
+        <package android:name="come.nanodata.armsx2.debug" />
+        <package android:name="dev.eden.eden_emulator" />
+        <package android:name="dev.imranr.obtainium" />
+        <package android:name="dev.imranr.obtainium.fdroid" />
+        <package android:name="dev.legacy.eden_emulator" />
+        <package android:name="io.github.lime3ds.android" />
+        <package android:name="io.recompiled.redream" />
+        <package android:name="me.magnum.melonds" />
+        <package android:name="me.magnum.melondualds" />
+        <package android:name="org.azahar_emu.azahar" />
+        <package android:name="org.devmiyax.yabasanshioro2" />
+        <package android:name="org.devmiyax.yabasanshioro2.pro" />
+        <package android:name="org.dolphinemu.dolphinemu" />
+        <package android:name="org.mupen64plusae.v3.alpha" />
+        <package android:name="org.mupen64plusae.v3.fzurita" />
+        <package android:name="org.mupen64plusae.v3.fzurita.amazon" />
+        <package android:name="org.mupen64plusae.v3.fzurita.pro" />
+        <package android:name="org.openbor.engine" />
+        <package android:name="org.ppsspp.ppsspp" />
+        <package android:name="org.ppsspp.ppssppgold" />
+        <package android:name="ru.playsoftware.j2meloader" />
+        <package android:name="xyz.aethersx2.android" />
     </queries>
 </manifest>

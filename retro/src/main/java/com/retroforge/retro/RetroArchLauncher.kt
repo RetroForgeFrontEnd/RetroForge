@@ -48,12 +48,13 @@ class RetroArchLauncher(private val context: Context) {
     }
 
     /** Opens RetroArch with the game. RetroArch shows its own message if the core isn't downloaded yet. */
-    fun launch(install: RetroArchInstall, romPath: String, core: Core): LaunchProblem? {
+    /** [configPath] is RetroForge's hotkey config ([RetroArchHotkeys]); null uses RetroArch's own settings. */
+    fun launch(install: RetroArchInstall, romPath: String, core: Core, configPath: String? = null): LaunchProblem? {
         val intent = Intent(Intent.ACTION_MAIN)
             .setComponent(ComponentName(install.packageName, ACTIVITY))
             .putExtra("ROM", romPath)
             .putExtra("LIBRETRO", "/data/data/${install.packageName}/cores/${core.id}_libretro_android.so")
-            .putExtra("CONFIGFILE", "/storage/emulated/0/Android/data/${install.packageName}/files/retroarch.cfg")
+            .putExtra("CONFIGFILE", configPath ?: "/storage/emulated/0/Android/data/${install.packageName}/files/retroarch.cfg")
             // The launcher holds the application context, which can only start another app in a new task.
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         return try {

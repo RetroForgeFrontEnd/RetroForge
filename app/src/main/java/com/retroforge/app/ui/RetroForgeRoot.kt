@@ -60,6 +60,7 @@ import com.retroforge.app.ui.library.LibraryViewModel
 import com.retroforge.app.ui.library.RetroScreen
 import com.retroforge.app.ui.library.SystemGamesScreen
 import com.retroforge.app.ui.settings.AboutScreen
+import com.retroforge.app.ui.settings.HotkeysScreen
 import com.retroforge.app.ui.settings.SettingsScreen
 import com.retroforge.app.ui.settings.SettingsViewModel
 import com.retroforge.core.settings.ThemeMode
@@ -86,6 +87,7 @@ private const val HACK_SOURCES_ROUTE = "hacks/sources"
 private const val FOLDERS_ROUTE = "retro/folders"
 private const val SETUP_ROUTE = "setup"
 private const val ABOUT_ROUTE = "settings/about"
+private const val HOTKEYS_ROUTE = "settings/hotkeys"
 private const val SYSTEM_ROUTE = "retro/system/{system}"
 private const val GAME_ROUTE = "retro/game/{id}"
 private const val COVER_ROUTE = "retro/game/{id}/cover"
@@ -130,10 +132,10 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
         val current = sections.firstOrNull { it.route == route } ?: when {
             route == PATCHER_ROUTE || route?.startsWith("retro/") == true -> Section.RETRO
             route?.startsWith("hacks/") == true -> Section.HACKS
-            route == SETUP_ROUTE || route == ABOUT_ROUTE -> Section.SETTINGS
+            route == SETUP_ROUTE || route == ABOUT_ROUTE || route == HOTKEYS_ROUTE -> Section.SETTINGS
             else -> Section.HOME
         }
-        val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library, container.retroArch, container.covers))
+        val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library, container.retroArch, container.covers, container.standalone, container.settings, container.retroArchHotkeys))
         val hacksViewModel: HacksViewModel = viewModel(
             factory = HacksViewModel.factory(container.catalogues, container.catalogueFetcher, container.contentResolver),
         )
@@ -238,9 +240,10 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         }
                         composable(Section.LINKS.route) { LinksScreen() }
                         composable(Section.SETTINGS.route) {
-                            SettingsScreen(settingsViewModel, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) })
+                            SettingsScreen(settingsViewModel, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) })
                         }
                         composable(ABOUT_ROUTE) { AboutScreen() }
+                        composable(HOTKEYS_ROUTE) { HotkeysScreen(settingsViewModel) }
                     }
                 }
                 if (maxWidth >= 600.dp) {

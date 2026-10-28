@@ -1,6 +1,6 @@
 # RetroForge — Project Status
 
-Last updated: 2026-10-27 (Milestone A complete on emulator)
+Last updated: 2026-10-28 (ROM manager, standalone emulators, hotkeys, resume)
 
 This file is the single source of truth for what exists, what has been verified and what is blocked. Detailed findings live in the linked documents.
 
@@ -15,14 +15,16 @@ This file is the single source of truth for what exists, what has been verified 
 | Links tab | Done: six verified YouTube channels |
 | Setup wizard | **Done, emulator tested**: games folder, RetroArch, cores your library needs, BIOS check against libretro checksums and copy into RetroArch |
 | Cover downloader | **Built**: free libretro box art (per game and per-system batch, fuzzy matching) and SteamGridDB custom covers with the user's own key. Emulator tested (libretro); SteamGridDB awaits a key. [COVER_ART.md](COVER_ART.md) |
-| ROM manager (rename, duplicates) | Proposal: [FEATURE_PROPOSAL_ROM_MANAGER.md](FEATURE_PROPOSAL_ROM_MANAGER.md) |
+| ROM manager | **Built; unit tested; emulator tested**: duplicates (checksum-compared), compression (CHD verified by chdman, zip), multi-disc playlists, delete to `_deleted`, free up space, undo. Renaming to No-Intro names not built yet. [ROM_MANAGER.md](ROM_MANAGER.md) |
+| Emulators and hotkeys | **Built; emulator tested**: 91 of 121 RetroBat systems have an Android RetroArch core; 21 free standalone emulators (56 systems) with Get/Obtainium links; per-system default; RetroArch quit/menu combos, hold-R2 fast-forward and auto save/load set without editing RetroArch's own config. [SYSTEM_COVERAGE.md](SYSTEM_COVERAGE.md), [EMULATORS_AND_HOTKEYS.md](EMULATORS_AND_HOTKEYS.md) |
+| About page, ROM hacks tab name | Done |
 | SD cards | **Games and BIOS on an SD card launch-tested** (emulator's virtual SD card); a real phone's SD card still to test |
 | 5 — First real retro launch (Milestone D) | **Done on emulator**: Play from RetroForge's game page starts RetroArch (Star Fox launch-tested), play history recorded. PS1 launch-tested once the core and the user's own BIOS were in place. Real device still needed |
 | Emulation path check (RetroArch, outside RetroForge) | 6 ROMs from your collection launch-tested on the emulator (SNES ×3 incl. `.7z`, Mega Drive, GBA, NES with gameplay): [EMULATOR_COMPATIBILITY.md](EMULATOR_COMPATIBILITY.md) |
 | ROM Patcher (IPS/BPS/UPS, zip/7z input) | **Built; 29 unit tests; emulator tested.** Patch chains, readmes and multi-patch archives work; a real 2-patch hack chain (Giant Mario → 2B) is gameplay-tested. Next: download a patch from a link. [FEATURE_PROPOSAL_ROM_TOOLS.md](FEATURE_PROPOSAL_ROM_TOOLS.md) |
 | Hacks tab (catalogues) | **Built; 7 unit tests; emulator tested.** Built-in starter catalogue (5 hacks, links to romhacking.net pages); add catalogues from file or https link. [hack-catalogue-format.md](hack-catalogue-format.md). romhacking.net isn't scraped: it is read-only since Aug 2024 and its robots.txt disallows its download and listing pages |
-| ROM sorting | Proposal only |
-| Systems up to PS2 | Requested; test pass planned (RetroArch cores on emulator; ARM64-only emulators such as PS2 need a real phone). Obtainium + emulation pack JSON suggested as the install route, to be evaluated |
+| ROM sorting / renaming | Duplicates done; renaming to No-Intro names still a proposal |
+| Systems up to PS2 | Launch routes for every RetroBat system that has one on Android ([SYSTEM_COVERAGE.md](SYSTEM_COVERAGE.md)); only SNES, NES and PS1 launch-tested. Standalone emulators (PS2, GameCube, 3DS …) need a real ARM64 phone to test |
 
 ## Milestone A — what exists
 

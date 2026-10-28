@@ -15,6 +15,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import com.retroforge.retro.RetroArchLauncher
+import com.retroforge.retro.StandaloneLauncher
+import com.retroforge.retro.RetroArchHotkeys
 import com.retroforge.core.settings.SettingsRepository
 import com.retroforge.core.settings.createSettingsRepository
 import com.retroforge.pc.DroidDeckBridge
@@ -33,6 +35,8 @@ class AppContainer(application: Application) {
     val catalogueFetcher = CatalogueFetcher("RetroForge/${BuildConfig.VERSION_NAME}")
     val library = LibraryRepository(LibraryDatabase.create(application), application.contentResolver)
     val retroArch = RetroArchLauncher(application)
+    val standalone = StandaloneLauncher(application)
+    val retroArchHotkeys = RetroArchHotkeys(application)
     val romManager = RomManagerRepository(library, application.contentResolver, File(application.filesDir, "rom-manager"))
 
     // Read by SteamGridDB calls on a background thread; kept current from settings.

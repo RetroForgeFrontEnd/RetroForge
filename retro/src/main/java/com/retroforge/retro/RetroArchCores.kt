@@ -4,8 +4,8 @@ package com.retroforge.retro
 data class Core(val id: String, val name: String)
 
 /**
- * Which RetroArch cores to offer per system, best first. Defaults follow RetroBat's own choices where an Android
- * build of that core exists. Only the systems listed here can be launched; everything else says so plainly.
+ * Which RetroArch cores to offer per system, best first: these hand-picked defaults (chosen for Android phones),
+ * then RetroBat's own choices where libretro builds that core for Android. Systems with neither say so plainly.
  * Status per system is recorded in docs/EMULATOR_COMPATIBILITY.md.
  */
 object RetroArchCores {
@@ -67,8 +67,14 @@ object RetroArchCores {
         "pokemini" to listOf(Core("pokemini", "PokeMini")),
     )
 
-    fun coresFor(system: String): List<Core> = bySystem[system].orEmpty()
+    /** Hand-picked cores first, then RetroBat's other Android-available cores for the system ([retroBatCores]). */
+    fun coresFor(system: String): List<Core> = (bySystem[system].orEmpty() + retroBatCores[system].orEmpty()).distinctBy { it.id }
+
+    val systems: Set<String> get() = bySystem.keys + retroBatCores.keys
 
     /** Cores that need BIOS files in RetroArch's system folder before games will start. */
-    val needsBios: Set<String> = setOf("swanstation", "pcsx_rearmed", "flycast", "mednafen_pce_fast")
+    val needsBios: Set<String> = setOf(
+        "swanstation", "pcsx_rearmed", "mednafen_psx_hw", "flycast", "mednafen_pce_fast", "mednafen_pce", "opera",
+        "mednafen_saturn", "yabasanshiro", "kronos", "mednafen_pcfx", "puae", "hatari", "bluemsx",
+    )
 }

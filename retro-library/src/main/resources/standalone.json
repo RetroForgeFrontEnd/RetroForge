@@ -1,0 +1,793 @@
+{
+ "source": "Launch commands and package names adapted from ES-DE Frontend for Android (resources/systems/android), MIT licence, Copyright (c) 2024-2026 Northwestern Software AB, (c) 2020-2024 Leon Styhre.",
+ "emulators": [
+  {
+   "id": "APS3E",
+   "name": "aPS3e",
+   "page": "https://github.com/aenu1/aps3e/releases",
+   "obtainium": "https://github.com/aenu1/aps3e",
+   "packages": [
+    {
+     "package": "aenu.aps3e.premium",
+     "activity": "aenu.aps3e.EmulatorActivity"
+    },
+    {
+     "package": "aenu.aps3e",
+     "activity": "aenu.aps3e.EmulatorActivity"
+    }
+   ]
+  },
+  {
+   "id": "ARMSX2",
+   "name": "ARMSX2",
+   "page": "https://github.com/ARMSX2/ARMSX2/releases",
+   "obtainium": "https://github.com/ARMSX2/ARMSX2",
+   "packages": [
+    {
+     "package": "come.nanodata.armsx2",
+     "activity": "com.armsx2.MainActivity"
+    },
+    {
+     "package": "com.armsx2",
+     "activity": "com.armsx2.MainActivity"
+    },
+    {
+     "package": "com.armsx2.nightly",
+     "activity": "com.armsx2.MainActivity"
+    },
+    {
+     "package": "come.nanodata.armsx2",
+     "activity": "kr.co.iefriends.pcsx2.MainActivity"
+    },
+    {
+     "package": "come.nanodata.armsx2.debug",
+     "activity": "kr.co.iefriends.pcsx2.MainActivity"
+    }
+   ]
+  },
+  {
+   "id": "AZAHAR",
+   "name": "Azahar",
+   "page": "https://github.com/azahar-emu/azahar/releases",
+   "obtainium": "https://github.com/azahar-emu/azahar",
+   "packages": [
+    {
+     "package": "org.azahar_emu.azahar",
+     "activity": "org.citra.citra_emu.activities.EmulationActivity"
+    },
+    {
+     "package": "io.github.lime3ds.android",
+     "activity": "org.citra.citra_emu.activities.EmulationActivity"
+    }
+   ]
+  },
+  {
+   "id": "DOLPHIN",
+   "name": "Dolphin",
+   "page": "https://dolphin-emu.org/download/",
+   "obtainium": null,
+   "packages": [
+    {
+     "package": "org.dolphinemu.dolphinemu",
+     "activity": "org.dolphinemu.dolphinemu.ui.main.TvMainActivity"
+    }
+   ]
+  },
+  {
+   "id": "DUCKSTATION",
+   "name": "DuckStation",
+   "page": "https://play.google.com/store/apps/details?id=com.github.stenzek.duckstation",
+   "obtainium": null,
+   "packages": [
+    {
+     "package": "com.github.stenzek.duckstation",
+     "activity": "com.github.stenzek.duckstation.EmulationActivity"
+    }
+   ]
+  },
+  {
+   "id": "EDEN",
+   "name": "Eden",
+   "page": "https://eden-emu.dev",
+   "obtainium": null,
+   "packages": [
+    {
+     "package": "dev.eden.eden_emulator",
+     "activity": "org.yuzu.yuzu_emu.activities.EmulationActivity"
+    },
+    {
+     "package": "dev.legacy.eden_emulator",
+     "activity": "org.yuzu.yuzu_emu.activities.EmulationActivity"
+    }
+   ]
+  },
+  {
+   "id": "FLYCAST",
+   "name": "Flycast",
+   "page": "https://github.com/flyinghead/flycast/releases",
+   "obtainium": "https://github.com/flyinghead/flycast",
+   "packages": [
+    {
+     "package": "com.flycast.emulator",
+     "activity": "com.flycast.emulator.MainActivity"
+    },
+    {
+     "package": "com.flycast.emulator",
+     "activity": "com.reicast.emulator.MainActivity"
+    }
+   ]
+  },
+  {
+   "id": "J2ME-LOADER",
+   "name": "J2ME Loader",
+   "page": "https://github.com/nikita36078/J2ME-Loader/releases",
+   "obtainium": "https://github.com/nikita36078/J2ME-Loader",
+   "packages": [
+    {
+     "package": "ru.playsoftware.j2meloader",
+     "activity": "ru.playsoftware.j2meloader.MainActivity"
+    }
+   ]
+  },
+  {
+   "id": "M64PLUS-FZ",
+   "name": "M64Plus FZ",
+   "page": "https://play.google.com/store/apps/details?id=org.mupen64plusae.v3.fzurita",
+   "obtainium": null,
+   "packages": [
+    {
+     "package": "org.mupen64plusae.v3.fzurita.amazon",
+     "activity": "paulscode.android.mupen64plusae.SplashActivity"
+    },
+    {
+     "package": "org.mupen64plusae.v3.fzurita.pro",
+     "activity": "paulscode.android.mupen64plusae.SplashActivity"
+    },
+    {
+     "package": "org.mupen64plusae.v3.fzurita",
+     "activity": "paulscode.android.mupen64plusae.SplashActivity"
+    }
+   ]
+  },
+  {
+   "id": "MAME4DROID-CURRENT",
+   "name": "MAME4droid",
+   "page": "https://github.com/seleuco/MAME4droid-current/releases",
+   "obtainium": "https://github.com/seleuco/MAME4droid-current",
+   "packages": [
+    {
+     "package": "com.seleuco.mame4d2024",
+     "activity": "com.seleuco.mame4droid.MAME4droid"
+    }
+   ]
+  },
+  {
+   "id": "MELONDS",
+   "name": "melonDS",
+   "page": "https://github.com/rafaelvcaetano/melonDS-android/releases",
+   "obtainium": "https://github.com/rafaelvcaetano/melonDS-android",
+   "packages": [
+    {
+     "package": "me.magnum.melonds",
+     "activity": "me.magnum.melonds.ui.emulator.EmulatorActivity"
+    },
+    {
+     "package": "me.magnum.melondualds",
+     "activity": "me.magnum.melonds.ui.emulator.EmulatorActivity"
+    }
+   ]
+  },
+  {
+   "id": "MUPEN64PLUS-AE",
+   "name": "Mupen64Plus AE",
+   "page": "https://github.com/mupen64plus-ae/mupen64plus-ae/releases",
+   "obtainium": "https://github.com/mupen64plus-ae/mupen64plus-ae",
+   "packages": [
+    {
+     "package": "org.mupen64plusae.v3.alpha",
+     "activity": "paulscode.android.mupen64plusae.SplashActivity"
+    }
+   ]
+  },
+  {
+   "id": "NETHERSX2",
+   "name": "NetherSX2",
+   "page": "https://github.com/Trixarian/NetherSX2-patch",
+   "obtainium": null,
+   "packages": [
+    {
+     "package": "xyz.aethersx2.android",
+     "activity": "xyz.aethersx2.android.EmulationActivity"
+    }
+   ]
+  },
+  {
+   "id": "NOODS",
+   "name": "NooDS",
+   "page": "https://github.com/Hydr8gon/NooDS/releases",
+   "obtainium": "https://github.com/Hydr8gon/NooDS",
+   "packages": [
+    {
+     "package": "com.hydra.noods",
+     "activity": "com.hydra.noods.FileBrowser"
+    }
+   ]
+  },
+  {
+   "id": "OPENBOR",
+   "name": "OpenBOR",
+   "page": "https://github.com/DCurrent/openbor/releases",
+   "obtainium": "https://github.com/DCurrent/openbor",
+   "packages": [
+    {
+     "package": "org.openbor.engine",
+     "activity": "org.openbor.engine.GameActivity"
+    }
+   ]
+  },
+  {
+   "id": "PLAY!",
+   "name": "Play!",
+   "page": "https://purei.org/downloads.php",
+   "obtainium": null,
+   "packages": [
+    {
+     "package": "com.virtualapplications.play",
+     "activity": "com.virtualapplications.play.MainActivity"
+    }
+   ]
+  },
+  {
+   "id": "PPSSPP",
+   "name": "PPSSPP",
+   "page": "https://www.ppsspp.org/download/",
+   "obtainium": null,
+   "packages": [
+    {
+     "package": "org.ppsspp.ppssppgold",
+     "activity": "org.ppsspp.ppsspp.PpssppActivity"
+    },
+    {
+     "package": "org.ppsspp.ppsspp",
+     "activity": "org.ppsspp.ppsspp.PpssppActivity"
+    }
+   ]
+  },
+  {
+   "id": "REDREAM",
+   "name": "Redream",
+   "page": "https://redream.io/download",
+   "obtainium": null,
+   "packages": [
+    {
+     "package": "io.recompiled.redream",
+     "activity": "io.recompiled.redream.MainActivity"
+    }
+   ]
+  },
+  {
+   "id": "SKYEMU",
+   "name": "SkyEmu",
+   "page": "https://github.com/skylersaleh/SkyEmu/releases",
+   "obtainium": "https://github.com/skylersaleh/SkyEmu",
+   "packages": [
+    {
+     "package": "com.sky.SkyEmu",
+     "activity": "com.sky.SkyEmu.EnhancedNativeActivity"
+    }
+   ]
+  },
+  {
+   "id": "SNES9X-EXPLUS",
+   "name": "Snes9x EX+",
+   "page": "https://github.com/Rakashazi/emu-ex-plus-alpha/releases",
+   "obtainium": "https://github.com/Rakashazi/emu-ex-plus-alpha",
+   "packages": [
+    {
+     "package": "com.explusalpha.Snes9xPlus",
+     "activity": "com.imagine.BaseActivity"
+    }
+   ]
+  },
+  {
+   "id": "YABASANSHIRO-2",
+   "name": "Yaba Sanshiro 2",
+   "page": "https://play.google.com/store/apps/details?id=org.devmiyax.yabasanshioro2",
+   "obtainium": null,
+   "packages": [
+    {
+     "package": "org.devmiyax.yabasanshioro2.pro",
+     "activity": "org.uoyabause.android.Yabause"
+    },
+    {
+     "package": "org.devmiyax.yabasanshioro2",
+     "activity": "org.uoyabause.android.Yabause"
+    }
+   ]
+  }
+ ],
+ "systems": {
+  "j2me": [
+   {
+    "emulator": "J2ME-LOADER",
+    "label": "J2ME Loader",
+    "command": "%ACTIVITY_CLEAR_TASK% %ACTIVITY_CLEAR_TOP% %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "mame": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/mame'\" %DATA%=%ROMPROVIDER%"
+   },
+   {
+    "emulator": "FLYCAST",
+    "label": "Flycast",
+    "command": "%ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%"
+   }
+  ],
+  "daphne": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/daphne'\" %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "cps1": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/cps1'\" %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "cps2": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/cps2'\" %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "cps3": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/cps3'\" %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "neogeo": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/neogeo'\" %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "model2": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/model2'\" %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "model3": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/model3'\" %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "atomiswave": [
+   {
+    "emulator": "FLYCAST",
+    "label": "Flycast",
+    "command": "%ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%"
+   }
+  ],
+  "naomi": [
+   {
+    "emulator": "FLYCAST",
+    "label": "Flycast",
+    "command": "%ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%"
+   }
+  ],
+  "naomi2": [
+   {
+    "emulator": "FLYCAST",
+    "label": "Flycast",
+    "command": "%ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%"
+   }
+  ],
+  "triforce": [
+   {
+    "emulator": "DOLPHIN",
+    "label": "Dolphin",
+    "command": "%ACTION%=android.intent.action.MAIN %CATEGORY%=android.intent.category.LEANBACK_LAUNCHER %EXTRA_AutoStartFile%=%ROMSAF%"
+   }
+  ],
+  "saturn": [
+   {
+    "emulator": "YABASANSHIRO-2",
+    "label": "Yaba Sanshiro 2",
+    "command": "%ACTIVITY_CLEAR_TASK% %ACTIVITY_CLEAR_TOP% %ACTION%=android.intent.action.VIEW %EXTRA_org.uoyabause.android.FileNameUri%=%ROMSAF%"
+   }
+  ],
+  "segastv": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/stv'\" %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "dreamcast": [
+   {
+    "emulator": "FLYCAST",
+    "label": "Flycast",
+    "command": "%ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%"
+   },
+   {
+    "emulator": "REDREAM",
+    "label": "Redream",
+    "command": "%ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%"
+   }
+  ],
+  "snes": [
+   {
+    "emulator": "SNES9X-EXPLUS",
+    "label": "Snes9x EX+",
+    "command": "%DATA%=%ROMSAF%"
+   }
+  ],
+  "snes-msu1": [
+   {
+    "emulator": "SNES9X-EXPLUS",
+    "label": "Snes9x EX+",
+    "command": "%DATA%=%ROMSAF%"
+   }
+  ],
+  "satellaview": [
+   {
+    "emulator": "SNES9X-EXPLUS",
+    "label": "Snes9x EX+",
+    "command": "%DATA%=%ROMSAF%"
+   }
+  ],
+  "sufami": [
+   {
+    "emulator": "SNES9X-EXPLUS",
+    "label": "Snes9x EX+",
+    "command": "%DATA%=%ROMSAF%"
+   }
+  ],
+  "n64": [
+   {
+    "emulator": "M64PLUS-FZ",
+    "label": "M64Plus FZ",
+    "command": "%ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%"
+   },
+   {
+    "emulator": "MUPEN64PLUS-AE",
+    "label": "Mupen64Plus AE",
+    "command": "%ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%"
+   }
+  ],
+  "n64dd": [
+   {
+    "emulator": "M64PLUS-FZ",
+    "label": "M64Plus FZ",
+    "command": "%ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%"
+   },
+   {
+    "emulator": "MUPEN64PLUS-AE",
+    "label": "Mupen64Plus AE",
+    "command": "%ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%"
+   }
+  ],
+  "gamecube": [
+   {
+    "emulator": "DOLPHIN",
+    "label": "Dolphin",
+    "command": "%ACTION%=android.intent.action.MAIN %CATEGORY%=android.intent.category.LEANBACK_LAUNCHER %EXTRA_AutoStartFile%=%ROMSAF%"
+   }
+  ],
+  "wii": [
+   {
+    "emulator": "DOLPHIN",
+    "label": "Dolphin",
+    "command": "%ACTION%=android.intent.action.MAIN %CATEGORY%=android.intent.category.LEANBACK_LAUNCHER %EXTRA_AutoStartFile%=%ROMSAF%"
+   }
+  ],
+  "switch": [
+   {
+    "emulator": "EDEN",
+    "label": "Eden",
+    "command": "%ACTION%=android.nfc.action.TECH_DISCOVERED %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "psx": [
+   {
+    "emulator": "DUCKSTATION",
+    "label": "DuckStation",
+    "command": "%ACTIVITY_CLEAR_TASK% %ACTIVITY_CLEAR_TOP% %EXTRABOOL_resumeState%=false %EXTRA_bootPath%=%ROMSAF%"
+   }
+  ],
+  "ps2": [
+   {
+    "emulator": "NETHERSX2",
+    "label": "NetherSX2",
+    "command": "%ACTIVITY_CLEAR_TASK% %ACTIVITY_CLEAR_TOP% %ACTION%=android.intent.action.MAIN %EXTRA_bootPath%=%ROMSAF%"
+   },
+   {
+    "emulator": "NETHERSX2",
+    "label": "AetherSX2",
+    "command": "%ACTIVITY_CLEAR_TASK% %ACTIVITY_CLEAR_TOP% %ACTION%=android.intent.action.MAIN %EXTRA_bootPath%=%ROMSAF%"
+   },
+   {
+    "emulator": "ARMSX2",
+    "label": "ARMSX2",
+    "command": "%ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%"
+   },
+   {
+    "emulator": "PLAY!",
+    "label": "Play!",
+    "command": "%ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%"
+   }
+  ],
+  "ps3": [
+   {
+    "emulator": "APS3E",
+    "label": "aPS3e Directory",
+    "command": "%ACTION%=aenu.intent.action.APS3E %EXTRA_game_dir%=%ROM%"
+   },
+   {
+    "emulator": "APS3E",
+    "label": "aPS3e ISO",
+    "command": "%ACTION%=aenu.intent.action.APS3E %EXTRA_iso_uri%=%ROMSAF%"
+   }
+  ],
+  "amstradcpc": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/amstradcpc' -flop1 '%ROMRAW%'\" %DATA%=cpc6128"
+   }
+  ],
+  "gx4000": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/gx4000' -cart '%ROMRAW%'\" %DATA%=gx4000"
+   }
+  ],
+  "apple2": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/apple2' -gameio joy -flop1 '%ROMRAW%'\" %DATA%=apple2e"
+   }
+  ],
+  "apple2gs": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/apple2gs' -gameio joy -flop3 '%ROMRAW%'\" %DATA%=apple2gs"
+   },
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current [Software list]",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/apple2gs' -gameio joy %BASENAME%\" %DATA%=apple2gs"
+   }
+  ],
+  "atari7800": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/atari7800' -cart '%ROMRAW%'\" %DATA%=a7800"
+   }
+  ],
+  "jaguar": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/atarijaguar' -cart '%ROMRAW%'\" %DATA%=jaguar"
+   }
+  ],
+  "intellivision": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/intellivision' -cart '%ROMRAW%'\" %DATA%=intv"
+   }
+  ],
+  "channelf": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/channelf' -cart '%ROMRAW%'\" %DATA%=channelf"
+   }
+  ],
+  "x68000": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/x68000' -flop1 '%ROMRAW%'\" %DATA%=x68000"
+   }
+  ],
+  "x1": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current [Diskette]",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/x1' -flop1 '%ROMRAW%'\" %DATA%=x1"
+   },
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current [Tape]",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/x1' -cass1 '%ROMRAW%'\" %DATA%=x1"
+   }
+  ],
+  "vectrex": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/vectrex' -cart '%ROMRAW%'\" %DATA%=vectrex"
+   }
+  ],
+  "odyssey2": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/odyssey2' -cart '%ROMRAW%'\" %DATA%=odyssey2"
+   }
+  ],
+  "gb": [
+   {
+    "emulator": "SKYEMU",
+    "label": "SkyEmu",
+    "command": "%ACTIVITY_CLEAR_TASK% %ACTIVITY_CLEAR_TOP% %ACTION%=android.intent.action.VIEW %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "gbc": [
+   {
+    "emulator": "SKYEMU",
+    "label": "SkyEmu",
+    "command": "%ACTIVITY_CLEAR_TASK% %ACTIVITY_CLEAR_TOP% %ACTION%=android.intent.action.VIEW %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "gba": [
+   {
+    "emulator": "NOODS",
+    "label": "NooDS",
+    "command": "%ACTIVITY_CLEAR_TASK% %ACTIVITY_CLEAR_TOP% %EXTRA_LaunchPath%=%ROM%"
+   },
+   {
+    "emulator": "SKYEMU",
+    "label": "SkyEmu",
+    "command": "%ACTIVITY_CLEAR_TASK% %ACTIVITY_CLEAR_TOP% %ACTION%=android.intent.action.VIEW %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "nds": [
+   {
+    "emulator": "MELONDS",
+    "label": "melonDS",
+    "command": "%ACTION%=me.magnum.melonds.LAUNCH_ROM %EXTRA_uri%=%ROMSAF%"
+   },
+   {
+    "emulator": "NOODS",
+    "label": "NooDS",
+    "command": "%ACTIVITY_CLEAR_TASK% %ACTIVITY_CLEAR_TOP% %EXTRA_LaunchPath%=%ROM%"
+   },
+   {
+    "emulator": "SKYEMU",
+    "label": "SkyEmu",
+    "command": "%ACTIVITY_CLEAR_TASK% %ACTIVITY_CLEAR_TOP% %ACTION%=android.intent.action.VIEW %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "3ds": [
+   {
+    "emulator": "AZAHAR",
+    "label": "Azahar",
+    "command": "%ACTIVITY_CLEAR_TASK% %ACTIVITY_CLEAR_TOP% %DATA%=%ROMSAF%"
+   }
+  ],
+  "psp": [
+   {
+    "emulator": "PPSSPP",
+    "label": "PPSSPP",
+    "command": "%ACTION%=android.intent.action.VIEW %CATEGORY%=android.intent.category.DEFAULT %DATA%=%ROMSAF%"
+   }
+  ],
+  "supervision": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/supervision' -cart '%ROMRAW%'\" %DATA%=svision"
+   }
+  ],
+  "openbor": [
+   {
+    "emulator": "OPENBOR",
+    "label": "OpenBOR",
+    "command": "%ACTION%=android.intent.action.MAIN"
+   }
+  ],
+  "gamecom": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/gamecom' -cartridge1 '%ROMRAW%'\" %DATA%=gamecom"
+   }
+  ],
+  "scv": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/scv' -cart '%ROMRAW%'\" %DATA%=scv"
+   }
+  ],
+  "bbcmicro": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/bbcmicro' -autoboot_delay '2' -autoboot_command '*cat\\n\\n*exec !boot\\n' -analogue acornjoy -flop1 '%ROMRAW%'\" %DATA%=bbcb"
+   }
+  ],
+  "adam": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current [Diskette]",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/adam' -flop1 '%ROMRAW%'\" %DATA%=adam"
+   },
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current [Tape]",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/adam' -cass1 '%ROMRAW%'\" %DATA%=adam"
+   },
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current [Cartridge]",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/adam' -cart1 '%ROMRAW%'\" %DATA%=adam"
+   },
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current [Software list]",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/adam' %BASENAME%\" %DATA%=adam"
+   }
+  ],
+  "astrocade": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/astrocde' -cart '%ROMRAW%'\" %DATA%=astrocde"
+   }
+  ],
+  "coco": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current [Cartridge]",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/coco' -cart '%ROMRAW%'\" %DATA%=coco"
+   },
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current [Tape]",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/coco' -autoboot_delay '2' -autoboot_command 'cloadm:exec\\n' -cass '%ROMRAW%'\" %DATA%=coco"
+   }
+  ],
+  "lcdgames": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current Local Artwork",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-artpath '%ROMPATHRAW%/lcdgames/artwork'\" %DATA%=%ROMPROVIDER%"
+   },
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %DATA%=%ROMPROVIDER%"
+   }
+  ],
+  "vsmile": [
+   {
+    "emulator": "MAME4DROID-CURRENT",
+    "label": "MAME4droid Current",
+    "command": "%ACTION%=android.intent.action.VIEW %EXTRA_cli_params%=\"-rompath '%GAMEDIRRAW%;%ROMPATHRAW%/vsmile' -cart '%ROMRAW%'\" %DATA%=vsmile"
+   }
+  ]
+ }
+}

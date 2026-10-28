@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.retro.HotkeyCombo
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -25,6 +26,18 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
     /** null until settings have loaded, so the first-run wizard isn't opened for returning users. */
     val setupDone: StateFlow<Boolean?> =
         repository.settings.map<AppSettings, Boolean?> { it.setupDone }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    fun setRetroArchHotkeys(enabled: Boolean, menu: HotkeyCombo, quit: HotkeyCombo) {
+        viewModelScope.launch { repository.setRetroArchHotkeys(enabled, menu.value, quit.value) }
+    }
+
+    fun setResumeGames(enabled: Boolean) {
+        viewModelScope.launch { repository.setResumeGames(enabled) }
+    }
+
+    fun setFastForwardOnR2(enabled: Boolean) {
+        viewModelScope.launch { repository.setFastForwardOnR2(enabled) }
+    }
 
     fun setSteamGridDbKey(key: String?) {
         viewModelScope.launch { repository.setSteamGridDbKey(key) }

@@ -27,6 +27,12 @@ import com.retroforge.retro.LaunchPlan
 import com.retroforge.retro.LaunchProblem
 import com.retroforge.retro.RetroArchCores
 import com.retroforge.retro.RetroArchLauncher
+import com.retroforge.library.StandaloneEmulator
+import com.retroforge.library.StandaloneOption
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.ui.unit.dp
 import java.text.DateFormat
 import java.util.Date
 
@@ -39,12 +45,25 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
     val plan = remember(game, root, resumes) { viewModel.launchPlan(game, root) }
     val play by remember(game.id) { viewModel.playFor(game.id) }.collectAsStateWithLifecycle(initialValue = null)
     var problem by remember(game.id) { mutableStateOf<LaunchProblem?>(null) }
+    val choices by viewModel.emulatorChoices.collectAsStateWithLifecycle()
+    val standalone = remember(game.system) { viewModel.standaloneOptions(game.system) }
+    val chosen = choices[game.system]?.let { id -> standalone.firstOrNull { it.second.id == id } }
+        ?.takeIf { remember(it, resumes) { viewModel.installedComponent(it.second) } != null }
+
+    // The system's chosen standalone emulator comes first, as the main Play button.
+    if (chosen != null) {
+        val (option, emulator) = chosen
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { problem = viewModel.playStandalone(game, root, option, emulator) }) {
+            CardTitle("Play")
+            CardBody("In ${option.label}, your choice for ${viewModel.systemName(game.system)}.")
+        }
+    }
 
     when (plan) {
         is LaunchPlan.Ready -> {
             plan.cores.forEachIndexed { index, core ->
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { problem = viewModel.play(game, plan, core) }) {
-                    CardTitle(if (index == 0) "Play" else "Play with ${core.name}")
+                    CardTitle(if (index == 0 && chosen == null) "Play" else "Play with ${core.name}")
                     if (index == 0) CardBody("In RetroArch with the ${core.name} core.")
                     if (core.id in RetroArchCores.needsBios) CardBody("This core needs BIOS files in RetroArch's system folder.")
                 }
@@ -75,6 +94,8 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
             CardBody(describe(plan.reason, viewModel))
         }
     }
+    if (standalone.isNotEmpty()) StandaloneSection(viewModel, game, root, standalone, choices[game.system], resumes) { problem = it }
+
     problem?.let { p ->
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             StatusPill("Problem", StatusTone.BAD)
@@ -91,4 +112,38 @@ private fun describe(problem: LaunchProblem, viewModel: LibraryViewModel): Strin
     LaunchProblem.LocationNotSupported ->
         "This game is in a location RetroArch can't open directly (for example a cloud drive). Games on internal storage, an SD card or a USB drive work."
     is LaunchProblem.StartFailed -> problem.detail
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun StandaloneSection(
+    viewModel: LibraryViewModel,
+    game: GameEntity,
+    root: RootEntity?,
+    options: List<Pair<StandaloneOption, StandaloneEmulator>>,
+    choice: String?,
+    resumes: Int,
+    onProblem: (LaunchProblem?) -> Unit,
+) {
+    val multiFile = game.fileName.substringAfterLast('.').lowercase() in setOf("cue", "m3u", "gdi", "ccd", "toc")
+    FocusCard(modifier = Modifier.fillMaxWidth()) {
+        CardTitle("Other emulators")
+        CardBody("Free standalone apps that play ${viewModel.systemName(game.system)} games. RetroForge doesn't include them: install the ones you want.")
+        if (multiFile) CardBody("This game is made of several files. Most standalone emulators can only open it if you also add your game folder inside the emulator.")
+        if (!viewModel.hasObtainium()) CardBody("Tip: Obtainium installs emulators from their official releases and keeps them updated.")
+    }
+    options.forEach { (option, emulator) ->
+        val installed = remember(emulator.id, resumes) { viewModel.installedComponent(emulator) } != null
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (installed) {
+                FocusChip("Play with ${option.label}", onClick = { onProblem(viewModel.playStandalone(game, root, option, emulator)) })
+                if (choice == emulator.id) FocusChip("Use RetroArch by default", onClick = { viewModel.setEmulatorChoice(game.system, null) })
+                else FocusChip("Use by default", onClick = { viewModel.setEmulatorChoice(game.system, emulator.id) })
+            } else {
+                FocusChip("Get ${emulator.name} (free)", onClick = {
+                    if (!viewModel.getEmulator(emulator)) onProblem(LaunchProblem.StartFailed("Couldn't open ${emulator.page}"))
+                })
+            }
+        }
+    }
 }

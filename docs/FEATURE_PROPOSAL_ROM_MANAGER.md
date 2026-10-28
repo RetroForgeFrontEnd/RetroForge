@@ -1,6 +1,6 @@
 # Proposal: ROM Manager (rename and sort duplicates)
 
-Requested 2026-10-28. Status: proposal, not started.
+Requested 2026-10-28. Status: duplicates, compression, playlists and deletion built — see [ROM_MANAGER.md](ROM_MANAGER.md). Renaming still a proposal.
 
 This is the first RetroForge feature that would **change files in the user's collection**, so everything else in RetroForge (read-only by default) still applies, with these extra rules.
 

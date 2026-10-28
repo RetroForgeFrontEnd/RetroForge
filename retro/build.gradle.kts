@@ -16,5 +16,6 @@ android {
 }
 
 dependencies {
+    implementation(project(":retro-library"))
     testImplementation(libs.junit)
 }
