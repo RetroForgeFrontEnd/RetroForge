@@ -68,6 +68,12 @@ data class PadLayout(
             )
             // Genesis Plus GX: libretro Y, B, A are the Mega Drive's A, B, C.
             "megadrive", "genesis", "sega32x", "megacd", "segacd" -> PadLayout(listOf("A" to Pad.Y, "B" to Pad.B, "C" to Pad.A), hasSelect = false)
+            // Saturn (Yabause and Beetle Saturn): X Y Z over A B C are libretro Y X L over B A R; the Saturn's L/R are L2/R2.
+            "saturn" -> PadLayout(
+                listOf("X" to Pad.Y, "Y" to Pad.X, "Z" to Pad.L, "A" to Pad.B, "B" to Pad.A, "C" to Pad.R),
+                listOf("L" to Pad.L2, "R" to Pad.R2),
+                hasSelect = false,
+            )
             "mastersystem", "sg1000" -> PadLayout(listOf("1" to Pad.B, "2" to Pad.A), hasSelect = false)
             "gamegear" -> PadLayout(listOf("1" to Pad.B, "2" to Pad.A), hasSelect = false)
             "pcengine", "pcenginecd" -> PadLayout(listOf("II" to Pad.B, "I" to Pad.A))
@@ -211,8 +217,8 @@ fun TouchControls(
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             // Narrow phones: shrink the d-pad and buttons together so a row of three (Mega Drive) keeps a gap from the d-pad.
             val n = layout.face.size
-            val faceSpan = if (n == 4) 3f else n.toFloat()
-            val gaps = if (n == 4) 0.dp else 14.dp * (n - 1)
+            val faceSpan = when (n) { 4 -> 3f; 6 -> 3.3f; else -> n.toFloat() }
+            val gaps = when (n) { 4 -> 0.dp; 6 -> 28.dp; else -> 14.dp * (n - 1) }
             val k = ((maxWidth - gaps - 24.dp) / (168.dp + 64.dp * faceSpan)).coerceAtMost(1f)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 DPad(168.dp * k) { set(0, it) }
@@ -252,6 +258,17 @@ private fun FaceButtons(face: List<Pair<String, Int>>, size: Dp, faint: Boolean 
             val at = mapOf(Pad.X to Alignment.TopCenter, Pad.Y to Alignment.CenterStart, Pad.A to Alignment.CenterEnd, Pad.B to Alignment.BottomCenter)
             face.forEachIndexed { i, (label, button) ->
                 Box(Modifier.align(at[button] ?: Alignment.Center)) { PadButton(label, CircleShape, size, size, faint = faint) { onPress(i, it) } }
+            }
+        }
+        // Six-button pads (Saturn): a row of three over a row of three, the bottom row nudged right like the real pad.
+        6 -> Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            listOf(0..2, 3..5).forEach { row ->
+                Row(Modifier.padding(start = if (row.first == 3) size * 0.3f else 0.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    row.forEach { i ->
+                        val (label, _) = face[i]
+                        PadButton(label, CircleShape, size, size, faint = faint) { onPress(i, it) }
+                    }
+                }
             }
         }
         else -> Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.Bottom) {

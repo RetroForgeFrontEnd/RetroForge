@@ -234,6 +234,10 @@ Not checked: time played (unit-tested only; the script force-stops the player, w
 
 GPU shown as "Android Emulator OpenGL ES Translator (Google SwiftShader)", correctly marked as unable to use custom drivers. "Show drivers anyway" listed MrPurple Turnip T30–T27 and K11MCH1 builds from GitHub. T30 (3.7 MB) downloaded to Download/RetroForge/GPU drivers; the zip holds meta.json (Mesa Turnip 26.3.0, minApi 30) and vulkan.purple.so. Not checked: installing it in Eden/Dolphin (needs a Snapdragon phone).
 
+### 2026-10-28: Saturn in the built-in player (emulator)
+
+Yabause: Bug! (USA).chd boots to the Sega/Away Team logo with saturn_bios.bin; The Legend of Oasis (USA).chd stays black with and without the BIOS (frames arrive, 320x224 RGB565, so it's the core, not the player). Six-button pad checked on screen. Beetle Saturn not tried (too heavy for the x86 emulator).
+
 ## Release test plan (run in the final stage, before any release)
 
 Everything is re-tested together on real hardware, so nothing that worked earlier is broken by later changes. Record each result here with date, device and evidence.

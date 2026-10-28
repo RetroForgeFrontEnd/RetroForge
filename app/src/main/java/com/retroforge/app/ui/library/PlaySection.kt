@@ -170,6 +170,7 @@ private fun BuiltInCard(
             },
         )
         if (core.needsBios) CardBody("${core.name} needs this system's BIOS file.")
+        if (game.system == "saturn") CardBody("Saturn in the built-in player is experimental: some games stay on a black screen. RetroArch or Yaba Sanshiro 2 (below) play more of them.")
         if (played > 0) CardBody("Time played here: ${Playtime.format(played)}.")
     }
 }

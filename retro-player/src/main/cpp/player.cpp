@@ -23,8 +23,10 @@
 #include <cstring>
 #include <map>
 #include <mutex>
+#include <set>
 #include <string>
 #include <thread>
+#include <set>
 #include <vector>
 
 #include "libretro.h"
@@ -306,9 +308,13 @@ bool environment(unsigned cmd, void *data) {
         case RETRO_ENVIRONMENT_SET_SUPPORT_ACHIEVEMENTS:
         case RETRO_ENVIRONMENT_SET_MINIMUM_AUDIO_LATENCY:
             return true;
-        default:
-            // Hardware rendering, disc control, rumble, VFS and the rest aren't offered yet; cores fall back or say so.
+        default: {
+            // Hardware rendering, rumble, VFS and the rest aren't offered yet; cores fall back or say so.
+            // Logged once per command, to see what a new core asks for.
+            static std::set<unsigned> logged;
+            if (logged.insert(cmd).second) LOGI("core asked for environment %u (not offered)", cmd);
             return false;
+        }
     }
 }
 
@@ -438,6 +444,11 @@ void applyWindowChange() {
 
 void videoRefresh(const void *data, unsigned width, unsigned height, size_t pitch) {
     Player &p = *P;
+    static int framesLogged = 0;
+    if (framesLogged < 3) {
+        framesLogged++;
+        LOGI("frame %ux%u pitch %zu format %d%s", width, height, pitch, static_cast<int>(p.format), data ? "" : " (no data)");
+    }
     if (!data || p.surface == EGL_NO_SURFACE || width == 0 || height == 0) return; // duplicate frame: keep the last
     GLenum glFormat, glType;
     if (p.format == RETRO_PIXEL_FORMAT_XRGB8888) {

@@ -19,6 +19,8 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Saves and storage**: Settings → Built-in player → Back up saves writes one zip with in-game saves, save states and cheats; Restore puts them back (on this or another device), replacing same-named saves and keeping the rest. A Storage card shows the space emulators and copied CD/arcade games use, with Clear copied games. Each game's page shows its time played in the built-in player.
 
+**Saturn (experimental)** in the built-in player with Yabause (or Beetle Saturn on fast phones): disc images (chd, cue/bin), six-button pad (X Y Z over A B C, L and R), Saturn BIOS in the BIOS check. Some games stay on a black screen; RetroArch and Yaba Sanshiro 2 are offered on the game page. YabaSanshiro, which plays far more, follows once the player draws with the GPU.
+
 **GPU and drivers** (Settings): shows the device's GPU and whether custom drivers apply (Snapdragon/Adreno only). Lists the latest Turnip builds (Mesa's open-source Vulkan driver) and downloads the one you pick to Download/RetroForge/GPU drivers, ready to install in Eden, Dolphin, NetherSX2 and other emulators with a driver manager.
 
 **Folders from ES-DE**: ES-DE folder names (`n3ds`, `sfc`, `famicom`, `atarilynx`, `sg-1000`, `arcade`, `gameandwatch` …) are recognised alongside RetroBat's.

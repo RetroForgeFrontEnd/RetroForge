@@ -80,3 +80,5 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | N64, PS2, Wii, Wii U, GameCube, Switch in the built-in player | 🟡 libretro builds exist for all but Switch; needs GPU rendering in the player (in progress); standalone apps stay offered |
 | "Made by Darren Glancy, built with AI" credit | ✅ About page and Settings |
 | GPU detector, custom GPU driver support and downloads | ✅ GPU check + Turnip list/download for apps with a driver manager (tested on the emulator); ❌ our player loading them (needs Vulkan GPU rendering first) |
+| Saturn in the built-in player | 🟡 experimental (Yabause: 1 of 2 test games boots); YabaSanshiro after GPU rendering; RetroArch and Yaba Sanshiro 2 offered |
+| Tester guide and email to Mr Sujano | ✅ docs/TESTER_GUIDE.md; email in Documents (Word) |

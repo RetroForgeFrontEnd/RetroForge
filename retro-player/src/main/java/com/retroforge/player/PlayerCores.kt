@@ -43,6 +43,10 @@ object PlayerCores {
     private val fbneo = PlayerCore("fbneo", "FinalBurn Neo")
     private val mame2003 = PlayerCore("mame2003_plus", "MAME 2003-Plus")
     private val swanstation = PlayerCore("swanstation", "SwanStation", needsBios = true)
+    // Yabause has its own BIOS replacement and runs on phones, but not every game boots; Beetle Saturn is accurate but
+    // needs a fast phone and the BIOS. YabaSanshiro (better) draws with the GPU, so it waits for hardware rendering.
+    private val yabause = PlayerCore("yabause", "Yabause (experimental)")
+    private val beetleSaturn = PlayerCore("mednafen_saturn", "Beetle Saturn (accurate, needs a fast phone)", needsBios = true)
 
     private val sega = listOf(gpgx, picodrive)
     private val gameBoy = listOf(gambatte, sameboy, gearboy, mgba)
@@ -63,6 +67,7 @@ object PlayerCores {
         "psx" to listOf(pcsx, swanstation),
         "megacd" to listOf(gpgxCd, picodriveCd), "segacd" to listOf(gpgxCd, picodriveCd),
         "pcenginecd" to listOf(pceCd),
+        "saturn" to listOf(yabause, beetleSaturn),
         "fbneo" to listOf(fbneo), "neogeo" to listOf(fbneo), "cps1" to listOf(fbneo), "cps2" to listOf(fbneo), "cps3" to listOf(fbneo),
         "mame" to listOf(mame2003, fbneo),
     )
@@ -74,7 +79,7 @@ object PlayerCores {
     fun companions(system: String): List<String> = if (system in arcadeSystems) listOf("neogeo.zip") else emptyList()
 
     /** Disc systems the built-in player runs; their disc images (cue/bin, chd, pbp …) are allowed. */
-    private val discSystems = setOf("psx", "megacd", "segacd", "pcenginecd")
+    private val discSystems = setOf("psx", "megacd", "segacd", "pcenginecd", "saturn")
 
     /** Disc images and playlists: only for the [discSystems]. */
     private val discExtensions = setOf("cue", "bin", "chd", "iso", "m3u", "ccd", "img", "gdi", "cdi", "pbp", "toc")
