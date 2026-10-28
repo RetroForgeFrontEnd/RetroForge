@@ -209,6 +209,13 @@ S22 (arm64) and the Android emulator (x86_64, software GPU). Debug build.
 - Automatic artwork (no folder chosen): canvas-es console pictures, logos and details downloaded by themselves for the library's systems only (c64, megadrive, nes, psp, psx …) into private storage; tiles drawn on RetroForge's theme colours (Forge Neon orange-to-cyan) over the faded RetroForge key art.
 - Centring and scale (user report: console pictures off-centre): transparent borders are trimmed when loading, so every console and logo is centred at the same scale. Landscape (user report: cut off): tiles left, logo/year/count right, all on one screen. Checked portrait (Commodore 64) and landscape (Mega Drive with C64 and NES neighbours).
 
+### 2026-10-28: PlayStation in the built-in player (emulator)
+
+- PCSX ReARMed downloaded by itself (PlayStation in the library). Batman Forever (.cue + .bin tracks) reached PRESS START with the core's HLE BIOS; DualShock on port 1.
+- Linking to the open files failed (EACCES: Android re-checks folder access when a path is reopened), so disc games are copied once into RetroForge's cache with progress shown, reused next time, keeping the two most recent games.
+- PS1 pad: L2/L1/R1/R2, split d-pad, △○✕□ drawn as shapes, two floating thumbsticks (tap = L3/R3), Select/Start/menu; DualShock-style dark console look with shaded buttons. Portrait surround slimmed to 4 dp so the picture is wider.
+- Not yet: analog input confirmed in a game, Resident Evil 2 (.m3u/.chd) and multi-disc swapping (disc control not implemented), on the S22.
+
 ## Release test plan (run in the final stage, before any release)
 
 Everything is re-tested together on real hardware, so nothing that worked earlier is broken by later changes. Record each result here with date, device and evidence.

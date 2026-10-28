@@ -32,6 +32,10 @@ data class ConsoleSkin(
     val shoulder: Color = pill,
     /** Face buttons in their own colours (by label), e.g. the SNES's four. */
     val face: Map<String, Color> = emptyMap(),
+    /** Face button symbols in their own colours on dark buttons, e.g. the PlayStation's. */
+    val faceText: Map<String, Color> = emptyMap(),
+    /** A d-pad of four separate pads (PlayStation) rather than one cross. */
+    val splitDpad: Boolean = false,
 ) {
     companion object {
         private val dark = ConsoleSkin(
@@ -87,6 +91,14 @@ data class ConsoleSkin(
                 button = Color(0xFF202024), label = Color(0xFFFFFFFF), dpad = Color(0xFF202024),
                 pill = Color(0xFF9C9CA4), pillLabel = Color(0xFF202024),
             )
+            // DualShock: dark body, dark buttons with coloured symbols, split d-pad.
+            "psx" -> ConsoleSkin(
+                body = Color(0xFF2A2B31), bodyShade = Color(0xFF1C1D22), bezel = Color(0xFF0C0C0F),
+                button = Color(0xFF3A3B44), label = Color(0xFFD9DAE2), dpad = Color(0xFF3A3B44),
+                pill = Color(0xFF45464F), pillLabel = Color(0xFFC9CAD2), shoulder = Color(0xFF41424B),
+                faceText = mapOf("△" to Color(0xFF40D3A6), "○" to Color(0xFFFF5C6C), "✕" to Color(0xFF86AAFF), "□" to Color(0xFFF29ADA)),
+                splitDpad = true,
+            )
             "nds" -> ConsoleSkin(
                 body = Color(0xFFD3D6DC), bodyShade = Color(0xFFBCC0C7), bezel = Color(0xFF2A2D34),
                 button = Color(0xFFF2F3F5), label = Color(0xFF3A3D44), dpad = Color(0xFF3A3D44),
@@ -103,16 +115,19 @@ val LocalConsoleSkin = staticCompositionLocalOf<ConsoleSkin?> { null }
 /** Space kept round the picture for the screen surround when the console look is on. */
 val BEZEL_MARGIN: Dp = 14.dp
 
+/** In portrait the phone's width limits the picture, so the surround is a slim rim there. */
+fun bezelMargin(portrait: Boolean): Dp = if (portrait) 4.dp else BEZEL_MARGIN
+
 /**
  * Draws the console body over everything except the game picture ([picture], in this canvas's pixels), with a
  * rounded dark surround just outside the picture. Leaves the picture itself untouched (the game shows through).
  */
 @Composable
-fun ConsoleFrame(skin: ConsoleSkin, picture: Rect, modifier: Modifier) {
+fun ConsoleFrame(skin: ConsoleSkin, picture: Rect, modifier: Modifier, margin: Dp = BEZEL_MARGIN) {
     Canvas(modifier) {
         if (picture.w <= 0 || picture.h <= 0) return@Canvas
-        val margin = BEZEL_MARGIN.toPx()
-        val radius = CornerRadius(margin * 1.2f)
+        val margin = margin.toPx()
+        val radius = CornerRadius(maxOf(margin * 1.2f, 10.dp.toPx()))
         val hole = androidx.compose.ui.geometry.Rect(Offset(picture.x.toFloat(), picture.y.toFloat()), Size(picture.w.toFloat(), picture.h.toFloat()))
         val bezel = hole.inflate(margin)
         val body = Path().apply {

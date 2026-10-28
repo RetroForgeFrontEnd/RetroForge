@@ -25,6 +25,16 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.shadow
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.foundation.layout.offset
+import kotlinx.coroutines.launch
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -42,6 +52,10 @@ data class PadLayout(
     val face: List<Pair<String, Int>>,
     val shoulders: List<Pair<String, Int>> = emptyList(),
     val hasSelect: Boolean = true,
+    /** Second shoulder pair (L2/R2), beside the first. */
+    val triggers: List<Pair<String, Int>> = emptyList(),
+    /** Two analog thumbsticks; a quick tap on one is L3/R3. */
+    val sticks: Boolean = false,
 ) {
     companion object {
         private val twoButton = PadLayout(listOf("B" to Pad.B, "A" to Pad.A))
@@ -58,6 +72,13 @@ data class PadLayout(
             "gamegear" -> PadLayout(listOf("1" to Pad.B, "2" to Pad.A), hasSelect = false)
             "pcengine" -> PadLayout(listOf("II" to Pad.B, "I" to Pad.A))
             "atari2600" -> PadLayout(listOf("Fire" to Pad.B))
+            // PlayStation: △ top, ○ right, ✕ bottom, □ left (libretro X, A, B, Y), L1/R1, L2/R2 and both sticks.
+            "psx" -> PadLayout(
+                listOf("□" to Pad.Y, "△" to Pad.X, "✕" to Pad.B, "○" to Pad.A),
+                listOf("L1" to Pad.L, "R1" to Pad.R),
+                triggers = listOf("L2" to Pad.L2, "R2" to Pad.R2),
+                sticks = true,
+            )
             else -> twoButton
         }
     }
@@ -66,6 +87,7 @@ data class PadLayout(
 /** Height the controls need, to decide whether the [compact] layout is needed to give the picture room. */
 fun touchControlsHeight(layout: PadLayout, compact: Boolean) = when {
     compact -> 200.dp
+    layout.sticks -> 470.dp
     layout.shoulders.isEmpty() -> 290.dp
     else -> 350.dp
 }
@@ -86,8 +108,9 @@ fun TouchControls(
     modifier: Modifier = Modifier,
     compact: Boolean = false,
     landscape: Boolean = false,
+    onAnalog: (stick: Int, x: Float, y: Float) -> Unit = { _, _, _ -> },
 ) {
-    val parts = remember { IntArray(16) }
+    val parts = remember { IntArray(20) }
     val mask = remember { mutableIntStateOf(0) }
     fun set(slot: Int, value: Int) {
         if (parts[slot] == value) return
@@ -103,20 +126,32 @@ fun TouchControls(
             val k = (maxHeight / 410.dp).coerceIn(0.7f, 1.3f)
             Row(Modifier.fillMaxSize().padding(horizontal = 8.dp * k, vertical = 8.dp * k), horizontalArrangement = Arrangement.SpaceBetween) {
                 Column(Modifier.fillMaxHeight(), verticalArrangement = Arrangement.SpaceBetween) {
-                    layout.shoulders.getOrNull(0)?.let { (label, button) ->
-                        PadButton(label, RoundedCornerShape(10.dp), 60.dp * k, 28.dp * k, small = true, faint = true, role = ButtonRole.SHOULDER) { down -> set(10, if (down) Pad.bit(button) else 0) }
-                    } ?: Spacer(Modifier.height(32.dp * k))
-                    DPad(116.dp * k, faint = true) { set(0, it) }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp * k)) {
+                        layout.triggers.getOrNull(0)?.let { (label, button) ->
+                            PadButton(label, RoundedCornerShape(10.dp), 52.dp * k, 28.dp * k, small = true, faint = true, role = ButtonRole.SHOULDER) { down -> set(12, if (down) Pad.bit(button) else 0) }
+                        }
+                        layout.shoulders.getOrNull(0)?.let { (label, button) ->
+                            PadButton(label, RoundedCornerShape(10.dp), if (layout.triggers.isEmpty()) 60.dp * k else 52.dp * k, 28.dp * k, small = true, faint = true, role = ButtonRole.SHOULDER) { down -> set(10, if (down) Pad.bit(button) else 0) }
+                        } ?: Spacer(Modifier.height(32.dp * k))
+                    }
+                    DPad(if (layout.sticks) 104.dp * k else 116.dp * k, faint = true) { set(0, it) }
+                    if (layout.sticks) Stick(84.dp * k, faint = true, onMove = { x, y -> onAnalog(0, x, y) }) { set(14, if (it) Pad.bit(Pad.L3) else 0) }
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp * k), verticalAlignment = Alignment.CenterVertically) {
                         if (layout.hasSelect) PadButton("Select", RoundedCornerShape(50), 60.dp * k, 26.dp * k, small = true, faint = true, role = ButtonRole.PILL) { set(8, if (it) Pad.bit(Pad.SELECT) else 0) }
                         PadButton("☰", CircleShape, 32.dp * k, 32.dp * k, small = true, faint = true, role = ButtonRole.PILL) { if (it) onMenu() }
                     }
                 }
                 Column(Modifier.fillMaxHeight(), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.SpaceBetween) {
-                    layout.shoulders.getOrNull(1)?.let { (label, button) ->
-                        PadButton(label, RoundedCornerShape(10.dp), 60.dp * k, 28.dp * k, small = true, faint = true, role = ButtonRole.SHOULDER) { down -> set(11, if (down) Pad.bit(button) else 0) }
-                    } ?: Spacer(Modifier.height(32.dp * k))
-                    FaceButtons(layout.face, 42.dp * k, faint = true) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp * k)) {
+                        layout.shoulders.getOrNull(1)?.let { (label, button) ->
+                            PadButton(label, RoundedCornerShape(10.dp), if (layout.triggers.isEmpty()) 60.dp * k else 52.dp * k, 28.dp * k, small = true, faint = true, role = ButtonRole.SHOULDER) { down -> set(11, if (down) Pad.bit(button) else 0) }
+                        } ?: Spacer(Modifier.height(32.dp * k))
+                        layout.triggers.getOrNull(1)?.let { (label, button) ->
+                            PadButton(label, RoundedCornerShape(10.dp), 52.dp * k, 28.dp * k, small = true, faint = true, role = ButtonRole.SHOULDER) { down -> set(13, if (down) Pad.bit(button) else 0) }
+                        }
+                    }
+                    FaceButtons(layout.face, if (layout.sticks) 38.dp * k else 42.dp * k, faint = true) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
+                    if (layout.sticks) Stick(84.dp * k, faint = true, onMove = { x, y -> onAnalog(1, x, y) }) { set(15, if (it) Pad.bit(Pad.R3) else 0) }
                     PadButton("Start", RoundedCornerShape(50), 60.dp * k, 26.dp * k, small = true, faint = true, role = ButtonRole.PILL) { set(9, if (it) Pad.bit(Pad.START) else 0) }
                 }
             }
@@ -147,17 +182,43 @@ fun TouchControls(
         return
     }
 
-    Column(modifier.padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column(modifier.padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) Column@{
         if (layout.shoulders.isNotEmpty()) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                layout.shoulders.forEachIndexed { i, (label, button) ->
-                    PadButton(label, RoundedCornerShape(12.dp), 88.dp, 44.dp, role = ButtonRole.SHOULDER) { down -> set(10 + i, if (down) Pad.bit(button) else 0) }
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    layout.triggers.getOrNull(0)?.let { (label, button) ->
+                        PadButton(label, RoundedCornerShape(12.dp), 72.dp, 40.dp, role = ButtonRole.SHOULDER) { down -> set(12, if (down) Pad.bit(button) else 0) }
+                    }
+                    layout.shoulders.getOrNull(0)?.let { (label, button) ->
+                        PadButton(label, RoundedCornerShape(12.dp), if (layout.triggers.isEmpty()) 88.dp else 72.dp, if (layout.triggers.isEmpty()) 44.dp else 40.dp, role = ButtonRole.SHOULDER) { down -> set(10, if (down) Pad.bit(button) else 0) }
+                    }
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    layout.shoulders.getOrNull(1)?.let { (label, button) ->
+                        PadButton(label, RoundedCornerShape(12.dp), if (layout.triggers.isEmpty()) 88.dp else 72.dp, if (layout.triggers.isEmpty()) 44.dp else 40.dp, role = ButtonRole.SHOULDER) { down -> set(11, if (down) Pad.bit(button) else 0) }
+                    }
+                    layout.triggers.getOrNull(1)?.let { (label, button) ->
+                        PadButton(label, RoundedCornerShape(12.dp), 72.dp, 40.dp, role = ButtonRole.SHOULDER) { down -> set(13, if (down) Pad.bit(button) else 0) }
+                    }
                 }
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             DPad(168.dp) { set(0, it) }
             FaceButtons(layout.face, 64.dp) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
+        }
+        if (layout.sticks) {
+            // DualShock-style: sticks below the d-pad and the buttons, Select / Start / menu between them.
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Stick(112.dp, onMove = { x, y -> onAnalog(0, x, y) }) { set(14, if (it) Pad.bit(Pad.L3) else 0) }
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (layout.hasSelect) PadButton("Select", RoundedCornerShape(50), 68.dp, 30.dp, small = true, role = ButtonRole.PILL) { set(8, if (it) Pad.bit(Pad.SELECT) else 0) }
+                    PadButton("Start", RoundedCornerShape(50), 68.dp, 30.dp, small = true, role = ButtonRole.PILL) { set(9, if (it) Pad.bit(Pad.START) else 0) }
+                    PadButton("☰", CircleShape, 36.dp, 36.dp, small = true, role = ButtonRole.PILL) { if (it) onMenu() }
+                }
+                Stick(112.dp, onMove = { x, y -> onAnalog(1, x, y) }) { set(15, if (it) Pad.bit(Pad.R3) else 0) }
+            }
+            return@Column
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
             if (layout.hasSelect) {
@@ -175,10 +236,10 @@ fun TouchControls(
 private fun FaceButtons(face: List<Pair<String, Int>>, size: Dp, faint: Boolean = false, onPress: (Int, Boolean) -> Unit) {
     when (face.size) {
         4 -> Box(Modifier.size(size * 3)) {
-            // SNES diamond: X top, Y left, A right, B bottom.
-            val at = mapOf("X" to Alignment.TopCenter, "Y" to Alignment.CenterStart, "A" to Alignment.CenterEnd, "B" to Alignment.BottomCenter)
-            face.forEachIndexed { i, (label, _) ->
-                Box(Modifier.align(at[label] ?: Alignment.Center)) { PadButton(label, CircleShape, size, size, faint = faint) { onPress(i, it) } }
+            // Diamond by button position (libretro/SNES): X top, Y left, A right, B bottom. PlayStation: △ ○ ✕ □.
+            val at = mapOf(Pad.X to Alignment.TopCenter, Pad.Y to Alignment.CenterStart, Pad.A to Alignment.CenterEnd, Pad.B to Alignment.BottomCenter)
+            face.forEachIndexed { i, (label, button) ->
+                Box(Modifier.align(at[button] ?: Alignment.Center)) { PadButton(label, CircleShape, size, size, faint = faint) { onPress(i, it) } }
             }
         }
         else -> Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.Bottom) {
@@ -215,6 +276,7 @@ private fun PadButton(
     val text = when {
         skin == null -> Color.White
         role == ButtonRole.PILL -> skin.pillLabel
+        role == ButtonRole.FACE && label in skin.faceText -> skin.faceText.getValue(label)
         role == ButtonRole.FACE && label in skin.face -> Color.White
         else -> skin.label
     }
@@ -225,12 +287,15 @@ private fun PadButton(
         faint -> 0.35f
         else -> 0.5f
     }
+    val down = pressed.intValue == 1
     Box(
         Modifier
             .size(width, height)
             .alpha(alpha)
-            .background(fill, shape)
-            .border(1.5.dp, if (skin == null) Color(0xAAFFFFFF) else Color(0x33000000), shape)
+            // Console look: a soft shadow and a lit-from-above gradient, flatter while pressed.
+            .then(if (skin != null) Modifier.shadow(if (down) 1.dp else 5.dp, shape, clip = false) else Modifier)
+            .background(if (skin != null) Brush.verticalGradient(if (down) listOf(fill.shade(-0.1f), fill.shade(0.06f)) else listOf(fill.shade(0.16f), fill.shade(-0.12f))) else SolidColor(fill), shape)
+            .border(if (skin != null) 1.dp else 1.5.dp, if (skin == null) Color(0xAAFFFFFF) else Color(0x26FFFFFF), shape)
             .pointerInput(Unit) {
                 awaitEachGesture {
                     awaitFirstDown(requireUnconsumed = false)
@@ -245,9 +310,37 @@ private fun PadButton(
             },
         contentAlignment = Alignment.Center,
     ) {
-        Text(label, color = text, fontSize = if (small) 12.sp else 20.sp, fontWeight = FontWeight.Bold)
+        if (label in PLAYSTATION_SYMBOLS) {
+            Symbol(label, text, Modifier.fillMaxSize(0.42f))
+        } else {
+            Text(label, color = text, fontSize = if (small) 12.sp else 20.sp, fontWeight = FontWeight.Bold)
+        }
     }
 }
+
+private val PLAYSTATION_SYMBOLS = setOf("△", "○", "✕", "□")
+
+/** The PlayStation face symbols drawn as bold shapes (a font's thin glyphs look flimsy at this size). */
+@Composable
+private fun Symbol(label: String, color: Color, modifier: Modifier) {
+    androidx.compose.foundation.Canvas(modifier) {
+        val stroke = androidx.compose.ui.graphics.drawscope.Stroke(width = size.minDimension * 0.13f, cap = StrokeCap.Round, join = StrokeJoin.Round)
+        val w = size.width
+        val h = size.height
+        when (label) {
+            "○" -> drawCircle(color, radius = size.minDimension * 0.42f, style = stroke)
+            "□" -> drawRect(color, topLeft = Offset(w * 0.12f, h * 0.12f), size = androidx.compose.ui.geometry.Size(w * 0.76f, h * 0.76f), style = stroke)
+            "△" -> drawPath(Path().apply { moveTo(w * 0.5f, h * 0.08f); lineTo(w * 0.94f, h * 0.86f); lineTo(w * 0.06f, h * 0.86f); close() }, color, style = stroke)
+            "✕" -> {
+                drawLine(color, Offset(w * 0.12f, h * 0.12f), Offset(w * 0.88f, h * 0.88f), stroke.width, StrokeCap.Round)
+                drawLine(color, Offset(w * 0.88f, h * 0.12f), Offset(w * 0.12f, h * 0.88f), stroke.width, StrokeCap.Round)
+            }
+        }
+    }
+}
+
+/** Lighter (positive) or darker (negative) by [amount] (0..1). */
+private fun Color.shade(amount: Float) = androidx.compose.ui.graphics.lerp(this, if (amount > 0) Color.White else Color.Black, abs(amount))
 
 /** Eight-way d-pad: the direction follows the finger while it's down, with a small dead zone in the middle. */
 @Composable
@@ -282,9 +375,125 @@ private fun DPad(size: Dp, faint: Boolean = false, onMask: (Int) -> Unit) {
                 }
             },
     ) {
-        val arm = Modifier.background(skin?.dpad ?: Color(0x55FFFFFF), RoundedCornerShape(10.dp))
-            .border(1.5.dp, if (skin == null) Color(0xAAFFFFFF) else Color(0x33000000), RoundedCornerShape(10.dp))
-        Box(arm.size(size / 3, size).align(Alignment.Center))
-        Box(arm.size(size, size / 3).align(Alignment.Center))
+        if (skin == null) {
+            val arm = Modifier.background(Color(0x55FFFFFF), RoundedCornerShape(10.dp)).border(1.5.dp, Color(0xAAFFFFFF), RoundedCornerShape(10.dp))
+            Box(arm.size(size / 3, size).align(Alignment.Center))
+            Box(arm.size(size, size / 3).align(Alignment.Center))
+        } else {
+            // Console look: four arms with depth and arrows; split into separate pads where the console's were (PlayStation).
+            androidx.compose.foundation.Canvas(Modifier.fillMaxSize().shadow(0.dp)) {
+                val s = this.size.minDimension
+                val armW = s / 3f
+                val gap = if (skin.splitDpad) s * 0.06f else 0f
+                val corner = androidx.compose.ui.geometry.CornerRadius(s * 0.06f)
+                val top = skin.dpad.shade(0.18f)
+                val bottom = skin.dpad.shade(-0.14f)
+                fun arm(x: Float, y: Float, aw: Float, ah: Float) {
+                    drawRoundRect(Color.Black.copy(alpha = 0.35f), Offset(x, y + s * 0.02f), androidx.compose.ui.geometry.Size(aw, ah), corner)
+                    drawRoundRect(Brush.verticalGradient(listOf(top, bottom), startY = y, endY = y + ah), Offset(x, y), androidx.compose.ui.geometry.Size(aw, ah), corner)
+                }
+                if (skin.splitDpad) {
+                    val len = s / 2f - armW / 2f - gap
+                    arm(armW, 0f, armW, len)                       // up
+                    arm(armW, s - len, armW, len)                  // down
+                    arm(0f, armW, len, armW)                       // left
+                    arm(s - len, armW, len, armW)                  // right
+                } else {
+                    arm(armW, 0f, armW, s)
+                    arm(0f, armW, s, armW)
+                    drawCircle(bottom, radius = armW * 0.22f, center = Offset(s / 2f, s / 2f))
+                }
+                val arrow = skin.label.copy(alpha = 0.55f)
+                val a = armW * 0.22f
+                fun tri(cx: Float, cy: Float, dx: Float, dy: Float) {
+                    drawPath(Path().apply {
+                        moveTo(cx + dx * a, cy + dy * a)
+                        lineTo(cx - dx * a * 0.6f + dy * a, cy - dy * a * 0.6f + dx * a)
+                        lineTo(cx - dx * a * 0.6f - dy * a, cy - dy * a * 0.6f - dx * a)
+                        close()
+                    }, arrow)
+                }
+                tri(s / 2f, armW * 0.55f, 0f, -1f)
+                tri(s / 2f, s - armW * 0.55f, 0f, 1f)
+                tri(armW * 0.55f, s / 2f, -1f, 0f)
+                tri(s - armW * 0.55f, s / 2f, 1f, 0f)
+            }
+        }
+    }
+}
+
+/**
+ * A floating analog stick: it centres where the thumb lands, follows it up to the rim and springs back on release.
+ * Reports -1..1 on each axis; a quick tap without moving is a stick click (L3/R3).
+ */
+@Composable
+private fun Stick(size: Dp, faint: Boolean = false, onMove: (Float, Float) -> Unit, onClick: (Boolean) -> Unit) {
+    val skin = LocalConsoleSkin.current
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var knob by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(Offset.Zero) }
+    val base = skin?.button ?: Color(0x55FFFFFF)
+    Box(
+        Modifier
+            .size(size)
+            .alpha(if (skin != null) (if (faint) 0.8f else 1f) else if (faint) 0.35f else 0.5f)
+            .background(
+                if (skin != null) Brush.radialGradient(listOf(base.shade(-0.35f), base.shade(-0.15f), base.shade(0.05f))) else SolidColor(base.copy(alpha = 0.35f)),
+                CircleShape,
+            )
+            .border(if (skin != null) 1.dp else 1.5.dp, if (skin == null) Color(0xAAFFFFFF) else Color(0x26FFFFFF), CircleShape)
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    val down = awaitFirstDown(requireUnconsumed = false)
+                    val started = System.currentTimeMillis()
+                    val reach = this.size.width / 2.5f
+                    var moved = false
+                    fun follow(at: Offset) {
+                        var v = (at - down.position) / reach
+                        val length = v.getDistance()
+                        if (length > 1f) v /= length
+                        if (length > 0.2f) moved = true
+                        knob = v
+                        onMove(v.x, v.y)
+                    }
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        val change = event.changes.firstOrNull { it.id == down.id } ?: break
+                        if (!change.pressed) break
+                        follow(change.position)
+                    }
+                    knob = Offset.Zero
+                    onMove(0f, 0f)
+                    if (!moved && System.currentTimeMillis() - started < 250) {
+                        scope.launch {
+                            onClick(true)
+                            kotlinx.coroutines.delay(120)
+                            onClick(false)
+                        }
+                    }
+                }
+            },
+        contentAlignment = Alignment.Center,
+    ) {
+        val travel = size * 0.28f
+        if (skin == null) {
+            Box(
+                Modifier
+                    .offset(travel * knob.x, travel * knob.y)
+                    .size(size * 0.46f)
+                    .background(Color(0x88FFFFFF), CircleShape)
+                    .border(1.5.dp, Color(0xCCFFFFFF), CircleShape),
+            )
+        } else {
+            // A rubber cap: domed gradient with a grip ring, casting a shadow on the base.
+            androidx.compose.foundation.Canvas(
+                Modifier.offset(travel * knob.x, travel * knob.y).size(size * 0.56f).shadow(6.dp, CircleShape, clip = false),
+            ) {
+                val r = this.size.minDimension / 2f
+                val cap = skin.dpad
+                drawCircle(Brush.radialGradient(listOf(cap.shade(0.22f), cap, cap.shade(-0.2f)), center = Offset(r * 0.8f, r * 0.7f), radius = r * 1.3f), r)
+                drawCircle(cap.shade(-0.28f), r * 0.72f, style = androidx.compose.ui.graphics.drawscope.Stroke(r * 0.07f))
+                drawCircle(cap.shade(0.1f), r * 0.52f, style = androidx.compose.ui.graphics.drawscope.Stroke(r * 0.04f))
+            }
+        }
     }
 }

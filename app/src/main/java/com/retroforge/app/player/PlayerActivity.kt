@@ -47,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -98,6 +99,7 @@ class PlayerActivity : ComponentActivity() {
     }
 
     private var phase by mutableStateOf<Phase>(Phase.Loading)
+    private var loadingDetail by mutableStateOf<String?>(null)
     private var menuOpen by mutableStateOf(false)
     private var showTouch by mutableStateOf(true)
     private var video by mutableStateOf<Video?>(null)
@@ -268,16 +270,18 @@ class PlayerActivity : ComponentActivity() {
         }
         val named = File(cache, fileName)
         if (needsFile) {
-            // Linked rather than copied: a PS1 disc can be hundreds of MB.
-            val path = GameFiles(contentResolver, cache).also { gameFiles = it }.expose(uri, fileName)
+            // Copied once into RetroForge's cache and reused next time; only the two most recent games are kept.
+            val root = File(externalCacheDir ?: cacheDir, "games")
+            val dir = File(root, Integer.toHexString(uri.toString().hashCode()))
+            GameFiles.prune(root, keep = 2, current = dir)
+            val path = GameFiles(contentResolver, dir).expose(uri, fileName) { percent ->
+                runOnUiThread { loadingDetail = "Preparing the game for the first time… $percent%" }
+            }
             return NativePlayer.loadGame(path, -1, false)
         }
         return contentResolver.openFileDescriptor(uri, "r")?.use { pfd -> NativePlayer.loadGame(named.path, pfd.fd, false) }
             ?: throw IOException("couldn't open it")
     }
-
-    /** The game's files linked for cores that open them by path; closed with the game. */
-    private var gameFiles: GameFiles? = null
 
     private fun fail(message: String) = runOnUiThread { phase = Phase.Failed(message) }
 
@@ -325,7 +329,6 @@ class PlayerActivity : ComponentActivity() {
                 NativePlayer.stop()
                 persist()
                 NativePlayer.close()
-                gameFiles?.close()
                 loaded = false
             }
             runOnUiThread {
@@ -383,7 +386,6 @@ class PlayerActivity : ComponentActivity() {
                 NativePlayer.stop()
                 persist()
                 NativePlayer.close()
-                gameFiles?.close()
                 loaded = false
             }
             runOnUiThread { finish() }
@@ -512,7 +514,7 @@ class PlayerActivity : ComponentActivity() {
     private fun applyViewport() {
         val av = video ?: return
         // With the console look, the picture keeps a margin for the screen surround.
-        val inset = if (consoleLook) (BEZEL_MARGIN.value * resources.displayMetrics.density).toInt() else 0
+        val inset = if (consoleLook) (bezelMargin(!isLandscape()).value * resources.displayMetrics.density).toInt() else 0
         val fitted = Viewport.fit(shape, surfaceWidth - 2 * inset, surfaceHeight - 2 * inset, av)
         picture = Rect(fitted.x + inset, fitted.y + inset, fitted.w, fitted.h)
         pictureRect = picture
@@ -572,6 +574,7 @@ class PlayerActivity : ComponentActivity() {
                         TouchControls(
                             layout, onMask = { input.setTouch(it) }, onMenu = { openMenu() }, modifier = modifier,
                             compact = compact, landscape = !portrait,
+                            onAnalog = { stick, x, y -> if (loaded) NativePlayer.setAnalog(0, stick, (x * 32767).toInt(), (y * 32767).toInt()) },
                         )
                     }
                 }
@@ -582,9 +585,10 @@ class PlayerActivity : ComponentActivity() {
                     Column(Modifier.fillMaxSize()) {
                         Box(Modifier.fillMaxWidth().weight(1f)) {
                             GameSurface(Modifier.fillMaxSize())
-                            skin?.let { ConsoleFrame(it, pictureRect, Modifier.fillMaxSize()) }
+                            skin?.let { ConsoleFrame(it, pictureRect, Modifier.fillMaxSize(), bezelMargin(portrait = true)) }
                         }
-                        Box(Modifier.fillMaxWidth().then(if (skin != null) Modifier.background(skin.bodyShade) else Modifier)) {
+                        // The pad's half of the body: a gentle top-to-bottom gradient for some depth.
+                        Box(Modifier.fillMaxWidth().then(if (skin != null) Modifier.background(Brush.verticalGradient(listOf(skin.body, skin.bodyShade))) else Modifier)) {
                             CompositionLocalProvider(LocalConsoleSkin provides skin) { controls(Modifier.fillMaxWidth().padding(bottom = 8.dp)) }
                         }
                     }
@@ -604,6 +608,7 @@ class PlayerActivity : ComponentActivity() {
                 Phase.Loading -> Centered {
                     CircularProgressIndicator()
                     Text("Starting $title…", color = Color.White, modifier = Modifier.padding(top = 16.dp))
+                    loadingDetail?.let { Text(it, color = Color(0xFFBBBBC4), fontSize = 13.sp, modifier = Modifier.padding(top = 6.dp)) }
                 }
                 is Phase.Failed -> Centered {
                     Text("Couldn't start $title", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
