@@ -7,7 +7,8 @@ Status: covers what exists today (Milestone A, ROM Patcher, Hacks tab). Updated 
 RetroForge declares `android.permission.INTERNET` for:
 
 - downloading a hack catalogue the user adds or updates from a link;
-- cover art: libretro's thumbnail server (system index once a week, then images) and, only with the user's own API key, SteamGridDB (sent only to steamgriddb.com as a bearer token; stored in app-private settings; never logged or displayed except its last 4 characters).
+- cover art: libretro's thumbnail server (system index once a week, then images) and, only with the user's own API key, SteamGridDB (sent only to steamgriddb.com as a bearer token; stored in app-private settings; never logged or displayed except its last 4 characters);
+- ScreenScraper, only when the user presses "Look up on ScreenScraper": the game's file name, size and MD5, RetroForge's developer ID and, if the user added one, their ScreenScraper login (stored in app-private settings, never logged or shown). The API requires these as URL parameters over HTTPS; they're removed from image addresses before anything is stored.
 
 Nothing else connects to the network.
 

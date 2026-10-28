@@ -10,6 +10,8 @@ import com.retroforge.hacks.CatalogueStore
 import java.io.File
 import com.retroforge.artwork.JvmHttpGet
 import com.retroforge.core.library.CoverRepository
+import com.retroforge.artwork.ScreenScraperApp
+import com.retroforge.artwork.ScreenScraperUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -41,9 +43,15 @@ class AppContainer(application: Application) {
 
     // Read by SteamGridDB calls on a background thread; kept current from settings.
     @Volatile private var steamGridDbKey: String? = null
+    @Volatile private var screenScraperUser: ScreenScraperUser? = null
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     init {
-        appScope.launch { settings.settings.collect { steamGridDbKey = it.steamGridDbKey } }
+        appScope.launch {
+            settings.settings.collect {
+                steamGridDbKey = it.steamGridDbKey
+                screenScraperUser = it.screenScraperUser?.let { name -> it.screenScraperPassword?.let { p -> ScreenScraperUser(name, p) } }
+            }
+        }
     }
     val covers = CoverRepository(
         db = library.database,
@@ -51,7 +59,15 @@ class AppContainer(application: Application) {
         cacheDir = application.cacheDir,
         http = JvmHttpGet("RetroForge/${BuildConfig.VERSION_NAME}"),
         steamGridDbKey = { steamGridDbKey },
+        resolver = application.contentResolver,
+        screenScraperApp = { screenScraperApp },
+        screenScraperUser = { screenScraperUser },
     )
+
+    /** RetroForge's developer credentials, only when this build was given them (local.properties). */
+    private val screenScraperApp: ScreenScraperApp? =
+        if (BuildConfig.SCREENSCRAPER_DEV_ID.isBlank()) null
+        else ScreenScraperApp(BuildConfig.SCREENSCRAPER_DEV_ID, BuildConfig.SCREENSCRAPER_DEV_PASSWORD, "RetroForge ${BuildConfig.VERSION_NAME}")
 }
 
 class RetroForgeApplication : Application() {

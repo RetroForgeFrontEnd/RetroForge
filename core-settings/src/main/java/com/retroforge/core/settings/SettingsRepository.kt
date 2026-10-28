@@ -36,6 +36,9 @@ data class AppSettings(
     val fastForwardOnR2: Boolean = true,
     /** Save a state when a game closes and load it next time, so it carries on where it was left. */
     val resumeGames: Boolean = true,
+    /** The user's own ScreenScraper account. Stored only in app-private storage, never logged. */
+    val screenScraperUser: String? = null,
+    val screenScraperPassword: String? = null,
 )
 
 fun createSettingsRepository(context: Context): SettingsRepository = SettingsRepository(
@@ -59,6 +62,8 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
             quitCombo = prefs[QUIT_COMBO] ?: 4,
             fastForwardOnR2 = prefs[FAST_FORWARD_R2] ?: true,
             resumeGames = prefs[RESUME] ?: true,
+            screenScraperUser = prefs[SS_USER],
+            screenScraperPassword = prefs[SS_PASSWORD],
             emulatorChoices = prefs[EMULATORS].orEmpty().lines().filter { '=' in it }.associate { it.substringBefore('=') to it.substringAfter('=') },
         )
     }
@@ -92,6 +97,16 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
             it[HOTKEYS] = enabled
             it[MENU_COMBO] = menu
             it[QUIT_COMBO] = quit
+        }
+    }
+
+    suspend fun setScreenScraperLogin(user: String?, password: String?) {
+        store.edit {
+            if (user.isNullOrBlank() || password.isNullOrEmpty()) {
+                it.remove(SS_USER); it.remove(SS_PASSWORD)
+            } else {
+                it[SS_USER] = user.trim(); it[SS_PASSWORD] = password
+            }
         }
     }
 
@@ -129,5 +144,7 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
         val QUIT_COMBO = intPreferencesKey("retroarch_quit_combo")
         val FAST_FORWARD_R2 = booleanPreferencesKey("fast_forward_r2")
         val RESUME = booleanPreferencesKey("resume_games")
+        val SS_USER = stringPreferencesKey("screenscraper_user")
+        val SS_PASSWORD = stringPreferencesKey("screenscraper_password")
     }
 }

@@ -1,6 +1,6 @@
 # Cover Art
 
-Status (2026-10-28): built; libretro source tested on the emulator; SteamGridDB tested with simulated responses only (no API key available yet).
+Status (2026-10-28): libretro, SteamGridDB (live-tested with the user's key) and your own images built and tested; ScreenScraper built and unit-tested, waiting for RetroForge's developer ID.
 
 ## Sources
 
@@ -9,6 +9,9 @@ Status (2026-10-28): built; libretro source tested on the emulator; SteamGridDB 
 | **Your gamelist.xml media** (RetroBat, ES-DE, Batocera scrapes) | nothing | default artwork | read-only, never modified |
 | **libretro thumbnails** (`thumbnails.libretro.com`, the server RetroArch uses) | nothing | free box art; per-game picker and per-system batch | one system index per week (cached), then one download at a time |
 | **SteamGridDB** (`steamgriddb.com/api/v2`) | the user's own free API key | custom community covers, per game, on request | no key ships with the app; no bulk downloads; NSFW, humour and epilepsy-warning images filtered out; artist credited |
+| **ScreenScraper** (`api.screenscraper.fr/api2`) | RetroForge's developer ID (issued by ScreenScraper on request; in `local.properties`, not in git); optionally the user's own account | front/3D boxes per game, on request: file name, size and MD5 (files up to 64 MB) | only free apps may use the API without ScreenScraper's permission; one lookup per request; quota errors shown; credentials are URL parameters as the API requires, never logged, and removed from the stored image address. System ids from ES-DE (MIT) |
+| **Your own image** | nothing | any picture on the device, via Android's photo picker | checked to be PNG/JPEG/WebP/GIF, 15 MB cap |
+| **The Cover Project** | a browser | opened in the browser only | the site blocks automated access (Cloudflare check on every page, even robots.txt), so RetroForge doesn't download from it; save a scan and use "Choose an image" |
 
 SteamGridDB's terms (checked 2026-10-28, effective 2019-07-31) allow personal, non-commercial use and forbid automated use that loads their servers unreasonably. RetroForge therefore never batch-downloads from SteamGridDB. If RetroForge is ever sold, SteamGridDB's permission is needed first.
 
@@ -41,3 +44,6 @@ Chosen covers are saved in RetroForge's private `files/covers/` (named by a hash
 - Emulator: Resident Evil 2 (no art) → "Resident Evil 2 (USA)" ranked first → saved and shown; SNES batch: "4 covers added, 79 not found" with live progress.
 - Found and fixed: a download that trickles data could hang forever (read timeout only fires on silence); every download now has a 60-second deadline.
 - Not tested: SteamGridDB against the live service (needs the user's key).
+- Emulator (2026-10-28): "Choose an image" saved a picked photo as the cover and the game page shows "Your own image"; "Open The Cover Project" opens the browser; ScreenScraper shows "not available in this build" without a developer ID and sends nothing.
+- Unit: ScreenScraper request building, XML parsing (DOCTYPE refused), cover ordering by type and region, credential stripping, errors (7 tests).
+- Not tested: ScreenScraper against the live service (needs the developer ID).

@@ -31,6 +31,10 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
         viewModelScope.launch { repository.setRetroArchHotkeys(enabled, menu.value, quit.value) }
     }
 
+    fun setScreenScraperLogin(user: String?, password: String?) {
+        viewModelScope.launch { repository.setScreenScraperLogin(user, password) }
+    }
+
     fun setResumeGames(enabled: Boolean) {
         viewModelScope.launch { repository.setResumeGames(enabled) }
     }

@@ -11,6 +11,14 @@ import com.retroforge.artwork.SteamGridDb
 import com.retroforge.artwork.ThumbnailMatch
 import com.retroforge.artwork.ThumbnailType
 import com.retroforge.artwork.looksLikeImage
+import com.retroforge.artwork.ScreenScraper
+import com.retroforge.artwork.ScreenScraperApp
+import com.retroforge.artwork.ScreenScraperUser
+import com.retroforge.artwork.SsMedia
+import com.retroforge.artwork.SsResult
+import android.content.ContentResolver
+import android.net.Uri
+import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -44,8 +52,12 @@ class CoverRepository(
     private val cacheDir: File,
     private val http: HttpGet,
     steamGridDbKey: () -> String?,
+    private val resolver: ContentResolver,
+    screenScraperApp: () -> ScreenScraperApp? = { null },
+    screenScraperUser: () -> ScreenScraperUser? = { null },
     private val clock: () -> Long = System::currentTimeMillis,
 ) {
+    val screenScraper = ScreenScraper(http, screenScraperApp, screenScraperUser)
     private val dao = db.dao()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val indexLock = Mutex()
@@ -78,14 +90,73 @@ class CoverRepository(
             ?.takeIf { it.code == 200 && looksLikeImage(it.body) }?.body
     }
 
-    /** Downloads [url] and makes it this game's cover. */
-    suspend fun save(game: GameEntity, url: String, source: String, author: String?): Result<Unit> = withContext(Dispatchers.IO) {
+    /** Downloads [url] and makes it this game's cover. [storedUrl] is what's recorded (credentials removed). */
+    suspend fun save(game: GameEntity, url: String, source: String, author: String?, storedUrl: String = url): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
             val response = http.get(url, emptyMap(), JvmHttpGet.MAX_IMAGE_BYTES)
             check(response.code == 200) { "the server answered HTTP ${response.code}" }
             check(looksLikeImage(response.body)) { "that download isn't an image" }
-            store(game, response.body, url, source, author)
+            store(game, response.body, storedUrl, source, author)
         }
+    }
+
+    /** An image the user picked on the device (e.g. a scan saved from The Cover Project) becomes the cover. */
+    suspend fun saveFromDevice(game: GameEntity, image: Uri): Result<Unit> = withContext(Dispatchers.IO) {
+        runCatching {
+            val bytes = checkNotNull(resolver.openInputStream(image)) { "couldn't open the image" }.use { input ->
+                val out = ByteArrayOutputStream()
+                val buf = ByteArray(64 * 1024)
+                while (true) {
+                    val r = input.read(buf)
+                    if (r < 0) break
+                    out.write(buf, 0, r)
+                    check(out.size() <= JvmHttpGet.MAX_IMAGE_BYTES) { "that image is larger than 15 MB" }
+                }
+                out.toByteArray()
+            }
+            check(looksLikeImage(bytes)) { "that file isn't a PNG, JPEG, WebP or GIF image" }
+            store(game, bytes, "", SOURCE_DEVICE, null)
+        }
+    }
+
+    /**
+     * Looks the game up on ScreenScraper, on request only: file name and size, plus MD5 for files up to 64 MB.
+     * Returns the cover images, best first.
+     */
+    suspend fun screenScraperCovers(game: GameEntity): Result<List<SsMedia>> = withContext(Dispatchers.IO) {
+        runCatching {
+            if (!screenScraper.available) error("ScreenScraper isn't available in this build of RetroForge (it needs RetroForge's developer ID from ScreenScraper).")
+            val systemId = ScreenScraper.systemIds[game.system] ?: error("ScreenScraper doesn't list this system.")
+            val md5 = if (game.sizeBytes in 1..MD5_MAX_BYTES) runCatching { md5Of(game) }.getOrNull() else null
+            when (val r = screenScraper.gameInfo(systemId, game.fileName, game.sizeBytes, md5)) {
+                is SsResult.Found -> ScreenScraper.covers(r.game, regionCode(game))
+                SsResult.NotFound -> emptyList()
+                SsResult.NotAvailable -> error("ScreenScraper didn't accept RetroForge's developer ID.")
+                SsResult.BadLogin -> error("ScreenScraper didn't accept your username or password. Check them in Settings.")
+                is SsResult.Failed -> error(r.reason)
+            }
+        }
+    }
+
+    private suspend fun md5Of(game: GameEntity): String {
+        val root = checkNotNull(dao.root(game.rootId))
+        val digest = MessageDigest.getInstance("MD5")
+        checkNotNull(resolver.openInputStream(SafScanNode.documentUri(root.treeUri, game.documentId))).use { input ->
+            val buf = ByteArray(256 * 1024)
+            while (true) {
+                val r = input.read(buf)
+                if (r < 0) break
+                digest.update(buf, 0, r)
+            }
+        }
+        return digest.digest().joinToString("") { "%02x".format(it) }
+    }
+
+    /** ScreenScraper region code from the file name's first region, for picking that region's box. */
+    private fun regionCode(game: GameEntity): String? = when (game.regions.substringBefore(',').trim()) {
+        "USA" -> "us"; "Europe" -> "eu"; "Japan" -> "jp"; "World" -> "wor"; "UK" -> "uk"; "France" -> "fr"; "Germany" -> "de"
+        "Spain" -> "sp"; "Italy" -> "it"; "Australia" -> "au"; "Brazil" -> "br"; "Korea" -> "kr"; "China" -> "cn"
+        else -> null
     }
 
     /** Forget the chosen cover; the game falls back to its gamelist artwork. */
@@ -166,6 +237,9 @@ class CoverRepository(
     companion object {
         const val SOURCE_LIBRETRO = "libretro"
         const val SOURCE_STEAMGRIDDB = "steamgriddb"
+        const val SOURCE_SCREENSCRAPER = "screenscraper"
+        const val SOURCE_DEVICE = "device"
+        private const val MD5_MAX_BYTES = 64L * 1024 * 1024
         private const val INDEX_MAX_AGE_MS = 7L * 24 * 60 * 60 * 1000
     }
 }

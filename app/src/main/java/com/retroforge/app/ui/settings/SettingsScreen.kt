@@ -16,6 +16,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.core.net.toUri
 import com.retroforge.artwork.SteamGridDb
+import com.retroforge.artwork.ScreenScraper
+import com.retroforge.app.BuildConfig
 import com.retroforge.retro.StandaloneLauncher
 import com.retroforge.retro.HotkeyCombo
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -25,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.retroforge.app.BuildConfig
 import com.retroforge.app.ui.CardBody
 import com.retroforge.app.ui.CardTitle
 import com.retroforge.app.ui.ScreenFrame
@@ -79,6 +80,8 @@ fun SettingsScreen(viewModel: SettingsViewModel, onOpenSetup: () -> Unit, onOpen
         }
 
         SteamGridDbKeyCard(settings.steamGridDbKey, viewModel::setSteamGridDbKey)
+
+        ScreenScraperCard(settings.screenScraperUser, viewModel::setScreenScraperLogin)
 
         EmulatorAppsCard()
 
@@ -200,5 +203,38 @@ private fun HotkeysCard(enabled: Boolean, menu: HotkeyCombo, quit: HotkeyCombo, 
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         FocusChip("Show all hotkeys", onClick = onShowAll)
         FocusChip(if (enabled) "Turn hotkeys off" else "Turn hotkeys on", onClick = { onChange(!enabled, menu, quit) })
+    }
+}
+
+@Composable
+private fun ScreenScraperCard(savedUser: String?, onSave: (String?, String?) -> Unit) {
+    val context = LocalContext.current
+    var user by remember(savedUser) { mutableStateOf(savedUser.orEmpty()) }
+    var password by remember(savedUser) { mutableStateOf("") }
+    val available = BuildConfig.SCREENSCRAPER_DEV_ID.isNotBlank()
+    FocusCard(modifier = Modifier.fillMaxWidth()) {
+        CardTitle("Covers from ScreenScraper")
+        if (!available) {
+            StatusPill("Not available in this build", StatusTone.NEUTRAL)
+            CardBody("ScreenScraper needs RetroForge's own developer ID, which ScreenScraper issues on request. It will work once that's added.")
+        } else if (savedUser.isNullOrBlank()) {
+            StatusPill("No account (lower limits)", StatusTone.NEUTRAL)
+        } else {
+            StatusPill("Signed in as $savedUser", StatusTone.GOOD)
+        }
+        CardBody(
+            "Optional: your free ScreenScraper account raises your daily limit. It stays on this device and is sent only to ScreenScraper. " +
+                "Use \"Change cover\" on a game to look it up.",
+        )
+        OutlinedTextField(value = user, onValueChange = { user = it.trim() }, singleLine = true, label = { Text("ScreenScraper username") }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
+        OutlinedTextField(
+            value = password, onValueChange = { password = it }, singleLine = true, label = { Text("Password") },
+            visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        )
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        FocusChip("Save", onClick = { onSave(user, password); password = "" }, enabled = user.isNotBlank() && password.isNotEmpty())
+        FocusChip("Create a free account", onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, ScreenScraper.SIGN_UP.toUri())) } })
+        if (!savedUser.isNullOrBlank()) FocusChip("Sign out", onClick = { onSave(null, null) })
     }
 }

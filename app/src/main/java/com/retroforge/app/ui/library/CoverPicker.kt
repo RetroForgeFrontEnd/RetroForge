@@ -42,6 +42,17 @@ import com.retroforge.core.ui.FocusChip
 import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
 import kotlinx.coroutines.launch
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
+import com.retroforge.artwork.ScreenScraper
+import com.retroforge.artwork.SsMedia
+
+/** The Cover Project has no API and blocks automated access, so it's opened in the browser. */
+private const val COVER_PROJECT = "https://www.thecoverproject.net/"
 
 /** One candidate cover: a preview to show and the full image to save. */
 private data class Candidate(val key: String, val previewUrl: String, val fullUrl: String, val label: String, val source: String, val author: String?)
@@ -70,12 +81,29 @@ fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbK
         if (hasSteamGridDbKey) sgdbGames = covers.searchSteamGridDb(g.title)
     }
 
+    var ssCovers by remember(g.id) { mutableStateOf<Result<List<SsMedia>>?>(null) }
+    var ssLoading by remember(g.id) { mutableStateOf(false) }
+    val context = LocalContext.current
+    val pickImage = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null && !saving) {
+            saving = true
+            scope.launch {
+                covers.saveFromDevice(g, uri).fold(
+                    onSuccess = { message = "Cover saved." to false; onDone() },
+                    onFailure = { message = "Couldn't use that image: ${it.message}" to true },
+                )
+                saving = false
+            }
+        }
+    }
+
     fun choose(c: Candidate) {
         if (saving) return
         saving = true
         message = null
         scope.launch {
-            covers.save(g, c.fullUrl, c.source, c.author).fold(
+            val stored = if (c.source == CoverRepository.SOURCE_SCREENSCRAPER) ScreenScraper.withoutCredentials(c.fullUrl) else c.fullUrl
+            covers.save(g, c.fullUrl, c.source, c.author, stored).fold(
                 onSuccess = { message = "Cover saved." to false; onDone() },
                 onFailure = { message = "Couldn't save that cover: ${it.message}" to true },
             )
@@ -153,6 +181,40 @@ fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbK
             }
         }
 
+        // ScreenScraper: one lookup, only when asked.
+        CardTitle("ScreenScraper")
+        if (!covers.screenScraper.available) {
+            CardBody("Not available in this build: ScreenScraper needs RetroForge's own developer ID, which ScreenScraper issues on request.")
+        } else when (val r = ssCovers) {
+            null -> {
+                CardBody("Front and 3D boxes from ScreenScraper's database, matched by your file. Add your ScreenScraper account in Settings for a higher daily limit.")
+                FocusChip("Look up on ScreenScraper", onClick = { ssCovers = Result.success(emptyList<SsMedia>()).also { ssLoading = true }; scope.launch { ssCovers = covers.screenScraperCovers(g); ssLoading = false } })
+            }
+            else -> if (ssLoading) LinearProgressIndicator(Modifier.fillMaxWidth()) else r.fold(
+                onSuccess = { list ->
+                    if (list.isEmpty()) CardBody("ScreenScraper has no box art for this file.")
+                    CandidateRow(
+                        list.take(12).map { m ->
+                            Candidate("ss-${m.type}-${m.region}", m.url, m.url, listOfNotNull(m.type.replace("box-", "Box "), m.region?.uppercase()).joinToString(" · "), CoverRepository.SOURCE_SCREENSCRAPER, null)
+                        },
+                        previews, covers, ::choose,
+                    )
+                },
+                onFailure = { CardBody(it.message ?: "ScreenScraper lookup failed.") },
+            )
+        }
+
+        // The user's own image.
+        CardTitle("Your own image")
+        CardBody(
+            "Use any picture saved on this device, for example a cover scan from The Cover Project (thecoverproject.net), " +
+                "which RetroForge can't download from directly.",
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            FocusChip("Choose an image", onClick = { pickImage.launch("image/*") })
+            FocusChip("Open The Cover Project", onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, COVER_PROJECT.toUri())) } })
+        }
+
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { scope.launch { covers.reset(g); onDone() } }) {
             CardTitle("Use the original artwork")
             CardBody("Removes the chosen cover. The game shows its gamelist artwork again, if it has any.")
@@ -199,6 +261,8 @@ fun CoverControls(game: GameEntity, viewModel: LibraryViewModel, onChangeCover: 
         CardBody(
             when (it.source) {
                 CoverRepository.SOURCE_STEAMGRIDDB -> "Cover from SteamGridDB" + (it.author?.let { a -> " by $a" } ?: "")
+                CoverRepository.SOURCE_SCREENSCRAPER -> "Box art from ScreenScraper"
+                CoverRepository.SOURCE_DEVICE -> "Your own image"
                 else -> "Box art from libretro thumbnails"
             },
         )

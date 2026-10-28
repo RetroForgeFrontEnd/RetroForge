@@ -24,6 +24,8 @@ Artwork: icons, banner and wordmark are original to this project. The RetroForge
 
 Data adapted into RetroForge: Android launch commands and package names for standalone emulators (`retro-library/src/main/resources/standalone.json`) from ES-DE Frontend (`resources/systems/android`), MIT licence, Copyright (c) 2024-2026 Northwestern Software AB, (c) 2020-2024 Leon Styhre, (c) 2014 Alec Lofquist. The MIT notice must be included with the app.
 
+ScreenScraper system ids (`retro-artwork/src/main/resources/screenscraper_systems.json`) are also adapted from ES-DE (MIT, same notice).
+
 Referenced, not bundled: Obtainium (GPL-3.0; RetroForge only opens its documented `obtainium://add/` link) and the Obtainium Emulation Pack (Unlicense; linked). Standalone emulators are separate apps the user installs.
 
 Online services used at runtime (no code bundled): libretro thumbnails (thumbnails.libretro.com), SteamGridDB API (user's own key; personal non-commercial use per its terms).
