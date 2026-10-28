@@ -115,6 +115,7 @@ struct Player {
     std::mutex coreMutex; // every call into the core
     std::thread loop;
     std::atomic<bool> running{false}, paused{false}, fastForward{false};
+    std::atomic<float> volume{1.0f}; // boost for quiet systems; samples are clamped, not wrapped
     std::atomic<int> viewX{0}, viewY{0}, viewW{0}, viewH{0}; // picture rectangle in surface pixels; 0 = fit
 
     // Window hand-over between the UI thread and the core thread.
@@ -560,8 +561,10 @@ void pushAudio(const int16_t *data, size_t frames) {
     Player &p = *P;
     if (!p.stream || p.fastForward) return; // fast-forward plays silently rather than chipmunk-fast
     p.resampled.clear();
+    const float gain = p.volume;
     for (size_t i = 0; i < frames; i++) {
-        float l = data[i * 2], r = data[i * 2 + 1];
+        float l = std::clamp(data[i * 2] * gain, -32768.0f, 32767.0f);
+        float r = std::clamp(data[i * 2 + 1] * gain, -32768.0f, 32767.0f);
         while (p.rsPos < 1.0) {
             float t = static_cast<float>(p.rsPos);
             p.resampled.push_back(static_cast<int16_t>(p.prevL + (l - p.prevL) * t));
@@ -902,6 +905,11 @@ JNIEXPORT void JNI(setViewport)(JNIEnv *, jobject, jint x, jint y, jint w, jint 
     P->viewY = y;
     P->viewW = w;
     P->viewH = h;
+}
+
+// Game volume: 1.0 as the core made it, up to 2.0 for quiet systems.
+JNIEXPORT void JNI(setVolume)(JNIEnv *, jobject, jfloat volume) {
+    if (P) P->volume = std::clamp(volume, 0.0f, 3.0f);
 }
 
 // [x], [y]: 0..1 across the drawn game picture.

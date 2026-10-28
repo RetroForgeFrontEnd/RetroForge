@@ -61,6 +61,9 @@ object NativePlayer {
     /** Where the picture goes on the surface, in pixels from the top left ([Viewport.fit]). */
     external fun setViewport(x: Int, y: Int, w: Int, h: Int)
 
+    /** Game volume, 1.0 = as the emulator made it; up to 2.0 for quiet systems. */
+    external fun setVolume(volume: Float)
+
     /** Touchscreen: [x], [y] from 0 to 1 across the game picture. */
     external fun setPointer(x: Float, y: Float, down: Boolean)
     external fun reset()

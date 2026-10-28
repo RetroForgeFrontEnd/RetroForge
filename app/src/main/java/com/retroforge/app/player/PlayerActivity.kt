@@ -107,6 +107,7 @@ class PlayerActivity : ComponentActivity() {
     private var shape by mutableStateOf(ScreenShape.ORIGINAL)
     private var touchEnabled by mutableStateOf(true)
     private var consoleLook by mutableStateOf(true)
+    private var volume by mutableStateOf(1f)
     private var filter by mutableStateOf(com.retroforge.player.ScreenFilter.SHARP)
     private var pictureRect by mutableStateOf(Rect(0, 0, 0, 0))
     private enum class MenuPage { MAIN, OPTIONS, EMULATORS }
@@ -145,6 +146,8 @@ class PlayerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        // The volume buttons change the game's sound (media), never the ringer.
+        volumeControlStream = android.media.AudioManager.STREAM_MUSIC
         window.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.BLACK))
         WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowInsetsControllerCompat(window, window.decorView).apply {
@@ -171,6 +174,7 @@ class PlayerActivity : ComponentActivity() {
         shape = ScreenShape.of(prefs.getString("shape.$system", null))
         touchEnabled = prefs.getBoolean("touch.$system", true)
         consoleLook = prefs.getBoolean("look.$system", true)
+        volume = prefs.getFloat("volume.$system", 1f)
         filter = com.retroforge.player.ScreenFilter.of(prefs.getString("filter.$system", null))
         savesDir = File(base, "saves/$system").apply { mkdirs() }
         statesDir = File(base, "states/$system").apply { mkdirs() }
@@ -225,6 +229,7 @@ class PlayerActivity : ComponentActivity() {
             surface?.let { NativePlayer.setSurface(it) }
         }
         NativePlayer.setFilter(filter.ordinal)
+        NativePlayer.setVolume(volume)
         PlayerCores.portDevice(coreId)?.let { NativePlayer.setPortDevice(0, it) }
         NativePlayer.start()
         runOnUiThread {
@@ -533,6 +538,16 @@ class PlayerActivity : ComponentActivity() {
         NativePlayer.setFilter(next.ordinal)
     }
 
+    private fun chooseVolume() {
+        volume = when {
+            volume < 1.4f -> 1.5f
+            volume < 1.9f -> 2f
+            else -> 1f
+        }
+        prefs.edit().putFloat("volume.$system", volume).apply()
+        NativePlayer.setVolume(volume)
+    }
+
     private fun chooseLook(on: Boolean) {
         consoleLook = on
         prefs.edit().putBoolean("look.$system", on).apply()
@@ -690,6 +705,7 @@ class PlayerActivity : ComponentActivity() {
                             NativePlayer.setFastForward(fastForwardOn)
                         }, modifier = wide) { Text("Fast-forward: ${if (fastForwardOn) "On" else "Off"}") }
                         MenuButton(onClick = { chooseShape(shape.next()) }, modifier = wide) { Text("Screen shape: ${shape.label}") }
+                        MenuButton(onClick = { chooseVolume() }, modifier = wide) { Text("Volume: ${(volume * 100).toInt()}%") }
                         MenuButton(onClick = { chooseFilter(filter.next()) }, modifier = wide) { Text("Screen filter: ${filter.label}") }
                         MenuButton(onClick = { chooseLook(!consoleLook) }, modifier = wide) { Text("Console look: ${if (consoleLook) "On" else "Off"}") }
                         if (hasTouch) MenuButton(onClick = { chooseTouch(!touchEnabled) }, modifier = wide) {
