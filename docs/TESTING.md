@@ -171,7 +171,9 @@ S22 (arm64) and the Android emulator (x86_64, software GPU). Debug build.
 - S22: Advance Wars (USA) (Rev 1).gba loaded in mGBA (240×160, 59.73 fps, 65536 Hz), save data synced. First attempt drew black (Compose painted over the game surface); fixed, then the phone was unplugged before a screenshot.
 - Emulator: 3 Ninjas Kick Back (USA).7z in Snes9x: **.7z unpacked**, game ran at full width with sharp pixel scaling; touch Start moved to the next screen; **rotating to landscape kept the game running** and used the full screen height; in-game menu (☰) opened with Resume / Save state / Load state / Screen shape / Touch controls / Restart / Quit; **Quit then Play resumed at the same screen** (auto state 823 KB written to Android/data/…/states/snes).
 - Fixed during testing: portrait picture was stuck at the top with a large gap; now centred above the controls.
-- Not yet tested: sound on a real device (audio is the timing clock), physical controller and hotkeys in the player, edge swipes, screen shapes other than Original, DS touchscreen, Save/Load state buttons, every other core.
+- **S22 retest**: Advance Wars (GBA, mGBA) now shows full width and sharp; sound stream running with 0 underruns (AAudio, not muted). Advance Wars - Dark Conflict (DS, DeSmuME, 256×384 at 59.83 fps): both screens shown, and **tapping "Touch to start" on the lower screen worked** (DS touchscreen through RetroForge's pointer input).
+- Fixed on the S22: the DS's tall picture ran under the L/R buttons in portrait; the picture now always fits the space above the controls (all of the screen when touch controls are off). Touch still lands correctly after the change.
+- Not yet tested: whether the sound is right by ear (stream is healthy), physical controller and hotkeys in the player, edge swipes, screen shapes other than Original, Save/Load state buttons, cores other than mGBA, DeSmuME and Snes9x, a release (R8) build of the player.
 
 ## Release test plan (run in the final stage, before any release)
 

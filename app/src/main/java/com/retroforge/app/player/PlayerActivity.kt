@@ -404,17 +404,17 @@ class PlayerActivity : ComponentActivity() {
         Box(Modifier.fillMaxSize()) {
             BoxWithConstraints(Modifier.fillMaxSize()) {
                 val portrait = maxHeight > maxWidth
-                val aspect = video?.aspect ?: (4f / 3f)
                 val controls: @Composable (Modifier) -> Unit = { modifier ->
                     if (touchEnabled && showTouch && phase == Phase.Playing && !menuOpen) {
                         TouchControls(layout, onMask = { input.setTouch(it) }, onMenu = { openMenu() }, modifier = modifier)
                     }
                 }
                 if (portrait) {
-                    // The picture as wide as the phone, centred in the space the controls leave free.
+                    // The picture gets the space the controls leave free (all of it when they're off), fitted and centred
+                    // by the screen shape, so a tall picture like the DS's two screens never runs under the buttons.
                     Column(Modifier.fillMaxSize()) {
-                        Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
-                            GameSurface(Modifier.fillMaxWidth().aspectRatio(aspect, matchHeightConstraintsFirst = false))
+                        Box(Modifier.fillMaxWidth().weight(1f)) {
+                            GameSurface(Modifier.fillMaxSize())
                         }
                         controls(Modifier.fillMaxWidth().padding(bottom = 8.dp))
                     }
