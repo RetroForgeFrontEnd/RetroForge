@@ -176,6 +176,14 @@ S22 (arm64) and the Android emulator (x86_64, software GPU). Debug build.
 - Fixed on the S22: the DS's tall picture ran under the L/R buttons in portrait; the picture now always fits the space above the controls (all of the screen when touch controls are off). Touch still lands correctly after the change.
 - Not yet tested: whether the sound is right by ear (stream is healthy), physical controller and hotkeys in the player, edge swipes, screen shapes other than Original, Save/Load state buttons, cores other than mGBA, DeSmuME and Snes9x, a release (R8) build of the player.
 
+### 2026-10-28: Player rotation, TV/controller use, pause menu (S22 and emulator)
+
+- DS (S22): screens stacked in portrait, **side by side in landscape**, switched live on rotation; touchscreen works in both (right-hand screen in landscape). Landscape controls moved to the side columns, sized from screen height and fainter after user feedback (too big).
+- Phone settings changed during the test and restored: auto-rotate (turned back on), `wm size`/`wm density` (reset).
+- Controller only (emulator, adb key events, no touches): Home → Retro → search → game page → Play → Start → Guide opens the pause menu → menu navigation → Quit. Found and fixed: moving onto a text box popped up the keyboard and trapped focus (now only A opens it; up/down leave); the box swallowed up/down; menu focus too faint (bold orange outline now).
+- Pause menu: Genesis Plus GX's own settings listed (System Region changed auto → ntsc-u). **Switch emulator** Genesis Plus GX → PicoDrive → back: game restarts in the new emulator and the choice is remembered on the game page and in Settings → Built-in player. Found and fixed: the first switch died (new player started in the old player's process, which then ended itself).
+- Not yet tested: switching on the S22, melonDS (needs BIOS), Settings per-system emulator chips by hand, a real TV box and a real controller.
+
 ## Release test plan (run in the final stage, before any release)
 
 Everything is re-tested together on real hardware, so nothing that worked earlier is broken by later changes. Record each result here with date, device and evidence.

@@ -46,6 +46,7 @@ class AppContainer(application: Application) {
     val standalone = StandaloneLauncher(application)
     val retroArchHotkeys = RetroArchHotkeys(application)
     val romManager = RomManagerRepository(library, application.contentResolver, File(application.filesDir, "rom-manager"))
+    val coreChoices = com.retroforge.player.CoreChoices(File(application.filesDir, "player/cores.properties"))
     val cores = CoreManager(File(application.filesDir, "cores"), "RetroForge/${BuildConfig.VERSION_NAME}")
 
     // Read by SteamGridDB calls on a background thread; kept current from settings.

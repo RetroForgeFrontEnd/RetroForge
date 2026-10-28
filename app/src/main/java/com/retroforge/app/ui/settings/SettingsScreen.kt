@@ -46,6 +46,8 @@ fun SettingsScreen(
     onOpenThemes: () -> Unit,
     onOpenLicences: () -> Unit,
     onOpenPrivacy: () -> Unit,
+    playerSystems: List<Pair<String, String>> = emptyList(),
+    coreChoices: com.retroforge.player.CoreChoices? = null,
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
 
@@ -77,6 +79,8 @@ fun SettingsScreen(
         SteamGridDbKeyCard(settings.steamGridDbKey, viewModel::setSteamGridDbKey)
 
         ScreenScraperCard(settings.screenScraperUser, viewModel::setScreenScraperLogin)
+
+        coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames) }
 
         EmulatorAppsCard()
 
@@ -156,7 +160,7 @@ private fun EmulatorAppsCard() {
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("Emulator apps")
         CardBody(
-            "RetroForge plays games in RetroArch, or in free standalone emulators you install yourself (choose one on any game's page). " +
+            "Besides the built-in player, RetroForge can play games in RetroArch or in free standalone emulators you install yourself (choose one on any game's page). " +
                 "Obtainium installs them from their official releases and keeps them updated.",
         )
         CardBody(

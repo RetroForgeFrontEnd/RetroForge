@@ -151,7 +151,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
             route == SETUP_ROUTE || route == ABOUT_ROUTE || route == HOTKEYS_ROUTE || route == TUTORIAL_ROUTE || route == THEMES_ROUTE || route == LICENCES_ROUTE || route == PRIVACY_ROUTE -> Section.SETTINGS
             else -> Section.HOME
         }
-        val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library, container.retroArch, container.covers, container.standalone, container.settings, container.retroArchHotkeys, container.cores))
+        val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library, container.retroArch, container.covers, container.standalone, container.settings, container.retroArchHotkeys, container.cores, container.coreChoices))
         val hacksViewModel: HacksViewModel = viewModel(
             factory = HacksViewModel.factory(container.catalogues, container.catalogueFetcher, container.contentResolver),
         )
@@ -269,7 +269,9 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         }
                         composable(Section.LINKS.route) { LinksScreen() }
                         composable(Section.SETTINGS.route) {
-                            SettingsScreen(settingsViewModel, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
+                            val counts by container.library.systemCounts.collectAsStateWithLifecycle(initialValue = emptyList())
+                            SettingsScreen(settingsViewModel,
+                                playerSystems = counts.map { it.system to container.library.systemName(it.system) }, coreChoices = container.coreChoices, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
                                 onOpenLicences = { nav.navigate(LICENCES_ROUTE) }, onOpenPrivacy = { nav.navigate(PRIVACY_ROUTE) },
                             )
                         }

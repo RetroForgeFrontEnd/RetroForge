@@ -2,9 +2,14 @@ package com.retroforge.player
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
+import java.io.File
 
 class PlayerCoresTest {
+    @get:Rule val temp = TemporaryFolder()
+
     @Test
     fun cartridgeGamesUseTheBuiltInPlayer() {
         assertEquals("mgba", PlayerCores.forGame("gba", "Pokemon Emerald.gba")?.id)
@@ -18,5 +23,20 @@ class PlayerCoresTest {
         assertNull(PlayerCores.forGame("pcengine", "Ys Book I & II.cue"))
         assertNull(PlayerCores.forGame("psx", "Crash.chd"))
         assertNull(PlayerCores.forGame("unknown", "game.bin"))
+    }
+
+    @Test
+    fun aChosenEmulatorIsUsedOnlyWhenTheSystemHasIt() {
+        assertEquals("gpsp", PlayerCores.forGame("gba", "Advance Wars.gba", preferred = "gpsp")?.id)
+        assertEquals("mgba", PlayerCores.forGame("gba", "Advance Wars.gba", preferred = "snes9x")?.id)
+    }
+
+    @Test
+    fun choicesAreRememberedInAFile() {
+        val file = File(temp.root, "player/cores.properties")
+        CoreChoices(file).set("gba", "gpsp")
+        assertEquals("gpsp", CoreChoices(file).get("gba"))
+        CoreChoices(file).set("gba", null)
+        assertNull(CoreChoices(file).get("gba"))
     }
 }

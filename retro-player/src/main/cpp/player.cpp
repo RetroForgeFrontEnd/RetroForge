@@ -109,6 +109,7 @@ struct Player {
 
     // Core options: values chosen (defaults unless Kotlin set one), kept alive for GET_VARIABLE.
     std::map<std::string, std::string> variables, overrides;
+    std::vector<std::pair<std::string, std::string>> definitions; // key, "Description; a|b|c", in the core's order
     std::atomic<bool> variablesChanged{false};
 
     std::mutex coreMutex; // every call into the core
@@ -236,7 +237,9 @@ bool environment(unsigned cmd, void *data) {
             *static_cast<unsigned *>(data) = 0;
             return true;
         case RETRO_ENVIRONMENT_SET_VARIABLES: {
+            P->definitions.clear();
             for (auto *v = static_cast<const retro_variable *>(data); v && v->key; v++) {
+                P->definitions.emplace_back(v->key, v->value ? v->value : "");
                 auto chosen = P->overrides.find(v->key);
                 P->variables[v->key] = chosen != P->overrides.end() ? chosen->second : defaultOf(v->value);
             }
@@ -833,6 +836,25 @@ JNIEXPORT void JNI(setAnalog)(JNIEnv *, jobject, jint port, jint stick, jint x, 
     if (!P || port < 0 || port >= 4 || stick < 0 || stick > 1) return;
     P->analog[port][stick][0] = static_cast<int16_t>(x);
     P->analog[port][stick][1] = static_cast<int16_t>(y);
+}
+
+// The core's options for the menu: key, description, choices ("a|b|c") and current value, four per option.
+JNIEXPORT jobjectArray JNI(coreOptions)(JNIEnv *env, jobject) {
+    std::vector<std::string> out;
+    if (P) {
+        std::lock_guard<std::mutex> lock(P->coreMutex);
+        for (auto &[key, raw] : P->definitions) {
+            size_t semi = raw.find("; ");
+            out.push_back(key);
+            out.push_back(semi == std::string::npos ? key : raw.substr(0, semi));
+            out.push_back(semi == std::string::npos ? raw : raw.substr(semi + 2));
+            auto current = P->variables.find(key);
+            out.push_back(current != P->variables.end() ? current->second : "");
+        }
+    }
+    jobjectArray array = env->NewObjectArray(static_cast<jsize>(out.size()), env->FindClass("java/lang/String"), nullptr);
+    for (size_t i = 0; i < out.size(); i++) env->SetObjectArrayElement(array, static_cast<jsize>(i), env->NewStringUTF(out[i].c_str()));
+    return array;
 }
 
 // Changes a core option while the game runs (e.g. the DS screen layout on rotation); the core picks it up

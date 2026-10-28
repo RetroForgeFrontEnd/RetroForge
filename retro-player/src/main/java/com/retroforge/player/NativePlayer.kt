@@ -42,6 +42,13 @@ object NativePlayer {
     external fun setButtons(port: Int, mask: Int)
     external fun setAnalog(port: Int, stick: Int, x: Int, y: Int)
 
+    private external fun coreOptions(): Array<String>
+
+    /** The core's own settings (what RetroArch calls core options), in the core's order. */
+    fun options(): List<CoreOption> = coreOptions().toList().chunked(4).map { (key, label, choices, current) ->
+        CoreOption(key, label, choices.split('|').filter { it.isNotEmpty() }, current)
+    }
+
     /** Changes a core option while the game runs. */
     external fun setOption(key: String, value: String)
 
@@ -60,6 +67,8 @@ object NativePlayer {
 }
 
 data class CoreInfo(val needsFile: Boolean, val blockExtract: Boolean, val name: String, val version: String, val extensions: Set<String>)
+
+data class CoreOption(val key: String, val label: String, val choices: List<String>, val value: String)
 
 data class Video(val fps: Float, val width: Int, val height: Int, val aspect: Float)
 

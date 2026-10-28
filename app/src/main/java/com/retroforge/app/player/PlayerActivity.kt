@@ -70,6 +70,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import com.retroforge.player.Video
 import com.retroforge.retro.HotkeyCombo
 import java.io.File
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.heightIn
+import com.retroforge.player.CoreChoices
+import com.retroforge.player.CoreManager
+import com.retroforge.player.CoreOption
 import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.zip.ZipInputStream
@@ -95,6 +103,13 @@ class PlayerActivity : ComponentActivity() {
     private var notice by mutableStateOf<String?>(null)
     private var shape by mutableStateOf(ScreenShape.ORIGINAL)
     private var touchEnabled by mutableStateOf(true)
+    private enum class MenuPage { MAIN, OPTIONS, EMULATORS }
+    private var menuPage by mutableStateOf(MenuPage.MAIN)
+    private var fastForwardOn by mutableStateOf(false)
+    private var coreOptions by mutableStateOf<List<CoreOption>>(emptyList())
+    @Volatile private var switching = false
+    private lateinit var coreChoices: CoreChoices
+    private lateinit var cores: CoreManager
     private lateinit var prefs: SharedPreferences
     private var surfaceWidth = 0
     private var surfaceHeight = 0
@@ -145,6 +160,8 @@ class PlayerActivity : ComponentActivity() {
         val base = getExternalFilesDir(null) ?: filesDir
         // Per-system player choices. Only this process uses these preferences.
         prefs = getSharedPreferences("player", MODE_PRIVATE)
+        coreChoices = CoreChoices(File(filesDir, "player/cores.properties"))
+        cores = CoreManager(File(filesDir, "cores"), "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}")
         shape = ScreenShape.of(prefs.getString("shape.$system", null))
         touchEnabled = prefs.getBoolean("touch.$system", true)
         savesDir = File(base, "saves/$system").apply { mkdirs() }
@@ -178,7 +195,8 @@ class PlayerActivity : ComponentActivity() {
 
     private fun load(corePath: String, uri: Uri, fileName: String, systemDir: File) {
         coreId = File(corePath).name.substringBefore("_libretro")
-        val options = PlayerCores.orientationOptions(coreId, isLandscape())
+        // The user's emulator settings for this core, then the ones that follow the screen's orientation.
+        val options = savedOptions() + PlayerCores.orientationOptions(coreId, isLandscape())
         val error = NativePlayer.openCore(corePath, systemDir.path, savesDir.path, options.keys.toTypedArray(), options.values.toTypedArray())
         if (error != null) return fail(error)
         val info = NativePlayer.coreInfo()
@@ -252,8 +270,53 @@ class PlayerActivity : ComponentActivity() {
     private fun fail(message: String) = runOnUiThread { phase = Phase.Failed(message) }
 
     private fun sram() = File(savesDir, "$saveBase.srm")
-    private fun autoState() = File(statesDir, "$saveBase.auto.state")
-    private fun slotState() = File(statesDir, "$saveBase.state")
+    // States belong to one emulator (another can't load them), so their names include it. In-game saves (.srm) are shared.
+    private fun autoState() = File(statesDir, "$saveBase.$coreId.auto.state")
+    private fun slotState() = File(statesDir, "$saveBase.$coreId.state")
+
+    private fun savedOptions(): Map<String, String> = prefs.all
+        .filterKeys { it.startsWith("opt.$coreId.") }
+        .mapNotNull { (k, v) -> (v as? String)?.let { k.removePrefix("opt.$coreId.") to it } }
+        .toMap()
+
+    private fun chooseOption(option: CoreOption) {
+        if (option.choices.isEmpty()) return
+        val next = option.choices[(option.choices.indexOf(option.value) + 1) % option.choices.size]
+        prefs.edit().putString("opt.$coreId.${option.key}", next).apply()
+        NativePlayer.setOption(option.key, next)
+        coreOptions = NativePlayer.options()
+        refreshVideo(10) // some settings change the picture (borders, layouts)
+    }
+
+    /** Restarts the game in another of the system's emulators; the in-game save carries over. */
+    private fun switchEmulator(core: PlayerCores.PlayerCore) {
+        if (core.id == coreId || switching) return
+        switching = true
+        notice = "Getting ${core.name}…"
+        lifecycleScope.launch {
+            if (!cores.ensure(core.id)) {
+                switching = false
+                notice = "Couldn't download ${core.name}. Check the internet connection."
+                return@launch
+            }
+            coreChoices.set(system, core.id)
+            val next = Intent(intent).putExtra(EXTRA_CORE_PATH, cores.file(core.id).path)
+            quitting = true
+            worker.execute {
+                if (loaded) {
+                    NativePlayer.stop()
+                    persist()
+                    NativePlayer.close()
+                    loaded = false
+                }
+                runOnUiThread {
+                    // A fresh player process for the new emulator: the relauncher (main process) starts it once this one has ended.
+                    startActivity(Intent(this@PlayerActivity, PlayerRelaunchActivity::class.java).putExtra(PlayerRelaunchActivity.EXTRA_NEXT, next))
+                    finish()
+                }
+            }
+        }
+    }
 
     private fun writeSafely(file: File, data: ByteArray) {
         val part = File(file.path + ".part")
@@ -274,6 +337,7 @@ class PlayerActivity : ComponentActivity() {
     private fun openMenu() {
         if (phase != Phase.Playing || menuOpen) return
         menuOpen = true
+        menuPage = MenuPage.MAIN
         input.releaseAll()
         NativePlayer.setPaused(true)
     }
@@ -343,8 +407,9 @@ class PlayerActivity : ComponentActivity() {
         super.onDestroy()
         if (isFinishing) {
             worker.shutdown()
-            // The player process exists for this one game. Ending it gives the next game a clean core.
-            Process.killProcess(Process.myPid())
+            // The player process exists for this one game. Ending it gives the next game a clean core. Not when switching
+            // emulator: the old core is already closed, and the new player may already be starting in this process.
+            if (!switching) Process.killProcess(Process.myPid())
         }
     }
 
@@ -354,7 +419,9 @@ class PlayerActivity : ComponentActivity() {
         if (menuOpen) {
             when (event.keyCode) {
                 KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_BUTTON_B, KeyEvent.KEYCODE_BUTTON_MODE, KeyEvent.KEYCODE_MENU -> {
-                    if (event.action == KeyEvent.ACTION_UP) closeMenu()
+                    if (event.action == KeyEvent.ACTION_UP) {
+                        if (menuPage != MenuPage.MAIN) menuPage = MenuPage.MAIN else closeMenu()
+                    }
                     return true
                 }
                 KeyEvent.KEYCODE_BUTTON_A -> return super.dispatchKeyEvent(
@@ -534,39 +601,89 @@ class PlayerActivity : ComponentActivity() {
 
     @Composable
     private fun PauseMenu(title: String) {
-        val first = remember { FocusRequester() }
-        LaunchedEffect(Unit) { runCatching { first.requestFocus() } }
+        val first = remember(menuPage) { FocusRequester() }
+        LaunchedEffect(menuPage) { runCatching { first.requestFocus() } }
         Box(Modifier.fillMaxSize().background(Color(0xCC000000)), contentAlignment = Alignment.Center) {
             Column(
-                Modifier.width(300.dp).background(Color(0xFF1C1C22), RoundedCornerShape(16.dp)).padding(20.dp),
+                Modifier.width(320.dp).heightIn(max = 560.dp).background(Color(0xFF1C1C22), RoundedCornerShape(16.dp))
+                    .verticalScroll(rememberScrollState()).padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(title, color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-                notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp) }
-                MenuButton(onClick = { closeMenu() }, modifier = Modifier.fillMaxWidth().focusRequester(first)) { Text("Resume") }
-                MenuButton(onClick = {
-                    worker.execute {
-                        val saved = NativePlayer.saveState()?.let { writeSafely(slotState(), it); true } == true
-                        runOnUiThread { notice = if (saved) "State saved" else "This core can't save states" }
+                val wide = Modifier.fillMaxWidth()
+                val coreName = PlayerCores.byId(coreId)?.name ?: coreId
+                when (menuPage) {
+                    MenuPage.MAIN -> {
+                        Text(title, color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                        Text("Paused · $coreName", color = Color(0xFFAAAAB4), fontSize = 13.sp)
+                        notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
+                        MenuButton(onClick = { closeMenu() }, modifier = wide.focusRequester(first)) { Text("Resume") }
+                        MenuButton(onClick = {
+                            worker.execute {
+                                val saved = NativePlayer.saveState()?.let { writeSafely(slotState(), it); true } == true
+                                runOnUiThread { notice = if (saved) "State saved" else "This emulator can't save states" }
+                            }
+                        }, modifier = wide) { Text("Save state") }
+                        MenuButton(onClick = {
+                            worker.execute {
+                                val file = slotState()
+                                val done = file.isFile && NativePlayer.loadState(file.readBytes())
+                                runOnUiThread { if (done) closeMenu() else notice = "No saved state yet" }
+                            }
+                        }, modifier = wide) { Text("Load state") }
+                        MenuButton(onClick = {
+                            fastForwardOn = !fastForwardOn
+                            NativePlayer.setFastForward(fastForwardOn)
+                        }, modifier = wide) { Text("Fast-forward: ${if (fastForwardOn) "On" else "Off"}") }
+                        MenuButton(onClick = { chooseShape(shape.next()) }, modifier = wide) { Text("Screen shape: ${shape.label}") }
+                        if (hasTouch) MenuButton(onClick = { chooseTouch(!touchEnabled) }, modifier = wide) {
+                            Text("Touch controls: ${if (touchEnabled) "On" else "Off"}")
+                        }
+                        MenuButton(onClick = {
+                            coreOptions = NativePlayer.options()
+                            menuPage = MenuPage.OPTIONS
+                        }, modifier = wide) { Text("Emulator settings ›") }
+                        if (PlayerCores.choices(system).size > 1) {
+                            MenuButton(onClick = { menuPage = MenuPage.EMULATORS }, modifier = wide) { Text("Switch emulator ›") }
+                        }
+                        MenuButton(onClick = {
+                            NativePlayer.reset()
+                            closeMenu()
+                        }, modifier = wide) { Text("Restart game") }
+                        MenuButton(onClick = { quit() }, modifier = wide) { Text("Quit to RetroForge") }
                     }
-                }, modifier = Modifier.fillMaxWidth()) { Text("Save state") }
-                MenuButton(onClick = {
-                    worker.execute {
-                        val file = slotState()
-                        val done = file.isFile && NativePlayer.loadState(file.readBytes())
-                        runOnUiThread { if (done) closeMenu() else notice = "No saved state yet" }
+                    MenuPage.OPTIONS -> {
+                        Text("$coreName settings", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text("Select a setting to change it. Kept for this emulator.", color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        if (coreOptions.isEmpty()) Text("This emulator has no settings.", color = Color(0xFFDDDDDD))
+                        coreOptions.forEach { option ->
+                            MenuButton(onClick = { chooseOption(option) }, modifier = wide) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(option.label, textAlign = TextAlign.Center, fontSize = 14.sp)
+                                    Text(option.value, color = Color(0xFFFF8A1F), fontSize = 13.sp)
+                                }
+                            }
+                        }
                     }
-                }, modifier = Modifier.fillMaxWidth()) { Text("Load state") }
-                MenuButton(onClick = { chooseShape(shape.next()) }, modifier = Modifier.fillMaxWidth()) { Text("Screen shape: ${shape.label}") }
-                MenuButton(onClick = { chooseTouch(!touchEnabled) }, modifier = Modifier.fillMaxWidth()) {
-                    Text("Touch controls: ${if (touchEnabled) "On" else "Off"}")
+                    MenuPage.EMULATORS -> {
+                        Text("Switch emulator", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(
+                            "The game restarts in the emulator you pick and your in-game save carries over. Save states belong to each emulator.",
+                            color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
+                        )
+                        notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        PlayerCores.choices(system).forEach { core ->
+                            MenuButton(onClick = { switchEmulator(core) }, modifier = wide) {
+                                Text(
+                                    core.name + (if (core.id == coreId) "  ✓" else "") + (if (core.needsBios) " (needs BIOS)" else ""),
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
+                        }
+                    }
                 }
-                MenuButton(onClick = {
-                    NativePlayer.reset()
-                    closeMenu()
-                }, modifier = Modifier.fillMaxWidth()) { Text("Restart game") }
-                MenuButton(onClick = { quit() }, modifier = Modifier.fillMaxWidth()) { Text("Quit to RetroForge") }
             }
         }
     }

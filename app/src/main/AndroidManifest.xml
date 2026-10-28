@@ -38,5 +38,12 @@
             android:launchMode="singleTask"
             android:excludeFromRecents="true"
             android:exported="false" />
+
+        <activity
+            android:name=".player.PlayerRelaunchActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:exported="false" />
     </application>
 </manifest>

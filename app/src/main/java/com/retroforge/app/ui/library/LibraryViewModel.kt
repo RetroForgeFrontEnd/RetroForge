@@ -61,6 +61,7 @@ class LibraryViewModel(
     private val settings: SettingsRepository,
     private val hotkeys: RetroArchHotkeys,
     private val cores: CoreManager,
+    private val coreChoices: com.retroforge.player.CoreChoices,
 ) : ViewModel() {
 
     private val emulators = StandaloneEmulators.bundled()
@@ -162,7 +163,7 @@ class LibraryViewModel(
     fun openRetroArch(plan: LaunchPlan.Ready) = retroArch.openRetroArch(plan.install)
 
     /** The built-in player's core for this game, or null when the game needs RetroArch or a standalone app. */
-    fun builtInCore(game: GameEntity) = PlayerCores.forGame(game.system, game.fileName)
+    fun builtInCore(game: GameEntity) = PlayerCores.forGame(game.system, game.fileName, coreChoices.get(game.system))
 
     val coreStates: StateFlow<Map<String, CoreState>> = cores.states
 
@@ -211,8 +212,9 @@ class LibraryViewModel(
             settings: SettingsRepository,
             hotkeys: RetroArchHotkeys,
             cores: CoreManager,
+            coreChoices: com.retroforge.player.CoreChoices,
         ): ViewModelProvider.Factory = viewModelFactory {
-            initializer { LibraryViewModel(repository, retroArch, covers, standalone, settings, hotkeys, cores) }
+            initializer { LibraryViewModel(repository, retroArch, covers, standalone, settings, hotkeys, cores, coreChoices) }
         }
     }
 }
