@@ -711,9 +711,22 @@ class PlayerActivity : ComponentActivity() {
         val first = remember(menuPage) { FocusRequester() }
         LaunchedEffect(menuPage) { runCatching { first.requestFocus() } }
         Box(Modifier.fillMaxSize().background(Color(0xCC000000)), contentAlignment = Alignment.Center) {
+          Column(Modifier.width(320.dp).heightIn(max = 560.dp).background(Color(0xFF1C1C22), RoundedCornerShape(16.dp))) {
+            // A header that doesn't scroll: back (on sub-pages) and close (back to the game) are always in reach.
+            androidx.compose.foundation.layout.Row(
+                Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (menuPage != MenuPage.MAIN) {
+                    androidx.compose.material3.TextButton(onClick = { menuPage = MenuPage.MAIN }) { Text("‹ Back", color = Color.White) }
+                } else {
+                    androidx.compose.foundation.layout.Spacer(Modifier.width(1.dp))
+                }
+                androidx.compose.material3.TextButton(onClick = { closeMenu() }) { Text("✕", color = Color.White, fontSize = 20.sp) }
+            }
             Column(
-                Modifier.width(320.dp).heightIn(max = 560.dp).background(Color(0xFF1C1C22), RoundedCornerShape(16.dp))
-                    .verticalScroll(rememberScrollState()).padding(20.dp),
+                Modifier.verticalScroll(rememberScrollState()).padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -843,6 +856,7 @@ class PlayerActivity : ComponentActivity() {
                     }
                 }
             }
+          }
         }
     }
 

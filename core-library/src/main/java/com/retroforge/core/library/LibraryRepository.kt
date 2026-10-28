@@ -106,6 +106,11 @@ class LibraryRepository(
     }
 
     /** Forgets a folder: drops RetroForge's index and access grant. The files themselves are untouched. */
+    /** The name RetroForge shows for a game folder (the folder itself isn't renamed). */
+    fun renameFolder(root: RootEntity, name: String) {
+        scope.launch { dao.renameRoot(root.id, name.trim().take(60)) }
+    }
+
     fun removeFolder(root: RootEntity) {
         jobs.remove(root.id)?.cancel()
         scope.launch {

@@ -210,9 +210,19 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
                     problems.take(5).forEach { CardBody("• ${it.path}: ${it.message}") }
                 }
             }
+            var renaming by remember(root.id) { mutableStateOf<String?>(null) }
+            renaming?.let { draft ->
+                ControllerTextField(draft, { renaming = it.take(60) }, Modifier.fillMaxWidth(), label = { Text("Name shown in RetroForge") })
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                FocusChip("Rescan", onClick = { viewModel.rescan(root) }, enabled = access && state !is ScanState.Running)
-                FocusChip("Forget folder", onClick = { viewModel.forget(root) })
+                if (renaming == null) {
+                    FocusChip("Rescan", onClick = { viewModel.rescan(root) }, enabled = access && state !is ScanState.Running)
+                    FocusChip("Rename", onClick = { renaming = root.name })
+                    FocusChip("Forget folder", onClick = { viewModel.forget(root) })
+                } else {
+                    FocusChip("Save name", enabled = !renaming.isNullOrBlank(), onClick = { viewModel.renameFolder(root, renaming.orEmpty()); renaming = null })
+                    FocusChip("Cancel", onClick = { renaming = null })
+                }
             }
         }
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { pickFolder.launch(null) }) {

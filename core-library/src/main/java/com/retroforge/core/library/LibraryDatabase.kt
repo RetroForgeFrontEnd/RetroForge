@@ -189,6 +189,9 @@ interface LibraryDao {
     @Insert
     suspend fun insertRoot(root: RootEntity): Long
 
+    @Query("UPDATE roots SET name = :name WHERE id = :id")
+    suspend fun renameRoot(id: Long, name: String)
+
     @Query("DELETE FROM roots WHERE id = :id")
     suspend fun deleteRoot(id: Long)
 

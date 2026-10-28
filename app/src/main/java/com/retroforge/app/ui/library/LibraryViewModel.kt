@@ -252,6 +252,7 @@ class LibraryViewModel(
     fun addFolder(uri: Uri) = repository.addFolder(uri)
     fun rescan(root: RootEntity) = repository.scan(root.id)
     fun forget(root: RootEntity) = repository.removeFolder(root)
+    fun renameFolder(root: RootEntity, name: String) = repository.renameFolder(root, name)
 
     /** content:// address of a file in a granted folder, for artwork. */
     fun documentUri(rootsById: Map<Long, RootEntity>, rootId: Long, documentId: String?): Uri? =
