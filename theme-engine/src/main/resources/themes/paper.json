@@ -1,0 +1,17 @@
+{
+  "format": "retroforge-theme", "version": 1,
+  "id": "paper", "name": "Paper", "author": "RetroForge", "license": "CC0-1.0",
+  "description": "Clean and modern: soft greys, one blue accent, big covers in a list.",
+  "light": {
+    "background": "#F4F5F7", "surface": "#FFFFFF", "surfaceVariant": "#E8EBF0",
+    "primary": "#2F6FEB", "secondary": "#5B6577", "text": "#16191F", "textMuted": "#5B6577", "outline": "#C3C9D3"
+  },
+  "dark": {
+    "background": "#121417", "surface": "#1B1E23", "surfaceVariant": "#262A31",
+    "primary": "#7AA7FF", "secondary": "#9AA3B2", "text": "#EEF1F5", "textMuted": "#9AA3B2", "outline": "#3A404A"
+  },
+  "shape": { "cornerRadius": 12 },
+  "type": { "font": "sans", "headlineWeight": 600 },
+  "wordmark": { "retro": "#2F6FEB", "forge": "#16191F", "glow": false },
+  "layout": { "gameView": "list", "tileAspect": "portrait" }
+}

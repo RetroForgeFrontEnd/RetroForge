@@ -1,18 +1,28 @@
 package com.retroforge.core.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.retroforge.theme.BuiltInThemes
+import com.retroforge.theme.FontStyle
+import com.retroforge.theme.Palette
+import com.retroforge.theme.ThemeFormat
+import com.retroforge.theme.ThemeSpec
 
 /** Colours the design system needs beyond Material's scheme. */
 @Immutable
@@ -21,81 +31,92 @@ data class ForgeColors(
     val supported: Color,
     val experimental: Color,
     val unsupported: Color,
+    val wordmarkRetro: Color,
+    val wordmarkForge: Color,
+    val wordmarkGlow: Boolean,
 )
 
-// Palette taken from the RetroForge key art: neon orange "RETRO", neon cyan "FORGE", workshop navy.
-val NeonOrange = Color(0xFFFF8A2A)
-val NeonCyan = Color(0xFF3ED6FF)
-private val EmberDeep = Color(0xFFB34700)
-private val CyanDeep = Color(0xFF00708F)
-private val Anvil = Color(0xFF0B1020)
-private val Iron = Color(0xFF151C2E)
-private val Steel = Color(0xFF222B40)
+/** The theme in use, for screens that follow its layout choices (grid or list, tile shape). */
+val LocalThemeSpec = staticCompositionLocalOf { BuiltInThemes.default }
 
-private val DarkScheme = darkColorScheme(
-    primary = NeonOrange,
-    onPrimary = Color(0xFF1A0A00),
-    primaryContainer = EmberDeep,
-    onPrimaryContainer = Color(0xFFFFE3D1),
-    secondary = NeonCyan,
-    onSecondary = Color(0xFF001F29),
-    background = Anvil,
-    onBackground = Color(0xFFE6ECF7),
-    surface = Iron,
-    onSurface = Color(0xFFE6ECF7),
-    surfaceVariant = Steel,
-    onSurfaceVariant = Color(0xFFAEB8CC),
-    outline = Color(0xFF4A5670),
+val LocalForgeColors = staticCompositionLocalOf {
+    forgeColors(BuiltInThemes.default, BuiltInThemes.default.palette(dark = true))
+}
+
+private fun c(argb: Long) = Color(argb.toInt())
+
+/** [color], unless it would nearly vanish on the background (e.g. a light theme's dark ink in dark mode). */
+private fun readable(color: Long, p: Palette): Long =
+    if (kotlin.math.abs(ThemeFormat.luminance(color) - ThemeFormat.luminance(p.background)) < 0.25) p.text else color
+
+private fun forgeColors(theme: ThemeSpec, p: Palette) = ForgeColors(
+    focusRing = c(p.focus),
+    supported = c(p.good),
+    experimental = c(p.caution),
+    unsupported = c(p.bad),
+    wordmarkRetro = c(readable(theme.wordmarkRetro, p)),
+    wordmarkForge = c(readable(theme.wordmarkForge, p)),
+    wordmarkGlow = theme.wordmarkGlow,
 )
 
-private val LightScheme = lightColorScheme(
-    primary = EmberDeep,
-    onPrimary = Color.White,
-    primaryContainer = Color(0xFFFFDCC6),
-    onPrimaryContainer = Color(0xFF331200),
-    secondary = CyanDeep,
-    onSecondary = Color.White,
-    background = Color(0xFFF6F4F2),
-    onBackground = Color(0xFF1B1C1F),
-    surface = Color.White,
-    onSurface = Color(0xFF1B1C1F),
-    surfaceVariant = Color(0xFFECE7E3),
-    onSurfaceVariant = Color(0xFF4F4A46),
-    outline = Color(0xFF8A847F),
-)
+private fun colorScheme(p: Palette, dark: Boolean) = if (dark) {
+    darkColorScheme(
+        primary = c(p.primary), onPrimary = c(p.onPrimary), primaryContainer = c(p.surfaceVariant), onPrimaryContainer = c(p.text),
+        secondary = c(p.secondary), onSecondary = c(p.onSecondary), background = c(p.background), onBackground = c(p.text),
+        surface = c(p.surface), onSurface = c(p.text), surfaceVariant = c(p.surfaceVariant), onSurfaceVariant = c(p.textMuted),
+        outline = c(p.outline), error = c(p.bad),
+    )
+} else {
+    lightColorScheme(
+        primary = c(p.primary), onPrimary = c(p.onPrimary), primaryContainer = c(p.surfaceVariant), onPrimaryContainer = c(p.text),
+        secondary = c(p.secondary), onSecondary = c(p.onSecondary), background = c(p.background), onBackground = c(p.text),
+        surface = c(p.surface), onSurface = c(p.text), surfaceVariant = c(p.surfaceVariant), onSurfaceVariant = c(p.textMuted),
+        outline = c(p.outline), error = c(p.bad),
+    )
+}
 
-private val DarkForge = ForgeColors(
-    focusRing = NeonOrange,
-    supported = Color(0xFF5FD38A),
-    experimental = Color(0xFFFFC857),
-    unsupported = Color(0xFFFF6B6B),
-)
+private fun typography(theme: ThemeSpec): Typography {
+    val family = when (theme.font) {
+        FontStyle.SANS -> FontFamily.SansSerif
+        FontStyle.SERIF -> FontFamily.Serif
+        FontStyle.MONO -> FontFamily.Monospace
+        // Android has no system rounded face; the default face with heavier headings gives the softer look.
+        FontStyle.ROUNDED -> FontFamily.Default
+    }
+    val heading = FontWeight(theme.headlineWeight)
+    fun TextStyle.themed(weight: FontWeight? = null) =
+        copy(fontFamily = family, fontWeight = weight ?: fontWeight, fontSize = fontSize * theme.textScale, lineHeight = lineHeight * theme.textScale)
+    val base = Typography()
+    return Typography(
+        displayLarge = base.displayLarge.themed(heading), displayMedium = base.displayMedium.themed(heading),
+        displaySmall = base.displaySmall.themed(FontWeight.Black).copy(letterSpacing = 1.sp),
+        headlineLarge = base.headlineLarge.themed(heading), headlineMedium = base.headlineMedium.themed(heading),
+        headlineSmall = base.headlineSmall.themed(heading),
+        titleLarge = base.titleLarge.themed(FontWeight.SemiBold), titleMedium = base.titleMedium.themed(), titleSmall = base.titleSmall.themed(),
+        bodyLarge = base.bodyLarge.themed(), bodyMedium = base.bodyMedium.themed(), bodySmall = base.bodySmall.themed(),
+        labelLarge = TextStyle(fontFamily = family, fontWeight = FontWeight.SemiBold, fontSize = 15.sp * theme.textScale, letterSpacing = 0.5.sp),
+        labelMedium = base.labelMedium.themed(), labelSmall = base.labelSmall.themed(),
+    )
+}
 
-private val LightForge = ForgeColors(
-    focusRing = EmberDeep,
-    supported = Color(0xFF1E7A43),
-    experimental = Color(0xFF8A5A00),
-    unsupported = Color(0xFFB3261E),
-)
-
-val LocalForgeColors = staticCompositionLocalOf { DarkForge }
-
-private val ForgeTypography = Typography().run {
-    copy(
-        displaySmall = displaySmall.copy(fontWeight = FontWeight.Black, letterSpacing = 1.sp),
-        headlineMedium = headlineMedium.copy(fontWeight = FontWeight.Bold),
-        titleLarge = titleLarge.copy(fontWeight = FontWeight.SemiBold),
-        labelLarge = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 15.sp, letterSpacing = 0.5.sp),
+/** Shapes from the theme's corner radius; small elements get proportionally smaller corners. */
+private fun shapes(theme: ThemeSpec): Shapes {
+    val r = theme.cornerRadius
+    return Shapes(
+        extraSmall = RoundedCornerShape((r / 4).dp), small = RoundedCornerShape((r / 2).dp),
+        medium = RoundedCornerShape(r.dp), large = RoundedCornerShape((r * 5 / 4).dp), extraLarge = RoundedCornerShape((r * 3 / 2).dp),
     )
 }
 
 @Composable
-fun RetroForgeTheme(dark: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    CompositionLocalProvider(LocalForgeColors provides if (dark) DarkForge else LightForge) {
-        MaterialTheme(
-            colorScheme = if (dark) DarkScheme else LightScheme,
-            typography = ForgeTypography,
-            content = content,
-        )
+fun RetroForgeTheme(theme: ThemeSpec = BuiltInThemes.default, dark: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
+    val palette = theme.palette(dark)
+    // A theme with only one brightness keeps it whichever mode is chosen.
+    val isDark = if (theme.dark == null || theme.light == null) theme.dark != null else dark
+    val scheme = remember(theme, isDark) { colorScheme(palette, isDark) }
+    val type = remember(theme) { typography(theme) }
+    val shape = remember(theme) { shapes(theme) }
+    CompositionLocalProvider(LocalForgeColors provides forgeColors(theme, palette), LocalThemeSpec provides theme) {
+        MaterialTheme(colorScheme = scheme, typography = type, shapes = shape, content = content)
     }
 }

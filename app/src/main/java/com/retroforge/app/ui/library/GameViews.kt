@@ -1,5 +1,10 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.core.ui.LocalThemeSpec
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -42,7 +47,7 @@ fun GameArt(game: GameEntity, image: Any?, modifier: Modifier = Modifier) {
             )
         }
     }
-    Box(modifier.clip(RoundedCornerShape(10.dp))) {
+    Box(modifier.clip(MaterialTheme.shapes.small)) {
         if (image == null) {
             placeholder()
         } else {
@@ -61,7 +66,7 @@ fun GameArt(game: GameEntity, image: Any?, modifier: Modifier = Modifier) {
 @Composable
 fun GameTile(game: GameEntity, image: Any?, onClick: () -> Unit, modifier: Modifier = Modifier) {
     FocusCard(modifier = modifier, onClick = onClick) {
-        GameArt(game, image, Modifier.fillMaxWidth().aspectRatio(4f / 3f))
+        GameArt(game, image, Modifier.fillMaxWidth().aspectRatio(LocalThemeSpec.current.tileAspect.ratio))
         Text(
             game.title,
             style = MaterialTheme.typography.titleSmall,
@@ -72,6 +77,20 @@ fun GameTile(game: GameEntity, image: Any?, onClick: () -> Unit, modifier: Modif
         )
         tagLine(game)?.let {
             Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+    }
+}
+
+/** One game as a row (themes with a list layout): small art beside the title. */
+@Composable
+fun GameRow(game: GameEntity, image: Any?, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    FocusCard(modifier = modifier, onClick = onClick) {
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            GameArt(game, image, Modifier.width(72.dp).aspectRatio(LocalThemeSpec.current.tileAspect.ratio))
+            Column(Modifier.weight(1f)) {
+                Text(game.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                tagLine(game)?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+            }
         }
     }
 }

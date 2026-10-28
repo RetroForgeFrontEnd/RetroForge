@@ -145,6 +145,13 @@ Not tested: physical gamepad, Android TV device or TV emulator image, tablet, li
 - Fixed the same day: when the ROM manager compresses a game or tidies a duplicate, its favourite, playlist entries, play history and chosen cover move with it (journalled; compression undo moves them back). Emulator: Batman Forever favourited, compressed to .chd (still a favourite), undone (still a favourite). A deleted game's entries stay hidden and return if the delete is undone.
 - The emulator crashed with host GPU rendering after a long session; `-gpu swiftshader_indirect` was stable.
 
+### 2026-10-28: Themes (emulator)
+
+- Themes screen: live previews of all 5 built-in themes; Phosphor, Arcade Sunset and Paper applied app-wide (colours, corners, monospaced type).
+- Rotation: portrait stacks preview above details; landscape puts them side by side. Found and fixed: the side rail didn't scroll, so Links and Settings were unreachable on a phone turned sideways.
+- Found and fixed: Paper's dark wordmark vanished in dark mode (wordmark colours now fall back to the text colour when too close to the background).
+- Imported canvas-es colours (copied XML only): the report listed each colour's source, the licence (CC0) and what wasn't imported. Found and fixed: white cards with white text, and a near-invisible selected tab; the importer now checks text-on-card and accent-on-background readability.
+
 ## Release test plan (run in the final stage, before any release)
 
 Everything is re-tested together on real hardware, so nothing that worked earlier is broken by later changes. Record each result here with date, device and evidence.

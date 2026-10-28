@@ -42,6 +42,8 @@ import com.retroforge.core.library.GameEntity
 import java.io.File
 import com.retroforge.core.library.ScanState
 import com.retroforge.core.ui.FocusCard
+import com.retroforge.core.ui.LocalThemeSpec
+import com.retroforge.theme.GameView
 import com.retroforge.core.ui.FocusChip
 import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
@@ -224,7 +226,8 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
     }
 
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(170.dp),
+        // List themes show one game per row (two on wide screens); grid themes as many tiles as fit.
+        columns = if (LocalThemeSpec.current.gameView == GameView.LIST) GridCells.Adaptive(360.dp) else GridCells.Adaptive(170.dp),
         modifier = Modifier.fillMaxSize(),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 24.dp, vertical = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -243,7 +246,8 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
             }
         }
         items(shown, key = { it.id }) { game ->
-            GameTile(game, viewModel.art(rootsById, chosen, game), onClick = { onOpenGame(game.id) })
+            if (LocalThemeSpec.current.gameView == GameView.LIST) GameRow(game, viewModel.art(rootsById, chosen, game), onClick = { onOpenGame(game.id) })
+            else GameTile(game, viewModel.art(rootsById, chosen, game), onClick = { onOpenGame(game.id) })
         }
     }
 }

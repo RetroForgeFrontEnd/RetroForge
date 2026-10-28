@@ -47,7 +47,7 @@ fun SectionTab(
     Surface(
         onClick = onClick,
         modifier = modifier.semantics { this.selected = selected; role = Role.Tab },
-        shape = RoundedCornerShape(14.dp),
+        shape = MaterialTheme.shapes.medium,
         color = if (selected) colors.primary.copy(alpha = 0.14f) else Color.Transparent,
         border = if (focused) BorderStroke(3.dp, LocalForgeColors.current.focusRing) else null,
         interactionSource = interaction,

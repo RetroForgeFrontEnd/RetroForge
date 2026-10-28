@@ -16,6 +16,8 @@ enum class ThemeMode { SYSTEM, DARK, LIGHT }
 
 data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.DARK,
+    /** Active theme id (built-in or the user's own); see ThemeStore. */
+    val themeId: String = "forge-neon",
     val showPcSection: Boolean = true,
     /** Version of the "no games or BIOS included" notice the user has acknowledged; 0 = never. */
     val noticeAcknowledged: Int = 0,
@@ -51,6 +53,7 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
         AppSettings(
             themeMode = prefs[THEME_MODE]?.let { stored -> ThemeMode.entries.firstOrNull { it.name == stored } }
                 ?: AppSettings().themeMode,
+            themeId = prefs[THEME_ID] ?: AppSettings().themeId,
             showPcSection = prefs[SHOW_PC] ?: AppSettings().showPcSection,
             noticeAcknowledged = prefs[NOTICE] ?: 0,
             setupDone = prefs[SETUP_DONE] ?: false,
@@ -66,6 +69,10 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
             screenScraperPassword = prefs[SS_PASSWORD],
             emulatorChoices = prefs[EMULATORS].orEmpty().lines().filter { '=' in it }.associate { it.substringBefore('=') to it.substringAfter('=') },
         )
+    }
+
+    suspend fun setThemeId(id: String) {
+        store.edit { it[THEME_ID] = id }
     }
 
     suspend fun setThemeMode(mode: ThemeMode) {
@@ -137,6 +144,7 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
         val RA_SYSTEM = stringPreferencesKey("retroarch_system_uri")
         val SGDB_KEY = stringPreferencesKey("steamgriddb_key")
         val THEME_MODE = stringPreferencesKey("theme_mode")
+        val THEME_ID = stringPreferencesKey("theme_id")
         val SHOW_PC = booleanPreferencesKey("show_pc_section")
         val EMULATORS = stringPreferencesKey("emulator_choices")
         val HOTKEYS = booleanPreferencesKey("retroarch_hotkeys")

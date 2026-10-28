@@ -37,7 +37,7 @@ import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel, onOpenSetup: () -> Unit, onOpenAbout: () -> Unit, onOpenHotkeys: () -> Unit, onOpenTutorial: () -> Unit) {
+fun SettingsScreen(viewModel: SettingsViewModel, onOpenSetup: () -> Unit, onOpenAbout: () -> Unit, onOpenHotkeys: () -> Unit, onOpenTutorial: () -> Unit, onOpenThemes: () -> Unit) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
 
     ScreenFrame(title = "Settings") {
@@ -51,28 +51,9 @@ fun SettingsScreen(viewModel: SettingsViewModel, onOpenSetup: () -> Unit, onOpen
             CardBody("Games folder, RetroArch, the cores your games need, and your BIOS files.")
         }
 
-        CardTitle("Appearance")
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            ThemeMode.entries.forEach { mode ->
-                val selected = settings.themeMode == mode
-                FocusCard(
-                    modifier = Modifier.weight(1f),
-                    selected = selected,
-                    onClick = { viewModel.setThemeMode(mode) },
-                ) {
-                    Text(
-                        text = when (mode) {
-                            ThemeMode.SYSTEM -> "System"
-                            ThemeMode.DARK -> "Dark"
-                            ThemeMode.LIGHT -> "Light"
-                        },
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                    )
-                    if (selected) StatusPill("In use", StatusTone.GOOD)
-                }
-            }
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenThemes) {
+            CardTitle("Themes")
+            CardBody("Colours, shapes, type and game-list layout, with previews. Brightness: ${settings.themeMode.name.lowercase()}. Import your own or a theme's colours from ES-DE or RetroBat.")
         }
 
         FocusCard(

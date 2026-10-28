@@ -20,6 +20,7 @@ android {
 }
 
 dependencies {
+    api(project(":theme-engine"))
     api(platform(libs.compose.bom))
     api(libs.compose.ui)
     api(libs.compose.material3)

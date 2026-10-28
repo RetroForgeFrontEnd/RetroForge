@@ -20,6 +20,7 @@ import com.retroforge.retro.RetroArchLauncher
 import com.retroforge.retro.StandaloneLauncher
 import com.retroforge.retro.RetroArchHotkeys
 import com.retroforge.core.settings.SettingsRepository
+import com.retroforge.core.settings.ThemeStore
 import com.retroforge.core.settings.createSettingsRepository
 import com.retroforge.pc.DroidDeckBridge
 import com.retroforge.pc.PcStatusRepository
@@ -27,6 +28,7 @@ import com.retroforge.pc.PcStatusRepository
 /** Manual dependency wiring; small enough that a DI framework would add more than it saves. */
 class AppContainer(application: Application) {
     val settings: SettingsRepository = createSettingsRepository(application)
+    val themes = ThemeStore(File(application.filesDir, "themes"))
     val droidDeck = DroidDeckBridge(application)
     val pcStatus = PcStatusRepository(droidDeck)
     val contentResolver: ContentResolver = application.contentResolver

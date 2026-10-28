@@ -1,0 +1,19 @@
+{
+  "format": "retroforge-theme", "version": 1,
+  "id": "forge-neon", "name": "Forge Neon", "author": "RetroForge", "license": "CC0-1.0",
+  "description": "RetroForge's own look: neon orange and cyan on workshop navy.",
+  "dark": {
+    "background": "#0B1020", "surface": "#151C2E", "surfaceVariant": "#222B40",
+    "primary": "#FF8A2A", "onPrimary": "#1A0A00", "secondary": "#3ED6FF", "onSecondary": "#001F29",
+    "text": "#E6ECF7", "textMuted": "#AEB8CC", "outline": "#4A5670", "focus": "#FF8A2A"
+  },
+  "light": {
+    "background": "#F6F4F2", "surface": "#FFFFFF", "surfaceVariant": "#ECE7E3",
+    "primary": "#B34700", "onPrimary": "#FFFFFF", "secondary": "#00708F", "onSecondary": "#FFFFFF",
+    "text": "#1B1C1F", "textMuted": "#4F4A46", "outline": "#8A847F", "focus": "#B34700"
+  },
+  "shape": { "cornerRadius": 16 },
+  "type": { "font": "sans", "headlineWeight": 700 },
+  "wordmark": { "retro": "#FF8A2A", "forge": "#3ED6FF", "glow": true },
+  "layout": { "gameView": "grid", "tileAspect": "wide" }
+}

@@ -1,0 +1,18 @@
+{
+  "format": "retroforge-theme", "version": 1,
+  "id": "console-blue", "name": "Console Blue", "author": "RetroForge", "license": "CC0-1.0",
+  "description": "A polished console dashboard: deep blue, bright white, rounded cards and tall box art.",
+  "dark": {
+    "background": "#06163A", "surface": "#0D2557", "surfaceVariant": "#163371",
+    "primary": "#FFFFFF", "onPrimary": "#06163A", "secondary": "#5CC8FF", "onSecondary": "#002233",
+    "text": "#F2F6FF", "textMuted": "#A9BCE6", "outline": "#2E4E95", "focus": "#5CC8FF"
+  },
+  "light": {
+    "background": "#EAF1FF", "surface": "#FFFFFF", "surfaceVariant": "#D7E4FF",
+    "primary": "#0B3FA8", "secondary": "#0077B6", "text": "#0A1A3A", "textMuted": "#40507A", "outline": "#9DB2E0"
+  },
+  "shape": { "cornerRadius": 24 },
+  "type": { "font": "rounded", "headlineWeight": 800 },
+  "wordmark": { "retro": "#FFFFFF", "forge": "#5CC8FF", "glow": false },
+  "layout": { "gameView": "grid", "tileAspect": "portrait" }
+}

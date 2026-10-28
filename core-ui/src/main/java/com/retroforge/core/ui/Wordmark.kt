@@ -17,11 +17,12 @@ import androidx.compose.ui.unit.sp
 /** The two-tone neon "RETROFORGE" logotype; [short] renders the "RF" monogram. */
 @Composable
 fun Wordmark(modifier: Modifier = Modifier, fontSize: TextUnit = 40.sp, short: Boolean = false) {
+    val forgeColors = LocalForgeColors.current
     val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val retro = if (dark) NeonOrange else MaterialTheme.colorScheme.primary
-    val forge = if (dark) NeonCyan else MaterialTheme.colorScheme.secondary
+    val retro = forgeColors.wordmarkRetro
+    val forge = forgeColors.wordmarkForge
     fun glow(color: Color) =
-        if (dark) Shadow(color = color.copy(alpha = 0.75f), blurRadius = 18f) else null
+        if (dark && forgeColors.wordmarkGlow) Shadow(color = color.copy(alpha = 0.75f), blurRadius = 18f) else null
     Text(
         text = buildAnnotatedString {
             withStyle(SpanStyle(color = retro, shadow = glow(retro))) { append(if (short) "R" else "RETRO") }

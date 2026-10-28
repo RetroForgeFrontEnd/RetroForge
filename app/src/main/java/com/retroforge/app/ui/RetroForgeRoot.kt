@@ -2,6 +2,8 @@ package com.retroforge.app.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -63,6 +65,8 @@ import com.retroforge.app.ui.library.SystemGamesScreen
 import com.retroforge.app.ui.settings.AboutScreen
 import com.retroforge.app.ui.settings.HotkeysScreen
 import com.retroforge.app.ui.settings.TutorialScreen
+import com.retroforge.app.ui.settings.ThemesScreen
+import com.retroforge.app.ui.settings.ThemesViewModel
 import com.retroforge.app.ui.settings.SettingsScreen
 import com.retroforge.app.ui.settings.SettingsViewModel
 import com.retroforge.core.settings.ThemeMode
@@ -91,6 +95,7 @@ private const val SETUP_ROUTE = "setup"
 private const val ABOUT_ROUTE = "settings/about"
 private const val HOTKEYS_ROUTE = "settings/hotkeys"
 private const val TUTORIAL_ROUTE = "settings/tutorial"
+private const val THEMES_ROUTE = "settings/themes"
 private const val SYSTEM_ROUTE = "retro/system/{system}"
 private const val GAME_ROUTE = "retro/game/{id}"
 private const val COVER_ROUTE = "retro/game/{id}/cover"
@@ -108,7 +113,10 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
         ThemeMode.LIGHT -> false
     }
 
-    RetroForgeTheme(dark = dark) {
+    val userThemes by container.themes.userThemes.collectAsStateWithLifecycle()
+    val theme = remember(settings.themeId, userThemes) { container.themes.find(settings.themeId) }
+
+    RetroForgeTheme(theme = theme, dark = dark) {
         // null until settings have loaded, so returning users never see the notice flash up.
         val acknowledged by settingsViewModel.noticeAcknowledged.collectAsStateWithLifecycle()
         if (acknowledged == null || acknowledged!! < LEGAL_NOTICE_VERSION) {
@@ -136,7 +144,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
         val current = sections.firstOrNull { it.route == route } ?: when {
             route == PATCHER_ROUTE || route?.startsWith("retro/") == true -> Section.RETRO
             route?.startsWith("hacks/") == true -> Section.HACKS
-            route == SETUP_ROUTE || route == ABOUT_ROUTE || route == HOTKEYS_ROUTE || route == TUTORIAL_ROUTE -> Section.SETTINGS
+            route == SETUP_ROUTE || route == ABOUT_ROUTE || route == HOTKEYS_ROUTE || route == TUTORIAL_ROUTE || route == THEMES_ROUTE -> Section.SETTINGS
             else -> Section.HOME
         }
         val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library, container.retroArch, container.covers, container.standalone, container.settings, container.retroArchHotkeys))
@@ -253,11 +261,15 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         }
                         composable(Section.LINKS.route) { LinksScreen() }
                         composable(Section.SETTINGS.route) {
-                            SettingsScreen(settingsViewModel, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) })
+                            SettingsScreen(settingsViewModel, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) })
                         }
                         composable(ABOUT_ROUTE) { AboutScreen() }
                         composable(HOTKEYS_ROUTE) { HotkeysScreen(settingsViewModel) }
                         composable(TUTORIAL_ROUTE) { TutorialScreen() }
+                        composable(THEMES_ROUTE) {
+                            val themesViewModel: ThemesViewModel = viewModel(factory = ThemesViewModel.factory(container.settings, container.themes, container.contentResolver))
+                            ThemesScreen(themesViewModel)
+                        }
                     }
                 }
                 if (maxWidth >= 600.dp) {
@@ -296,7 +308,8 @@ private fun SectionNav(sections: List<Section>, current: Section, vertical: Bool
     }
     if (vertical) {
         Column(
-            modifier = Modifier.fillMaxHeight().background(MaterialTheme.colorScheme.surface).padding(12.dp),
+            // Scrolls when the screen is short (a phone turned sideways), so every section stays reachable.
+            modifier = Modifier.fillMaxHeight().background(MaterialTheme.colorScheme.surface).verticalScroll(rememberScrollState()).padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {

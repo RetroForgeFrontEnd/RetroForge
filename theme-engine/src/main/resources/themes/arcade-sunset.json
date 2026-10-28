@@ -1,0 +1,14 @@
+{
+  "format": "retroforge-theme", "version": 1,
+  "id": "arcade-sunset", "name": "Arcade Sunset", "author": "RetroForge", "license": "CC0-1.0",
+  "description": "Late-night arcade: hot pink and sunset yellow over deep purple.",
+  "dark": {
+    "background": "#14061F", "surface": "#220B33", "surfaceVariant": "#33124A",
+    "primary": "#FF3EA5", "onPrimary": "#2A0016", "secondary": "#FFD23F", "onSecondary": "#2A2000",
+    "text": "#FBEFFF", "textMuted": "#C9A8DB", "outline": "#5A2A78", "focus": "#FFD23F"
+  },
+  "shape": { "cornerRadius": 8 },
+  "type": { "font": "sans", "headlineWeight": 900 },
+  "wordmark": { "retro": "#FF3EA5", "forge": "#FFD23F", "glow": true },
+  "layout": { "gameView": "grid", "tileAspect": "square" }
+}

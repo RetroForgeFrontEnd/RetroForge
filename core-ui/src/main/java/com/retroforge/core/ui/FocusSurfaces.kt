@@ -38,7 +38,7 @@ fun FocusCard(
         selected -> BorderStroke(2.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.6f))
         else -> BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
     }
-    val shape = RoundedCornerShape(16.dp)
+    val shape = MaterialTheme.shapes.medium
     val surfaceModifier = modifier.graphicsLayer { scaleX = scale; scaleY = scale }
     val body: @Composable () -> Unit = { Column(Modifier.padding(20.dp), content = content) }
     if (onClick != null) {
