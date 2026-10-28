@@ -70,6 +70,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import com.retroforge.player.Video
 import com.retroforge.retro.HotkeyCombo
 import java.io.File
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.rememberScrollState
@@ -103,6 +104,8 @@ class PlayerActivity : ComponentActivity() {
     private var notice by mutableStateOf<String?>(null)
     private var shape by mutableStateOf(ScreenShape.ORIGINAL)
     private var touchEnabled by mutableStateOf(true)
+    private var consoleLook by mutableStateOf(true)
+    private var pictureRect by mutableStateOf(Rect(0, 0, 0, 0))
     private enum class MenuPage { MAIN, OPTIONS, EMULATORS }
     private var menuPage by mutableStateOf(MenuPage.MAIN)
     private var fastForwardOn by mutableStateOf(false)
@@ -164,6 +167,7 @@ class PlayerActivity : ComponentActivity() {
         cores = CoreManager(File(filesDir, "cores"), "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}")
         shape = ScreenShape.of(prefs.getString("shape.$system", null))
         touchEnabled = prefs.getBoolean("touch.$system", true)
+        consoleLook = prefs.getBoolean("look.$system", true)
         savesDir = File(base, "saves/$system").apply { mkdirs() }
         statesDir = File(base, "states/$system").apply { mkdirs() }
         input = PlayerInput(
@@ -300,22 +304,36 @@ class PlayerActivity : ComponentActivity() {
                 return@launch
             }
             coreChoices.set(system, core.id)
-            val next = Intent(intent).putExtra(EXTRA_CORE_PATH, cores.file(core.id).path)
-            quitting = true
-            worker.execute {
-                if (loaded) {
-                    NativePlayer.stop()
-                    persist()
-                    NativePlayer.close()
-                    loaded = false
-                }
-                runOnUiThread {
-                    // A fresh player process for the new emulator: the relauncher (main process) starts it once this one has ended.
-                    startActivity(Intent(this@PlayerActivity, PlayerRelaunchActivity::class.java).putExtra(PlayerRelaunchActivity.EXTRA_NEXT, next))
-                    finish()
-                }
+            restartWith(Intent(intent).putExtra(EXTRA_CORE_PATH, cores.file(core.id).path))
+        }
+    }
+
+    /** Saves and closes this game, then starts the player again with [next] (another emulator or another game). */
+    private fun restartWith(next: Intent) {
+        switching = true
+        quitting = true
+        worker.execute {
+            if (loaded) {
+                NativePlayer.stop()
+                persist()
+                NativePlayer.close()
+                loaded = false
+            }
+            runOnUiThread {
+                // The relauncher (main process) starts the new player once this one has closed.
+                startActivity(Intent(this@PlayerActivity, PlayerRelaunchActivity::class.java).putExtra(PlayerRelaunchActivity.EXTRA_NEXT, next))
+                finish()
             }
         }
+    }
+
+    // Another game started from the library while this one was still open (in the background): save this one and switch.
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (intent.getStringExtra(EXTRA_URI) == this.intent.getStringExtra(EXTRA_URI) &&
+            intent.getStringExtra(EXTRA_CORE_PATH) == this.intent.getStringExtra(EXTRA_CORE_PATH)
+        ) return
+        if (!quitting) restartWith(Intent(intent))
     }
 
     private fun writeSafely(file: File, data: ByteArray) {
@@ -483,13 +501,23 @@ class PlayerActivity : ComponentActivity() {
     /** Places the picture for the current screen shape; the touchscreen mapping uses the same rectangle. */
     private fun applyViewport() {
         val av = video ?: return
-        picture = Viewport.fit(shape, surfaceWidth, surfaceHeight, av)
+        // With the console look, the picture keeps a margin for the screen surround.
+        val inset = if (consoleLook) (BEZEL_MARGIN.value * resources.displayMetrics.density).toInt() else 0
+        val fitted = Viewport.fit(shape, surfaceWidth - 2 * inset, surfaceHeight - 2 * inset, av)
+        picture = Rect(fitted.x + inset, fitted.y + inset, fitted.w, fitted.h)
+        pictureRect = picture
         if (loaded) picture.let { NativePlayer.setViewport(it.x, it.y, it.w, it.h) }
     }
 
     private fun chooseShape(next: ScreenShape) {
         shape = next
         prefs.edit().putString("shape.$system", next.name).apply()
+        applyViewport()
+    }
+
+    private fun chooseLook(on: Boolean) {
+        consoleLook = on
+        prefs.edit().putBoolean("look.$system", on).apply()
         applyViewport()
     }
 
@@ -531,19 +559,24 @@ class PlayerActivity : ComponentActivity() {
                         )
                     }
                 }
+                val skin = if (consoleLook) ConsoleSkin.forSystem(system) else null
                 if (portrait) {
                     // The picture gets the space the controls leave free (all of it when they're off), fitted and centred
                     // by the screen shape, so a tall picture like the DS's two screens never runs under the buttons.
                     Column(Modifier.fillMaxSize()) {
                         Box(Modifier.fillMaxWidth().weight(1f)) {
                             GameSurface(Modifier.fillMaxSize())
+                            skin?.let { ConsoleFrame(it, pictureRect, Modifier.fillMaxSize()) }
                         }
-                        controls(Modifier.fillMaxWidth().padding(bottom = 8.dp))
+                        Box(Modifier.fillMaxWidth().then(if (skin != null) Modifier.background(skin.bodyShade) else Modifier)) {
+                            CompositionLocalProvider(LocalConsoleSkin provides skin) { controls(Modifier.fillMaxWidth().padding(bottom = 8.dp)) }
+                        }
                     }
                 } else {
                     // Landscape: the picture uses the full height; the controls sit over it at the sides.
                     GameSurface(Modifier.fillMaxSize())
-                    controls(Modifier.fillMaxSize())
+                    skin?.let { ConsoleFrame(it, pictureRect, Modifier.fillMaxSize()) }
+                    CompositionLocalProvider(LocalConsoleSkin provides skin) { controls(Modifier.fillMaxSize()) }
                 }
             }
             if (phase == Phase.Playing && !menuOpen) {
@@ -636,6 +669,7 @@ class PlayerActivity : ComponentActivity() {
                             NativePlayer.setFastForward(fastForwardOn)
                         }, modifier = wide) { Text("Fast-forward: ${if (fastForwardOn) "On" else "Off"}") }
                         MenuButton(onClick = { chooseShape(shape.next()) }, modifier = wide) { Text("Screen shape: ${shape.label}") }
+                        MenuButton(onClick = { chooseLook(!consoleLook) }, modifier = wide) { Text("Console look: ${if (consoleLook) "On" else "Off"}") }
                         if (hasTouch) MenuButton(onClick = { chooseTouch(!touchEnabled) }, modifier = wide) {
                             Text("Touch controls: ${if (touchEnabled) "On" else "Off"}")
                         }

@@ -104,20 +104,20 @@ fun TouchControls(
             Row(Modifier.fillMaxSize().padding(horizontal = 8.dp * k, vertical = 8.dp * k), horizontalArrangement = Arrangement.SpaceBetween) {
                 Column(Modifier.fillMaxHeight(), verticalArrangement = Arrangement.SpaceBetween) {
                     layout.shoulders.getOrNull(0)?.let { (label, button) ->
-                        PadButton(label, RoundedCornerShape(10.dp), 60.dp * k, 28.dp * k, small = true, faint = true) { down -> set(10, if (down) Pad.bit(button) else 0) }
+                        PadButton(label, RoundedCornerShape(10.dp), 60.dp * k, 28.dp * k, small = true, faint = true, role = ButtonRole.SHOULDER) { down -> set(10, if (down) Pad.bit(button) else 0) }
                     } ?: Spacer(Modifier.height(32.dp * k))
                     DPad(116.dp * k, faint = true) { set(0, it) }
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp * k), verticalAlignment = Alignment.CenterVertically) {
-                        if (layout.hasSelect) PadButton("Select", RoundedCornerShape(50), 60.dp * k, 26.dp * k, small = true, faint = true) { set(8, if (it) Pad.bit(Pad.SELECT) else 0) }
-                        PadButton("☰", CircleShape, 32.dp * k, 32.dp * k, small = true, faint = true) { if (it) onMenu() }
+                        if (layout.hasSelect) PadButton("Select", RoundedCornerShape(50), 60.dp * k, 26.dp * k, small = true, faint = true, role = ButtonRole.PILL) { set(8, if (it) Pad.bit(Pad.SELECT) else 0) }
+                        PadButton("☰", CircleShape, 32.dp * k, 32.dp * k, small = true, faint = true, role = ButtonRole.PILL) { if (it) onMenu() }
                     }
                 }
                 Column(Modifier.fillMaxHeight(), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.SpaceBetween) {
                     layout.shoulders.getOrNull(1)?.let { (label, button) ->
-                        PadButton(label, RoundedCornerShape(10.dp), 60.dp * k, 28.dp * k, small = true, faint = true) { down -> set(11, if (down) Pad.bit(button) else 0) }
+                        PadButton(label, RoundedCornerShape(10.dp), 60.dp * k, 28.dp * k, small = true, faint = true, role = ButtonRole.SHOULDER) { down -> set(11, if (down) Pad.bit(button) else 0) }
                     } ?: Spacer(Modifier.height(32.dp * k))
                     FaceButtons(layout.face, 42.dp * k, faint = true) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
-                    PadButton("Start", RoundedCornerShape(50), 60.dp * k, 26.dp * k, small = true, faint = true) { set(9, if (it) Pad.bit(Pad.START) else 0) }
+                    PadButton("Start", RoundedCornerShape(50), 60.dp * k, 26.dp * k, small = true, faint = true, role = ButtonRole.PILL) { set(9, if (it) Pad.bit(Pad.START) else 0) }
                 }
             }
         }
@@ -128,18 +128,18 @@ fun TouchControls(
         Row(modifier.padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 layout.shoulders.getOrNull(0)?.let { (label, button) ->
-                    PadButton(label, RoundedCornerShape(10.dp), 64.dp, 32.dp, small = true) { down -> set(10, if (down) Pad.bit(button) else 0) }
+                    PadButton(label, RoundedCornerShape(10.dp), 64.dp, 32.dp, small = true, role = ButtonRole.SHOULDER) { down -> set(10, if (down) Pad.bit(button) else 0) }
                 }
                 DPad(132.dp) { set(0, it) }
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (layout.hasSelect) PadButton("Select", RoundedCornerShape(50), 64.dp, 30.dp, small = true) { set(8, if (it) Pad.bit(Pad.SELECT) else 0) }
-                PadButton("Start", RoundedCornerShape(50), 64.dp, 30.dp, small = true) { set(9, if (it) Pad.bit(Pad.START) else 0) }
-                PadButton("☰", CircleShape, 36.dp, 36.dp, small = true) { if (it) onMenu() }
+                if (layout.hasSelect) PadButton("Select", RoundedCornerShape(50), 64.dp, 30.dp, small = true, role = ButtonRole.PILL) { set(8, if (it) Pad.bit(Pad.SELECT) else 0) }
+                PadButton("Start", RoundedCornerShape(50), 64.dp, 30.dp, small = true, role = ButtonRole.PILL) { set(9, if (it) Pad.bit(Pad.START) else 0) }
+                PadButton("☰", CircleShape, 36.dp, 36.dp, small = true, role = ButtonRole.PILL) { if (it) onMenu() }
             }
             Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 layout.shoulders.getOrNull(1)?.let { (label, button) ->
-                    PadButton(label, RoundedCornerShape(10.dp), 64.dp, 32.dp, small = true) { down -> set(11, if (down) Pad.bit(button) else 0) }
+                    PadButton(label, RoundedCornerShape(10.dp), 64.dp, 32.dp, small = true, role = ButtonRole.SHOULDER) { down -> set(11, if (down) Pad.bit(button) else 0) }
                 }
                 FaceButtons(layout.face, 46.dp) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
             }
@@ -151,7 +151,7 @@ fun TouchControls(
         if (layout.shoulders.isNotEmpty()) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 layout.shoulders.forEachIndexed { i, (label, button) ->
-                    PadButton(label, RoundedCornerShape(12.dp), 88.dp, 44.dp) { down -> set(10 + i, if (down) Pad.bit(button) else 0) }
+                    PadButton(label, RoundedCornerShape(12.dp), 88.dp, 44.dp, role = ButtonRole.SHOULDER) { down -> set(10 + i, if (down) Pad.bit(button) else 0) }
                 }
             }
         }
@@ -161,12 +161,12 @@ fun TouchControls(
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
             if (layout.hasSelect) {
-                PadButton("Select", RoundedCornerShape(50), 76.dp, 32.dp, small = true) { set(8, if (it) Pad.bit(Pad.SELECT) else 0) }
+                PadButton("Select", RoundedCornerShape(50), 76.dp, 32.dp, small = true, role = ButtonRole.PILL) { set(8, if (it) Pad.bit(Pad.SELECT) else 0) }
                 Spacer(Modifier.width(16.dp))
             }
-            PadButton("Start", RoundedCornerShape(50), 76.dp, 32.dp, small = true) { set(9, if (it) Pad.bit(Pad.START) else 0) }
+            PadButton("Start", RoundedCornerShape(50), 76.dp, 32.dp, small = true, role = ButtonRole.PILL) { set(9, if (it) Pad.bit(Pad.START) else 0) }
             Spacer(Modifier.width(16.dp))
-            PadButton("☰", CircleShape, 40.dp, 40.dp, small = true) { if (it) onMenu() }
+            PadButton("☰", CircleShape, 40.dp, 40.dp, small = true, role = ButtonRole.PILL) { if (it) onMenu() }
         }
     }
 }
@@ -190,15 +190,47 @@ private fun FaceButtons(face: List<Pair<String, Int>>, size: Dp, faint: Boolean 
     }
 }
 
+private enum class ButtonRole { FACE, SHOULDER, PILL }
+
 @Composable
-private fun PadButton(label: String, shape: Shape, width: Dp, height: Dp, small: Boolean = false, faint: Boolean = false, onPress: (Boolean) -> Unit) {
+private fun PadButton(
+    label: String,
+    shape: Shape,
+    width: Dp,
+    height: Dp,
+    small: Boolean = false,
+    faint: Boolean = false,
+    role: ButtonRole = ButtonRole.FACE,
+    onPress: (Boolean) -> Unit,
+) {
     val pressed = remember { mutableIntStateOf(0) }
+    val skin = LocalConsoleSkin.current
+    // With a console look: solid buttons in the pad's colours (a little see-through where they sit over the picture).
+    val fill = when {
+        skin == null -> Color(0x55FFFFFF)
+        role == ButtonRole.PILL -> skin.pill
+        role == ButtonRole.SHOULDER -> skin.shoulder
+        else -> skin.face[label] ?: skin.button
+    }
+    val text = when {
+        skin == null -> Color.White
+        role == ButtonRole.PILL -> skin.pillLabel
+        role == ButtonRole.FACE && label in skin.face -> Color.White
+        else -> skin.label
+    }
+    val alpha = when {
+        skin != null && pressed.intValue == 1 -> 0.7f
+        skin != null -> if (faint) 0.8f else 1f
+        pressed.intValue == 1 -> 0.85f
+        faint -> 0.35f
+        else -> 0.5f
+    }
     Box(
         Modifier
             .size(width, height)
-            .alpha(if (pressed.intValue == 1) 0.85f else if (faint) 0.35f else 0.5f)
-            .background(Color(0x55FFFFFF), shape)
-            .border(1.5.dp, Color(0xAAFFFFFF), shape)
+            .alpha(alpha)
+            .background(fill, shape)
+            .border(1.5.dp, if (skin == null) Color(0xAAFFFFFF) else Color(0x33000000), shape)
             .pointerInput(Unit) {
                 awaitEachGesture {
                     awaitFirstDown(requireUnconsumed = false)
@@ -213,17 +245,18 @@ private fun PadButton(label: String, shape: Shape, width: Dp, height: Dp, small:
             },
         contentAlignment = Alignment.Center,
     ) {
-        Text(label, color = Color.White, fontSize = if (small) 12.sp else 20.sp, fontWeight = FontWeight.Bold)
+        Text(label, color = text, fontSize = if (small) 12.sp else 20.sp, fontWeight = FontWeight.Bold)
     }
 }
 
 /** Eight-way d-pad: the direction follows the finger while it's down, with a small dead zone in the middle. */
 @Composable
 private fun DPad(size: Dp, faint: Boolean = false, onMask: (Int) -> Unit) {
+    val skin = LocalConsoleSkin.current
     Box(
         Modifier
             .size(size)
-            .alpha(if (faint) 0.35f else 0.5f)
+            .alpha(if (skin != null) (if (faint) 0.8f else 1f) else if (faint) 0.35f else 0.5f)
             .pointerInput(Unit) {
                 fun directions(at: Offset): Int {
                     val x = (at.x - this.size.width / 2f) / (this.size.width / 2f)
@@ -249,7 +282,8 @@ private fun DPad(size: Dp, faint: Boolean = false, onMask: (Int) -> Unit) {
                 }
             },
     ) {
-        val arm = Modifier.background(Color(0x55FFFFFF), RoundedCornerShape(10.dp)).border(1.5.dp, Color(0xAAFFFFFF), RoundedCornerShape(10.dp))
+        val arm = Modifier.background(skin?.dpad ?: Color(0x55FFFFFF), RoundedCornerShape(10.dp))
+            .border(1.5.dp, if (skin == null) Color(0xAAFFFFFF) else Color(0x33000000), RoundedCornerShape(10.dp))
         Box(arm.size(size / 3, size).align(Alignment.Center))
         Box(arm.size(size, size / 3).align(Alignment.Center))
     }

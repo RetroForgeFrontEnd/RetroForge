@@ -184,6 +184,13 @@ S22 (arm64) and the Android emulator (x86_64, software GPU). Debug build.
 - Pause menu: Genesis Plus GX's own settings listed (System Region changed auto → ntsc-u). **Switch emulator** Genesis Plus GX → PicoDrive → back: game restarts in the new emulator and the choice is remembered on the game page and in Settings → Built-in player. Found and fixed: the first switch died (new player started in the old player's process, which then ended itself).
 - Not yet tested: switching on the S22, melonDS (needs BIOS), Settings per-system emulator chips by hand, a real TV box and a real controller.
 
+### 2026-10-28: Console look (emulator)
+
+- SNES (Snes9x): light grey body, dark screen surround, red/yellow/green/blue face buttons; portrait and landscape (picture full height in its surround, controls on the body at the sides).
+- NES (FCEUmm): grey top, dark lower panel, red B/A, black d-pad.
+- Pause menu "Console look: On/Off" switches live (plain see-through controls when off) and is kept per system.
+- Not yet checked by eye: GBA, GB/GBC, Mega Drive, Master System, Game Gear, PC Engine and DS skins (colours defined, same drawing code). Not testable from adb: starting a second game while one is open in the background (the player now saves and switches to the new game).
+
 ## Release test plan (run in the final stage, before any release)
 
 Everything is re-tested together on real hardware, so nothing that worked earlier is broken by later changes. Record each result here with date, device and evidence.
