@@ -1,90 +1,41 @@
 # RetroForge — Project Status
 
-Last updated: 2026-10-28 (ROM manager, standalone emulators, hotkeys, resume)
+Last updated: 2026-10-28 (built-in player, console look, TV/controller use, PC wording)
 
-This file is the single source of truth for what exists, what has been verified and what is blocked. Detailed findings live in the linked documents.
+The single source of truth for what exists, what has been verified and what is blocked, by the phases of the original brief. Detail lives in the linked documents; every test run is logged in [TESTING.md](TESTING.md).
 
-## Phase summary
+Build: debug and release (R8) build verified 2026-10-28; release build tested with the native player. All unit tests pass. Version 0.5.0-beta. Everything is committed on `main`.
 
-| Phase | Status |
+## Phases
+
+| Phase (from the brief) | Status |
 |---|---|
-| 1 — Environment and feasibility audit | Done. PC approach **approved 2026-10-27: separate DroidDeck app via its launch intent.** |
-| 2 — PC runtime proof of concept | Blocked on a physical device (see [pc-runtime-proof-of-concept.md](pc-runtime-proof-of-concept.md)) |
-| 3 — Android foundation (Milestone A) | **Done: build verified, unit tested, emulator tested.** Physical device / TV / gamepad not tested. |
-| 4 — Retro library (Milestone B) | **Done: unit tested, real-collection tested (28,274 games, read-only), emulator tested via SAF.** USB/OTG drives and very large SAF trees not yet tried on a real device |
-| Links tab | Done: six verified YouTube channels |
-| Setup wizard | **Done, emulator tested**: games folder, RetroArch, cores your library needs, BIOS check against libretro checksums and copy into RetroArch |
-| Cover downloader | **Built**: free libretro box art (per game and per-system batch, fuzzy matching) and SteamGridDB custom covers with the user's own key. Emulator tested (libretro); SteamGridDB awaits a key. [COVER_ART.md](COVER_ART.md) |
-| ROM manager | **Built; unit tested; emulator tested**: duplicates (checksum-compared), compression (CHD verified by chdman, zip), multi-disc playlists, delete to `_deleted`, free up space, undo. Renaming to No-Intro names not built yet. [ROM_MANAGER.md](ROM_MANAGER.md) |
-| Emulators and hotkeys | **Built; emulator tested**: 91 of 121 RetroBat systems have an Android RetroArch core; 21 free standalone emulators (56 systems) with Get/Obtainium links; per-system default; RetroArch quit/menu combos, hold-R2 fast-forward and auto save/load set without editing RetroArch's own config. [SYSTEM_COVERAGE.md](SYSTEM_COVERAGE.md), [EMULATORS_AND_HOTKEYS.md](EMULATORS_AND_HOTKEYS.md) |
-| About page, ROM hacks tab name | Done |
-| Favourites and playlists | **Built; emulator tested**: favourite any game; custom playlists (make, add/remove from a game's page, reorder, rename, delete); shown on the Retro screen. Database v4 (auto-migration tested by upgrading the installed app) |
-| Tutorial and user guide | **Done, emulator tested**: Settings → How to use RetroForge (12 topics, Retro Game Corps guides linked); [USER_GUIDE.md](USER_GUIDE.md) generated from it |
-| Theme engine (phase 10, first part) | **Built; unit tested; emulator tested**: documented JSON format ([retroforge-theme-format.md](retroforge-theme-format.md)), 5 original themes, theme manager with live previews, import of theme files and of colours from ES-DE/RetroBat themes ([retrobat-theme-compatibility.md](retrobat-theme-compatibility.md)), game lists follow the theme (grid/list, tile shape). Next: images, fonts, system carousel, motion |
-| SD cards | **Games and BIOS on an SD card launch-tested** (emulator's virtual SD card); a real phone's SD card still to test |
-| 5 — First real retro launch (Milestone D) | **Done on emulator**: Play from RetroForge's game page starts RetroArch (Star Fox launch-tested), play history recorded. PS1 launch-tested once the core and the user's own BIOS were in place. Real device still needed |
-| Emulation path check (RetroArch, outside RetroForge) | 6 ROMs from your collection launch-tested on the emulator (SNES ×3 incl. `.7z`, Mega Drive, GBA, NES with gameplay): [EMULATOR_COMPATIBILITY.md](EMULATOR_COMPATIBILITY.md) |
-| ROM Patcher (IPS/BPS/UPS, zip/7z input) | **Built; 29 unit tests; emulator tested.** Patch chains, readmes and multi-patch archives work; a real 2-patch hack chain (Giant Mario → 2B) is gameplay-tested. Next: download a patch from a link. [FEATURE_PROPOSAL_ROM_TOOLS.md](FEATURE_PROPOSAL_ROM_TOOLS.md) |
-| Hacks tab (catalogues) | **Built; 7 unit tests; emulator tested.** Built-in starter catalogue (5 hacks, links to romhacking.net pages); add catalogues from file or https link. [hack-catalogue-format.md](hack-catalogue-format.md). romhacking.net isn't scraped: it is read-only since Aug 2024 and its robots.txt disallows its download and listing pages |
-| ROM sorting / renaming | Duplicates done; renaming to No-Intro names still a proposal |
-| Systems up to PS2 | Launch routes for every RetroBat system that has one on Android ([SYSTEM_COVERAGE.md](SYSTEM_COVERAGE.md)); only SNES, NES and PS1 launch-tested. Standalone emulators (PS2, GameCube, 3DS …) need a real ARM64 phone to test |
+| 1 — Environment and feasibility audit | **Done.** RetroBat audited read-only; DroidDeck audited; risks documented ([RISK_ASSESSMENT.md](RISK_ASSESSMENT.md)) |
+| 2 — PC runtime proof of concept | **Blocked on hardware.** Approved approach: separate runtime app. The S22 (Xclipse) can't run DroidDeck; needs an Adreno 730+ device, or a GameNative/Winlator test on the S22 ([retroforge-pc-architecture.md](retroforge-pc-architecture.md)) |
+| 3 — Android foundation | **Done; device tested** (emulator, Galaxy S22). Controller-only use tested on the emulator; no real TV box or physical controller yet |
+| 4 — Retro library | **Done.** SAF folders (phone, SD card), scanner (28,274-game real collection read-only), gamelist.xml, favourites, playlists, search, filters. USB/OTG not yet tried |
+| 5 — First real retro launch | **Done on device.** Built-in player: GBA and DS on the S22; SNES, NES, Mega Drive on the emulator. RetroArch and standalone launches tested on the emulator |
+| 6 — Unified experience | **Partly.** Retro library unified across routes (built-in, RetroArch, standalone); PC games aren't in the library yet (Phase 8) |
+| 7 — Emulator expansion | **Ongoing.** Built-in player: 21 cartridge systems, several emulators each, switchable mid-game. RetroArch: 91 of 121 RetroBat systems. 21 standalone emulators. Untested: PS2, 3DS, Wii, Switch standalone apps ([SYSTEM_COVERAGE.md](SYSTEM_COVERAGE.md)) |
+| 8 — PC subsystem | **Minimal.** GPU check, DroidDeck detect/open, links to GameNative/Winlator on other GPUs. No PC game started from RetroForge yet ([pc-game-compatibility.md](pc-game-compatibility.md)) |
+| 9 — Artwork and metadata | **Built.** libretro box art, SteamGridDB (your key), ScreenScraper (waits for RetroForge's developer ID), your own images. Manual metadata editing (titles, descriptions) **not built** |
+| 10 — Theme engine | **Built.** Documented format, 8 themes with their own home layouts, previews, ES-DE/RetroBat colour import ([retroforge-theme-format.md](retroforge-theme-format.md)). Not yet: theme images/logos import, interface sounds |
+| 11 — Controllers, graphics, firmware, saves | **Mostly built.** Controller and TV-remote navigation; player screen shapes, filters (sharp/smooth/CRT/LCD), console look; BIOS check and copy for RetroArch and the built-in player; saves and per-emulator states ([SHADERS_AND_GRAPHICS.md](SHADERS_AND_GRAPHICS.md), [BIOS_AND_FIRMWARE.md](BIOS_AND_FIRMWARE.md)). Not yet: button remapping, save backup/export, performance overlay |
+| 12 — Device and performance testing | **Started.** 1 of 3 target devices (Galaxy S22). Needed: a mid-range phone, a handheld/tablet, a TV box, a real controller |
+| 13 — Release readiness | **Beta prep done** ([RELEASE_PLAN.md](RELEASE_PLAN.md)): licences screen, privacy policy, bug reports, signing setup. Still needed from you: release key, support links, issues URL, privacy policy web page. Final full test pass still to run |
 
-## Milestone A — what exists
+## Also built (asked for along the way)
 
-- Gradle multi-module project: `app`, `core-ui`, `core-settings`, `pc` (see [ARCHITECTURE.md](ARCHITECTURE.md)).
-- Branding from the RetroForge key art: navy background, neon orange/cyan two-tone wordmark, tagline, launcher icon, Android TV banner.
-- Sections Home / Retro / PC / Settings; bottom bar on phones, side rail on wide screens and TV.
-- Controller/keyboard navigation with visible focus rings; A/B/L1/R1 mapping ([CONTROLLER_SUPPORT.md](CONTROLLER_SUPPORT.md)).
-- Settings (persisted with DataStore): theme System/Dark/Light; show/hide PC section.
-- PC section, real data only: GPU detection (GL renderer, kgsl sysfs, SoC), classification against DroidDeck's published requirements, DroidDeck install detection and launch-intent check, "Open DroidDeck" when installed, and the official releases link when not.
-- Retro section: clearly labelled "Not built yet" states. **No fake launch buttons anywhere.**
+ROM manager (duplicates, CHD/zip compression verified against chdman, multi-disc playlists, delete, undo) · ROM patcher and ROM hacks catalogues · hotkeys (RetroArch and built-in player), hold-R2 fast-forward, carry on where you left off · setup wizard · tutorial, About, Links · Obtainium links.
 
-## Evidence
+## Waiting on you
 
-| Item | Status | Evidence |
-|---|---|---|
-| Debug build | Build verified | `./gradlew assembleDebug`, 2026-10-27 |
-| Unit tests (10) | Unit tested, all pass | [TESTING.md](TESTING.md) |
-| Lint | 0 errors | `lintDebug` |
-| UI, navigation, settings persistence | Device tested (emulator, API 37) | [TESTING.md](TESTING.md) manual log |
-| GPU detection on Adreno hardware | **Not tested** | needs physical device |
-| DroidDeck detection when installed | **Not tested** | needs DroidDeck installed |
-| Physical gamepad, Android TV | **Not tested** | |
-
-## Environment (verified 2026-10-27)
-
-| Item | Finding |
-|---|---|
-| Project | `F:\RetroForge`, Git repo initialised (branch `main`), **nothing committed yet** |
-| Android Studio | Installed; bundled JBR = OpenJDK 25.0.3 (used for builds) |
-| Android SDK | `C:\Users\darre\AppData\Local\Android\Sdk`: platform 37, build-tools 36, platform-tools, emulator |
-| Emulator | AVD `Medium_Phone_API_37.0` (x86_64), working |
-| Physical Android device | **None connected** |
-| RetroBat | `G:\Retrobat` 8.3.1.1, read-only audit done ([retrobat-installation-inventory.md](retrobat-installation-inventory.md)) |
-| DroidDeck source | Audited at commit `4f58230` ([droiddeck-architecture-audit.md](droiddeck-architecture-audit.md)) |
-| Docker, Rust, gh | Not installed (not needed with the approved approach) |
-| Disk | `G:` 95 % full (52 GB free) |
-
-## Open items needing your input
-
-1. **Target devices** (answered 2026-10-27): all Android device types, including dual-screen handhelds such as the AYN Thor; possibly iOS later. Still needed: **one physical device** for real testing (PC/GPU check, emulator performance, controllers).
-2. **How the device reaches your ROMs:** USB drive, SD-card subset, or network share ([ROM_PORTABILITY.md](ROM_PORTABILITY.md)).
-3. **Licence for RetroForge itself**, still open.
-4. **Key art file:** to show the artwork in the app, save it in `F:\RetroForge\branding\` and confirm you have the right to use it (e.g. you made or commissioned it).
-5. **Commit:** Milestone A is uncommitted, awaiting your OK.
-
-## Observations about your RetroBat install (no action taken)
-
-- `emulators/retroarch/retroarch.cfg` still references `D:\Retrobat` (8 lines); RetroBat normally rewrites these at launch.
-- `roms/ps2` has 37 `.gz` files plus 37 matching `.tmp` files, which looks like an interrupted conversion.
-- `G:` is 95 % full.
+1. **Devices:** an Adreno 730+ device for DroidDeck, or OK to test GameNative on your S22; a TV box and a Bluetooth controller if you have them.
+2. **PC test game:** transfer the TCG Card Shop Simulator files to the phone when ready.
+3. **ScreenScraper developer ID** (requested by you).
+4. **Release:** create the release key, add support links and the GitHub issues URL to `local.properties`, publish the privacy policy page.
+5. **Licence for RetroForge itself** (still open; the built-in player keeps the choice open: no GPL code is linked).
 
 ## Documents
 
-Current: [ARCHITECTURE.md](ARCHITECTURE.md), [BUILD_AND_INSTALL.md](BUILD_AND_INSTALL.md), [TESTING.md](TESTING.md), [CONTROLLER_SUPPORT.md](CONTROLLER_SUPPORT.md), [THIRD_PARTY_LICENCES.md](THIRD_PARTY_LICENCES.md), [RISK_ASSESSMENT.md](RISK_ASSESSMENT.md), [ROM_PORTABILITY.md](ROM_PORTABILITY.md), [droiddeck-architecture-audit.md](droiddeck-architecture-audit.md), [pc-runtime-proof-of-concept.md](pc-runtime-proof-of-concept.md), [pc-runtime-licences.md](pc-runtime-licences.md), [retrobat-installation-inventory.md](retrobat-installation-inventory.md), [retrobat-system-emulator-matrix.md](retrobat-system-emulator-matrix.md), [third-party-dependencies-and-licences.md](third-party-dependencies-and-licences.md), [reverse-engineering-gaps.md](reverse-engineering-gaps.md).
-
-Not yet written (each lands with its phase): USER_GUIDE, SECURITY_AND_PRIVACY (Milestone B, when storage access arrives), EMULATOR_INTEGRATION_GUIDE / EMULATOR_COMPATIBILITY (Milestone D), SHADERS_AND_GRAPHICS, BIOS_AND_FIRMWARE (Phase 11), theme-format docs (Phase 10), retroforge-pc-architecture / pc-game-compatibility (after the PoC), the remaining RetroBat analysis docs (Phases 4–5).
-
-## Next milestone: B — read-only library scanner
-
-Folder picker (Storage Access Framework) → background recursive scan → Room database, with platform rules seeded from your RetroBat folder names and extensions. It will skip media subfolders, handle `.m3u`, optionally import `gamelist.xml` read-only, and come with fixture-based tests. Testable on the emulator with dummy files; your real collection needs the device or a copied subset.
+[ARCHITECTURE.md](ARCHITECTURE.md) · [BUILD_AND_INSTALL.md](BUILD_AND_INSTALL.md) · [USER_GUIDE.md](USER_GUIDE.md) · [ROM_PORTABILITY.md](ROM_PORTABILITY.md) · [EMULATOR_INTEGRATION_GUIDE.md](EMULATOR_INTEGRATION_GUIDE.md) · [EMULATOR_COMPATIBILITY.md](EMULATOR_COMPATIBILITY.md) · [EMULATORS_AND_HOTKEYS.md](EMULATORS_AND_HOTKEYS.md) · [SYSTEM_COVERAGE.md](SYSTEM_COVERAGE.md) · [CONTROLLER_SUPPORT.md](CONTROLLER_SUPPORT.md) · [SHADERS_AND_GRAPHICS.md](SHADERS_AND_GRAPHICS.md) · [BIOS_AND_FIRMWARE.md](BIOS_AND_FIRMWARE.md) · [SECURITY_AND_PRIVACY.md](SECURITY_AND_PRIVACY.md) · [PRIVACY_POLICY.md](PRIVACY_POLICY.md) · [TESTING.md](TESTING.md) · [THIRD_PARTY_LICENCES.md](THIRD_PARTY_LICENCES.md) · [ROM_MANAGER.md](ROM_MANAGER.md) · [COVER_ART.md](COVER_ART.md) · [RELEASE_PLAN.md](RELEASE_PLAN.md) · [retroforge-theme-format.md](retroforge-theme-format.md) · [retrobat-theme-compatibility.md](retrobat-theme-compatibility.md) · [droiddeck-architecture-audit.md](droiddeck-architecture-audit.md) · [retroforge-pc-architecture.md](retroforge-pc-architecture.md) · [pc-runtime-licences.md](pc-runtime-licences.md) · [pc-game-compatibility.md](pc-game-compatibility.md) · [pc-runtime-proof-of-concept.md](pc-runtime-proof-of-concept.md) · [RISK_ASSESSMENT.md](RISK_ASSESSMENT.md)
