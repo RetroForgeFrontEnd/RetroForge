@@ -6,4 +6,4 @@ target_compile_features(retroforge_player PRIVATE cxx_std_17)
 target_compile_options(retroforge_player PRIVATE -Wall -Wno-unused-parameter)
 # 16 KB pages (Android 15+ devices that use them).
 target_link_options(retroforge_player PRIVATE "-Wl,-z,max-page-size=16384")
-target_link_libraries(retroforge_player android log EGL GLESv2 aaudio dl)
+target_link_libraries(retroforge_player android log EGL GLESv3 aaudio dl)

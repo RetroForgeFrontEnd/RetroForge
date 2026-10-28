@@ -11,7 +11,7 @@
 #include <android/native_window_jni.h>
 #include <aaudio/AAudio.h>
 #include <EGL/egl.h>
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
 
 #include <algorithm>
 #include <atomic>
@@ -26,7 +26,6 @@
 #include <set>
 #include <string>
 #include <thread>
-#include <set>
 #include <vector>
 
 #include "libretro.h"
@@ -136,11 +135,20 @@ struct Player {
     EGLSurface surface = EGL_NO_SURFACE;
     ANativeWindow *window = nullptr;
     GLuint program = 0, texture = 0;
-    GLint uTexSize = -1, uOutSize = -1, uFilter = -1;
+    GLint uTexSize = -1, uOutSize = -1, uSrcSize = -1, uFilter = -1;
     std::atomic<int> filter{0};
     unsigned texW = 0, texH = 0;
     bool hasFrame = false;
     std::vector<uint8_t> staging;
+
+    // Hardware rendering: cores that draw with OpenGL ES (N64, PSP, Dreamcast …) draw into hwFbo, which is then
+    // drawn to the screen like a software frame. The context is GLES 3 when such a core asked for it.
+    retro_hw_render_callback hw{};
+    bool hwRequested = false, hwReady = false, hwFrame = false;
+    GLuint hwFbo = 0, hwTexture = 0, hwDepth = 0;
+    unsigned hwW = 0, hwH = 0;       // framebuffer size (the core's largest picture)
+    unsigned frameW = 0, frameH = 0; // the part of it the last frame used
+    int glesVersion = 2;
 
     // Audio.
     AAudioStream *stream = nullptr;
@@ -189,6 +197,16 @@ std::string defaultOf(const char *value) {
     std::string options = semi == std::string::npos ? v : v.substr(semi + 2);
     size_t bar = options.find('|');
     return bar == std::string::npos ? options : options.substr(0, bar);
+}
+
+uintptr_t hwFramebuffer() { return P ? P->hwFbo : 0; }
+
+retro_proc_address_t hwProcAddress(const char *sym) {
+    // Core GL ES functions from the library itself (some drivers' eglGetProcAddress only knows extensions).
+    static void *gles = dlopen("libGLESv3.so", RTLD_NOW | RTLD_LOCAL);
+    void *f = gles ? dlsym(gles, sym) : nullptr;
+    if (!f) f = reinterpret_cast<void *>(eglGetProcAddress(sym));
+    return reinterpret_cast<retro_proc_address_t>(f);
 }
 
 bool environment(unsigned cmd, void *data) {
@@ -297,6 +315,25 @@ bool environment(unsigned cmd, void *data) {
             if (data) std::memcpy(&P->disks, data, sizeof(retro_disk_control_callback));
             return true;
         }
+        case RETRO_ENVIRONMENT_SET_HW_RENDER: {
+            // OpenGL ES 2 or 3 only (desktop OpenGL doesn't exist on Android; Vulkan isn't offered yet).
+            auto *hw = static_cast<retro_hw_render_callback *>(data);
+            bool gles = hw->context_type == RETRO_HW_CONTEXT_OPENGLES2 || hw->context_type == RETRO_HW_CONTEXT_OPENGLES3 ||
+                        (hw->context_type == RETRO_HW_CONTEXT_OPENGLES_VERSION && hw->version_major <= 3);
+            LOGI("core asked for GPU rendering, type %d %u.%u: %s", hw->context_type, hw->version_major, hw->version_minor,
+                 gles ? "offered" : "not offered");
+            if (!gles) return false;
+            hw->get_current_framebuffer = hwFramebuffer;
+            hw->get_proc_address = hwProcAddress;
+            P->hw = *hw;
+            P->hwRequested = true;
+            return true;
+        }
+        case RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER:
+            *static_cast<unsigned *>(data) = RETRO_HW_CONTEXT_OPENGLES3;
+            return true;
+        case RETRO_ENVIRONMENT_SET_HW_SHARED_CONTEXT:
+            return true;
         case RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
         case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
         case RETRO_ENVIRONMENT_SET_CONTROLLER_INFO:
@@ -334,6 +371,7 @@ precision mediump float;
 uniform sampler2D uTex;
 uniform vec2 uTexSize;
 uniform vec2 uOutSize;
+uniform vec2 uSrcSize;
 uniform int uFilter;
 varying vec2 vUv;
 void main() {
@@ -342,7 +380,7 @@ void main() {
         return;
     }
     vec2 texel = vUv * uTexSize;
-    vec2 scale = max(floor(uOutSize / uTexSize), vec2(1.0));
+    vec2 scale = max(floor(uOutSize / uSrcSize), vec2(1.0));
     vec2 region = 0.5 - 0.5 / scale;
     vec2 centre = fract(texel) - 0.5;
     vec2 f = (centre - clamp(centre, -region, region)) * scale + 0.5;
@@ -375,13 +413,20 @@ bool eglStart() {
     Player &p = *P;
     p.display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if (p.display == EGL_NO_DISPLAY || !eglInitialize(p.display, nullptr, nullptr)) return false;
-    const EGLint attrs[] = {EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-                            EGL_RED_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_BLUE_SIZE, 8, EGL_NONE};
-    EGLint count = 0;
-    if (!eglChooseConfig(p.display, attrs, &p.config, 1, &count) || count == 0) return false;
-    const EGLint ctx[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
-    p.context = eglCreateContext(p.display, p.config, EGL_NO_CONTEXT, ctx);
-    return p.context != EGL_NO_CONTEXT;
+    // GPU cores get OpenGL ES 3 (which also runs their ES 2 code); software cores only need ES 2.
+    for (int version : {p.hwRequested ? 3 : 2, 2}) {
+        const EGLint attrs[] = {EGL_RENDERABLE_TYPE, version == 3 ? 0x40 /* EGL_OPENGL_ES3_BIT_KHR */ : EGL_OPENGL_ES2_BIT,
+                                EGL_SURFACE_TYPE, EGL_WINDOW_BIT, EGL_RED_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_BLUE_SIZE, 8, EGL_NONE};
+        EGLint count = 0;
+        if (!eglChooseConfig(p.display, attrs, &p.config, 1, &count) || count == 0) continue;
+        const EGLint ctx[] = {EGL_CONTEXT_CLIENT_VERSION, version, EGL_NONE};
+        p.context = eglCreateContext(p.display, p.config, EGL_NO_CONTEXT, ctx);
+        if (p.context != EGL_NO_CONTEXT) {
+            p.glesVersion = version;
+            return true;
+        }
+    }
+    return false;
 }
 
 void glSetup() {
@@ -394,6 +439,7 @@ void glSetup() {
     glLinkProgram(p.program);
     p.uTexSize = glGetUniformLocation(p.program, "uTexSize");
     p.uOutSize = glGetUniformLocation(p.program, "uOutSize");
+    p.uSrcSize = glGetUniformLocation(p.program, "uSrcSize");
     p.uFilter = glGetUniformLocation(p.program, "uFilter");
     glGenTextures(1, &p.texture);
     glBindTexture(GL_TEXTURE_2D, p.texture);
@@ -402,6 +448,76 @@ void glSetup() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     p.texW = p.texH = 0;
+}
+
+// (Re)sizes the GPU core's framebuffer to the core's largest picture.
+void hwResize() {
+    Player &p = *P;
+    unsigned w = std::max(1u, std::max(p.av.geometry.max_width, p.av.geometry.base_width));
+    unsigned h = std::max(1u, std::max(p.av.geometry.max_height, p.av.geometry.base_height));
+    if (w == p.hwW && h == p.hwH) return;
+    glBindTexture(GL_TEXTURE_2D, p.hwTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glBindFramebuffer(GL_FRAMEBUFFER, p.hwFbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, p.hwTexture, 0);
+    if (p.hw.depth) {
+        glBindRenderbuffer(GL_RENDERBUFFER, p.hwDepth);
+        glRenderbufferStorage(GL_RENDERBUFFER, p.hw.stencil ? GL_DEPTH24_STENCIL8 : GL_DEPTH_COMPONENT24, w, h);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, p.hw.stencil ? GL_DEPTH_STENCIL_ATTACHMENT : GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, p.hwDepth);
+    }
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (status != GL_FRAMEBUFFER_COMPLETE) LOGE("GPU framebuffer %ux%u incomplete: 0x%x", w, h, status);
+    glViewport(0, 0, w, h);
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    p.hwW = w;
+    p.hwH = h;
+}
+
+// Creates the framebuffer and tells the core its GL context is ready (on the core thread, context current).
+void hwSetup() {
+    Player &p = *P;
+    glGenFramebuffers(1, &p.hwFbo);
+    glGenTextures(1, &p.hwTexture);
+    glBindTexture(GL_TEXTURE_2D, p.hwTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    if (p.hw.depth) glGenRenderbuffers(1, &p.hwDepth);
+    hwResize();
+    LOGI("GPU rendering ready: OpenGL ES %d, framebuffer %ux%u%s", p.glesVersion, p.hwW, p.hwH, p.hw.depth ? " with depth" : "");
+    if (p.hw.context_reset) {
+        std::lock_guard<std::mutex> lock(p.coreMutex);
+        p.hw.context_reset();
+    }
+    p.hwReady = true;
+}
+
+// Puts back the GL state the player's own drawing relies on, whatever the core left behind.
+void restoreGlState() {
+    Player &p = *P;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    if (p.glesVersion >= 3) {
+        glBindVertexArray(0);
+        glBindSampler(0, 0);
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_STENCIL_TEST);
+    glDisable(GL_BLEND);
+    glDisable(GL_SCISSOR_TEST);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DITHER);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glActiveTexture(GL_TEXTURE0);
+    GLint attribs = 0;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &attribs);
+    for (GLint i = 2; i < attribs; i++) glDisableVertexAttribArray(i);
 }
 
 void releaseSurface() {
@@ -432,6 +548,7 @@ void applyWindowChange() {
             if (p.surface != EGL_NO_SURFACE && eglMakeCurrent(p.display, p.surface, p.surface, p.context)) {
                 eglSwapInterval(p.display, 1);
                 if (p.program == 0) glSetup();
+                if (p.hwRequested && !p.hwReady) hwSetup();
                 p.hasFrame = false;
             } else {
                 LOGE("EGL surface failed");
@@ -449,7 +566,16 @@ void videoRefresh(const void *data, unsigned width, unsigned height, size_t pitc
         framesLogged++;
         LOGI("frame %ux%u pitch %zu format %d%s", width, height, pitch, static_cast<int>(p.format), data ? "" : " (no data)");
     }
+    if (data == RETRO_HW_FRAME_BUFFER_VALID) {
+        // Drawn by the core into hwFbo: only remember how much of it this frame used.
+        p.frameW = width;
+        p.frameH = height;
+        p.hwFrame = true;
+        p.hasFrame = true;
+        return;
+    }
     if (!data || p.surface == EGL_NO_SURFACE || width == 0 || height == 0) return; // duplicate frame: keep the last
+    p.hwFrame = false;
     GLenum glFormat, glType;
     if (p.format == RETRO_PIXEL_FORMAT_XRGB8888) {
         p.staging.resize(width * height * 4);
@@ -496,6 +622,7 @@ void videoRefresh(const void *data, unsigned width, unsigned height, size_t pitc
 void present() {
     Player &p = *P;
     if (p.surface == EGL_NO_SURFACE) return;
+    if (p.hwRequested) restoreGlState();
     EGLint sw = 0, sh = 0;
     eglQuerySurface(p.display, p.surface, EGL_WIDTH, &sw);
     eglQuerySurface(p.display, p.surface, EGL_HEIGHT, &sh);
@@ -511,7 +638,8 @@ void present() {
             vh = p.viewH;
             vy = sh - (p.viewY + vh);
         } else {
-            float aspect = p.av.geometry.aspect_ratio > 0 ? p.av.geometry.aspect_ratio : float(p.texW) / float(p.texH);
+            unsigned fw = p.hwFrame ? p.frameW : p.texW, fh = p.hwFrame ? p.frameH : p.texH;
+            float aspect = p.av.geometry.aspect_ratio > 0 ? p.av.geometry.aspect_ratio : float(fw) / float(fh);
             vw = sw;
             vh = int(sw / aspect);
             if (vh > sh) {
@@ -522,12 +650,27 @@ void present() {
             vy = (sh - vh) / 2;
         }
         glViewport(vx, vy, vw, vh);
-        static const GLfloat quad[] = {-1, -1, 0, 1, 1, -1, 1, 1, -1, 1, 0, 0, 1, 1, 1, 0};
+        // Software frames are stored top row first; a GPU core's framebuffer is bottom row first (unless it says
+        // otherwise) and only partly used, so the corners pick out that part.
+        GLfloat u = 1, top = 0, bottom = 1;
+        if (p.hwFrame) {
+            u = float(p.frameW) / float(p.hwW);
+            float v = float(p.frameH) / float(p.hwH);
+            top = p.hw.bottom_left_origin ? v : 0;
+            bottom = p.hw.bottom_left_origin ? 0 : v;
+        }
+        const GLfloat quad[] = {-1, -1, 0, bottom, 1, -1, u, bottom, -1, 1, 0, top, 1, 1, u, top};
         glUseProgram(p.program);
-        glUniform2f(p.uTexSize, float(p.texW), float(p.texH));
+        if (p.hwFrame) {
+            glUniform2f(p.uTexSize, float(p.hwW), float(p.hwH));
+            glUniform2f(p.uSrcSize, float(p.frameW), float(p.frameH));
+        } else {
+            glUniform2f(p.uTexSize, float(p.texW), float(p.texH));
+            glUniform2f(p.uSrcSize, float(p.texW), float(p.texH));
+        }
         glUniform2f(p.uOutSize, float(vw), float(vh));
         glUniform1i(p.uFilter, p.filter);
-        glBindTexture(GL_TEXTURE_2D, p.texture);
+        glBindTexture(GL_TEXTURE_2D, p.hwFrame ? p.hwTexture : p.texture);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), quad);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), quad + 2);
         glEnableVertexAttribArray(0);
@@ -649,10 +792,15 @@ void runLoop() {
     while (p.running) {
         applyWindowChange();
         if (p.audioLost) audioOpen();
-        if (p.paused || p.surface == EGL_NO_SURFACE) {
+        if (p.paused || p.surface == EGL_NO_SURFACE || (p.hwRequested && !p.hwReady)) {
             std::this_thread::sleep_for(std::chrono::milliseconds(16));
             next = clock::now();
             continue;
+        }
+        if (p.hwRequested) {
+            hwResize(); // a no-op unless the core's picture grew
+            glBindFramebuffer(GL_FRAMEBUFFER, p.hwFbo);
+            glViewport(0, 0, p.hwW, p.hwH);
         }
         {
             std::lock_guard<std::mutex> lock(p.coreMutex);
@@ -677,6 +825,10 @@ void runLoop() {
             if (next < now - std::chrono::milliseconds(100)) next = now;
             std::this_thread::sleep_until(next);
         }
+    }
+    if (p.hwReady && p.surface != EGL_NO_SURFACE && p.hw.context_destroy) {
+        std::lock_guard<std::mutex> lock(p.coreMutex);
+        p.hw.context_destroy();
     }
     releaseSurface();
     if (P->context != EGL_NO_CONTEXT) {

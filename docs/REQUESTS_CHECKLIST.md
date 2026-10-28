@@ -82,3 +82,6 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | GPU detector, custom GPU driver support and downloads | ✅ GPU check + Turnip list/download for apps with a driver manager (tested on the emulator); ❌ our player loading them (needs Vulkan GPU rendering first) |
 | Saturn in the built-in player | 🟡 experimental (Yabause: 1 of 2 test games boots); YabaSanshiro after GPU rendering; RetroArch and Yaba Sanshiro 2 offered |
 | Tester guide and email to Mr Sujano | ✅ docs/TESTER_GUIDE.md; email in Documents (Word) |
+| GPU rendering in the built-in player (N64, PSP, Dreamcast, GameCube, YabaSanshiro) | 🟡 OpenGL ES framebuffer support built (software games unaffected); next: add the cores and test them; Vulkan later |
+| Short demo video for Mr Sujano | ❌ next session (emulator screen recording) |
+| Bigger portrait picture for older systems | ⛔ waiting for your choice (zoom/crop vs bigger controls) |
