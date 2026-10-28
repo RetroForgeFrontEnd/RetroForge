@@ -42,6 +42,7 @@ fun SettingsScreen(
     onOpenSetup: () -> Unit,
     onOpenAbout: () -> Unit,
     onOpenHotkeys: () -> Unit,
+    onOpenGpu: () -> Unit,
     onOpenTutorial: () -> Unit,
     onOpenThemes: () -> Unit,
     onOpenLicences: () -> Unit,
@@ -102,6 +103,11 @@ fun SettingsScreen(
         coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames) }
 
         EmulatorAppsCard()
+
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenGpu) {
+            CardTitle("GPU and drivers")
+            CardBody("See which graphics chip this device has, and download custom Turnip drivers for emulators like Eden, Dolphin and NetherSX2 (Snapdragon only).")
+        }
 
         HotkeysCard(settings.retroArchHotkeys, HotkeyCombo.of(settings.menuCombo), HotkeyCombo.of(settings.quitCombo), viewModel::setRetroArchHotkeys, onOpenHotkeys)
         if (settings.retroArchHotkeys) {

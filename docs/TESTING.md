@@ -230,6 +230,10 @@ GB (Snaky Pocket, Gambatte), GBC (Petris), GBA (minicraft, mGBA), Master System 
 Also checked: Mega Drive/Mega CD touch buttons no longer touch the d-pad on a 411 dp wide screen; Back up saves wrote a 9-file zip (saves, states, cheats) through Android's save dialog; About shows who made it; Storage card shows sizes.
 Not checked: time played (unit-tested only; the script force-stops the player, which skips counting), Restore from a backup on a second device, Obtainium links (Obtainium not installed on the emulator).
 
+### 2026-10-28: GPU and drivers page (emulator)
+
+GPU shown as "Android Emulator OpenGL ES Translator (Google SwiftShader)", correctly marked as unable to use custom drivers. "Show drivers anyway" listed MrPurple Turnip T30–T27 and K11MCH1 builds from GitHub. T30 (3.7 MB) downloaded to Download/RetroForge/GPU drivers; the zip holds meta.json (Mesa Turnip 26.3.0, minApi 30) and vulkan.purple.so. Not checked: installing it in Eden/Dolphin (needs a Snapdragon phone).
+
 ## Release test plan (run in the final stage, before any release)
 
 Everything is re-tested together on real hardware, so nothing that worked earlier is broken by later changes. Record each result here with date, device and evidence.

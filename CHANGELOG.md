@@ -19,6 +19,8 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Saves and storage**: Settings → Built-in player → Back up saves writes one zip with in-game saves, save states and cheats; Restore puts them back (on this or another device), replacing same-named saves and keeping the rest. A Storage card shows the space emulators and copied CD/arcade games use, with Clear copied games. Each game's page shows its time played in the built-in player.
 
+**GPU and drivers** (Settings): shows the device's GPU and whether custom drivers apply (Snapdragon/Adreno only). Lists the latest Turnip builds (Mesa's open-source Vulkan driver) and downloads the one you pick to Download/RetroForge/GPU drivers, ready to install in Eden, Dolphin, NetherSX2 and other emulators with a driver manager.
+
 **Folders from ES-DE**: ES-DE folder names (`n3ds`, `sfc`, `famicom`, `atarilynx`, `sg-1000`, `arcade`, `gameandwatch` …) are recognised alongside RetroBat's.
 
 **Fixed**: Mega Drive / 32X / Mega CD touch buttons touching the d-pad on narrower phones (the d-pad and buttons now shrink together to fit).
