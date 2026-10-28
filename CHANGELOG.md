@@ -15,6 +15,8 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Edit game details**: change a game's title, description, release date, developer, publisher, genre and players from its page. Saved in RetroForge only (game files and gamelist.xml untouched), kept through rescans and ROM manager changes, with Reset to the scanned details.
 
+**Retro tab, canvas style**: systems first, as a big centred rounded tile with neighbours peeking in, the logo, year and game count underneath on the theme's wallpaper. Choose a theme folder you already have (canvas-es and other ES-DE-style themes, Alekfull-NX) and RetroForge reads its system art, logos, console pictures and details; tiles can show the consoles or game art. Without a theme, coloured name plates. RetroForge ships none of this artwork.
+
 **Covers**: free libretro box art (one game or a whole system), SteamGridDB (your own key), ScreenScraper (needs RetroForge's developer ID), or any image on your device.
 
 **ROM tools**: IPS/BPS/UPS patcher with patch chains and readmes; ROM hacks tab with catalogues; ROM manager (duplicates, compress discs to CHD and cartridges to .zip, multi-disc playlists, delete, undo, free up space).

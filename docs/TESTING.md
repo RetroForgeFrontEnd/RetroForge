@@ -199,6 +199,14 @@ S22 (arm64) and the Android emulator (x86_64, software GPU). Debug build.
 - "Reset to the scanned details" showed the scanned title and restored it.
 - Not tested: an edit following a file through ROM manager compress/undo (uses the same relink as favourites, which is tested).
 
+### 2026-10-28: canvas-style Retro tab with theme artwork (emulator)
+
+- Without artwork: centred rounded name plates with neighbours, name, game count, hints.
+- Chose a copy of canvas-es's artwork folders (from the user's own install; never shipped): index built (art tiles, SVG logos, consoles, metadata, wallpaper). Commodore 64 showed its art tile, SVG logo, "1982", "2 GAMES" on the theme's dark wallpaper.
+- "Tiles: consoles" (default): Mega Drive pad picture on its blue system colour with the SEGA MEGA DRIVE logo and 1990. The old index rebuilt itself to pick up console pictures.
+- Swipe and d-pad left/right browse; tapping the middle tile opened Mega Drive (25 games).
+- Not yet: on the S22 / a real controller; Alekfull-NX folder (layout rules written, not tried on device).
+
 ## Release test plan (run in the final stage, before any release)
 
 Everything is re-tested together on real hardware, so nothing that worked earlier is broken by later changes. Record each result here with date, device and evidence.

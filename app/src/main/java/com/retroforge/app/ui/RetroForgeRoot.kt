@@ -152,7 +152,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
             route == SETUP_ROUTE || route == ABOUT_ROUTE || route == HOTKEYS_ROUTE || route == TUTORIAL_ROUTE || route == THEMES_ROUTE || route == LICENCES_ROUTE || route == PRIVACY_ROUTE -> Section.SETTINGS
             else -> Section.HOME
         }
-        val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library, container.retroArch, container.covers, container.standalone, container.settings, container.retroArchHotkeys, container.cores, container.coreChoices))
+        val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library, container.retroArch, container.covers, container.standalone, container.settings, container.retroArchHotkeys, container.cores, container.coreChoices, container.systemArt, container.contentResolver, container.viewPrefs))
         val hacksViewModel: HacksViewModel = viewModel(
             factory = HacksViewModel.factory(container.catalogues, container.catalogueFetcher, container.contentResolver),
         )

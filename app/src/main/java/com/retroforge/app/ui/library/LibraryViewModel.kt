@@ -62,7 +62,46 @@ class LibraryViewModel(
     private val hotkeys: RetroArchHotkeys,
     private val cores: CoreManager,
     private val coreChoices: com.retroforge.player.CoreChoices,
+    private val systemArtStore: com.retroforge.core.library.SystemArtStore,
+    private val resolver: android.content.ContentResolver,
+    private val viewPrefs: android.content.SharedPreferences,
 ) : ViewModel() {
+
+    private val _systemArt = MutableStateFlow(systemArtStore.cached())
+    /** Artwork from the theme folder the user chose for the Retro tab's systems, or null. */
+    val systemArt: StateFlow<com.retroforge.core.library.SystemArtIndex?> = _systemArt
+    val indexingArt = MutableStateFlow(false)
+
+    /** Retro tab tiles: pictures of the consoles (true) or game art. */
+    val consoleTiles = MutableStateFlow(viewPrefs.getBoolean("console_tiles", true))
+    fun setConsoleTiles(on: Boolean) {
+        consoleTiles.value = on
+        viewPrefs.edit().putBoolean("console_tiles", on).apply()
+    }
+
+    init {
+        // Indexes from before console pictures were found are rebuilt once, from the same folder.
+        _systemArt.value?.takeIf { it.version < com.retroforge.core.library.SystemArtStore.VERSION }?.let { old ->
+            useArtFolder(Uri.parse(old.treeUri))
+        }
+    }
+
+    /** Reads (never changes) a theme folder's per-system artwork. */
+    fun useArtFolder(uri: Uri) {
+        runCatching { resolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+        viewModelScope.launch {
+            indexingArt.value = true
+            val name = uri.lastPathSegment?.substringAfterLast('/')?.substringAfterLast(':').orEmpty()
+            _systemArt.value = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { runCatching { systemArtStore.index(uri, name) }.getOrNull() }
+            indexingArt.value = false
+        }
+    }
+
+    fun clearArtFolder() {
+        systemArtStore.clear()
+        _systemArt.value = null
+    }
+
 
     private val emulators = StandaloneEmulators.bundled()
 
@@ -216,8 +255,11 @@ class LibraryViewModel(
             hotkeys: RetroArchHotkeys,
             cores: CoreManager,
             coreChoices: com.retroforge.player.CoreChoices,
+            systemArt: com.retroforge.core.library.SystemArtStore,
+            resolver: android.content.ContentResolver,
+            viewPrefs: android.content.SharedPreferences,
         ): ViewModelProvider.Factory = viewModelFactory {
-            initializer { LibraryViewModel(repository, retroArch, covers, standalone, settings, hotkeys, cores, coreChoices) }
+            initializer { LibraryViewModel(repository, retroArch, covers, standalone, settings, hotkeys, cores, coreChoices, systemArt, resolver, viewPrefs) }
         }
     }
 }

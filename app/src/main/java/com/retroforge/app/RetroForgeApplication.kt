@@ -46,6 +46,10 @@ class AppContainer(application: Application) {
     val standalone = StandaloneLauncher(application)
     val retroArchHotkeys = RetroArchHotkeys(application)
     val romManager = RomManagerRepository(library, application.contentResolver, File(application.filesDir, "rom-manager"))
+    /** System artwork read from a theme folder the user chose (never shipped). */
+    val systemArt = com.retroforge.core.library.SystemArtStore(application.contentResolver, File(application.filesDir, "system-art.json"))
+    /** Small view choices (Retro tab tile style). */
+    val viewPrefs: android.content.SharedPreferences = application.getSharedPreferences("views", android.content.Context.MODE_PRIVATE)
     val coreChoices = com.retroforge.player.CoreChoices(File(application.filesDir, "player/cores.properties"))
     /** The built-in player's BIOS folder (the cores' "system" directory); PlayerActivity uses the same path. */
     val playerSystemDir = File(application.getExternalFilesDir(null) ?: application.filesDir, "system")
@@ -88,7 +92,11 @@ class AppContainer(application: Application) {
         else ScreenScraperApp(BuildConfig.SCREENSCRAPER_DEV_ID, BuildConfig.SCREENSCRAPER_DEV_PASSWORD, "RetroForge ${BuildConfig.VERSION_NAME}")
 }
 
-class RetroForgeApplication : Application() {
+class RetroForgeApplication : Application(), coil3.SingletonImageLoader.Factory {
+    // Theme logos are often SVG.
+    override fun newImageLoader(context: coil3.PlatformContext): coil3.ImageLoader =
+        coil3.ImageLoader.Builder(context).components { add(coil3.svg.SvgDecoder.Factory()) }.build()
+
     // Created on first use, so the player process (which never touches it) doesn't open the library or settings.
     val container: AppContainer by lazy { AppContainer(this) }
 }

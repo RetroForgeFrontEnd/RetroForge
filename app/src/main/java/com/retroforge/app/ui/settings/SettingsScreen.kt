@@ -64,7 +64,7 @@ fun SettingsScreen(
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenThemes) {
             CardTitle("Themes")
-            CardBody("Colours, shapes, type and game-list layout, with previews. Brightness: ${settings.themeMode.name.lowercase()}. Import your own or a theme's colours from ES-DE or RetroBat.")
+            CardBody("Colours, shapes, type and game-list layout, with previews. Brightness: ${settings.themeMode.name.lowercase()}. Import your own, or a theme's colours from another frontend.")
         }
 
         FocusCard(

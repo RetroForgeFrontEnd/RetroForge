@@ -77,6 +77,7 @@ dependencies {
     implementation(libs.commons.compress)
     implementation(libs.xz)
     implementation(libs.coil.compose)
+    implementation(libs.coil.svg)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

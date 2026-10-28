@@ -31,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -71,7 +72,27 @@ fun RetroScreen(
     val chosen by viewModel.chosenCovers.collectAsStateWithLifecycle()
     val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::addFolder) }
 
+    val systemArt by viewModel.systemArt.collectAsStateWithLifecycle()
+    val indexingArt by viewModel.indexingArt.collectAsStateWithLifecycle()
+    val pickArt = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::useArtFolder) }
+
     ScreenFrame(title = "Retro", subtitle = "Your consoles, arcade and computer games.") {
+        // Systems first, canvas style, with artwork from the user's own theme folder when chosen.
+        if (systems.isNotEmpty()) {
+            val consoles by viewModel.consoleTiles.collectAsStateWithLifecycle()
+            CanvasSystemsView(systems.map { SystemSummary(it.id, it.name, it.games, it.hacks) }, systemArt, consoles, onOpenSystem)
+            androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                FocusChip(
+                    if (systemArt == null) "Use system artwork from a theme folder" else "System artwork: ${systemArt!!.themeName.ifBlank { "theme" }} · change",
+                    onClick = { pickArt.launch(null) },
+                )
+                if (systemArt != null) {
+                    FocusChip(if (consoles) "Tiles: consoles" else "Tiles: game art", onClick = { viewModel.setConsoleTiles(!consoles) })
+                    FocusChip("Plain tiles", onClick = viewModel::clearArtFolder)
+                }
+            }
+            if (indexingArt) LinearProgressIndicator(Modifier.fillMaxWidth())
+        }
         val running = scans.values.filterIsInstance<ScanState.Running>().firstOrNull()
         when {
             roots == null -> LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -131,8 +152,6 @@ fun RetroScreen(
 
             FavouritesAndPlaylistsSection(viewModel, rootsById, onOpenGame, onOpenPlaylist)
 
-            CardTitle("Systems")
-            SystemsView(systems.map { SystemSummary(it.id, it.name, it.games, it.hacks) }, onOpenSystem)
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenPatcher) {

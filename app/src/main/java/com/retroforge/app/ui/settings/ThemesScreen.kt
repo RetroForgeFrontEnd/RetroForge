@@ -201,13 +201,13 @@ fun ThemesScreen(viewModel: ThemesViewModel) {
             CardTitle("Add a theme")
             CardBody("A RetroForge theme is one small .json file (format in docs/retroforge-theme-format.md). Themes are only data: nothing in them runs.")
             CardBody(
-                "From another frontend: choose an ES-DE, RetroBat or Batocera theme folder. RetroForge reads its colours only " +
+                "From another frontend: choose a theme folder from another frontend (EmulationStation-style themes). RetroForge reads its colours only " +
                     "(layouts, carousels and artwork don't carry over) and never changes the folder. Check the theme's licence before sharing.",
             )
         }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             FocusChip("Import a theme file", onClick = { pickFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) })
-            FocusChip("Colours from an ES-DE / RetroBat theme", onClick = { pickFolder.launch(null) })
+            FocusChip("Colours from another frontend's theme", onClick = { pickFolder.launch(null) })
         }
     }
 }

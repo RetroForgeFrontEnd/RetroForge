@@ -27,3 +27,15 @@ Result for the 7 themes: 5 give a usable palette (Alekfull-NX, art-book-next-es,
 ## Possible later
 
 System logos from themes the user owns (per-system image lookup differs per theme), once the theme engine supports images.
+
+
+## System artwork for the Retro tab (2026-10-28)
+
+The Retro tab can show per-system artwork from a theme folder you pick (read only, nothing copied or changed; the index of file locations is kept in RetroForge's storage). Recognised by file name `<system>.<ext>` in these folders:
+
+| Theme layout | Tiles (game art) | Consoles | Logos | Details | Background |
+|---|---|---|---|---|---|
+| canvas-es / ES-DE style | `_inc/systems/carousel-icons-art/*.webp` | `_inc/systems/carousel-icons-icons/*.webp` | `_inc/systems/logos/*.svg` | `_inc/systems/metadata/*.xml` (year, manufacturer, colour) | `wallpapers/dark.webp` |
+| Alekfull-NX | `assets/logos/*.jpg` (square) | none | `assets/logos2/*.png` | none | none |
+
+canvas-es is CC0; Alekfull-NX says it isn't authorised for commercial use. In both, the artwork shows console makers' logos and game characters, so RetroForge only ever reads it from the user's own copy and never ships it.
