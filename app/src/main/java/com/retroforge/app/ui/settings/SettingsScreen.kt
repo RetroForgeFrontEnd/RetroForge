@@ -32,7 +32,7 @@ import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel, onOpenSetup: () -> Unit) {
+fun SettingsScreen(viewModel: SettingsViewModel, onOpenSetup: () -> Unit, onOpenAbout: () -> Unit) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
 
     ScreenFrame(title = "Settings") {
@@ -81,9 +81,9 @@ fun SettingsScreen(viewModel: SettingsViewModel, onOpenSetup: () -> Unit) {
             legalNoticeParagraphs.forEach { CardBody(it) }
         }
 
-        FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("About")
-            CardBody("RetroForge ${BuildConfig.VERSION_NAME}")
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenAbout) {
+            CardTitle("About RetroForge")
+            CardBody("Version ${BuildConfig.VERSION_NAME}. Select to read what RetroForge is for.")
             CardBody("Controller: D-pad to move, A to select, B to go back, L1/R1 to switch sections.")
         }
     }
