@@ -6,6 +6,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import android.content.Intent
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.core.net.toUri
+import com.retroforge.artwork.SteamGridDb
+import com.retroforge.core.ui.FocusChip
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -63,6 +74,8 @@ fun SettingsScreen(viewModel: SettingsViewModel, onOpenSetup: () -> Unit) {
             CardBody("Hide the PC section if you only play retro games or this device cannot run PC games.")
         }
 
+        SteamGridDbKeyCard(settings.steamGridDbKey, viewModel::setSteamGridDbKey)
+
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("Games, BIOS and the law")
             legalNoticeParagraphs.forEach { CardBody(it) }
@@ -73,5 +86,37 @@ fun SettingsScreen(viewModel: SettingsViewModel, onOpenSetup: () -> Unit) {
             CardBody("RetroForge ${BuildConfig.VERSION_NAME}")
             CardBody("Controller: D-pad to move, A to select, B to go back, L1/R1 to switch sections.")
         }
+    }
+}
+
+@Composable
+private fun SteamGridDbKeyCard(saved: String?, onSave: (String?) -> Unit) {
+    val context = LocalContext.current
+    var draft by remember(saved) { mutableStateOf("") }
+    FocusCard(modifier = Modifier.fillMaxWidth()) {
+        CardTitle("Custom covers (SteamGridDB)")
+        if (saved.isNullOrBlank()) {
+            StatusPill("No API key", StatusTone.NEUTRAL)
+            CardBody(
+                "SteamGridDB has thousands of community-made covers. Create a free account, copy your API key from " +
+                    "${SteamGridDb.KEY_PAGE} and paste it here. It stays on this device and is sent only to SteamGridDB.",
+            )
+        } else {
+            StatusPill("API key saved (…${saved.takeLast(4)})", StatusTone.GOOD)
+            CardBody("Use \"Change cover\" on any game to browse SteamGridDB covers.")
+        }
+        OutlinedTextField(
+            value = draft,
+            onValueChange = { draft = it.trim() },
+            singleLine = true,
+            label = { Text(if (saved.isNullOrBlank()) "Paste API key" else "Replace API key") },
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        )
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        FocusChip("Save key", onClick = { onSave(draft); draft = "" }, enabled = draft.length >= 16)
+        FocusChip("Get a free key", onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, SteamGridDb.KEY_PAGE.toUri())) } })
+        if (!saved.isNullOrBlank()) FocusChip("Remove key", onClick = { onSave(null) })
     }
 }

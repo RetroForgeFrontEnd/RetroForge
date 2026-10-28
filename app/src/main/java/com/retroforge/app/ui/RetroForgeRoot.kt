@@ -51,6 +51,7 @@ import com.retroforge.app.ui.pc.PcScreen
 import com.retroforge.app.ui.patcher.PatcherScreen
 import com.retroforge.app.ui.patcher.PatcherViewModel
 import com.retroforge.app.ui.pc.PcViewModel
+import com.retroforge.app.ui.library.CoverPickerScreen
 import com.retroforge.app.ui.library.GameDetailScreen
 import com.retroforge.app.ui.library.LibraryFoldersScreen
 import com.retroforge.app.ui.library.LibraryViewModel
@@ -83,6 +84,7 @@ private const val FOLDERS_ROUTE = "retro/folders"
 private const val SETUP_ROUTE = "setup"
 private const val SYSTEM_ROUTE = "retro/system/{system}"
 private const val GAME_ROUTE = "retro/game/{id}"
+private const val COVER_ROUTE = "retro/game/{id}/cover"
 
 @Composable
 fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
@@ -125,7 +127,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
             route == SETUP_ROUTE -> Section.SETTINGS
             else -> Section.HOME
         }
-        val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library, container.retroArch))
+        val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library, container.retroArch, container.covers))
         val hacksViewModel: HacksViewModel = viewModel(
             factory = HacksViewModel.factory(container.catalogues, container.catalogueFetcher, container.contentResolver),
         )
@@ -178,6 +180,16 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                                 libraryViewModel,
                                 entry.arguments?.getString("id")?.toLongOrNull() ?: -1,
                                 onOpenGame = { nav.navigate("retro/game/$it") },
+                                onChangeCover = { nav.navigate("retro/game/$it/cover") },
+                            )
+                        }
+                        composable(COVER_ROUTE) { entry ->
+                            CoverPickerScreen(
+                                libraryViewModel,
+                                entry.arguments?.getString("id")?.toLongOrNull() ?: -1,
+                                hasSteamGridDbKey = !settings.steamGridDbKey.isNullOrBlank(),
+                                onOpenSettings = { nav.goTo(Section.SETTINGS) },
+                                onDone = { nav.popBackStack() },
                             )
                         }
                         composable(PATCHER_ROUTE) {

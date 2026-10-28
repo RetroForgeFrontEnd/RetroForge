@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.retroforge.core.library.CoverRepository
 import com.retroforge.core.library.GameEntity
+import java.io.File
 import com.retroforge.core.library.LibraryRepository
 import com.retroforge.core.library.PlayEntity
 import com.retroforge.core.library.ProblemEntity
@@ -30,7 +32,21 @@ import kotlinx.coroutines.flow.stateIn
 data class SystemSummary(val id: String, val name: String, val games: Int, val hacks: Int)
 
 @OptIn(FlowPreview::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-class LibraryViewModel(private val repository: LibraryRepository, private val retroArch: RetroArchLauncher) : ViewModel() {
+class LibraryViewModel(
+    private val repository: LibraryRepository,
+    private val retroArch: RetroArchLauncher,
+    val covers: CoverRepository,
+) : ViewModel() {
+
+    /** Chosen covers by (folder, path); these take priority over gamelist artwork. */
+    val chosenCovers: StateFlow<Map<Pair<Long, String>, File>> = covers.covers
+        .map { list -> list.associate { (it.rootId to it.relativePath) to covers.fileFor(it) } }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
+    /** What to show for a game: the chosen cover, else its gamelist artwork, else null (title tile). */
+    fun art(rootsById: Map<Long, RootEntity>, covers: Map<Pair<Long, String>, File>, game: GameEntity): Any? =
+        covers[game.rootId to game.relativePath] ?: documentUri(rootsById, game.rootId, game.imageDocumentId)
+
 
     val roots: StateFlow<List<RootEntity>?> = repository.roots.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
     val scans: StateFlow<Map<Long, ScanState>> = repository.scans
@@ -76,8 +92,8 @@ class LibraryViewModel(private val repository: LibraryRepository, private val re
         documentId?.let { id -> rootsById[rootId]?.let { repository.documentUri(it, id) } }
 
     companion object {
-        fun factory(repository: LibraryRepository, retroArch: RetroArchLauncher): ViewModelProvider.Factory = viewModelFactory {
-            initializer { LibraryViewModel(repository, retroArch) }
+        fun factory(repository: LibraryRepository, retroArch: RetroArchLauncher, covers: CoverRepository): ViewModelProvider.Factory = viewModelFactory {
+            initializer { LibraryViewModel(repository, retroArch, covers) }
         }
     }
 }

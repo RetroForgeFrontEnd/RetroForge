@@ -7,6 +7,12 @@ import com.retroforge.core.library.LibraryDatabase
 import com.retroforge.core.library.LibraryRepository
 import com.retroforge.hacks.CatalogueStore
 import java.io.File
+import com.retroforge.artwork.JvmHttpGet
+import com.retroforge.core.library.CoverRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import com.retroforge.retro.RetroArchLauncher
 import com.retroforge.core.settings.SettingsRepository
 import com.retroforge.core.settings.createSettingsRepository
@@ -26,6 +32,20 @@ class AppContainer(application: Application) {
     val catalogueFetcher = CatalogueFetcher("RetroForge/${BuildConfig.VERSION_NAME}")
     val library = LibraryRepository(LibraryDatabase.create(application), application.contentResolver)
     val retroArch = RetroArchLauncher(application)
+
+    // Read by SteamGridDB calls on a background thread; kept current from settings.
+    @Volatile private var steamGridDbKey: String? = null
+    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    init {
+        appScope.launch { settings.settings.collect { steamGridDbKey = it.steamGridDbKey } }
+    }
+    val covers = CoverRepository(
+        db = library.database,
+        coversDir = File(application.filesDir, "covers"),
+        cacheDir = application.cacheDir,
+        http = JvmHttpGet("RetroForge/${BuildConfig.VERSION_NAME}"),
+        steamGridDbKey = { steamGridDbKey },
+    )
 }
 
 class RetroForgeApplication : Application() {

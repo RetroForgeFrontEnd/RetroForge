@@ -55,6 +55,7 @@ fun HacksScreen(
     val ownHacks by library.hacks.collectAsStateWithLifecycle()
     val roots by library.roots.collectAsStateWithLifecycle()
     val rootsById = remember(roots) { roots.orEmpty().associateBy { it.id } }
+    val chosen by library.chosenCovers.collectAsStateWithLifecycle()
     ScreenFrame(title = "Hacks", subtitle = "Hacks you already have, and more to discover from your catalogues.") {
         if (state.loading) LinearProgressIndicator(Modifier.fillMaxWidth())
 
@@ -70,7 +71,7 @@ fun HacksScreen(
                     items(games, key = { it.id }) { game ->
                         GameTile(
                             game,
-                            library.documentUri(rootsById, game.rootId, game.imageDocumentId),
+                            library.art(rootsById, chosen, game),
                             onClick = { onOpenGame(game.id) },
                             modifier = Modifier.width(190.dp),
                         )

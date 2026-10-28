@@ -26,6 +26,10 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
     val setupDone: StateFlow<Boolean?> =
         repository.settings.map<AppSettings, Boolean?> { it.setupDone }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
+    fun setSteamGridDbKey(key: String?) {
+        viewModelScope.launch { repository.setSteamGridDbKey(key) }
+    }
+
     fun markSetupOffered() {
         viewModelScope.launch { repository.setSetupDone(true) }
     }

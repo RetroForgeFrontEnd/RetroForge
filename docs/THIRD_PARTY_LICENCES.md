@@ -22,4 +22,6 @@ Not shipped, interacted with as separate apps: DroidDeck (GPL-3.0) — see [pc-r
 
 Artwork: icons, banner and wordmark are original to this project. The RetroForge key art shared on 2026-10-27 is not yet included in the app.
 
+Online services used at runtime (no code bundled): libretro thumbnails (thumbnails.libretro.com), SteamGridDB API (user's own key; personal non-commercial use per its terms).
+
 An in-app licence screen is still to be added before any public release.

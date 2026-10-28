@@ -24,6 +24,8 @@ data class AppSettings(
     val biosFolderUri: String? = null,
     /** The folder RetroArch reads BIOS from, granted by the user so RetroForge can copy into it. */
     val retroArchSystemUri: String? = null,
+    /** The user's own SteamGridDB API key. Stored only in app-private storage, never logged. */
+    val steamGridDbKey: String? = null,
 )
 
 fun createSettingsRepository(context: Context): SettingsRepository = SettingsRepository(
@@ -41,6 +43,7 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
             setupDone = prefs[SETUP_DONE] ?: false,
             biosFolderUri = prefs[BIOS_FOLDER],
             retroArchSystemUri = prefs[RA_SYSTEM],
+            steamGridDbKey = prefs[SGDB_KEY],
         )
     }
 
@@ -54,6 +57,10 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
 
     suspend fun acknowledgeNotice(version: Int) {
         store.edit { it[NOTICE] = version }
+    }
+
+    suspend fun setSteamGridDbKey(key: String?) {
+        store.edit { if (key.isNullOrBlank()) it.remove(SGDB_KEY) else it[SGDB_KEY] = key.trim() }
     }
 
     suspend fun setSetupDone(done: Boolean) {
@@ -73,6 +80,7 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
         val SETUP_DONE = booleanPreferencesKey("setup_done")
         val BIOS_FOLDER = stringPreferencesKey("bios_folder_uri")
         val RA_SYSTEM = stringPreferencesKey("retroarch_system_uri")
+        val SGDB_KEY = stringPreferencesKey("steamgriddb_key")
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val SHOW_PC = booleanPreferencesKey("show_pc_section")
     }

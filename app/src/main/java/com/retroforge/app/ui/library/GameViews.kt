@@ -1,6 +1,5 @@
 package com.retroforge.app.ui.library
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -22,9 +21,12 @@ import coil3.compose.SubcomposeAsyncImage
 import com.retroforge.core.library.GameEntity
 import com.retroforge.core.ui.FocusCard
 
-/** Artwork from the user's own gamelist media, or the title on a plain tile when there is none (or it fails). */
+/**
+ * A game's artwork, or its title on a plain tile when there is none (or it fails to load).
+ * [image] is a chosen cover file, a content:// URI of the gamelist artwork, or null.
+ */
 @Composable
-fun GameArt(game: GameEntity, image: Uri?, modifier: Modifier = Modifier) {
+fun GameArt(game: GameEntity, image: Any?, modifier: Modifier = Modifier) {
     val placeholder: @Composable () -> Unit = {
         Box(
             Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant).padding(8.dp),
@@ -57,7 +59,7 @@ fun GameArt(game: GameEntity, image: Uri?, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun GameTile(game: GameEntity, image: Uri?, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun GameTile(game: GameEntity, image: Any?, onClick: () -> Unit, modifier: Modifier = Modifier) {
     FocusCard(modifier = modifier, onClick = onClick) {
         GameArt(game, image, Modifier.fillMaxWidth().aspectRatio(4f / 3f))
         Text(

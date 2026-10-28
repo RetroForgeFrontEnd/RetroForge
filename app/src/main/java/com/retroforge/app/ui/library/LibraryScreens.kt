@@ -37,7 +37,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.retroforge.app.ui.CardBody
 import com.retroforge.app.ui.CardTitle
 import com.retroforge.app.ui.ScreenFrame
+import com.retroforge.core.library.CoverBatch
 import com.retroforge.core.library.GameEntity
+import java.io.File
 import com.retroforge.core.library.ScanState
 import com.retroforge.core.ui.FocusCard
 import com.retroforge.core.ui.FocusChip
@@ -62,6 +64,7 @@ fun RetroScreen(
     val results by viewModel.searchResults.collectAsStateWithLifecycle()
     val recent by viewModel.recentlyPlayed.collectAsStateWithLifecycle()
     val rootsById = remember(roots) { roots.orEmpty().associateBy { it.id } }
+    val chosen by viewModel.chosenCovers.collectAsStateWithLifecycle()
     val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::addFolder) }
 
     ScreenFrame(title = "Retro", subtitle = "Your consoles, arcade and computer games.") {
@@ -117,7 +120,7 @@ fun RetroScreen(
                 CardTitle("Recently played")
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     rowItems(recent, key = { it.id }) { game ->
-                        GameTile(game, viewModel.documentUri(rootsById, game.rootId, game.imageDocumentId), onClick = { onOpenGame(game.id) }, modifier = Modifier.width(190.dp))
+                        GameTile(game, viewModel.art(rootsById, chosen, game), onClick = { onOpenGame(game.id) }, modifier = Modifier.width(190.dp))
                     }
                 }
             }
@@ -199,6 +202,7 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
     val games by remember(system) { viewModel.games(system) }.collectAsStateWithLifecycle(initialValue = null)
     val roots by viewModel.roots.collectAsStateWithLifecycle()
     val rootsById = remember(roots) { roots.orEmpty().associateBy { it.id } }
+    val chosen by viewModel.chosenCovers.collectAsStateWithLifecycle()
     var filter by remember { mutableStateOf("") }
     var hideCopies by remember { mutableStateOf(false) }
     val shown = remember(games, filter, hideCopies) {
@@ -221,22 +225,24 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
                 if (games == null) LinearProgressIndicator(Modifier.fillMaxWidth())
                 else CardBody("${shown.size} of ${games!!.size} games")
                 OutlinedTextField(value = filter, onValueChange = { filter = it }, singleLine = true, label = { Text("Filter") }, modifier = Modifier.fillMaxWidth())
+                SystemCoverBatch(viewModel, system, games.orEmpty(), chosen)
                 if (games.orEmpty().any { it.duplicateKey != null }) {
                     FocusChip(if (hideCopies) "• Showing one copy of each game" else "Show one copy of each game", onClick = { hideCopies = !hideCopies })
                 }
             }
         }
         items(shown, key = { it.id }) { game ->
-            GameTile(game, viewModel.documentUri(rootsById, game.rootId, game.imageDocumentId), onClick = { onOpenGame(game.id) })
+            GameTile(game, viewModel.art(rootsById, chosen, game), onClick = { onOpenGame(game.id) })
         }
     }
 }
 
 @Composable
-fun GameDetailScreen(viewModel: LibraryViewModel, gameId: Long, onOpenGame: (Long) -> Unit) {
+fun GameDetailScreen(viewModel: LibraryViewModel, gameId: Long, onOpenGame: (Long) -> Unit, onChangeCover: (Long) -> Unit) {
     val game by remember(gameId) { viewModel.game(gameId) }.collectAsStateWithLifecycle(initialValue = null)
     val roots by viewModel.roots.collectAsStateWithLifecycle()
     val rootsById = remember(roots) { roots.orEmpty().associateBy { it.id } }
+    val chosen by viewModel.chosenCovers.collectAsStateWithLifecycle()
     var duplicates by remember { mutableStateOf<List<GameEntity>>(emptyList()) }
     LaunchedEffect(game) { duplicates = game?.let { viewModel.duplicatesOf(it) }.orEmpty() }
     val context = LocalContext.current
@@ -246,7 +252,8 @@ fun GameDetailScreen(viewModel: LibraryViewModel, gameId: Long, onOpenGame: (Lon
         return
     }
     ScreenFrame(title = g.title, subtitle = viewModel.systemName(g.system)) {
-        GameArt(g, viewModel.documentUri(rootsById, g.rootId, g.imageDocumentId), Modifier.fillMaxWidth().heightIn(max = 320.dp).padding(bottom = 4.dp))
+        GameArt(g, viewModel.art(rootsById, chosen, g), Modifier.fillMaxWidth().heightIn(max = 320.dp).padding(bottom = 4.dp))
+        CoverControls(g, viewModel, onChangeCover = { onChangeCover(g.id) })
         PlaySection(viewModel, g, rootsById[g.rootId])
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             g.description?.let { CardBody(it) }
@@ -286,3 +293,31 @@ fun GameDetailScreen(viewModel: LibraryViewModel, gameId: Long, onOpenGame: (Lon
 }
 
 fun plural(count: Int, noun: String): String = if (count == 1) "1 $noun" else "$count ${noun}s"
+
+@Composable
+private fun SystemCoverBatch(viewModel: LibraryViewModel, system: String, games: List<GameEntity>, chosen: Map<Pair<Long, String>, File>) {
+    val batch by viewModel.covers.batch.collectAsStateWithLifecycle()
+    val missing = games.count { it.imageDocumentId == null && (it.rootId to it.relativePath) !in chosen }
+    val mine = when (val b = batch) {
+        is CoverBatch.Running -> b.system == system
+        is CoverBatch.Finished -> b.system == system
+        is CoverBatch.Failed -> b.system == system
+        null -> false
+    }
+    when (val b = if (mine) batch else null) {
+        is CoverBatch.Running -> {
+            CardBody("Downloading box art: ${b.done} of ${b.total} · ${plural(b.found, "cover")} found")
+            LinearProgressIndicator(progress = { if (b.total == 0) 0f else b.done.toFloat() / b.total }, modifier = Modifier.fillMaxWidth())
+            FocusChip("Stop", onClick = viewModel.covers::cancelBatch)
+        }
+        is CoverBatch.Finished -> CardBody(
+            "Box art: ${plural(b.found, "cover")} added" +
+                (if (b.missing > 0) ", ${b.missing} not found" else "") +
+                (if (b.failed > 0) ", ${b.failed} failed" else "") + ".",
+        )
+        is CoverBatch.Failed -> CardBody(b.reason)
+        null -> if (missing > 0 && viewModel.covers.hasLibretroSource(system)) {
+            FocusChip("Download box art for ${plural(missing, "game")} without artwork", onClick = { viewModel.covers.downloadMissing(system, games) })
+        }
+    }
+}

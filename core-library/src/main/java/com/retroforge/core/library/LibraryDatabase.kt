@@ -88,6 +88,24 @@ data class PlayEntity(
     val core: String?,
 )
 
+/** A cover the user chose, saved in RetroForge's own storage (never in the ROM folder). Keyed like play history. */
+@Entity(
+    tableName = "covers",
+    primaryKeys = ["rootId", "relativePath"],
+    foreignKeys = [ForeignKey(entity = RootEntity::class, parentColumns = ["id"], childColumns = ["rootId"], onDelete = ForeignKey.CASCADE)],
+)
+data class CoverEntity(
+    val rootId: Long,
+    val relativePath: String,
+    /** File name inside the app's covers folder. */
+    val file: String,
+    /** "libretro" or "steamgriddb". */
+    val source: String,
+    val sourceUrl: String,
+    val author: String?,
+    val savedAt: Long,
+)
+
 data class SystemCount(val system: String, val games: Int, val hacks: Int)
 
 @Dao
@@ -149,6 +167,18 @@ interface LibraryDao {
     @Query("SELECT play_history.* FROM play_history JOIN games ON games.rootId = play_history.rootId AND games.relativePath = play_history.relativePath WHERE games.id = :gameId")
     fun playFor(gameId: Long): Flow<PlayEntity?>
 
+    @Query("SELECT * FROM covers")
+    fun covers(): Flow<List<CoverEntity>>
+
+    @Query("SELECT * FROM covers WHERE rootId = :rootId AND relativePath = :path")
+    suspend fun cover(rootId: Long, path: String): CoverEntity?
+
+    @androidx.room.Upsert
+    suspend fun upsertCover(cover: CoverEntity)
+
+    @Query("DELETE FROM covers WHERE rootId = :rootId AND relativePath = :path")
+    suspend fun deleteCover(rootId: Long, path: String)
+
     @Insert
     suspend fun insertGames(games: List<GameEntity>)
 
@@ -179,10 +209,10 @@ interface LibraryDao {
 }
 
 @Database(
-    entities = [RootEntity::class, GameEntity::class, ProblemEntity::class, PlayEntity::class],
-    version = 2,
+    entities = [RootEntity::class, GameEntity::class, ProblemEntity::class, PlayEntity::class, CoverEntity::class],
+    version = 3,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 1, to = 2)],
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3)],
 )
 abstract class LibraryDatabase : RoomDatabase() {
     abstract fun dao(): LibraryDao

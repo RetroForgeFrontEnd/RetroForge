@@ -4,7 +4,12 @@ Status: covers what exists today (Milestone A, ROM Patcher, Hacks tab). Updated 
 
 ## Network access
 
-RetroForge declares `android.permission.INTERNET` for **one** purpose: downloading a hack catalogue when the user adds or updates one from a link. Nothing else connects to the network.
+RetroForge declares `android.permission.INTERNET` for:
+
+- downloading a hack catalogue the user adds or updates from a link;
+- cover art: libretro's thumbnail server (system index once a week, then images) and, only with the user's own API key, SteamGridDB (sent only to steamgriddb.com as a bearer token; stored in app-private settings; never logged or displayed except its last 4 characters).
+
+Nothing else connects to the network.
 
 - No analytics, telemetry, crash reporting or advertising SDKs.
 - No accounts and no sign-in.

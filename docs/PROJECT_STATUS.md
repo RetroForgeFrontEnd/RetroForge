@@ -14,6 +14,8 @@ This file is the single source of truth for what exists, what has been verified 
 | 4 — Retro library (Milestone B) | **Done: unit tested, real-collection tested (28,274 games, read-only), emulator tested via SAF.** USB/OTG drives and very large SAF trees not yet tried on a real device |
 | Links tab | Done: six verified YouTube channels |
 | Setup wizard | **Done, emulator tested**: games folder, RetroArch, cores your library needs, BIOS check against libretro checksums and copy into RetroArch |
+| Cover downloader | **Built**: free libretro box art (per game and per-system batch, fuzzy matching) and SteamGridDB custom covers with the user's own key. Emulator tested (libretro); SteamGridDB awaits a key. [COVER_ART.md](COVER_ART.md) |
+| ROM manager (rename, duplicates) | Proposal: [FEATURE_PROPOSAL_ROM_MANAGER.md](FEATURE_PROPOSAL_ROM_MANAGER.md) |
 | SD cards | **Games and BIOS on an SD card launch-tested** (emulator's virtual SD card); a real phone's SD card still to test |
 | 5 — First real retro launch (Milestone D) | **Done on emulator**: Play from RetroForge's game page starts RetroArch (Star Fox launch-tested), play history recorded. PS1 launch-tested once the core and the user's own BIOS were in place. Real device still needed |
 | Emulation path check (RetroArch, outside RetroForge) | 6 ROMs from your collection launch-tested on the emulator (SNES ×3 incl. `.7z`, Mega Drive, GBA, NES with gameplay): [EMULATOR_COMPATIBILITY.md](EMULATOR_COMPATIBILITY.md) |

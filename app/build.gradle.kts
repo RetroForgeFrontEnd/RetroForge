@@ -41,6 +41,7 @@ dependencies {
     implementation(project(":retro-hacks"))
     implementation(project(":core-library"))
     implementation(project(":retro"))
+    implementation(project(":retro-artwork"))
     implementation(libs.coil.compose)
 
     implementation(libs.androidx.core.ktx)

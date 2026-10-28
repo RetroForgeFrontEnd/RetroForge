@@ -20,6 +20,8 @@ Run: `./gradlew testDebugUnitTest` (JVM, no device needed, no ROMs needed).
 | `RealCollectionTest` | retro-library | 1 (skipped unless `RETROFORGE_REAL_ROMS` is set) | Read-only scan of a real collection, printing statistics |
 | `BiosCheckerTest` | retro-library | 6 | BIOS verified by MD5 under any file name, right-name-wrong-contents flagged, all/any rules, sub-folders, only library systems checked, bundled rules valid |
 | `RealBiosTest` | retro-library | 1 (skipped unless `RETROFORGE_REAL_BIOS` is set) | Read-only check of a real BIOS folder |
+| `ArtworkTest` | retro-artwork | 8 | libretro matching (exact, GoodTools, region, no cross-title), URL encoding, index parsing, SteamGridDB requests and bad keys, image sniffing |
+| `RealMatchTest` | retro-artwork | 1 (opt-in) | Matches a real collection against the live libretro indexes |
 | `RealPatchTest` | retro-patch | 1 (skipped unless `patch-test/` has `.base` files) | Applies real patches or patch chains from the git-ignored `patch-test/` folder and prints SHA-1 for cross-checking |
 
 Last run: 2026-10-28, **63 passed, 0 failed** (64 incl. opt-in) (+1 real-patch chain test that ran locally). `lintDebug`: 0 errors, 2 accepted warnings (TV banner vector is 320×180 by Android TV requirement; `allowBackup=false` already covers pre-Android-12).

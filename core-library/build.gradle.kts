@@ -23,6 +23,7 @@ room {
 
 dependencies {
     api(project(":retro-library"))
+    api(project(":retro-artwork"))
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)

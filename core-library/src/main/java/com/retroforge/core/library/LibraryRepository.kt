@@ -33,12 +33,12 @@ sealed interface ScanState {
  * application-wide scope, so leaving a screen doesn't stop them; results replace a folder's index atomically.
  */
 class LibraryRepository(
-    private val db: LibraryDatabase,
+    val database: LibraryDatabase,
     private val resolver: ContentResolver,
     val rules: SystemRules = SystemRules.bundled(),
     private val clock: () -> Long = System::currentTimeMillis,
 ) {
-    private val dao = db.dao()
+    private val dao = database.dao()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val jobs = mutableMapOf<Long, Job>()
     private val _scans = MutableStateFlow<Map<Long, ScanState>>(emptyMap())
