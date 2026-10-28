@@ -27,6 +27,17 @@ interface CollectionFiles {
     fun replace(path: String, bytes: ByteArray)
     /** Removes a file this run created and didn't finish (a ".retroforge-part" file). */
     fun discardPartial(path: String)
+    /** Every file under [folder] with its size, paths from the collection folder. */
+    fun walk(folder: String): List<Pair<String, Long>>
+    /**
+     * Permanently deletes one of RetroForge's holding folders (_duplicates, _originals, _deleted) and everything in
+     * it. The only permanent delete there is, and only after the user confirms it.
+     */
+    fun deleteHoldingFolder(folder: String)
+}
+
+fun requireHoldingFolder(folder: String) {
+    require(folder in HOLDING_FOLDERS) { "only RetroForge's holding folders can be deleted" }
 }
 
 const val PARTIAL_SUFFIX = ".retroforge-part"
@@ -64,5 +75,11 @@ class JvmCollectionFiles(private val root: File) : CollectionFiles {
     override fun discardPartial(path: String) {
         require(path.endsWith(PARTIAL_SUFFIX))
         f(path).delete()
+    }
+    override fun walk(folder: String) = f(folder).walk().filter { it.isFile }
+        .map { it.relativeTo(root).invariantSeparatorsPath to it.length() }.toList()
+    override fun deleteHoldingFolder(folder: String) {
+        requireHoldingFolder(folder)
+        if (!f(folder).deleteRecursively()) throw IOException("couldn't delete $folder")
     }
 }

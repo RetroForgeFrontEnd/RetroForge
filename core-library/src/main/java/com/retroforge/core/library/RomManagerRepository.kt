@@ -15,7 +15,16 @@ import com.retroforge.library.manage.DuplicateCandidate
 import com.retroforge.library.manage.DuplicateMover
 import com.retroforge.library.manage.DuplicatePlanner
 import com.retroforge.library.manage.DuplicateSet
+import com.retroforge.library.manage.DELETED_FOLDER
+import com.retroforge.library.manage.GameDeleter
+import com.retroforge.library.manage.GameFiles
+import com.retroforge.library.manage.Holding
+import com.retroforge.library.manage.HoldingSummary
 import com.retroforge.library.manage.Journal
+import com.retroforge.library.manage.MultiDiscPlanner
+import com.retroforge.library.manage.PlaylistJob
+import com.retroforge.library.manage.PlaylistMaker
+import com.retroforge.library.manage.PlaylistSkip
 import com.retroforge.library.manage.OperationLog
 import com.retroforge.library.manage.SkippedSet
 import com.retroforge.library.manage.Undo
@@ -35,6 +44,8 @@ import java.util.UUID
 data class DuplicateReport(val sets: List<DuplicateSet>, val skipped: List<SkippedSet>)
 
 data class CompressReport(val jobs: List<CompressJob>, val skipped: List<CompressSkip>)
+
+data class PlaylistReport(val jobs: List<PlaylistJob>, val skipped: List<PlaylistSkip>)
 
 sealed interface ManagerRun {
     data class Running(val title: String, val detail: String, val fraction: Float?) : ManagerRun
@@ -102,6 +113,21 @@ class RomManagerRepository(
         CompressReport(jobs.sortedWith(compareBy({ it.system }, { it.title.lowercase() })), skipped)
     }
 
+    suspend fun findMultiDisc(root: RootEntity): PlaylistReport = withContext(Dispatchers.IO) {
+        val games = dao.gamesIn(root.id).map { CompressCandidate(it.system, it.relativePath, systemFolder(root, it), it.title, it.sizeBytes) }
+        val (jobs, skipped) = MultiDiscPlanner.plan(games, SafCollectionFiles(resolver, Uri.parse(root.treeUri)), library.rules)
+        PlaylistReport(jobs, skipped)
+    }
+
+    fun makePlaylists(root: RootEntity, jobs: List<PlaylistJob>) = start(root, "playlists", "Made ${jobs.size} playlists") { files, journal ->
+        _run.value = ManagerRun.Running("Making playlists", "${jobs.size} multi-disc games", null)
+        val problems = PlaylistMaker(files).run(jobs, journal) { !isActive }
+        val made = journal.log.steps.size
+        val summary = "Made ${if (made == 1) "1 playlist" else "$made playlists"} for multi-disc games"
+        journal.finish(summary)
+        ManagerRun.Done("Playlists made", "$summary. Each shows as one game; change discs from the emulator's menu.", problems)
+    }
+
     fun moveDuplicates(root: RootEntity, selections: List<Pair<DuplicateSet, DuplicateCandidate>>) = start(root, "duplicates", "Moving ${selections.sumOf { it.first.files.size - 1 }} copies") { files, journal ->
         _run.value = ManagerRun.Running("Tidying duplicates", "Moving copies to _duplicates …", null)
         val r = DuplicateMover(files).run(selections, journal) { !isActive }
@@ -123,6 +149,32 @@ class RomManagerRepository(
         val summary = "Compressed ${r.converted} of ${jobs.size} games, saving ${formatBytes(saved)}; originals are in _originals"
         journal.finish(summary)
         ManagerRun.Done(if (r.converted == jobs.size) "Compression finished" else "Compression stopped", "$summary.", r.problems)
+    }
+
+    /** The files deleting [game] would move (an .m3u's discs, a .cue's tracks …). Reads only. */
+    suspend fun gameParts(root: RootEntity, game: GameEntity): List<String> = withContext(Dispatchers.IO) {
+        GameFiles.of(SafCollectionFiles(resolver, Uri.parse(root.treeUri)), game.relativePath)
+    }
+
+    fun deleteGame(root: RootEntity, game: GameEntity) = start(root, "delete", "Deleted ${game.title}") { files, journal ->
+        _run.value = ManagerRun.Running("Deleting", game.title, null)
+        val problems = GameDeleter(files).moveToDeleted(game.relativePath, systemFolder(root, game), journal)
+        journal.finish("Deleted ${game.title}")
+        ManagerRun.Done("Deleted", "${game.title} is in the $DELETED_FOLDER folder. Undo it from History, or use Free up space to delete it for good.", problems)
+    }
+
+    suspend fun holdingSummaries(root: RootEntity): List<HoldingSummary> = withContext(Dispatchers.IO) {
+        if (!library.hasAccess(root)) emptyList() else runCatching { Holding.summaries(SafCollectionFiles(resolver, Uri.parse(root.treeUri))) }.getOrDefault(emptyList())
+    }
+
+    /** Permanently deletes a holding folder. History entries that needed those files can no longer be undone. */
+    fun purge(root: RootEntity, folder: String) = startRaw {
+        if (!hasWriteAccess(root)) return@startRaw ManagerRun.Failed("RetroForge needs permission to change this folder.")
+        _run.value = ManagerRun.Running("Deleting permanently", folder, null)
+        SafCollectionFiles(resolver, Uri.parse(root.treeUri)).deleteHoldingFolder(folder)
+        _logs.value.filter { it.rootId == root.id && it.undoneAt == null && Holding.dependsOn(it, folder) }
+            .forEach { save(it.copy(purgedAt = clock())) }
+        ManagerRun.Done("Deleted permanently", "Emptied $folder.", emptyList())
     }
 
     fun undo(root: RootEntity, log: OperationLog) {

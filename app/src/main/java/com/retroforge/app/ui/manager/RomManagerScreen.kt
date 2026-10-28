@@ -27,6 +27,7 @@ import com.retroforge.core.library.ManagerRun
 import com.retroforge.core.library.RomManagerRepository.Companion.formatBytes
 import com.retroforge.core.library.RootEntity
 import com.retroforge.library.manage.CompressFormat
+import com.retroforge.library.manage.DELETED_FOLDER
 import com.retroforge.library.manage.DUPLICATES_FOLDER
 import com.retroforge.library.manage.KeepRule
 import com.retroforge.library.manage.ORIGINALS_FOLDER
@@ -40,7 +41,8 @@ import java.util.Date
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun RomManagerScreen(viewModel: RomManagerViewModel) {
+fun RomManagerScreen(viewModel: RomManagerViewModel, deleteGameId: Long = -1) {
+    LaunchedEffect(deleteGameId) { if (deleteGameId >= 0) viewModel.askDelete(deleteGameId) }
     val roots by viewModel.roots.collectAsStateWithLifecycle()
     val rootId by viewModel.rootId.collectAsStateWithLifecycle()
     val tab by viewModel.tab.collectAsStateWithLifecycle()
@@ -59,7 +61,7 @@ fun RomManagerScreen(viewModel: RomManagerViewModel) {
 
     ScreenFrame(
         title = "ROM manager",
-        subtitle = "Tidy duplicates and compress games. Every change is shown first, nothing is deleted, and History can undo it.",
+        subtitle = "Tidy duplicates and compress games. Every change is shown first and History can undo it. Files are set aside, never deleted, until you choose Free up space.",
     ) {
         val root = roots?.firstOrNull { it.id == rootId }
         if (roots?.isEmpty() == true) {
@@ -87,6 +89,7 @@ fun RomManagerScreen(viewModel: RomManagerViewModel) {
         when (tab) {
             ManagerTab.DUPLICATES -> DuplicatesTab(viewModel)
             ManagerTab.COMPRESS -> CompressTab(viewModel)
+            ManagerTab.MULTI_DISC -> MultiDiscTab(viewModel)
             ManagerTab.HISTORY -> HistoryTab(viewModel, root)
         }
     }
@@ -145,6 +148,30 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
                         "and gamelist.xml / .m3u entries point at the new file. This can take a long time for disc games.",
                 )
             }
+            is Pending.DeleteGame -> {
+                CardTitle("Delete ${pending.game.title}?")
+                CardBody(
+                    "${if (pending.parts.size == 1) "Its file moves" else "Its ${pending.parts.size} files move"} to the $DELETED_FOLDER folder and its gamelist.xml entry is removed. " +
+                        "You can undo this from History until you empty $DELETED_FOLDER with Free up space.",
+                )
+                pending.parts.take(6).forEach { CardBody("• $it") }
+                if (pending.parts.size > 6) CardBody("… and ${pending.parts.size - 6} more")
+            }
+            is Pending.Purge -> {
+                CardTitle("Delete ${pending.summary.folder} permanently?")
+                StatusPill("This can't be undone", StatusTone.BAD)
+                CardBody(
+                    "${plural(pending.summary.files, "file")} (${formatBytes(pending.summary.bytes)}) will be deleted for good. " +
+                        "History entries that would need them can no longer be undone.",
+                )
+            }
+            is Pending.MakePlaylists -> {
+                CardTitle("Make ${plural(pending.count, "playlist")}?")
+                CardBody(
+                    "Each multi-disc game gets an .m3u playlist next to its discs, listing them in order. Your disc files aren't changed. " +
+                        "RetroForge then shows each game once, and the emulator can change discs from its menu. Other frontends will list the playlist too.",
+                )
+            }
             is Pending.Undo -> {
                 CardTitle("Undo this?")
                 CardBody(pending.log.summary)
@@ -161,7 +188,7 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
         }
     }
     FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        if (canWrite) FocusChip("Yes, go ahead", onClick = viewModel::confirm)
+        if (canWrite) FocusChip(if (pending is Pending.Purge) "Delete permanently" else "Yes, go ahead", onClick = viewModel::confirm)
         else FocusChip("Allow changes to ${root.name}", onClick = {
             val rootUri = root.treeUri.toUri()
             pickFolder.launch(DocumentsContract.buildDocumentUriUsingTree(rootUri, DocumentsContract.getTreeDocumentId(rootUri)))
@@ -283,19 +310,71 @@ private fun CompressTab(viewModel: RomManagerViewModel) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun MultiDiscTab(viewModel: RomManagerViewModel) {
+    val state by viewModel.multiDisc.collectAsStateWithLifecycle()
+    when (val s = state) {
+        Loadable.Idle -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = viewModel::findMultiDisc) {
+            CardTitle("Find multi-disc games")
+            CardBody(
+                "Finds games split over several discs or floppies (\"Disc 1\", \"Disk 2 of 4\", \"Side B\") that have no .m3u playlist, " +
+                    "so each plays as one game with disc swapping. This only reads your files.",
+            )
+        }
+        is Loadable.Loading -> { CardBody("Looking for multi-disc games …"); LinearProgressIndicator(Modifier.fillMaxWidth()) }
+        is Loadable.Failed -> { StatusPill("Couldn't check", StatusTone.BAD); CardBody(s.reason); FocusChip("Try again", onClick = viewModel::findMultiDisc) }
+        is Loadable.Ready -> {
+            val report = s.value
+            if (report.jobs.isEmpty()) CardBody("Every multi-disc game already has a playlist.")
+            report.jobs.groupBy { it.system }.forEach { (system, jobs) ->
+                FocusCard(modifier = Modifier.fillMaxWidth()) {
+                    Text("$system: ${plural(jobs.size, "game")}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+                    jobs.take(5).forEach { CardBody("${it.title}: ${plural(it.discs.size, "disc")}") }
+                    if (jobs.size > 5) CardBody("… and ${jobs.size - 5} more")
+                }
+            }
+            if (report.skipped.isNotEmpty()) {
+                FocusCard(modifier = Modifier.fillMaxWidth()) {
+                    CardTitle("Left alone: ${plural(report.skipped.size, "game")}")
+                    report.skipped.take(10).forEach { CardBody("${it.title}: ${it.reason}") }
+                }
+            }
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                FocusChip("Make ${plural(report.jobs.size, "playlist")}", onClick = viewModel::askMakePlaylists, enabled = report.jobs.isNotEmpty())
+                FocusChip("Check again", onClick = viewModel::findMultiDisc)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun HistoryTab(viewModel: RomManagerViewModel, root: RootEntity) {
     val logs by viewModel.logs.collectAsStateWithLifecycle()
+    val holding by viewModel.holding.collectAsStateWithLifecycle()
+    LaunchedEffect(root.id) { viewModel.refreshHolding() }
+    if (holding.isNotEmpty()) {
+        FocusCard(modifier = Modifier.fillMaxWidth()) {
+            CardTitle("Free up space")
+            CardBody("Files RetroForge set aside. Delete a folder once you're sure you don't need it: this is the only step that deletes for good.")
+            holding.forEach { CardBody("${it.folder}: ${plural(it.files, "file")} · ${formatBytes(it.bytes)}") }
+        }
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            holding.forEach { h -> FocusChip("Delete ${h.folder} permanently", onClick = { viewModel.askPurge(h) }) }
+        }
+    }
     val mine = logs.filter { it.rootId == root.id }
     if (mine.isEmpty()) CardBody("Nothing has been changed in ${root.name} yet.")
     val format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
     mine.forEach { log ->
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle(if (log.kind == "compress") "Compressed" else "Duplicates tidied")
+            CardTitle(when (log.kind) { "compress" -> "Compressed"; "delete" -> "Deleted"; "playlists" -> "Playlists made"; else -> "Duplicates tidied" })
             CardBody(log.summary)
             CardBody(format.format(Date(log.startedAt)) + " · ${plural(log.steps.size, "change")}" + if (!log.finished) " · interrupted" else "")
             log.undoneAt?.let { StatusPill("Undone ${format.format(Date(it))}", StatusTone.NEUTRAL) }
+            if (log.undoneAt == null && log.purgedAt != null) StatusPill("Can't be undone: its files were deleted permanently", StatusTone.NEUTRAL)
         }
-        if (log.undoneAt == null) FocusChip("Undo", onClick = { viewModel.askUndo(log) })
+        if (log.undoneAt == null && log.purgedAt == null) FocusChip("Undo", onClick = { viewModel.askUndo(log) })
     }
 }

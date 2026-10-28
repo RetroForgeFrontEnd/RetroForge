@@ -19,6 +19,7 @@ class RealPlanTest {
         override fun create(path: String) = error("read-only")
         override fun replace(path: String, bytes: ByteArray) = error("read-only")
         override fun discardPartial(path: String) = error("read-only")
+        override fun deleteHoldingFolder(folder: String) = error("read-only")
     }
 
     @Test
@@ -40,6 +41,11 @@ class RealPlanTest {
             val same = ContentFingerprint.sameness(set.files.map { f -> ContentFingerprint.of(f.fileName, f.size) { files.open(f.relativePath) } })
             println("PLAN set ${set.system}/${set.title}: $same keep=${set.keep(KeepRule.MOST_COMPATIBLE).fileName} files=${set.files.map { it.fileName }}")
         }
+
+        val (lists, lskip) = MultiDiscPlanner.plan(games.map { CompressCandidate(it.system, it.relativePath, systemFolder(it.relativePath), it.displayTitle, it.size) }, files, rules)
+        println("PLAN playlists=${lists.size} skipped=${lskip.size}")
+        lists.groupBy { it.system }.forEach { (k, v) -> println("PLAN playlists $k: ${v.size} e.g. ${v.first().playlist} <- ${v.first().discs}") }
+        lskip.groupBy { it.system + ": " + it.reason }.forEach { (k, v) -> println("PLAN lskip ${v.size} $k e.g. ${v.first().title}") }
 
         val (jobs, cskip) = CompressPlanner.plan(games.map { CompressCandidate(it.system, it.relativePath, systemFolder(it.relativePath), it.displayTitle, it.size) }, files, rules)
         println("PLAN compress jobs=${jobs.size} inputGB=%.2f skipped=${cskip.size}".format(jobs.sumOf { it.inputBytes } / 1e9))

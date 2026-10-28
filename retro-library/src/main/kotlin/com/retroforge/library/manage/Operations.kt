@@ -12,7 +12,7 @@ import java.nio.charset.CodingErrorAction
 /** Where moved-aside files go, relative to the collection folder. RetroBat and ES-DE ignore these top-level folders. */
 const val DUPLICATES_FOLDER = "_duplicates"
 const val ORIGINALS_FOLDER = "_originals"
-val HOLDING_FOLDERS = setOf(DUPLICATES_FOLDER, ORIGINALS_FOLDER)
+val HOLDING_FOLDERS = setOf(DUPLICATES_FOLDER, ORIGINALS_FOLDER, DELETED_FOLDER)
 const val BACKUP_SUFFIX = ".retroforge-backup"
 
 @Serializable
@@ -59,6 +59,8 @@ data class OperationLog(
     val steps: List<Step> = emptyList(),
     val finished: Boolean = false,
     val undoneAt: Long? = null,
+    /** Set when files this log would put back were permanently deleted, so it can no longer be undone. */
+    val purgedAt: Long? = null,
 ) {
     companion object {
         val json = Json { ignoreUnknownKeys = true; classDiscriminator = "type" }
@@ -104,14 +106,18 @@ object GamelistEditor {
      */
     fun retarget(text: String, oldPath: String, newPath: String): Pair<String, TextChange?> {
         val old = find(text, oldPath) ?: return text to null
-        if (find(text, newPath) != null) {
-            val previous = gameBlock.findAll(text).lastOrNull { it.range.last < old.range.first }
-            return text.removeRange(old.range) to TextChange.RemovedEntry(old.value, previous?.let { pathOf(it.value) })
-        }
+        if (find(text, newPath) != null) return remove(text, oldPath)
         val from = pathOf(old.value)!!
         val to = escape("./$newPath")
         val block = old.value.replaceFirst("<path>$from</path>", "<path>$to</path>")
         return text.replaceRange(old.range, block) to TextChange.PathChanged(from, to)
+    }
+
+    /** Removes the entry for [path] (e.g. a deleted game); undo puts it back in place. */
+    fun remove(text: String, path: String): Pair<String, TextChange?> {
+        val old = find(text, path) ?: return text to null
+        val previous = gameBlock.findAll(text).lastOrNull { it.range.last < old.range.first }
+        return text.removeRange(old.range) to TextChange.RemovedEntry(old.value, previous?.let { pathOf(it.value) })
     }
 
     fun undo(text: String, change: TextChange): String = when (change) {

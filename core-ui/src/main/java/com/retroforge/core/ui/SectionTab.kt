@@ -13,7 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -26,6 +27,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 /** One entry of the main section navigation (rail on wide screens, bar on phones). */
 @Composable
@@ -57,12 +59,14 @@ fun SectionTab(
         ) {
             Icon(icon, contentDescription = null, tint = content, modifier = Modifier.size(26.dp))
             Spacer(Modifier.height(4.dp))
-            Text(
+            val style = if (compact) MaterialTheme.typography.labelMedium else MaterialTheme.typography.labelLarge
+            // Shrinks a long label ("ROM hacks") to fit a narrow phone tab rather than clipping it.
+            BasicText(
                 label,
-                style = if (compact) MaterialTheme.typography.labelMedium else MaterialTheme.typography.labelLarge,
-                color = content,
+                style = style.copy(color = content),
                 maxLines = 1,
                 softWrap = false,
+                autoSize = TextAutoSize.StepBased(minFontSize = 9.sp, maxFontSize = style.fontSize, stepSize = 0.5.sp),
             )
         }
     }

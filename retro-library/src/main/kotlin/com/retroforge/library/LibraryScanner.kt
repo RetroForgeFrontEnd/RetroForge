@@ -186,7 +186,8 @@ class LibraryScanner(private val rules: SystemRules) {
         val hidden = referencedByPlaylists(romFiles, prefix, problems)
         return romFiles.filter { it.path.lowercase() !in hidden }.map { entry ->
             val name = RomNames.parse(entry.node.name)
-            val meta = metadata[entry.path.lowercase()]
+            // A playlist RetroForge (or the user) made has no gamelist entry of its own: borrow its first disc's.
+            val meta = metadata[entry.path.lowercase()] ?: if (isPlaylist(entry)) firstDisc(entry)?.let { metadata[it] } else null
             val image = listOfNotNull(meta?.image, meta?.thumbnail, meta?.marquee)
                 .firstNotNullOfOrNull { imageIndex[GamelistParser.normalizePath(it)] }
             ScannedGame(
@@ -244,6 +245,13 @@ class LibraryScanner(private val rules: SystemRules) {
                 else -> null
             }
         }.map { it.replace('\\', '/').removePrefix("./") }.toList()
+    }
+
+    private fun isPlaylist(entry: FileEntry) = !entry.node.isDirectory && entry.node.name.endsWith(".m3u", ignoreCase = true)
+
+    private fun firstDisc(entry: FileEntry): String? = runCatching { readReferences(entry.node).firstOrNull() }.getOrNull()?.let { ref ->
+        val dir = entry.path.substringBeforeLast('/', "")
+        (if (dir.isEmpty()) ref else "$dir/$ref").lowercase()
     }
 
     private fun discCount(entry: FileEntry): Int? = runCatching { readReferences(entry.node).size }.getOrNull()?.takeIf { it > 0 }

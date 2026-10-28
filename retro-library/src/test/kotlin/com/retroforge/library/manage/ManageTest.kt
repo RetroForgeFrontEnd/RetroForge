@@ -155,3 +155,36 @@ class ManageTest {
         assertEquals((1000L + 300) * Chd.CD_FRAME, CueSheet.logicalBytes(tracks))
     }
 }
+
+class MultiDiscTest {
+    @get:Rule val tmp = TemporaryFolder()
+
+    @Test
+    fun plansPlaylists() {
+        val root = tmp.newFolder("roms")
+        File(root, "psx").mkdirs()
+        File(root, "psx/Taken.m3u").writeText("x")
+        fun g(path: String) = CompressCandidate(path.substringBefore('/'), path, path.substringBefore('/'), nameOf(path).substringBefore(" ("), 1)
+        val games = listOf(
+            g("psx/Command & Conquer (USA) (Disc 1) (GDI).chd"), g("psx/Command & Conquer (USA) (Disc 2) (NOD).chd"),
+            g("psx/Gap (USA) (Disc 1).chd"), g("psx/Gap (USA) (Disc 3).chd"),
+            g("psx/Taken (Disc 1).chd"), g("psx/Taken (Disc 2).chd"),
+            g("amstradcpc/Bard's Tale (1988)(Electronic Arts)(Disk 2 of 2).zip"), g("amstradcpc/Bard's Tale (1988)(Electronic Arts)(Disk 1 of 2).zip"),
+            g("snes/Not Multi (USA) (Disc 1).sfc"), g("snes/Not Multi (USA) (Disc 2).sfc"),
+        )
+        val (jobs, skipped) = MultiDiscPlanner.plan(games, JvmCollectionFiles(root), com.retroforge.library.SystemRules.bundled())
+        assertEquals(
+            listOf(
+                PlaylistJob("amstradcpc", "Bard's Tale", "amstradcpc/Bard's Tale (1988)(Electronic Arts).m3u",
+                    listOf("Bard's Tale (1988)(Electronic Arts)(Disk 1 of 2).zip", "Bard's Tale (1988)(Electronic Arts)(Disk 2 of 2).zip")),
+                PlaylistJob("psx", "Command & Conquer", "psx/Command & Conquer (USA).m3u",
+                    listOf("Command & Conquer (USA) (Disc 1) (GDI).chd", "Command & Conquer (USA) (Disc 2) (NOD).chd")),
+            ),
+            jobs,
+        )
+        assertEquals(setOf("Disc 2 is missing.", "Taken.m3u already exists."), skipped.map { it.reason }.toSet())
+
+        PlaylistMaker(JvmCollectionFiles(root)).run(jobs.takeLast(1), Journal(OperationLog("1", "playlists", 1, 0, "t")) {})
+        assertEquals("Command & Conquer (USA) (Disc 1) (GDI).chd\nCommand & Conquer (USA) (Disc 2) (NOD).chd\n", File(root, "psx/Command & Conquer (USA).m3u").readText())
+    }
+}

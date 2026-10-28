@@ -73,7 +73,7 @@ import kotlinx.coroutines.flow.Flow
 enum class Section(val route: String, val label: String, @DrawableRes val icon: Int) {
     HOME("home", "Home", R.drawable.ic_section_home),
     RETRO("retro", "Retro", R.drawable.ic_section_retro),
-    HACKS("hacks", "Hacks", R.drawable.ic_section_hacks),
+    HACKS("hacks", "ROM hacks", R.drawable.ic_section_hacks),
     PC("pc", "PC", R.drawable.ic_section_pc),
     LINKS("links", "Links", R.drawable.ic_section_links),
     SETTINGS("settings", "Settings", R.drawable.ic_section_settings),
@@ -88,6 +88,7 @@ private const val SYSTEM_ROUTE = "retro/system/{system}"
 private const val GAME_ROUTE = "retro/game/{id}"
 private const val COVER_ROUTE = "retro/game/{id}/cover"
 private const val MANAGER_ROUTE = "retro/manager"
+private const val MANAGER_DELETE_ROUTE = "retro/manager/delete/{id}"
 
 @Composable
 fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
@@ -174,6 +175,10 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                             val managerViewModel: RomManagerViewModel = viewModel(factory = RomManagerViewModel.factory(container.library, container.romManager))
                             RomManagerScreen(managerViewModel)
                         }
+                        composable(MANAGER_DELETE_ROUTE) { entry ->
+                            val managerViewModel: RomManagerViewModel = viewModel(factory = RomManagerViewModel.factory(container.library, container.romManager))
+                            RomManagerScreen(managerViewModel, deleteGameId = entry.arguments?.getString("id")?.toLongOrNull() ?: -1)
+                        }
                         composable(SETUP_ROUTE) {
                             val setupViewModel: SetupViewModel = viewModel(
                                 factory = SetupViewModel.factory(container.library, container.retroArch, container.settings, container.contentResolver),
@@ -189,6 +194,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                                 entry.arguments?.getString("id")?.toLongOrNull() ?: -1,
                                 onOpenGame = { nav.navigate("retro/game/$it") },
                                 onChangeCover = { nav.navigate("retro/game/$it/cover") },
+                                onDelete = { nav.navigate("retro/manager/delete/$it") },
                             )
                         }
                         composable(COVER_ROUTE) { entry ->

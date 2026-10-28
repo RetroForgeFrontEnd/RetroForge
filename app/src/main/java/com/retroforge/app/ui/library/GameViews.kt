@@ -78,7 +78,7 @@ fun GameTile(game: GameEntity, image: Any?, onClick: () -> Unit, modifier: Modif
 
 fun tagLine(game: GameEntity): String? = listOfNotNull(
     game.regions.ifEmpty { null },
-    game.discs?.let { "$it discs" },
+    game.discs?.let { if (it == 1) "1 disc" else "$it discs" },
     if (game.isHack) game.hackFolder ?: "Hack" else null,
     if (game.duplicateKey != null) "Also another copy" else null,
 ).joinToString(" · ").ifEmpty { null }

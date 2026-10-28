@@ -80,6 +80,32 @@ class CompressorTest {
     private fun chdAndZipSize(root: File) = File(root, "psx/discs/Game (Disc 1).chd").length() + File(root, "snes/Rom (USA).zip").length()
 
     @Test
+    fun deleteGameThenUndoThenPurge() {
+        val root = collection()
+        File(root, "psx/gamelist.xml").writeText("<gameList>\n\t<game>\n\t\t<path>./Game.m3u</path>\n\t</game>\n</gameList>\n")
+        val files = JvmCollectionFiles(root)
+        assertEquals(4, GameFiles.of(files, "psx/Game.m3u").size) // m3u, cue, two bins
+        var log: OperationLog? = null
+        val problems = GameDeleter(files).moveToDeleted("psx/Game.m3u", "psx", Journal(OperationLog("2", "delete", 1, 0, "t")) { log = it })
+        assertEquals(emptyList<String>(), problems)
+        assertFalse(File(root, "psx/Game.m3u").exists())
+        assertTrue(File(root, "_deleted/psx/discs/Game (Disc 1) (Track 2).bin").isFile)
+        assertFalse(File(root, "psx/gamelist.xml").readText().contains("Game.m3u"))
+        assertEquals(listOf(HoldingSummary(DELETED_FOLDER, 4, 2352L * 60 + File(root, "_deleted/psx/discs/Game (Disc 1).cue").length() + File(root, "_deleted/psx/Game.m3u").length())), Holding.summaries(files))
+        assertTrue(Holding.dependsOn(log!!, DELETED_FOLDER))
+
+        assertEquals(emptyList<String>(), Undo.run(files, log!!))
+        assertTrue(File(root, "psx/discs/Game (Disc 1).bin").isFile)
+        assertTrue(File(root, "psx/gamelist.xml").readText().contains("<path>./Game.m3u</path>"))
+
+        GameDeleter(files).moveToDeleted("snes/Rom (USA).sfc", "snes", Journal(OperationLog("3", "delete", 1, 0, "t")) {})
+        files.deleteHoldingFolder(DELETED_FOLDER)
+        assertFalse(File(root, DELETED_FOLDER).exists())
+        assertTrue(runCatching { files.deleteHoldingFolder("snes") }.isFailure)
+        assertTrue(File(root, "snes").isDirectory)
+    }
+
+    @Test
     fun failedConversionLeavesOriginalsAlone() {
         val root = collection()
         File(root, "psx/discs/Game (Disc 1) (Track 2).bin").writeBytes(ByteArray(100)) // not whole sectors

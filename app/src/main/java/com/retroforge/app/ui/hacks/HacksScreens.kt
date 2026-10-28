@@ -56,7 +56,7 @@ fun HacksScreen(
     val roots by library.roots.collectAsStateWithLifecycle()
     val rootsById = remember(roots) { roots.orEmpty().associateBy { it.id } }
     val chosen by library.chosenCovers.collectAsStateWithLifecycle()
-    ScreenFrame(title = "Hacks", subtitle = "Hacks you already have, and more to discover from your catalogues.") {
+    ScreenFrame(title = "ROM hacks", subtitle = "ROM hacks you already have, and more to discover from your catalogues.") {
         if (state.loading) LinearProgressIndicator(Modifier.fillMaxWidth())
 
         Text("Your hack ROMs", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)

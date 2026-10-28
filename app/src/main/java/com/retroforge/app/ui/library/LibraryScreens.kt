@@ -145,7 +145,7 @@ fun RetroScreen(
         if (!roots.isNullOrEmpty()) {
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenManager) {
                 CardTitle("ROM manager")
-                CardBody("Tidy duplicate copies and compress games (CHD for discs, .zip for cartridges). Shows every change first, deletes nothing, and can undo.")
+                CardBody("Tidy duplicate copies and compress games (CHD for discs, .zip for cartridges). Shows every change first and can undo it; files are set aside, not deleted.")
             }
         }
 
@@ -246,7 +246,7 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
 }
 
 @Composable
-fun GameDetailScreen(viewModel: LibraryViewModel, gameId: Long, onOpenGame: (Long) -> Unit, onChangeCover: (Long) -> Unit) {
+fun GameDetailScreen(viewModel: LibraryViewModel, gameId: Long, onOpenGame: (Long) -> Unit, onChangeCover: (Long) -> Unit, onDelete: (Long) -> Unit) {
     val game by remember(gameId) { viewModel.game(gameId) }.collectAsStateWithLifecycle(initialValue = null)
     val roots by viewModel.roots.collectAsStateWithLifecycle()
     val rootsById = remember(roots) { roots.orEmpty().associateBy { it.id } }
@@ -263,6 +263,7 @@ fun GameDetailScreen(viewModel: LibraryViewModel, gameId: Long, onOpenGame: (Lon
         GameArt(g, viewModel.art(rootsById, chosen, g), Modifier.fillMaxWidth().heightIn(max = 320.dp).padding(bottom = 4.dp))
         CoverControls(g, viewModel, onChangeCover = { onChangeCover(g.id) })
         PlaySection(viewModel, g, rootsById[g.rootId])
+        FocusChip("Delete this game…", onClick = { onDelete(g.id) })
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             g.description?.let { CardBody(it) }
             listOfNotNull(

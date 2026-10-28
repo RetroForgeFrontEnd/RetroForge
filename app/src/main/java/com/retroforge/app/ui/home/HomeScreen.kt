@@ -53,8 +53,8 @@ fun HomeScreen(showPc: Boolean, onOpen: (Section) -> Unit) {
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("Your files stay yours")
             CardBody(
-                "RetroForge reads your game folders in place. It never renames, moves or deletes ROMs, " +
-                    "and keeps its own data separate, so your other frontends keep working with the same collection.",
+                "RetroForge reads your game folders in place and keeps its own data separate, so your other frontends keep working " +
+                    "with the same collection. Files are only changed when you confirm it in the ROM manager, and those changes can be undone.",
             )
         }
     }

@@ -9,6 +9,7 @@ import com.retroforge.library.manage.CollectionFiles
 import com.retroforge.library.manage.PARTIAL_SUFFIX
 import com.retroforge.library.manage.nameOf
 import com.retroforge.library.manage.parentOf
+import com.retroforge.library.manage.requireHoldingFolder
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
@@ -142,6 +143,26 @@ class SafCollectionFiles(private val resolver: ContentResolver, private val tree
         val file = need(path)
         (resolver.openOutputStream(uri(file.id), "wt") ?: throw IOException("can't write $path")).use { it.write(bytes) }
         changed(need(parentOf(path)).id)
+    }
+
+    override fun walk(folder: String): List<Pair<String, Long>> {
+        val start = find(folder)?.takeIf { it.isDirectory } ?: return emptyList()
+        val out = mutableListOf<Pair<String, Long>>()
+        fun visit(id: String, path: String) {
+            for (child in children(id)) {
+                val childPath = "$path/${child.name}"
+                if (child.isDirectory) visit(child.id, childPath) else out += childPath to child.size
+            }
+        }
+        visit(start.id, folder)
+        return out
+    }
+
+    override fun deleteHoldingFolder(folder: String) {
+        requireHoldingFolder(folder)
+        val target = find(folder) ?: return
+        if (!DocumentsContract.deleteDocument(resolver, uri(target.id))) throw IOException("couldn't delete $folder")
+        listings.clear()
     }
 
     override fun discardPartial(path: String) {

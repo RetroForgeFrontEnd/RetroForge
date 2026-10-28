@@ -8,8 +8,12 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.retroforge.core.library.CompressReport
 import com.retroforge.core.library.DuplicateReport
+import com.retroforge.core.library.GameEntity
+import com.retroforge.library.manage.HoldingSummary
+import kotlinx.coroutines.flow.first
 import com.retroforge.core.library.LibraryRepository
 import com.retroforge.core.library.ManagerRun
+import com.retroforge.core.library.PlaylistReport
 import com.retroforge.core.library.RomManagerRepository
 import com.retroforge.core.library.RootEntity
 import com.retroforge.library.manage.DuplicateSet
@@ -22,7 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-enum class ManagerTab(val label: String) { DUPLICATES("Duplicates"), COMPRESS("Compress"), HISTORY("History") }
+enum class ManagerTab(val label: String) { DUPLICATES("Duplicates"), COMPRESS("Compress"), MULTI_DISC("Multi-disc"), HISTORY("History") }
 
 sealed interface Loadable<out T> {
     data object Idle : Loadable<Nothing>
@@ -36,6 +40,9 @@ sealed interface Pending {
     data class MoveDuplicates(val count: Int) : Pending
     data class Compress(val count: Int, val bytes: Long) : Pending
     data class Undo(val log: OperationLog) : Pending
+    data class DeleteGame(val game: GameEntity, val parts: List<String>) : Pending
+    data class Purge(val summary: HoldingSummary) : Pending
+    data class MakePlaylists(val count: Int) : Pending
 }
 
 class RomManagerViewModel(private val library: LibraryRepository, private val manager: RomManagerRepository) : ViewModel() {
@@ -60,6 +67,44 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
     val compressible = MutableStateFlow<Loadable<CompressReport>>(Loadable.Idle)
     val selectedSystems = MutableStateFlow<Set<String>>(emptySet())
 
+    val holding = MutableStateFlow<List<HoldingSummary>>(emptyList())
+
+    val multiDisc = MutableStateFlow<Loadable<PlaylistReport>>(Loadable.Idle)
+
+    fun findMultiDisc() {
+        val root = root() ?: return
+        viewModelScope.launch {
+            multiDisc.value = Loadable.Loading(0, 0)
+            multiDisc.value = try {
+                Loadable.Ready(manager.findMultiDisc(root))
+            } catch (e: Exception) {
+                Loadable.Failed(e.message ?: "Couldn't look for multi-disc games")
+            }
+        }
+    }
+
+    fun askMakePlaylists() {
+        val jobs = (multiDisc.value as? Loadable.Ready)?.value?.jobs.orEmpty()
+        pending.value = Pending.MakePlaylists(jobs.size)
+    }
+
+    fun refreshHolding() {
+        val root = root() ?: return
+        viewModelScope.launch { holding.value = manager.holdingSummaries(root) }
+    }
+
+    /** Opened from a game's page: select its folder and ask to confirm deleting it. */
+    fun askDelete(gameId: Long) {
+        viewModelScope.launch {
+            val game = library.game(gameId).first() ?: return@launch
+            val root = library.rootOf(game) ?: return@launch
+            selectRoot(root)
+            pending.value = Pending.DeleteGame(game, runCatching { manager.gameParts(root, game) }.getOrDefault(listOf(game.relativePath)))
+        }
+    }
+
+    fun askPurge(summary: HoldingSummary) { pending.value = Pending.Purge(summary) }
+
     fun root(): RootEntity? = roots.value?.firstOrNull { it.id == rootId.value }
 
     fun selectRoot(root: RootEntity) {
@@ -67,6 +112,7 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
         rootId.value = root.id
         duplicates.value = Loadable.Idle
         compressible.value = Loadable.Idle
+        multiDisc.value = Loadable.Idle
         pending.value = null
     }
 
@@ -143,6 +189,12 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
                 compressible.value = Loadable.Idle
             }
             is Pending.Undo -> manager.undo(root, p.log)
+            is Pending.DeleteGame -> manager.deleteGame(root, p.game)
+            is Pending.Purge -> manager.purge(root, p.summary.folder)
+            is Pending.MakePlaylists -> {
+                manager.makePlaylists(root, (multiDisc.value as? Loadable.Ready)?.value?.jobs.orEmpty())
+                multiDisc.value = Loadable.Idle
+            }
             null -> Unit
         }
         pending.value = null
@@ -150,7 +202,10 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
 
     fun cancelPending() { pending.value = null }
     fun stop() = manager.cancel()
-    fun dismissRun() = manager.dismiss()
+    fun dismissRun() {
+        manager.dismiss()
+        refreshHolding()
+    }
 
     companion object {
         fun factory(library: LibraryRepository, manager: RomManagerRepository): ViewModelProvider.Factory = viewModelFactory {
