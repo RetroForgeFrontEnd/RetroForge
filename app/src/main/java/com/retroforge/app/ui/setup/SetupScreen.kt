@@ -162,6 +162,15 @@ fun SetupScreen(viewModel: SetupViewModel, onDone: () -> Unit) {
                     )
                     if (settings?.retroArchSystemUri == null) CardBody("You'll be asked to choose that folder once. Open RetroArch at least once first so it exists.")
                 }
+                bios.playerCopy?.takeIf { it.copied.isNotEmpty() || it.alreadyThere.isNotEmpty() || it.failed.isNotEmpty() }?.let { r ->
+                    CardBody(
+                        "Built-in player: " + listOfNotNull(
+                            r.copied.size.takeIf { it > 0 }?.let { "$it BIOS file(s) copied" },
+                            r.alreadyThere.size.takeIf { it > 0 }?.let { "$it already there" },
+                            r.failed.size.takeIf { it > 0 }?.let { "$it couldn't be copied" },
+                        ).joinToString(", ") + ". Nothing to do: RetroForge keeps its own copy.",
+                    )
+                }
                 if (bios.copying) LinearProgressIndicator(Modifier.fillMaxWidth())
                 bios.copyResult?.let { r ->
                     FocusCard(modifier = Modifier.fillMaxWidth()) {

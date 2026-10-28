@@ -58,6 +58,31 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge) {
     }
 }
 
+/** Other free PC-game apps, for devices DroidDeck doesn't support. Links to their official releases only. */
+@Composable
+private fun OtherPcAppsCard() {
+    val context = LocalContext.current
+    FocusCard(modifier = Modifier.fillMaxWidth()) {
+        CardTitle("Other PC game apps")
+        CardBody(
+            "GameNative (Steam, Epic, GOG and Amazon games you own) and Winlator (Windows games you have installed) are free, separately " +
+                "developed apps. Their recent versions and community builds are reported to run some games on Mali and Xclipse GPUs " +
+                "too, usually with lower compatibility than on Snapdragon. RetroForge doesn't start their games yet and hasn't tested them.",
+        )
+    }
+    androidx.compose.foundation.layout.Row(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)) {
+        com.retroforge.core.ui.FocusChip("GameNative releases", onClick = {
+            runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, GAMENATIVE_RELEASES.toUri())) }
+        })
+        com.retroforge.core.ui.FocusChip("Winlator releases", onClick = {
+            runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, WINLATOR_RELEASES.toUri())) }
+        })
+    }
+}
+
+private const val GAMENATIVE_RELEASES = "https://github.com/utkarshdalal/GameNative/releases/latest"
+private const val WINLATOR_RELEASES = "https://github.com/brunodev85/winlator/releases"
+
 @Composable
 private fun DeviceCard(status: PcStatus) {
     FocusCard(modifier = Modifier.fillMaxWidth()) {
@@ -65,14 +90,14 @@ private fun DeviceCard(status: PcStatus) {
         val (label, tone) = when (status.support.level) {
             PcSupportLevel.SUPPORTED -> "Supported GPU" to StatusTone.GOOD
             PcSupportLevel.EXPERIMENTAL -> "Experimental GPU" to StatusTone.CAUTION
-            PcSupportLevel.UNSUPPORTED -> "PC games not available" to StatusTone.BAD
+            PcSupportLevel.UNSUPPORTED -> "DroidDeck not supported" to StatusTone.CAUTION
             PcSupportLevel.UNKNOWN -> "GPU not identified" to StatusTone.NEUTRAL
         }
         StatusPill(label, tone)
         CardBody(status.support.reason)
         CardBody("GPU: ${status.gpu.glRenderer ?: "unknown"}")
         status.gpu.socModel?.let { CardBody("Chip: $it") }
-        CardBody("Based on the PC runtime's published requirements; a supported GPU does not guarantee every game runs.")
+        CardBody("Based on DroidDeck's published requirements; a supported GPU does not guarantee every game runs.")
     }
 }
 
@@ -86,10 +111,11 @@ private fun DroidDeckCard(status: PcStatus, bridge: DroidDeckBridge) {
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("PC game runtime")
             CardBody(
-                "Not needed on this device. PC games need a phone or handheld with a Qualcomm Snapdragon chip (Adreno GPU), " +
-                    "such as many AYN, Retroid and Snapdragon phones. Your retro games work as normal.",
+                "DroidDeck, the PC runtime RetroForge works with, needs a Qualcomm Snapdragon chip (Adreno GPU). " +
+                    "Your retro games work as normal.",
             )
         }
+        OtherPcAppsCard()
     } else if (install == null) {
         FocusCard(
             modifier = Modifier.fillMaxWidth(),

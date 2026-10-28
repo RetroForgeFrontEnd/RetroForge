@@ -47,6 +47,8 @@ class AppContainer(application: Application) {
     val retroArchHotkeys = RetroArchHotkeys(application)
     val romManager = RomManagerRepository(library, application.contentResolver, File(application.filesDir, "rom-manager"))
     val coreChoices = com.retroforge.player.CoreChoices(File(application.filesDir, "player/cores.properties"))
+    /** The built-in player's BIOS folder (the cores' "system" directory); PlayerActivity uses the same path. */
+    val playerSystemDir = File(application.getExternalFilesDir(null) ?: application.filesDir, "system")
     val cores = CoreManager(File(application.filesDir, "cores"), "RetroForge/${BuildConfig.VERSION_NAME}")
 
     // Read by SteamGridDB calls on a background thread; kept current from settings.

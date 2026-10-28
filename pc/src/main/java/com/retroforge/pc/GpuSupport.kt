@@ -37,7 +37,7 @@ object GpuClassifier {
             ?: return if (identity.glRenderer.isNullOrBlank() && identity.kgslModel.isNullOrBlank()) {
                 PcSupport(PcSupportLevel.UNKNOWN, null, "The GPU model could not be read on this device.")
             } else {
-                PcSupport(PcSupportLevel.UNSUPPORTED, null, "PC games need a Qualcomm Adreno GPU, and this device does not have one.")
+                PcSupport(PcSupportLevel.UNSUPPORTED, null, "DroidDeck needs a Qualcomm Adreno GPU, and this device does not have one.")
             }
         return when {
             model == 850 -> PcSupport(PcSupportLevel.EXPERIMENTAL, model, "Adreno 850 support is experimental.")

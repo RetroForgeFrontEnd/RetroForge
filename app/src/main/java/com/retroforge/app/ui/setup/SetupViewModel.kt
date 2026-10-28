@@ -42,6 +42,8 @@ data class BiosState(
     val reports: List<BiosReport>? = null,
     val copying: Boolean = false,
     val copyResult: CopyResult? = null,
+    /** Copied into the built-in player's own BIOS folder automatically after each check. */
+    val playerCopy: CopyResult? = null,
     val error: String? = null,
 )
 
@@ -50,6 +52,8 @@ class SetupViewModel(
     private val retroArch: RetroArchLauncher,
     private val settings: SettingsRepository,
     private val resolver: ContentResolver,
+    /** The built-in player's BIOS ("system") folder. */
+    private val playerSystemDir: java.io.File,
 ) : ViewModel() {
 
     private val checker = BiosChecker.bundled()
@@ -110,6 +114,11 @@ class SetupViewModel(
             _bios.update {
                 it.copy(checking = false, reports = result.getOrNull(), error = result.exceptionOrNull()?.let { e -> "Couldn't read that folder: ${e.message}" })
             }
+            // The built-in player needs no folder picking: its BIOS folder is RetroForge's own.
+            result.getOrNull()?.let { reports ->
+                val copy = withContext(Dispatchers.IO) { runCatching { installer.copyToFolder(uri, installer.toCopy(reports), playerSystemDir) } }
+                _bios.update { it.copy(playerCopy = copy.getOrNull()) }
+            }
         }
     }
 
@@ -140,7 +149,7 @@ class SetupViewModel(
     fun systemName(id: String) = library.systemName(id)
 
     companion object {
-        fun factory(library: LibraryRepository, retroArch: RetroArchLauncher, settings: SettingsRepository, resolver: ContentResolver): ViewModelProvider.Factory =
-            viewModelFactory { initializer { SetupViewModel(library, retroArch, settings, resolver) } }
+        fun factory(library: LibraryRepository, retroArch: RetroArchLauncher, settings: SettingsRepository, resolver: ContentResolver, playerSystemDir: java.io.File): ViewModelProvider.Factory =
+            viewModelFactory { initializer { SetupViewModel(library, retroArch, settings, resolver, playerSystemDir) } }
     }
 }

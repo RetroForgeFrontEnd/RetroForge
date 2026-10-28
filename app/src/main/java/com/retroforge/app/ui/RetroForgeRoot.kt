@@ -214,7 +214,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         }
                         composable(SETUP_ROUTE) {
                             val setupViewModel: SetupViewModel = viewModel(
-                                factory = SetupViewModel.factory(container.library, container.retroArch, container.settings, container.contentResolver),
+                                factory = SetupViewModel.factory(container.library, container.retroArch, container.settings, container.contentResolver, container.playerSystemDir),
                             )
                             SetupScreen(setupViewModel, onDone = { nav.goTo(Section.RETRO) })
                         }

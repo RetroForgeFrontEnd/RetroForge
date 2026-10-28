@@ -52,6 +52,38 @@ class BiosInstaller(private val resolver: ContentResolver) {
         return CopyResult(copied, existing, failed)
     }
 
+    /**
+     * The same copy into a folder of RetroForge's own (the built-in player's BIOS folder), so no folder needs picking.
+     * Never overwrites: files already there are left alone.
+     */
+    fun copyToFolder(sourceTree: Uri, files: List<FoundBios>, targetDir: java.io.File): CopyResult {
+        val copied = mutableListOf<String>()
+        val existing = mutableListOf<String>()
+        val failed = mutableListOf<Pair<String, String>>()
+        for (file in files) {
+            val target = file.wanted.name
+            try {
+                val out = java.io.File(targetDir, target)
+                // BIOS names come from RetroForge's own rules; this keeps any odd name inside the folder.
+                require(out.canonicalPath.startsWith(targetDir.canonicalPath + java.io.File.separator)) { "unexpected file name" }
+                if (out.exists()) {
+                    existing += target
+                    continue
+                }
+                out.parentFile?.mkdirs()
+                val part = java.io.File(out.path + ".part")
+                resolver.openInputStream(DocumentsContract.buildDocumentUriUsingTree(sourceTree, file.nodeId)).use { input ->
+                    part.outputStream().use { output -> checkNotNull(input) { "couldn't read ${file.foundAs}" }.copyTo(output) }
+                }
+                check(part.renameTo(out)) { "couldn't save $target" }
+                copied += target
+            } catch (e: Exception) {
+                failed += target to (e.message ?: e.javaClass.simpleName)
+            }
+        }
+        return CopyResult(copied, existing, failed)
+    }
+
     private fun childId(tree: Uri, parentId: String, name: String): String? {
         val uri = DocumentsContract.buildChildDocumentsUriUsingTree(tree, parentId)
         return resolver.query(uri, arrayOf(Document.COLUMN_DOCUMENT_ID, Document.COLUMN_DISPLAY_NAME), null, null, null)?.use { c ->
