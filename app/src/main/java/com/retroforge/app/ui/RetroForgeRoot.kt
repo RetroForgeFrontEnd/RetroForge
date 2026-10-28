@@ -53,6 +53,8 @@ import com.retroforge.app.ui.patcher.PatcherViewModel
 import com.retroforge.app.ui.pc.PcViewModel
 import com.retroforge.app.ui.library.CoverPickerScreen
 import com.retroforge.app.ui.library.GameDetailScreen
+import com.retroforge.app.ui.manager.RomManagerScreen
+import com.retroforge.app.ui.manager.RomManagerViewModel
 import com.retroforge.app.ui.library.LibraryFoldersScreen
 import com.retroforge.app.ui.library.LibraryViewModel
 import com.retroforge.app.ui.library.RetroScreen
@@ -85,6 +87,7 @@ private const val SETUP_ROUTE = "setup"
 private const val SYSTEM_ROUTE = "retro/system/{system}"
 private const val GAME_ROUTE = "retro/game/{id}"
 private const val COVER_ROUTE = "retro/game/{id}/cover"
+private const val MANAGER_ROUTE = "retro/manager"
 
 @Composable
 fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
@@ -163,9 +166,14 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                                 onOpenSystem = { nav.navigate("retro/system/$it") },
                                 onOpenGame = { nav.navigate("retro/game/$it") },
                                 onOpenPatcher = { nav.navigate(PATCHER_ROUTE) },
+                                onOpenManager = { nav.navigate(MANAGER_ROUTE) },
                             )
                         }
                         composable(FOLDERS_ROUTE) { LibraryFoldersScreen(libraryViewModel) }
+                        composable(MANAGER_ROUTE) {
+                            val managerViewModel: RomManagerViewModel = viewModel(factory = RomManagerViewModel.factory(container.library, container.romManager))
+                            RomManagerScreen(managerViewModel)
+                        }
                         composable(SETUP_ROUTE) {
                             val setupViewModel: SetupViewModel = viewModel(
                                 factory = SetupViewModel.factory(container.library, container.retroArch, container.settings, container.contentResolver),

@@ -56,6 +56,7 @@ fun RetroScreen(
     onOpenSystem: (String) -> Unit,
     onOpenGame: (Long) -> Unit,
     onOpenPatcher: () -> Unit,
+    onOpenManager: () -> Unit,
 ) {
     val roots by viewModel.roots.collectAsStateWithLifecycle()
     val systems by viewModel.systems.collectAsStateWithLifecycle()
@@ -75,7 +76,7 @@ fun RetroScreen(
                 CardTitle("Add your game folder")
                 CardBody(
                     "Select to choose the folder that holds your system folders, such as an existing \"roms\" folder from another frontend " +
-                        "(with snes, nes, psx … inside), or a single system folder. RetroForge only reads it: nothing is renamed, moved or written.",
+                        "(with snes, nes, psx … inside), or a single system folder. RetroForge only reads it: nothing is renamed, moved or written unless you use the ROM manager and allow it.",
                 )
             }
             else -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenFolders) {
@@ -141,6 +142,13 @@ fun RetroScreen(
             CardBody("Apply IPS, BPS or UPS patches (ROM hacks, translations) to make a new copy. Originals are never changed.")
         }
 
+        if (!roots.isNullOrEmpty()) {
+            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenManager) {
+                CardTitle("ROM manager")
+                CardBody("Tidy duplicate copies and compress games (CHD for discs, .zip for cartridges). Shows every change first, deletes nothing, and can undo.")
+            }
+        }
+
     }
 }
 
@@ -150,7 +158,7 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
     val scans by viewModel.scans.collectAsStateWithLifecycle()
     val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::addFolder) }
 
-    ScreenFrame(title = "Game folders", subtitle = "RetroForge keeps its own index of these folders. Your files are only read, never changed.") {
+    ScreenFrame(title = "Game folders", subtitle = "RetroForge keeps its own index of these folders. Your files are only read, unless you allow the ROM manager to change them.") {
         roots.orEmpty().forEach { root ->
             val state = scans[root.id]
             val problems by remember(root.id) { viewModel.problems(root.id) }.collectAsState(initial = emptyList())

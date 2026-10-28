@@ -5,6 +5,7 @@ import android.content.ContentResolver
 import com.retroforge.app.ui.hacks.CatalogueFetcher
 import com.retroforge.core.library.LibraryDatabase
 import com.retroforge.core.library.LibraryRepository
+import com.retroforge.core.library.RomManagerRepository
 import com.retroforge.hacks.CatalogueStore
 import java.io.File
 import com.retroforge.artwork.JvmHttpGet
@@ -32,6 +33,7 @@ class AppContainer(application: Application) {
     val catalogueFetcher = CatalogueFetcher("RetroForge/${BuildConfig.VERSION_NAME}")
     val library = LibraryRepository(LibraryDatabase.create(application), application.contentResolver)
     val retroArch = RetroArchLauncher(application)
+    val romManager = RomManagerRepository(library, application.contentResolver, File(application.filesDir, "rom-manager"))
 
     // Read by SteamGridDB calls on a background thread; kept current from settings.
     @Volatile private var steamGridDbKey: String? = null

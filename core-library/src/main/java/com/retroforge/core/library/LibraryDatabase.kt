@@ -131,6 +131,9 @@ interface LibraryDao {
     @Query("SELECT * FROM games WHERE system = :system ORDER BY sortKey, fileName")
     fun gamesFor(system: String): Flow<List<GameEntity>>
 
+    @Query("SELECT * FROM games WHERE rootId = :rootId")
+    suspend fun gamesIn(rootId: Long): List<GameEntity>
+
     @Query("SELECT * FROM games WHERE isHack = 1 ORDER BY system, hackFolder, sortKey")
     fun hacks(): Flow<List<GameEntity>>
 

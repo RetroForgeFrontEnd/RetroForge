@@ -77,7 +77,10 @@ class LibraryRepository(
         jobs.remove(root.id)?.cancel()
         scope.launch {
             dao.deleteRoot(root.id)
-            runCatching { resolver.releasePersistableUriPermission(Uri.parse(root.treeUri), Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+            val uri = Uri.parse(root.treeUri)
+            val write = resolver.persistedUriPermissions.any { it.uri == uri && it.isWritePermission }
+            val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or (if (write) Intent.FLAG_GRANT_WRITE_URI_PERMISSION else 0)
+            runCatching { resolver.releasePersistableUriPermission(uri, flags) }
             _scans.update { it - root.id }
         }
     }

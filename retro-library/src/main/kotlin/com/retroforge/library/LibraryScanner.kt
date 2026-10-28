@@ -1,5 +1,6 @@
 package com.retroforge.library
 
+import com.retroforge.library.manage.HOLDING_FOLDERS
 import java.io.IOException
 import java.io.InputStream
 
@@ -111,7 +112,7 @@ class LibraryScanner(private val rules: SystemRules) {
         val dirs = children.filter { it.isDirectory }
         val matched = dirs.mapNotNull { dir -> rules.forFolder(dir.name)?.let { SystemDir(dir.name + "/", dir, it) } }
         if (matched.isNotEmpty()) {
-            val unrecognised = dirs.filter { rules.forFolder(it.name) == null }.map { it.name }.sorted()
+            val unrecognised = dirs.filter { rules.forFolder(it.name) == null && it.name.lowercase() !in HOLDING_FOLDERS }.map { it.name }.sorted()
             return Triple(RootLayout.COLLECTION, matched.sortedBy { it.dir.name.lowercase() }, unrecognised)
         }
         // The user may have picked the folder above "roms" (e.g. the RetroBat folder itself).
@@ -122,7 +123,7 @@ class LibraryScanner(private val rules: SystemRules) {
             }
             val nested = inner.filter { it.isDirectory }.mapNotNull { dir -> rules.forFolder(dir.name)?.let { SystemDir("${roms.name}/${dir.name}/", dir, it) } }
             if (nested.isNotEmpty()) {
-                val unrecognised = inner.filter { it.isDirectory && rules.forFolder(it.name) == null }.map { it.name }.sorted()
+                val unrecognised = inner.filter { it.isDirectory && rules.forFolder(it.name) == null && it.name.lowercase() !in HOLDING_FOLDERS }.map { it.name }.sorted()
                 return Triple(RootLayout.COLLECTION, nested.sortedBy { it.dir.name.lowercase() }, unrecognised)
             }
         }
@@ -151,6 +152,7 @@ class LibraryScanner(private val rules: SystemRules) {
                 val ext = child.name.substringAfterLast('.', "").lowercase()
                 when {
                     child.name.startsWith(".") -> Unit
+                    child.isDirectory && child.name.lowercase() in HOLDING_FOLDERS -> Unit
                     // EmulationStation treats a folder named like a game ("Skate (EUR).ps3", "XCOM.pc") as one game.
                     child.isDirectory && !inMedia && ext.isNotEmpty() && ext in rule.extensions -> romFiles += FileEntry(childPath, child)
                     child.isDirectory -> {
