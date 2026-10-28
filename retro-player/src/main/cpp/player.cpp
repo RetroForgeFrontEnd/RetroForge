@@ -130,7 +130,8 @@ struct Player {
     EGLSurface surface = EGL_NO_SURFACE;
     ANativeWindow *window = nullptr;
     GLuint program = 0, texture = 0;
-    GLint uTexSize = -1, uOutSize = -1;
+    GLint uTexSize = -1, uOutSize = -1, uFilter = -1;
+    std::atomic<int> filter{0};
     unsigned texW = 0, texH = 0;
     bool hasFrame = false;
     std::vector<uint8_t> staging;
@@ -304,21 +305,35 @@ attribute vec2 aUv;
 varying vec2 vUv;
 void main() { vUv = aUv; gl_Position = vec4(aPos, 0.0, 1.0); })";
 
-// Sharp bilinear: whole-pixel scaling with a one-pixel blend at the edges, so pixel art stays crisp at any size
-// without the uneven pixels of nearest-neighbour.
+// uFilter 0, sharp: whole-pixel scaling with a one-pixel blend at the edges, so pixel art stays crisp at any size
+// without the uneven pixels of nearest-neighbour. 1, smooth: plain bilinear. 2, CRT: sharp plus darkened gaps between
+// the console's scan lines. 3, LCD: sharp plus a faint grid between pixels, like a handheld's screen.
 const char *kFragment = R"(
 precision mediump float;
 uniform sampler2D uTex;
 uniform vec2 uTexSize;
 uniform vec2 uOutSize;
+uniform int uFilter;
 varying vec2 vUv;
 void main() {
+    if (uFilter == 1) {
+        gl_FragColor = vec4(texture2D(uTex, vUv).rgb, 1.0);
+        return;
+    }
     vec2 texel = vUv * uTexSize;
     vec2 scale = max(floor(uOutSize / uTexSize), vec2(1.0));
     vec2 region = 0.5 - 0.5 / scale;
     vec2 centre = fract(texel) - 0.5;
     vec2 f = (centre - clamp(centre, -region, region)) * scale + 0.5;
-    gl_FragColor = vec4(texture2D(uTex, (floor(texel) + f) / uTexSize).rgb, 1.0);
+    vec3 colour = texture2D(uTex, (floor(texel) + f) / uTexSize).rgb;
+    if (uFilter == 2) {
+        float d = abs(fract(texel.y) - 0.5) * 2.0;
+        colour *= (1.0 - 0.5 * d * d) * 1.15;
+    } else if (uFilter == 3) {
+        vec2 d = abs(fract(texel) - 0.5) * 2.0;
+        colour *= 1.0 - 0.35 * smoothstep(0.7, 1.0, max(d.x, d.y));
+    }
+    gl_FragColor = vec4(colour, 1.0);
 })";
 
 GLuint compile(GLenum type, const char *source) {
@@ -358,6 +373,7 @@ void glSetup() {
     glLinkProgram(p.program);
     p.uTexSize = glGetUniformLocation(p.program, "uTexSize");
     p.uOutSize = glGetUniformLocation(p.program, "uOutSize");
+    p.uFilter = glGetUniformLocation(p.program, "uFilter");
     glGenTextures(1, &p.texture);
     glBindTexture(GL_TEXTURE_2D, p.texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -484,6 +500,7 @@ void present() {
         glUseProgram(p.program);
         glUniform2f(p.uTexSize, float(p.texW), float(p.texH));
         glUniform2f(p.uOutSize, float(vw), float(vh));
+        glUniform1i(p.uFilter, p.filter);
         glBindTexture(GL_TEXTURE_2D, p.texture);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), quad);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), quad + 2);
@@ -866,6 +883,10 @@ JNIEXPORT void JNI(setOption)(JNIEnv *env, jobject, jstring key, jstring value) 
     P->overrides[k] = v;
     if (P->variables.count(k)) P->variables[k] = v;
     P->variablesChanged = true;
+}
+
+JNIEXPORT void JNI(setFilter)(JNIEnv *, jobject, jint filter) {
+    if (P) P->filter = filter;
 }
 
 JNIEXPORT void JNI(setViewport)(JNIEnv *, jobject, jint x, jint y, jint w, jint h) {

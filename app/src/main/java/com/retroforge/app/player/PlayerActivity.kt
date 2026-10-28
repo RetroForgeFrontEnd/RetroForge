@@ -105,6 +105,7 @@ class PlayerActivity : ComponentActivity() {
     private var shape by mutableStateOf(ScreenShape.ORIGINAL)
     private var touchEnabled by mutableStateOf(true)
     private var consoleLook by mutableStateOf(true)
+    private var filter by mutableStateOf(com.retroforge.player.ScreenFilter.SHARP)
     private var pictureRect by mutableStateOf(Rect(0, 0, 0, 0))
     private enum class MenuPage { MAIN, OPTIONS, EMULATORS }
     private var menuPage by mutableStateOf(MenuPage.MAIN)
@@ -168,6 +169,7 @@ class PlayerActivity : ComponentActivity() {
         shape = ScreenShape.of(prefs.getString("shape.$system", null))
         touchEnabled = prefs.getBoolean("touch.$system", true)
         consoleLook = prefs.getBoolean("look.$system", true)
+        filter = com.retroforge.player.ScreenFilter.of(prefs.getString("filter.$system", null))
         savesDir = File(base, "saves/$system").apply { mkdirs() }
         statesDir = File(base, "states/$system").apply { mkdirs() }
         input = PlayerInput(
@@ -220,6 +222,7 @@ class PlayerActivity : ComponentActivity() {
             loaded = true
             surface?.let { NativePlayer.setSurface(it) }
         }
+        NativePlayer.setFilter(filter.ordinal)
         NativePlayer.start()
         runOnUiThread {
             video = av
@@ -515,6 +518,12 @@ class PlayerActivity : ComponentActivity() {
         applyViewport()
     }
 
+    private fun chooseFilter(next: com.retroforge.player.ScreenFilter) {
+        filter = next
+        prefs.edit().putString("filter.$system", next.name).apply()
+        NativePlayer.setFilter(next.ordinal)
+    }
+
     private fun chooseLook(on: Boolean) {
         consoleLook = on
         prefs.edit().putBoolean("look.$system", on).apply()
@@ -669,6 +678,7 @@ class PlayerActivity : ComponentActivity() {
                             NativePlayer.setFastForward(fastForwardOn)
                         }, modifier = wide) { Text("Fast-forward: ${if (fastForwardOn) "On" else "Off"}") }
                         MenuButton(onClick = { chooseShape(shape.next()) }, modifier = wide) { Text("Screen shape: ${shape.label}") }
+                        MenuButton(onClick = { chooseFilter(filter.next()) }, modifier = wide) { Text("Screen filter: ${filter.label}") }
                         MenuButton(onClick = { chooseLook(!consoleLook) }, modifier = wide) { Text("Console look: ${if (consoleLook) "On" else "Off"}") }
                         if (hasTouch) MenuButton(onClick = { chooseTouch(!touchEnabled) }, modifier = wide) {
                             Text("Touch controls: ${if (touchEnabled) "On" else "Off"}")

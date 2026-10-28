@@ -21,6 +21,21 @@ enum class ScreenShape(val label: String) {
     }
 }
 
+/** How the console's pixels are drawn (player.cpp's fragment shader); chosen per system in the pause menu. */
+enum class ScreenFilter(val label: String) {
+    SHARP("Sharp pixels"),
+    SMOOTH("Smooth"),
+    CRT("CRT scanlines"),
+    LCD("LCD grid"),
+    ;
+
+    fun next(): ScreenFilter = entries[(ordinal + 1) % entries.size]
+
+    companion object {
+        fun of(name: String?) = entries.firstOrNull { it.name == name } ?: SHARP
+    }
+}
+
 data class Rect(val x: Int, val y: Int, val w: Int, val h: Int)
 
 object Viewport {
