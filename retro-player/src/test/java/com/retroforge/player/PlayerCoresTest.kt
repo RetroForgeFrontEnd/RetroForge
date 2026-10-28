@@ -21,8 +21,14 @@ class PlayerCoresTest {
     @Test
     fun discsAndUnknownSystemsDoNot() {
         assertNull(PlayerCores.forGame("pcengine", "Ys Book I & II.cue"))
-        assertNull(PlayerCores.forGame("psx", "Crash.chd"))
         assertNull(PlayerCores.forGame("unknown", "game.bin"))
+    }
+
+    @Test
+    fun playStationDiscsUseTheBuiltInPlayer() {
+        assertEquals("pcsx_rearmed", PlayerCores.forGame("psx", "Crash.chd")?.id)
+        assertEquals("pcsx_rearmed", PlayerCores.forGame("psx", "Final Fantasy VII (Disc 1).cue")?.id)
+        assertEquals(0x205, PlayerCores.portDevice("pcsx_rearmed"))
     }
 
     @Test

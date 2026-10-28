@@ -34,6 +34,9 @@ object PlayerCores {
     private val desmume = PlayerCore("desmume", "DeSmuME")
     private val desmume2015 = PlayerCore("desmume2015", "DeSmuME 2015 (faster)")
     private val melonds = PlayerCore("melonds", "melonDS", needsBios = true)
+    // Has its own BIOS replacement; uses the real one when it's in the BIOS folder.
+    private val pcsx = PlayerCore("pcsx_rearmed", "PCSX ReARMed")
+    private val swanstation = PlayerCore("swanstation", "SwanStation", needsBios = true)
 
     private val sega = listOf(gpgx, picodrive)
     private val gameBoy = listOf(gambatte, sameboy, gearboy, mgba)
@@ -51,9 +54,13 @@ object PlayerCores {
         "atari2600" to listOf(stella),
         "lynx" to listOf(handy),
         "nds" to listOf(desmume, desmume2015, melonds),
+        "psx" to listOf(pcsx, swanstation),
     )
 
-    /** Disc images and playlists: these aren't for the built-in player yet. */
+    /** Disc systems the built-in player runs; their disc images (cue/bin, chd, pbp …) are allowed. */
+    private val discSystems = setOf("psx")
+
+    /** Disc images and playlists: only for the [discSystems]. */
     private val discExtensions = setOf("cue", "bin", "chd", "iso", "m3u", "ccd", "img", "gdi", "cdi", "pbp", "toc")
 
     /** The built-in player's emulators for [system], the default first. */
@@ -64,9 +71,24 @@ object PlayerCores {
 
     /** The core for this game ([preferred] when it's one of the system's), or null when the built-in player can't run it. */
     fun forGame(system: String, fileName: String, preferred: String? = null): PlayerCore? {
-        if (fileName.substringAfterLast('.', "").lowercase() in discExtensions) return null
+        if (system !in discSystems && fileName.substringAfterLast('.', "").lowercase() in discExtensions) return null
         val list = choices(system)
         return list.firstOrNull { it.id == preferred } ?: list.firstOrNull()
+    }
+
+    /**
+     * The controller a core should be told about, when not a plain joypad: PCSX ReARMed's DualShock
+     * (RETRO_DEVICE_SUBCLASS(RETRO_DEVICE_ANALOG, 1)), so analog games get both sticks.
+     */
+    fun portDevice(coreId: String): Int? = when (coreId) {
+        "pcsx_rearmed" -> (1 + 1 shl 8) or 5
+        else -> null
+    }
+
+    /** Core options set by default: SwanStation's analog controller. */
+    fun defaultOptions(coreId: String): Map<String, String> = when (coreId) {
+        "swanstation" -> mapOf("swanstation_Controller1_Type" to "AnalogController")
+        else -> emptyMap()
     }
 
     fun byId(id: String): PlayerCore? = bySystem.values.flatten().firstOrNull { it.id == id }

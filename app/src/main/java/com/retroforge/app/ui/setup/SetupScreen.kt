@@ -13,6 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import com.retroforge.retro.RetroArchCores
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
@@ -47,7 +51,7 @@ fun SetupScreen(viewModel: SetupViewModel, onDone: () -> Unit) {
     val pickBios = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::onBiosFolderPicked) }
     val pickRetroArchFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::onRetroArchFolderPicked) }
 
-    ScreenFrame(title = "Set up RetroForge", subtitle = "Four steps to go from your game folder to playing. You can come back here any time from Settings.") {
+    ScreenFrame(title = "Set up RetroForge", subtitle = "Three steps from your game folder to playing; most of it happens by itself. You can come back here any time from Settings.") {
         val s = summary
 
         // 1. Games
@@ -62,57 +66,68 @@ fun SetupScreen(viewModel: SetupViewModel, onDone: () -> Unit) {
             }
         }
 
-        // 2. RetroArch
-        FocusCard(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                if (install == null) {
-                    try {
-                        context.startActivity(Intent(Intent.ACTION_VIEW, RetroArchLauncher.DOWNLOAD_URL.toUri()))
-                    } catch (_: ActivityNotFoundException) {
-                        // No browser: the address is shown on the card.
-                    }
-                } else {
-                    viewModel.openRetroArch()
+        // 2. Emulators: the built-in player's download by themselves; RetroArch only for systems it can't run yet.
+        val coreStates by viewModel.coreStates.collectAsStateWithLifecycle()
+        val systemIds = s?.systemIds.orEmpty()
+        val builtIn = systemIds.mapNotNull { id -> com.retroforge.player.PlayerCores.forSystem(id)?.let { id to it } }
+        FocusCard(modifier = Modifier.fillMaxWidth()) {
+            CardTitle("2. Emulators")
+            when {
+                s == null || systemIds.isEmpty() -> CardBody("Add your games first. RetroForge then gets the emulators they need by itself.")
+                builtIn.isEmpty() -> CardBody("RetroForge's built-in player doesn't run these systems yet; see below.")
+                else -> {
+                    val cores = builtIn.map { it.second }.distinctBy { it.id }
+                    val ready = cores.count { (coreStates[it.id] ?: viewModel.coreState(it.id)) == com.retroforge.player.CoreState.Ready }
+                    if (ready == cores.size) StatusPill("Ready", StatusTone.GOOD)
+                    else StatusPill("Getting ${ready + 1} of ${cores.size}…", StatusTone.CAUTION)
+                    CardBody("Built in, nothing to install: ${builtIn.map { viewModel.systemName(it.first) }.sorted().joinToString()}.")
+                    CardBody("RetroForge downloads these emulators for you in the background.")
+                    val failed = cores.filter { (coreStates[it.id] ?: viewModel.coreState(it.id)) is com.retroforge.player.CoreState.Failed }
+                    if (failed.isNotEmpty()) CardBody("Couldn't download ${failed.joinToString { it.name }} yet (no internet?). RetroForge tries again next time.")
                 }
-            },
-        ) {
-            CardTitle("2. RetroArch")
-            val i = install
-            if (i == null) {
-                StatusPill("Not installed", StatusTone.CAUTION)
-                CardBody("RetroForge plays games through RetroArch, a free emulator app. Select to open its official download page (${RetroArchLauncher.DOWNLOAD_URL}). Open it once after installing and allow it to access files.")
-            } else {
-                StatusPill("Installed ${i.versionName.orEmpty()}".trim(), StatusTone.GOOD)
-                CardBody("Select to open RetroArch.")
             }
         }
 
-        // 3. Cores
-        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = if (install != null) viewModel::openRetroArch else null) {
-            CardTitle("3. Emulator cores")
-            when {
-                s == null || s.cores.isEmpty() -> CardBody("Add your games first; RetroForge will then list the cores they need.")
-                else -> {
-                    StatusPill("${plural(s.cores.size, "core")} for your library", StatusTone.NEUTRAL)
-                    CardBody("In RetroArch: Main Menu → Online Updater → Core Downloader, then download each of these. RetroForge can't see inside RetroArch, so it can't tick them off for you.")
-                    s.cores.forEach { need ->
-                        Text(
-                            "• ${need.core.name}: ${need.systems.joinToString()} (${plural(need.games, "game")})",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
-                    if (s.unsupported.isNotEmpty()) {
-                        CardBody("Not playable from RetroForge yet: ${s.unsupported.take(15).joinToString()}${if (s.unsupported.size > 15) " …" else ""}")
-                    }
+        // RetroArch, only when some systems need it.
+        val needRetroArch = systemIds.filter { com.retroforge.player.PlayerCores.forSystem(it) == null && RetroArchCores.coresFor(it).isNotEmpty() }
+        if (needRetroArch.isNotEmpty()) {
+            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = if (install != null) viewModel::openRetroArch else null) {
+                CardTitle("RetroArch, for ${plural(needRetroArch.size, "more system")}")
+                val i = install
+                if (i == null) StatusPill("Not installed", StatusTone.CAUTION) else StatusPill("Installed ${i.versionName.orEmpty()}".trim(), StatusTone.GOOD)
+                CardBody("${needRetroArch.map(viewModel::systemName).sorted().joinToString()} play in RetroArch, a free emulator app RetroForge starts for you.")
+                if (i == null) {
+                    CardBody("Install it from Google Play or its website, then open it once and allow it to access files.")
+                } else {
+                    CardBody(
+                        "RetroArch keeps its emulators (\"cores\") in its own private storage, so only RetroArch can download them: " +
+                            "in RetroArch, Main Menu → Online Updater → Core Downloader. Each game's page names the core it needs.",
+                    )
                 }
             }
+            if (install == null) {
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    FocusChip("Get it on Google Play", onClick = {
+                        val market = Intent(Intent.ACTION_VIEW, "market://details?id=com.retroarch".toUri())
+                        try {
+                            context.startActivity(market)
+                        } catch (_: ActivityNotFoundException) {
+                            runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, "https://play.google.com/store/apps/details?id=com.retroarch".toUri())) }
+                        }
+                    })
+                    FocusChip("RetroArch website", onClick = {
+                        runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, RetroArchLauncher.DOWNLOAD_URL.toUri())) }
+                    })
+                }
+            }
+        }
+        if (s != null && s.unsupported.isNotEmpty()) {
+            CardBody("Not playable from RetroForge yet: ${s.unsupported.take(15).joinToString()}${if (s.unsupported.size > 15) " …" else ""}")
         }
 
         // 4. BIOS
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { pickBios.launch(null) }) {
-            CardTitle("4. BIOS files")
+            CardTitle("3. BIOS files")
             CardBody(
                 "Some systems need BIOS files from the original console. RetroForge doesn't provide them. If you have your own, " +
                     "select this to choose the folder they're in (for example another frontend's \"bios\" folder) and RetroForge will check them.",

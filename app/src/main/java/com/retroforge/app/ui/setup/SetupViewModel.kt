@@ -54,7 +54,14 @@ class SetupViewModel(
     private val resolver: ContentResolver,
     /** The built-in player's BIOS ("system") folder. */
     private val playerSystemDir: java.io.File,
+    private val cores: com.retroforge.player.CoreManager,
 ) : ViewModel() {
+
+    /** Download state of the built-in player's emulators (fetched in the background for the library's systems). */
+    val coreStates: StateFlow<Map<String, com.retroforge.player.CoreState>> = cores.states
+
+    fun coreState(id: String) = cores.state(id)
+
 
     private val checker = BiosChecker.bundled()
     private val installer = BiosInstaller(resolver)
@@ -149,7 +156,14 @@ class SetupViewModel(
     fun systemName(id: String) = library.systemName(id)
 
     companion object {
-        fun factory(library: LibraryRepository, retroArch: RetroArchLauncher, settings: SettingsRepository, resolver: ContentResolver, playerSystemDir: java.io.File): ViewModelProvider.Factory =
-            viewModelFactory { initializer { SetupViewModel(library, retroArch, settings, resolver, playerSystemDir) } }
+        fun factory(
+            library: LibraryRepository,
+            retroArch: RetroArchLauncher,
+            settings: SettingsRepository,
+            resolver: ContentResolver,
+            playerSystemDir: java.io.File,
+            cores: com.retroforge.player.CoreManager,
+        ): ViewModelProvider.Factory =
+            viewModelFactory { initializer { SetupViewModel(library, retroArch, settings, resolver, playerSystemDir, cores) } }
     }
 }

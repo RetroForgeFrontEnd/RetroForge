@@ -202,7 +202,7 @@ class PlayerActivity : ComponentActivity() {
     private fun load(corePath: String, uri: Uri, fileName: String, systemDir: File) {
         coreId = File(corePath).name.substringBefore("_libretro")
         // The user's emulator settings for this core, then the ones that follow the screen's orientation.
-        val options = savedOptions() + PlayerCores.orientationOptions(coreId, isLandscape())
+        val options = PlayerCores.defaultOptions(coreId) + savedOptions() + PlayerCores.orientationOptions(coreId, isLandscape())
         val error = NativePlayer.openCore(corePath, systemDir.path, savesDir.path, options.keys.toTypedArray(), options.values.toTypedArray())
         if (error != null) return fail(error)
         val info = NativePlayer.coreInfo()
@@ -223,6 +223,7 @@ class PlayerActivity : ComponentActivity() {
             surface?.let { NativePlayer.setSurface(it) }
         }
         NativePlayer.setFilter(filter.ordinal)
+        PlayerCores.portDevice(coreId)?.let { NativePlayer.setPortDevice(0, it) }
         NativePlayer.start()
         runOnUiThread {
             video = av
@@ -267,12 +268,16 @@ class PlayerActivity : ComponentActivity() {
         }
         val named = File(cache, fileName)
         if (needsFile) {
-            contentResolver.openInputStream(uri)?.use { input -> named.outputStream().use { input.copyTo(it) } } ?: throw IOException("couldn't open it")
-            return NativePlayer.loadGame(named.path, -1, false)
+            // Linked rather than copied: a PS1 disc can be hundreds of MB.
+            val path = GameFiles(contentResolver, cache).also { gameFiles = it }.expose(uri, fileName)
+            return NativePlayer.loadGame(path, -1, false)
         }
         return contentResolver.openFileDescriptor(uri, "r")?.use { pfd -> NativePlayer.loadGame(named.path, pfd.fd, false) }
             ?: throw IOException("couldn't open it")
     }
+
+    /** The game's files linked for cores that open them by path; closed with the game. */
+    private var gameFiles: GameFiles? = null
 
     private fun fail(message: String) = runOnUiThread { phase = Phase.Failed(message) }
 
@@ -320,6 +325,7 @@ class PlayerActivity : ComponentActivity() {
                 NativePlayer.stop()
                 persist()
                 NativePlayer.close()
+                gameFiles?.close()
                 loaded = false
             }
             runOnUiThread {
@@ -377,6 +383,7 @@ class PlayerActivity : ComponentActivity() {
                 NativePlayer.stop()
                 persist()
                 NativePlayer.close()
+                gameFiles?.close()
                 loaded = false
             }
             runOnUiThread { finish() }

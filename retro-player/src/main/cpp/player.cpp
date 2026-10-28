@@ -874,6 +874,13 @@ JNIEXPORT jobjectArray JNI(coreOptions)(JNIEnv *env, jobject) {
     return array;
 }
 
+// Tells the core what's plugged into a port (e.g. a DualShock for PCSX ReARMed, so it reads the analog sticks).
+JNIEXPORT void JNI(setPortDevice)(JNIEnv *, jobject, jint port, jint device) {
+    if (!P || !P->gameLoaded) return;
+    std::lock_guard<std::mutex> lock(P->coreMutex);
+    P->core.set_controller_port_device(static_cast<unsigned>(port), static_cast<unsigned>(device));
+}
+
 // Changes a core option while the game runs (e.g. the DS screen layout on rotation); the core picks it up
 // through GET_VARIABLE_UPDATE on its next frame.
 JNIEXPORT void JNI(setOption)(JNIEnv *env, jobject, jstring key, jstring value) {

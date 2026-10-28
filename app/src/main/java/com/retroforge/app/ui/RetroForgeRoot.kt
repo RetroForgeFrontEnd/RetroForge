@@ -215,9 +215,13 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         }
                         composable(SETUP_ROUTE) {
                             val setupViewModel: SetupViewModel = viewModel(
-                                factory = SetupViewModel.factory(container.library, container.retroArch, container.settings, container.contentResolver, container.playerSystemDir),
+                                factory = SetupViewModel.factory(container.library, container.retroArch, container.settings, container.contentResolver, container.playerSystemDir, container.cores),
                             )
-                            SetupScreen(setupViewModel, onDone = { nav.goTo(Section.RETRO) })
+                            SetupScreen(setupViewModel, onDone = {
+                                // Take setup off the stack first, or Home's saved stack would bring it back.
+                                nav.popBackStack(SETUP_ROUTE, inclusive = true)
+                                nav.goTo(Section.RETRO)
+                            })
                         }
                         composable(SYSTEM_ROUTE) { entry ->
                             SystemGamesScreen(libraryViewModel, entry.arguments?.getString("system").orEmpty(), onOpenGame = { nav.navigate("retro/game/$it") })

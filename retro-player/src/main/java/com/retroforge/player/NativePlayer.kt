@@ -49,6 +49,9 @@ object NativePlayer {
         CoreOption(key, label, choices.split('|').filter { it.isNotEmpty() }, current)
     }
 
+    /** What's plugged into [port]: a libretro device id ([PlayerCores.portDevice]). */
+    external fun setPortDevice(port: Int, device: Int)
+
     /** Changes a core option while the game runs. */
     external fun setOption(key: String, value: String)
 

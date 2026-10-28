@@ -17,6 +17,8 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Retro tab, canvas style**: systems first, as a big centred rounded tile with neighbours peeking in, the logo, year and game count underneath on the theme's wallpaper. Ready on first start: console pictures, logos and details from canvas-es (by Siddy212, CC0) download by themselves for the systems in your library, drawn in RetroForge's colours with the faded RetroForge logo behind. Tiles can show consoles, game art or plain name plates, and you can use your own theme folder instead (canvas-es and other ES-DE-style themes, Alekfull-NX). RetroForge ships none of this artwork.
 
+**Setup does the work**: emulators for your systems download by themselves (step 2 just shows progress). RetroArch only appears when some of your systems need it, with Google Play and website buttons. PlayStation joins the built-in player (PCSX ReARMed), with disc games read in place (cue/bin, chd, pbp; nothing copied). New neon "RF" app icon from the key art's sign. Fixed: setup reappearing on Home after Done.
+
 **Covers**: free libretro box art (one game or a whole system), SteamGridDB (your own key), ScreenScraper (needs RetroForge's developer ID), or any image on your device.
 
 **ROM tools**: IPS/BPS/UPS patcher with patch chains and readmes; ROM hacks tab with catalogues; ROM manager (duplicates, compress discs to CHD and cartridges to .zip, multi-disc playlists, delete, undo, free up space).

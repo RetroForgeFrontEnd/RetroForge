@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- "RF" in the key art's neon-sign style (drawn by tools/NeonIcon.java from the bundled Orbitron font). -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/forge_anvil" />
-    <foreground android:drawable="@drawable/ic_launcher_foreground" />
-    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+    <foreground android:drawable="@drawable/ic_launcher_neon" />
+    <monochrome android:drawable="@drawable/ic_launcher_mono" />
 </adaptive-icon>
