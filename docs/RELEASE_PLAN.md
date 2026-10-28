@@ -21,6 +21,7 @@ Nice to have for the beta: the in-game edge-swipe menu, theme engine v2, the fea
 
 1. **Closed beta on GitHub Releases** (signed APK). Free, immediate, and Obtainium can track it, so testers get updates automatically. Add RetroForge to the Obtainium Emulation Pack later.
 2. **Google Play** when the beta is stable. New personal developer accounts must run a closed test (currently 12 testers for 14 days; check Google's current rule) before production. Play's emulator policy is fine for apps that ship no games or BIOS; avoid store text that mentions piracy, specific commercial games or console makers' logos.
+   **Blocker for Play, found 2026-10-28:** Play's Device and Network Abuse policy says an app "may not download executable code (such as dex, JAR, .so files) from a source other than Google Play". The built-in player downloads libretro cores (.so) from buildbot.libretro.com, which is fine for GitHub/Obtainium/F-Droid releases but not for Play. A Play build would need the cores delivered through Play (bundled, or Play Feature Delivery modules), which also means RetroForge distributes them and must meet each core's licence (GPL source offers; non-commercial cores only while RetroForge is free). The same rule applies to any PC runtime RetroForge downloads.
 3. **F-Droid** only if the source is published under an open licence (F-Droid builds from source and rejects non-free dependencies).
 
 ## Funding without charging for the app
