@@ -208,9 +208,16 @@ fun TouchControls(
                 }
             }
         }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            DPad(168.dp) { set(0, it) }
-            FaceButtons(layout.face, 64.dp) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            // Narrow phones: shrink the d-pad and buttons together so a row of three (Mega Drive) keeps a gap from the d-pad.
+            val n = layout.face.size
+            val faceSpan = if (n == 4) 3f else n.toFloat()
+            val gaps = if (n == 4) 0.dp else 14.dp * (n - 1)
+            val k = ((maxWidth - gaps - 24.dp) / (168.dp + 64.dp * faceSpan)).coerceAtMost(1f)
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                DPad(168.dp * k) { set(0, it) }
+                FaceButtons(layout.face, 64.dp * k) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
+            }
         }
         if (layout.sticks) {
             // DualShock-style: sticks below the d-pad and the buttons, Select / Start / menu between them.

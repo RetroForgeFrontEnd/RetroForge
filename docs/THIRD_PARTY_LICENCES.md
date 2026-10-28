@@ -36,7 +36,7 @@ Retro tab artwork: canvas-es by Siddy212 (CC0-1.0, github.com/Siddy212/canvas-es
 
 Cheats: libretro-database's cht files (CC BY-SA 4.0, github.com/libretro/libretro-database) are **not bundled**; one game's file is downloaded when its Cheats page is opened, and credited in Settings → Licences.
 
-Referenced, not bundled: Obtainium (GPL-3.0; RetroForge only opens its documented `obtainium://add/` link) and the Obtainium Emulation Pack (Unlicense; linked). Standalone emulators are separate apps the user installs.
+Referenced, not bundled: Obtainium (GPL-3.0; RetroForge only opens its documented `obtainium://add/` and `obtainium://app/` links) and the Obtainium Emulation Pack (Unlicense): its app setups for 11 emulators are copied into `standalone.json` by `tools/add_obtainium_apps.py`, and the pack itself is linked. Standalone emulators are separate apps the user installs.
 
 Online services used at runtime (no code bundled): libretro thumbnails (thumbnails.libretro.com), SteamGridDB API (user's own key; personal non-commercial use per its terms).
 

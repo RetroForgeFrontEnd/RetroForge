@@ -267,6 +267,7 @@ class PlayerActivity : ComponentActivity() {
         }
         NativePlayer.setFilter(filter.ordinal)
         NativePlayer.setVolume(volume)
+        runOnUiThread { if (foreground && playingSince == 0L) playingSince = android.os.SystemClock.elapsedRealtime() }
         cheatStore.load().also { saved -> runOnUiThread { cheats = saved } }.let(::applyCheats)
         PlayerCores.portDevice(coreId)?.let { NativePlayer.setPortDevice(0, it) }
         NativePlayer.start()
@@ -459,15 +460,30 @@ class PlayerActivity : ComponentActivity() {
         }, 100)
     }
 
+    private val playtime by lazy { Playtime(File(filesDir, "player/playtime.properties")) }
+    private var playingSince = 0L
+
+    /** Adds the time since the game came to the front to its play time. */
+    private fun countPlaytime() {
+        if (playingSince == 0L) return
+        val played = android.os.SystemClock.elapsedRealtime() - playingSince
+        playingSince = 0L
+        val fileName = intent.getStringExtra(EXTRA_FILE_NAME).orEmpty()
+        // At once, not on the worker: quitting ends the process straight after this.
+        runCatching { playtime.add(system, fileName, played) }
+    }
+
     override fun onResume() {
         super.onResume()
         foreground = true
+        if (loaded) playingSince = android.os.SystemClock.elapsedRealtime()
         if (loaded && !menuOpen) NativePlayer.setPaused(false)
     }
 
     override fun onPause() {
         super.onPause()
         foreground = false
+        countPlaytime()
         if (loaded && !quitting) {
             input.releaseAll()
             NativePlayer.setPaused(true)

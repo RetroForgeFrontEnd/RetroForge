@@ -17,6 +17,15 @@ fun AboutScreen() {
         CardBody("Version ${BuildConfig.VERSION_NAME}")
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
+            CardTitle("Who made it")
+            CardBody("Made by Darren Glancy.")
+            CardBody(
+                "Built with AI: the code, the built-in player and the guides were written with Claude, Anthropic's AI, " +
+                    "working to Darren's ideas, tested on real phones and checked by him. No secret about it.",
+            )
+        }
+
+        FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("RetroForge stands for…")
             CardBody("…sorry, wrong YouTube channel. (A nod to Mr Sujano. Go and watch him.)")
             CardBody(
@@ -28,7 +37,7 @@ fun AboutScreen() {
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("What it does")
             CardBody("• Finds the games you already have, on your phone or SD card, and shows them with box art, by system.")
-            CardBody("• Plays them in RetroArch with the right core and BIOS checks. PC games go through a separately installed PC game runtime.")
+            CardBody("• Plays them in its own built-in player, with nothing to set up, or in RetroArch and standalone emulators. PC games go through a separately installed PC game runtime.")
             CardBody("• Patches ROM hacks and translations, and helps you discover more from catalogues you choose.")
             CardBody("• Tidies your collection: removes duplicates, compresses discs to CHD and cartridges to .zip, and makes multi-disc playlists. Every change is shown first and can be undone.")
             CardBody("• Works with a controller from the sofa as well as with touch.")

@@ -24,6 +24,14 @@ class StandaloneTest {
     }
 
     @Test
+    fun modernEmulatorsCanBeAddedToObtainium() {
+        for (id in listOf("DOLPHIN", "PPSSPP", "EDEN", "DUCKSTATION", "PLAY!", "NETHERSX2")) {
+            val setup = all.emulators.getValue(id).obtainiumApp
+            assertTrue(id, setup != null && setup.contains("\"url\""))
+        }
+    }
+
+    @Test
     fun duckStation() {
         val (option, emu) = all.optionsFor("psx").first { it.second.name == "DuckStation" }
         val spec = LaunchCommand.parse(option.command, vars)

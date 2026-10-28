@@ -284,7 +284,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         composable(Section.SETTINGS.route) {
                             val counts by container.library.systemCounts.collectAsStateWithLifecycle(initialValue = emptyList())
                             SettingsScreen(settingsViewModel,
-                                playerSystems = counts.map { it.system to container.library.systemName(it.system) }, coreChoices = container.coreChoices, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
+                                playerSystems = counts.map { it.system to container.library.systemName(it.system) }, coreChoices = container.coreChoices, viewPrefs = container.viewPrefs, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
                                 onOpenLicences = { nav.navigate(LICENCES_ROUTE) }, onOpenPrivacy = { nav.navigate(PRIVACY_ROUTE) },
                             )
                         }

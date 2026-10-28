@@ -17,6 +17,12 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Retro tab, canvas style**: systems first, as a big centred rounded tile with neighbours peeking in, the logo, year and game count underneath on the theme's wallpaper. Ready on first start: console pictures, logos and details from canvas-es (by Siddy212, CC0) download by themselves for the systems in your library, drawn in RetroForge's colours with the faded RetroForge logo behind. Tiles can show consoles, game art or plain name plates, and you can use your own theme folder instead (canvas-es and other ES-DE-style themes, Alekfull-NX). RetroForge ships none of this artwork.
 
+**Saves and storage**: Settings → Built-in player → Back up saves writes one zip with in-game saves, save states and cheats; Restore puts them back (on this or another device), replacing same-named saves and keeping the rest. A Storage card shows the space emulators and copied CD/arcade games use, with Clear copied games. Each game's page shows its time played in the built-in player.
+
+**Folders from ES-DE**: ES-DE folder names (`n3ds`, `sfc`, `famicom`, `atarilynx`, `sg-1000`, `arcade`, `gameandwatch` …) are recognised alongside RetroBat's.
+
+**Fixed**: Mega Drive / 32X / Mega CD touch buttons touching the d-pad on narrower phones (the d-pad and buttons now shrink together to fit).
+
 **Setup does the work**: emulators for your systems download by themselves (step 2 just shows progress). RetroArch only appears when some of your systems need it, with Google Play and website buttons. PlayStation joins the built-in player (PCSX ReARMed), with disc games read in place (cue/bin, chd, pbp; nothing copied). New neon "RF" app icon from the key art's sign. Fixed: setup reappearing on Home after Done.
 
 **Cheats** (pause menu): the game's cheats from libretro's cheat database, switched on and off live and remembered per game, plus your own Game Genie / Action Replay / GameShark codes. Also: change disc for multi-disc games, Volume boost, Sega CD, PC Engine CD and arcade (FinalBurn Neo, MAME 2003-Plus) in the built-in player.

@@ -165,9 +165,21 @@ class LibraryViewModel(
     val roots: StateFlow<List<RootEntity>?> = repository.roots.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
     val scans: StateFlow<Map<Long, ScanState>> = repository.scans
 
-    val systems: StateFlow<List<SystemSummary>> = repository.systemCounts
-        .map { counts -> counts.map { SystemSummary(it.system, repository.systemName(it.system), it.games, it.hacks) }.sortedBy { it.name.lowercase() } }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    /** Retro tab: only systems with games (default), or every system RetroForge knows (Settings → Retro tab). */
+    private val showAllSystems = MutableStateFlow(viewPrefs.getBoolean(SHOW_ALL_SYSTEMS, false))
+    private val prefsListener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
+        if (key == SHOW_ALL_SYSTEMS) showAllSystems.value = prefs.getBoolean(SHOW_ALL_SYSTEMS, false)
+    }.also { viewPrefs.registerOnSharedPreferenceChangeListener(it) }
+
+    override fun onCleared() {
+        viewPrefs.unregisterOnSharedPreferenceChangeListener(prefsListener)
+    }
+
+    val systems: StateFlow<List<SystemSummary>> = kotlinx.coroutines.flow.combine(repository.systemCounts, showAllSystems) { counts, all ->
+        val withGames = counts.map { SystemSummary(it.system, repository.systemName(it.system), it.games, it.hacks) }
+        val others = if (all) repository.rules.systems.filter { rule -> counts.none { it.system == rule.id } }.map { SystemSummary(it.id, it.name, 0, 0) } else emptyList()
+        (withGames + others).sortedBy { it.name.lowercase() }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val hacks: StateFlow<List<GameEntity>> = repository.hacks.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -259,6 +271,9 @@ class LibraryViewModel(
         documentId?.let { id -> rootsById[rootId]?.let { repository.documentUri(it, id) } }
 
     companion object {
+        /** View preference: show systems without games in the Retro tab. */
+        const val SHOW_ALL_SYSTEMS = "show_all_systems"
+
         fun factory(
             repository: LibraryRepository,
             retroArch: RetroArchLauncher,

@@ -61,11 +61,14 @@ class StandaloneLauncher(private val context: Context) {
 
     /**
      * Opens where to get [emulator]: Obtainium's "add app" screen when Obtainium is installed and the emulator
-     * publishes releases it can track, otherwise the official download page.
+     * publishes releases it can track (a full app setup from the Obtainium Emulation Pack, or a GitHub repository),
+     * otherwise the official download page.
      */
     fun openDownload(emulator: StandaloneEmulator, preferObtainium: Boolean = true): Boolean {
-        if (preferObtainium && emulator.obtainium != null) {
-            val add = Intent(Intent.ACTION_VIEW, Uri.parse("obtainium://add/${emulator.obtainium}")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val obtainium = emulator.obtainiumApp?.let { "obtainium://app/" + Uri.encode(it) }
+            ?: emulator.obtainium?.let { "obtainium://add/$it" }
+        if (preferObtainium && obtainium != null) {
+            val add = Intent(Intent.ACTION_VIEW, Uri.parse(obtainium)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             if (runCatching { context.startActivity(add) }.isSuccess) return true
         }
         return runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(emulator.page)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }.isSuccess

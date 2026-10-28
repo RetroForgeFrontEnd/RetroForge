@@ -223,6 +223,13 @@ S22 (arm64) and the Android emulator (x86_64, software GPU). Debug build.
 - Unit tests: all modules pass. New: cue sheet track names, theme metadata. `SettingsRepositoryTest.persistsChanges` now skips on Windows hosts (DataStore's rename-over-existing-file is refused by Windows; fine on Android/Linux).
 - Added without game tests: Sega CD, PC Engine CD (need their BIOS), arcade via FinalBurn Neo / MAME 2003-Plus (neogeo.zip copied alongside when present; clone parent sets not handled yet).
 
+### 2026-10-28: Every built-in player system boots (emulator)
+
+One game per system, started from its game page by an adb script (`boottest.sh`, kept outside the repo), with the player's log and a screenshot checked for each. All 17 boot and draw a picture:
+GB (Snaky Pocket, Gambatte), GBC (Petris), GBA (minicraft, mGBA), Master System (New Boggle Boggle 2), Game Gear (Pengo), SG-1000 (Guzzler), 32X (Shadow Squadron, PicoDrive), PC Engine (Hatris), Neo Geo Pocket (Neo Cherry Master), WonderSwan (Mingle Magnet), Atari 2600 (Extra Terrestrials), Lynx (Centipede, with lynxboot.img), DS (Game & Watch Collection 2, by hand: the script couldn't type "&"), Mega CD (Frog Feast .chd, Sega BIOS logo shown), PC Engine CD (Pyramid Plunder .chd, System Card 3), CPS1 (gulunpa, FBNeo), FBNeo (blockade), Neo Geo (mslug title screen, neogeo.zip found beside it). Earlier: NES, SNES, Mega Drive, PlayStation.
+Also checked: Mega Drive/Mega CD touch buttons no longer touch the d-pad on a 411 dp wide screen; Back up saves wrote a 9-file zip (saves, states, cheats) through Android's save dialog; About shows who made it; Storage card shows sizes.
+Not checked: time played (unit-tested only; the script force-stops the player, which skips counting), Restore from a backup on a second device, Obtainium links (Obtainium not installed on the emulator).
+
 ## Release test plan (run in the final stage, before any release)
 
 Everything is re-tested together on real hardware, so nothing that worked earlier is broken by later changes. Record each result here with date, device and evidence.

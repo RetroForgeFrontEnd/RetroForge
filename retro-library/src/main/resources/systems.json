@@ -41,7 +41,9 @@
     "zcxi",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "n3ds"
+   ]
   },
   {
    "id": "Windows",
@@ -176,7 +178,9 @@
     "rp9",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "cd32"
+   ]
   },
   {
    "id": "amigacdtv",
@@ -302,7 +306,9 @@
     "ufi",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "acornarchimedes"
+   ]
   },
   {
    "id": "arduboy",
@@ -430,7 +436,9 @@
     "wav",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "acornatom"
+   ]
   },
   {
    "id": "atomiswave",
@@ -523,7 +531,9 @@
     "tap",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "vic20"
+   ]
   },
   {
    "id": "c64",
@@ -603,7 +613,9 @@
     "nrg",
     "toc"
    ],
-   "aliases": []
+   "aliases": [
+    "cdimono1"
+   ]
   },
   {
    "id": "cgenius",
@@ -666,7 +678,9 @@
     "sg",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "coleco"
+   ]
   },
   {
    "id": "cplus4",
@@ -679,7 +693,9 @@
     "tap",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "plus4"
+   ]
   },
   {
    "id": "cps1",
@@ -785,7 +801,9 @@
     "pc",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "pc"
+   ]
   },
   {
    "id": "dragon32",
@@ -861,7 +879,9 @@
     "7z",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "acornelectron"
+   ]
   },
   {
    "id": "enterprise",
@@ -1135,7 +1155,9 @@
     "mgw",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "gameandwatch"
+   ]
   },
   {
    "id": "gx4000",
@@ -1213,7 +1235,9 @@
     "squashfs",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "atarijaguar"
+   ]
   },
   {
    "id": "jaguarcd",
@@ -1226,7 +1250,9 @@
     "squashfs",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "atarijaguarcd"
+   ]
   },
   {
    "id": "karaoke",
@@ -1293,7 +1319,9 @@
     "o",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "atarilynx"
+   ]
   },
   {
    "id": "mame",
@@ -1303,7 +1331,9 @@
     "decomp",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "arcade"
+   ]
   },
   {
    "id": "mastersystem",
@@ -1332,7 +1362,8 @@
     "zip"
    ],
    "aliases": [
-    "segacd"
+    "segacd",
+    "megacdjp"
    ]
   },
   {
@@ -1351,7 +1382,8 @@
     "zip"
    ],
    "aliases": [
-    "genesis"
+    "genesis",
+    "megadrivejp"
    ]
   },
   {
@@ -1626,7 +1658,9 @@
     "m3u",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "neogeocdjp"
+   ]
   },
   {
    "id": "nes",
@@ -1638,7 +1672,9 @@
     "wad",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "famicom"
+   ]
   },
   {
    "id": "ngage",
@@ -1683,7 +1719,9 @@
     "bin",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "videopac"
+   ]
   },
   {
    "id": "openbor",
@@ -1724,7 +1762,9 @@
     "dsk",
     "tap"
    ],
-   "aliases": []
+   "aliases": [
+    "oric"
+   ]
   },
   {
    "id": "p2000t",
@@ -2105,7 +2145,9 @@
     "toc",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "saturnjp"
+   ]
   },
   {
    "id": "screenshots",
@@ -2158,7 +2200,8 @@
     "zip"
    ],
    "aliases": [
-    "32x"
+    "32x",
+    "mega32x"
    ]
   },
   {
@@ -2167,7 +2210,9 @@
    "extensions": [
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "stv"
+   ]
   },
   {
    "id": "sg1000",
@@ -2181,7 +2226,9 @@
     "sms",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "sg-1000"
+   ]
   },
   {
    "id": "sgb",
@@ -2231,7 +2278,10 @@
     "wad",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "sfc",
+    "snesna"
+   ]
   },
   {
    "id": "snes-msu1",
@@ -2647,7 +2697,9 @@
     "xfd",
     "zip"
    ],
-   "aliases": []
+   "aliases": [
+    "atarixe"
+   ]
   },
   {
    "id": "zaccariapinball",

@@ -7,7 +7,7 @@ import kotlinx.serialization.json.Json
 private data class RawPackage(val `package`: String, val activity: String)
 
 @Serializable
-private data class RawEmulator(val id: String, val name: String, val page: String, val obtainium: String? = null, val packages: List<RawPackage>)
+private data class RawEmulator(val id: String, val name: String, val page: String, val obtainium: String? = null, val obtainiumApp: String? = null, val packages: List<RawPackage>)
 
 @Serializable
 data class StandaloneOption(val emulator: String, val label: String, val command: String)
@@ -23,6 +23,8 @@ data class StandaloneEmulator(
     val page: String,
     /** Repository URL Obtainium can track for updates, when releases are published there. */
     val obtainium: String?,
+    /** Obtainium's full setup for this app (from the Obtainium Emulation Pack), for releases that aren't plain GitHub ones. */
+    val obtainiumApp: String? = null,
     /** (package, activity) pairs, preferred first. */
     val components: List<Pair<String, String>>,
 )
@@ -44,7 +46,7 @@ class StandaloneEmulators(val emulators: Map<String, StandaloneEmulator>, privat
         fun parse(text: String): StandaloneEmulators {
             val raw = json.decodeFromString(RawFile.serializer(), text)
             val emulators = raw.emulators.associate { e ->
-                e.id to StandaloneEmulator(e.id, e.name, e.page, e.obtainium, e.packages.map { it.`package` to it.activity })
+                e.id to StandaloneEmulator(e.id, e.name, e.page, e.obtainium, e.obtainiumApp, e.packages.map { it.`package` to it.activity })
             }
             // Two labels for one app and command (ES-DE lists AetherSX2 and NetherSX2 that way) would be one button twice.
             val systems = raw.systems.mapValues { (_, opts) -> opts.distinctBy { it.emulator to it.command } }

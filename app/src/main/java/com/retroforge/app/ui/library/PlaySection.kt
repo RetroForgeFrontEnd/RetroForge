@@ -2,19 +2,27 @@ package com.retroforge.app.ui.library
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.retroforge.app.player.Playtime
 import com.retroforge.app.ui.CardBody
 import com.retroforge.app.ui.CardTitle
 import com.retroforge.core.library.GameEntity
@@ -23,21 +31,19 @@ import com.retroforge.core.ui.FocusCard
 import com.retroforge.core.ui.FocusChip
 import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
+import com.retroforge.library.StandaloneEmulator
+import com.retroforge.library.StandaloneOption
+import com.retroforge.player.CoreState
+import com.retroforge.player.PlayerCores
 import com.retroforge.retro.LaunchPlan
 import com.retroforge.retro.LaunchProblem
 import com.retroforge.retro.RetroArchCores
 import com.retroforge.retro.RetroArchLauncher
-import com.retroforge.library.StandaloneEmulator
-import com.retroforge.library.StandaloneOption
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.ui.unit.dp
-import java.text.DateFormat
-import androidx.compose.runtime.rememberCoroutineScope
-import com.retroforge.player.CoreState
-import com.retroforge.player.PlayerCores
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.text.DateFormat
 import java.util.Date
 
 @Composable
@@ -138,6 +144,14 @@ private fun BuiltInCard(
     val scope = rememberCoroutineScope()
     val states by viewModel.coreStates.collectAsStateWithLifecycle()
     val state = states[core.id] ?: viewModel.coreState(core.id)
+    // Read again each time this page comes back, e.g. after quitting the game.
+    var played by remember { mutableLongStateOf(0L) }
+    LifecycleResumeEffect(game.id) {
+        val job = scope.launch {
+            played = withContext(Dispatchers.IO) { Playtime(File(context.filesDir, "player/playtime.properties")).get(game.system, game.fileName) }
+        }
+        onPauseOrDispose { job.cancel() }
+    }
     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
         onProblem(null)
         scope.launch {
@@ -156,6 +170,7 @@ private fun BuiltInCard(
             },
         )
         if (core.needsBios) CardBody("${core.name} needs this system's BIOS file.")
+        if (played > 0) CardBody("Time played here: ${Playtime.format(played)}.")
     }
 }
 

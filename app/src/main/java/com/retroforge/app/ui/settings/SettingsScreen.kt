@@ -48,6 +48,7 @@ fun SettingsScreen(
     onOpenPrivacy: () -> Unit,
     playerSystems: List<Pair<String, String>> = emptyList(),
     coreChoices: com.retroforge.player.CoreChoices? = null,
+    viewPrefs: android.content.SharedPreferences? = null,
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
 
@@ -59,7 +60,7 @@ fun SettingsScreen(
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenAbout) {
             CardTitle("About RetroForge")
-            CardBody("Version ${BuildConfig.VERSION_NAME}. What RetroForge stands for (sort of), and what it's for.")
+            CardBody("Version ${BuildConfig.VERSION_NAME}. Made by Darren Glancy, built with AI. What RetroForge stands for (sort of), and what it's for.")
             CardBody("Controller: D-pad to move, A to select, B to go back, L1/R1 to switch sections.")
         }
 
@@ -85,6 +86,18 @@ fun SettingsScreen(
         SteamGridDbKeyCard(settings.steamGridDbKey, viewModel::setSteamGridDbKey)
 
         ScreenScraperCard(settings.screenScraperUser, viewModel::setScreenScraperLogin)
+
+        viewPrefs?.let { prefs ->
+            var showAll by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SHOW_ALL_SYSTEMS, false)) }
+            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
+                showAll = !showAll
+                prefs.edit().putBoolean(com.retroforge.app.ui.library.LibraryViewModel.SHOW_ALL_SYSTEMS, showAll).apply()
+            }) {
+                CardTitle("Retro tab: show systems without games")
+                StatusPill(if (showAll) "On" else "Off", if (showAll) StatusTone.GOOD else StatusTone.NEUTRAL)
+                CardBody("Off: the Retro tab shows only the systems you have games for. On: every system RetroForge knows, for browsing.")
+            }
+        }
 
         coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames) }
 
