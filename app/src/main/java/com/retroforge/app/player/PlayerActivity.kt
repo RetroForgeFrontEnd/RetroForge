@@ -404,9 +404,12 @@ class PlayerActivity : ComponentActivity() {
         Box(Modifier.fillMaxSize()) {
             BoxWithConstraints(Modifier.fillMaxSize()) {
                 val portrait = maxHeight > maxWidth
+                // Compact controls when the full-width picture wouldn't leave room for the normal ones (the DS's two screens).
+                val aspect = video?.aspect ?: (4f / 3f)
+                val compact = portrait && maxHeight - maxWidth / aspect < touchControlsHeight(layout, compact = false)
                 val controls: @Composable (Modifier) -> Unit = { modifier ->
                     if (touchEnabled && showTouch && phase == Phase.Playing && !menuOpen) {
-                        TouchControls(layout, onMask = { input.setTouch(it) }, onMenu = { openMenu() }, modifier = modifier)
+                        TouchControls(layout, onMask = { input.setTouch(it) }, onMenu = { openMenu() }, modifier = modifier, compact = compact)
                     }
                 }
                 if (portrait) {
