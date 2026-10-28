@@ -12,7 +12,7 @@ Status (2026-10-28): built; emulator tested where stated.
 
 The game file is passed as a content:// URI with read access granted to that emulator only. Multi-file games (.cue, .m3u) usually also need the folder added inside the emulator; the page says so.
 
-Evidence: parsing unit-tested (DuckStation, Dolphin, PPSSPP, MAME4droid); the page and Get links emulator-tested. **No standalone emulator launch tested yet** (none installed on the test emulator; most are ARM64-only).
+Evidence: parsing unit-tested (DuckStation, Dolphin, PPSSPP, MAME4droid); **PPSSPP 1.20.4 launch-tested** on the emulator (Pinball Dreams .cso reached its table select; default choice and play history work). Other standalone emulators not tested yet (most are ARM64-only and need a real phone).
 
 ## RetroArch hotkeys, fast-forward and resume
 

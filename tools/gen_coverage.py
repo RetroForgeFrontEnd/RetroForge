@@ -18,7 +18,7 @@ for sid, body in re.findall(r'"([^"]+)" to listOf\((.*?)\),?\n', core_table):
 sa = {k: [o["label"] for o in v] for k, v in standalone["systems"].items()}
 
 # Launch-tested on the Android emulator (docs/TESTING.md).
-TESTED = {"snes": "Star Fox, Super Mario World (.7z), 3 Ninjas (auto save/load)", "nes": "gameplay", "psx": "Resident Evil 2 (2 discs), Batman Forever (RetroForge CHD), Command & Conquer (disc swap)"}
+TESTED = {"psp": "Pinball Dreams in PPSSPP (standalone)", "snes": "Star Fox, Super Mario World (.7z), 3 Ninjas (auto save/load)", "nes": "gameplay", "psx": "Resident Evil 2 (2 discs), Batman Forever (RetroForge CHD), Command & Conquer (disc swap)"}
 NOTES = {
     "teknoparrot": "Windows-only arcade loader; no Android equivalent.",
     "Windows": "PC games: RetroForge's PC section (DroidDeck), or Winlator/GameNative outside RetroForge.",

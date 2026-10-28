@@ -5,8 +5,8 @@ Generated from the same tables the app uses: RetroBat's own core choices (`es_sy
 
 | Status | Systems |
 |---|---|
-| Launch tested | 3 |
-| Should work (not tested) | 101 |
+| Launch tested | 4 |
+| Should work (not tested) | 100 |
 | No Android option | 17 |
 | **Total** | **121** |
 
@@ -67,7 +67,7 @@ Generated from the same tables the app uses: RetroBat's own core choices (`es_sy
 | Lynx (`lynx`) | 84 | Should work (not tested) | Mednafen Lynx, Handy, Holani | — |  |
 | Java 2 MicroEdition (`j2me`) | 83 | Should work (not tested) | — | J2ME Loader |  |
 | Saturn (`saturn`) | 83 | Should work (not tested) | Mednafen Saturn, Ymir, Yabasanshiro | Yaba Sanshiro 2 |  |
-| PlayStation Portable (`psp`) | 72 | Should work (not tested) | PPSSPP | PPSSPP |  |
+| PlayStation Portable (`psp`) | 72 | Launch tested | PPSSPP | PPSSPP | Pinball Dreams in PPSSPP (standalone) |
 | Uzebox (`uzebox`) | 72 | Should work (not tested) | Uzem | — |  |
 | SG-1000 (`sg1000`) | 69 | Should work (not tested) | Gearsystem, Genesis Plus GX | — |  |
 | Watara SuperVision (`supervision`) | 69 | Should work (not tested) | Potator | MAME4droid Current |  |
