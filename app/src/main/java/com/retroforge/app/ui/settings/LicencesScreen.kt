@@ -44,6 +44,10 @@ private val notices = listOf(
         "By Siddy212, github.com/Siddy212/canvas-es. Not part of RetroForge: downloaded from that repository for the systems in your " +
             "library. Console and game names, logos and characters shown in it belong to their owners.",
     ),
+    Notice(
+        "libretro cheat database (pause menu → Cheats)", "CC BY-SA 4.0",
+        "github.com/libretro/libretro-database. Not part of RetroForge: a game's cheat file is downloaded from there when you open its Cheats page.",
+    ),
     Notice("Press Start 2P font", "SIL Open Font License 1.1", "Copyright 2012 The Press Start 2P Project Authors.", "licences/font-pressstart2p-OFL.txt"),
     Notice("Orbitron font", "SIL Open Font License 1.1", "Copyright The Orbitron Project Authors.", "licences/font-orbitron-OFL.txt"),
     Notice("Rajdhani font", "SIL Open Font License 1.1", "Copyright Indian Type Foundry.", "licences/font-rajdhani-OFL.txt"),

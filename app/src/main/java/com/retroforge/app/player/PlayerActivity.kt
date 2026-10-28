@@ -110,7 +110,44 @@ class PlayerActivity : ComponentActivity() {
     private var volume by mutableStateOf(1f)
     private var filter by mutableStateOf(com.retroforge.player.ScreenFilter.SHARP)
     private var pictureRect by mutableStateOf(Rect(0, 0, 0, 0))
-    private enum class MenuPage { MAIN, OPTIONS, EMULATORS }
+    private enum class MenuPage { MAIN, OPTIONS, EMULATORS, CHEATS }
+    private var cheats by mutableStateOf<List<Cheat>>(emptyList())
+    private var cheatStatus by mutableStateOf<String?>(null)
+    private var newCode by mutableStateOf("")
+    private var newName by mutableStateOf("")
+    private val cheatStore by lazy { CheatStore(File(filesDir, "cheats/$system/$saveBase.json")) }
+
+    /** Turns on exactly the enabled cheats; tells the user when this emulator has no cheat support. */
+    private fun applyCheats(list: List<Cheat>) {
+        val ok = NativePlayer.applyCheats(list.filter { it.enabled }.map { it.code }.toTypedArray())
+        if (!ok && list.any { it.enabled }) runOnUiThread { cheatStatus = "This emulator doesn't support cheats." }
+    }
+
+    private fun updateCheats(list: List<Cheat>) {
+        cheats = list
+        worker.execute {
+            cheatStore.save(list)
+            applyCheats(list)
+        }
+    }
+
+    private fun openCheats() {
+        menuPage = MenuPage.CHEATS
+        cheats = cheatStore.load()
+        if (cheatStore.downloaded) return
+        cheatStatus = "Looking for cheats for this game…"
+        worker.execute {
+            val found = runCatching {
+                cheatStore.fetch(system, intent.getStringExtra(EXTRA_FILE_NAME).orEmpty(), "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}")
+            }
+            runOnUiThread {
+                found.onSuccess { list ->
+                    if (list == null) cheatStatus = "libretro's cheat database has no cheats for this game. You can add your own code below."
+                    else { cheats = list; cheatStatus = null }
+                }.onFailure { cheatStatus = "Couldn't get cheats (${it.message}). Check the internet connection." }
+            }
+        }
+    }
     private var menuPage by mutableStateOf(MenuPage.MAIN)
     private var fastForwardOn by mutableStateOf(false)
     private var coreOptions by mutableStateOf<List<CoreOption>>(emptyList())
@@ -230,6 +267,7 @@ class PlayerActivity : ComponentActivity() {
         }
         NativePlayer.setFilter(filter.ordinal)
         NativePlayer.setVolume(volume)
+        cheatStore.load().also { saved -> runOnUiThread { cheats = saved } }.let(::applyCheats)
         PlayerCores.portDevice(coreId)?.let { NativePlayer.setPortDevice(0, it) }
         NativePlayer.start()
         runOnUiThread {
@@ -725,6 +763,9 @@ class PlayerActivity : ComponentActivity() {
                             coreOptions = NativePlayer.options()
                             menuPage = MenuPage.OPTIONS
                         }, modifier = wide) { Text("Emulator settings ›") }
+                        MenuButton(onClick = { openCheats() }, modifier = wide) {
+                            Text("Cheats ›" + cheats.count { it.enabled }.let { if (it > 0) "  ($it on)" else "" })
+                        }
                         if (PlayerCores.choices(system).size > 1) {
                             MenuButton(onClick = { menuPage = MenuPage.EMULATORS }, modifier = wide) { Text("Switch emulator ›") }
                         }
@@ -733,6 +774,41 @@ class PlayerActivity : ComponentActivity() {
                             closeMenu()
                         }, modifier = wide) { Text("Restart game") }
                         MenuButton(onClick = { quit() }, modifier = wide) { Text("Quit to RetroForge") }
+                    }
+                    MenuPage.CHEATS -> {
+                        Text("Cheats", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(
+                            "From libretro's cheat database (CC BY-SA 4.0). Switch one on and it works at once. Cheats can upset saves: save your game first.",
+                            color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
+                        )
+                        cheatStatus?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        cheats.forEachIndexed { i, cheat ->
+                            MenuButton(onClick = {
+                                updateCheats(cheats.toMutableList().also { it[i] = cheat.copy(enabled = !cheat.enabled) })
+                            }, modifier = wide) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(cheat.description, textAlign = TextAlign.Center, fontSize = 14.sp)
+                                    Text(if (cheat.enabled) "On" else "Off", color = if (cheat.enabled) Color(0xFF9FE3B0) else Color(0xFFFF8A1F), fontSize = 13.sp)
+                                }
+                            }
+                            if (cheat.custom) {
+                                MenuButton(onClick = { updateCheats(cheats.filterIndexed { j, _ -> j != i }) }, modifier = wide) {
+                                    Text("Remove \"${cheat.description}\"", fontSize = 13.sp)
+                                }
+                            }
+                        }
+                        Text("Add your own code", color = Color.White, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
+                        com.retroforge.core.ui.ControllerTextField(newCode, { newCode = it.take(400) }, wide, label = { Text("Code (Game Genie, Action Replay …)") })
+                        com.retroforge.core.ui.ControllerTextField(newName, { newName = it.take(60) }, wide, label = { Text("Name (optional)") })
+                        MenuButton(onClick = {
+                            val code = newCode.trim()
+                            if (code.isNotEmpty()) {
+                                updateCheats(cheats + Cheat(newName.trim().ifEmpty { "My code ${cheats.count { it.custom } + 1}" }, code, enabled = true, custom = true))
+                                newCode = ""
+                                newName = ""
+                            }
+                        }, modifier = wide) { Text("Add and switch on") }
                     }
                     MenuPage.OPTIONS -> {
                         Text("$coreName settings", color = Color.White, fontWeight = FontWeight.Bold)

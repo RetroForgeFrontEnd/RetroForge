@@ -57,6 +57,8 @@ struct CoreApi {
     void (*unload_game)() = nullptr;
     void *(*get_memory_data)(unsigned) = nullptr;
     size_t (*get_memory_size)(unsigned) = nullptr;
+    void (*cheat_reset)() = nullptr;
+    void (*cheat_set)(unsigned, bool, const char *) = nullptr;
 };
 
 // Single-producer (core thread) single-consumer (AAudio callback) ring of stereo frames.
@@ -760,6 +762,9 @@ JNIEXPORT jstring JNI(openCore)(JNIEnv *env, jobject, jstring corePath, jstring 
         P = nullptr;
         return env->NewStringUTF("The emulator core is damaged or not a libretro core");
     }
+    // Cheats are optional: a core without them simply has no Cheats page.
+    c.cheat_reset = reinterpret_cast<void (*)()>(dlsym(h, "retro_cheat_reset"));
+    c.cheat_set = reinterpret_cast<void (*)(unsigned, bool, const char *)>(dlsym(h, "retro_cheat_set"));
     c.set_environment(environment);
     c.init();
     c.set_video_refresh(videoRefresh);
@@ -917,6 +922,19 @@ JNIEXPORT void JNI(setViewport)(JNIEnv *, jobject, jint x, jint y, jint w, jint 
     P->viewY = y;
     P->viewW = w;
     P->viewH = h;
+}
+
+// Replaces the active cheats with [codes] (each a core-format code, parts joined with '+'). False when the core has none.
+JNIEXPORT jboolean JNI(applyCheats)(JNIEnv *env, jobject, jobjectArray codes) {
+    if (!P || !P->gameLoaded || !P->core.cheat_reset || !P->core.cheat_set) return JNI_FALSE;
+    std::lock_guard<std::mutex> lock(P->coreMutex);
+    P->core.cheat_reset();
+    jsize n = codes ? env->GetArrayLength(codes) : 0;
+    for (jsize i = 0; i < n; i++) {
+        std::string code = str(env, static_cast<jstring>(env->GetObjectArrayElement(codes, i)));
+        P->core.cheat_set(static_cast<unsigned>(i), true, code.c_str());
+    }
+    return JNI_TRUE;
 }
 
 // Multi-disc games: [number of discs, current disc (0-based)], or [0, 0] when the core has no disc control.

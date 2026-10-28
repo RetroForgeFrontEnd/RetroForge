@@ -19,6 +19,8 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Setup does the work**: emulators for your systems download by themselves (step 2 just shows progress). RetroArch only appears when some of your systems need it, with Google Play and website buttons. PlayStation joins the built-in player (PCSX ReARMed), with disc games read in place (cue/bin, chd, pbp; nothing copied). New neon "RF" app icon from the key art's sign. Fixed: setup reappearing on Home after Done.
 
+**Cheats** (pause menu): the game's cheats from libretro's cheat database, switched on and off live and remembered per game, plus your own Game Genie / Action Replay / GameShark codes. Also: change disc for multi-disc games, Volume boost, Sega CD, PC Engine CD and arcade (FinalBurn Neo, MAME 2003-Plus) in the built-in player.
+
 **Covers**: free libretro box art (one game or a whole system), SteamGridDB (your own key), ScreenScraper (needs RetroForge's developer ID), or any image on your device.
 
 **ROM tools**: IPS/BPS/UPS patcher with patch chains and readmes; ROM hacks tab with catalogues; ROM manager (duplicates, compress discs to CHD and cartridges to .zip, multi-disc playlists, delete, undo, free up space).

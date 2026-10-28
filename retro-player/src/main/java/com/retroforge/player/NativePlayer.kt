@@ -61,6 +61,9 @@ object NativePlayer {
     /** Where the picture goes on the surface, in pixels from the top left ([Viewport.fit]). */
     external fun setViewport(x: Int, y: Int, w: Int, h: Int)
 
+    /** Turns on exactly these cheat codes (the core's own formats: Game Genie, Action Replay, GameShark …). False if the core has no cheats. */
+    external fun applyCheats(codes: Array<String>): Boolean
+
     private external fun discs(): IntArray
 
     /** (number of discs, current disc from 0), or null when the game has one disc / the core can't swap. */
