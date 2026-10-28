@@ -32,6 +32,8 @@ import com.retroforge.core.ui.FocusCard
 import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
 import com.retroforge.core.ui.Wordmark
+import com.retroforge.core.ui.LocalThemeSpec
+import com.retroforge.theme.HomeLayout
 
 /**
  * The dashboard: the last game played, big; then recent games, favourites and systems as swipeable rows. Before
@@ -44,7 +46,15 @@ fun HomeScreen(
     onOpen: (Section) -> Unit,
     onOpenGame: (Long) -> Unit,
     onOpenSystem: (String) -> Unit,
+    onOpenPlaylist: (Long) -> Unit = {},
 ) {
+    // The theme decides the structure of home; the dashboard below is the default.
+    when (LocalThemeSpec.current.homeLayout) {
+        HomeLayout.CROSSBAR -> return CrossBarHome(library, onOpenGame, onOpenSystem)
+        HomeLayout.HERO -> return HeroHome(library, onOpenGame, onOpenSystem)
+        HomeLayout.BLADES -> return BladesHome(library, onOpenGame, onOpenSystem, onOpenPlaylist)
+        HomeLayout.DASHBOARD -> Unit
+    }
     val recent by library.recentlyPlayed.collectAsStateWithLifecycle()
     val favourites by library.favourites.collectAsStateWithLifecycle()
     val systems by library.systems.collectAsStateWithLifecycle()

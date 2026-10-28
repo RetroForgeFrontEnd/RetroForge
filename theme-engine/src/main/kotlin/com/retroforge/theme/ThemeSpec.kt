@@ -29,6 +29,13 @@ enum class FontStyle { SANS, SERIF, MONO, ROUNDED, PIXEL, TECH, DISPLAY }
 enum class GameView { GRID, LIST }
 enum class TileAspect(val ratio: Float) { WIDE(4f / 3f), SQUARE(1f), PORTRAIT(3f / 4f) }
 enum class SystemView { GRID, CAROUSEL }
+
+/**
+ * How the home screen is built: DASHBOARD (hero banner then rows), CROSSBAR (a sideways category bar over a list
+ * of that category's games), HERO (the focused game fills the screen above a row of tiles), BLADES (swipeable
+ * full-height panels with tabs).
+ */
+enum class HomeLayout { DASHBOARD, CROSSBAR, HERO, BLADES }
 enum class BackgroundStyle { SOLID, LINEAR, RADIAL }
 
 /** The page background: flat, or a gradient through [colors] (per brightness; empty means the palette's background). */
@@ -53,6 +60,7 @@ data class ThemeSpec(
     val gameView: GameView,
     val tileAspect: TileAspect,
     val systemView: SystemView = SystemView.GRID,
+    val homeLayout: HomeLayout = HomeLayout.DASHBOARD,
     val background: Background = Background(BackgroundStyle.SOLID, emptyList(), emptyList(), 135),
     /** CRT-style scanlines over every screen. */
     val scanlines: Boolean = false,
@@ -96,7 +104,7 @@ object ThemeFormat {
     private data class RawWordmark(val retro: String? = null, val forge: String? = null, val glow: Boolean = true)
 
     @Serializable
-    private data class RawLayout(val gameView: String = "grid", val tileAspect: String = "wide", val systemView: String = "grid")
+    private data class RawLayout(val gameView: String = "grid", val tileAspect: String = "wide", val systemView: String = "grid", val home: String = "dashboard")
 
     @Serializable
     private data class RawBackground(val style: String = "solid", val dark: List<String> = emptyList(), val light: List<String> = emptyList(), val angle: Int = 135)
@@ -152,6 +160,7 @@ object ThemeFormat {
             gameView = enumOf(raw.layout.gameView, GameView.entries, "layout.gameView"),
             tileAspect = enumOf(raw.layout.tileAspect, TileAspect.entries, "layout.tileAspect"),
             systemView = enumOf(raw.layout.systemView, SystemView.entries, "layout.systemView"),
+            homeLayout = enumOf(raw.layout.home, HomeLayout.entries, "layout.home"),
             background = Background(
                 enumOf(raw.background.style, BackgroundStyle.entries, "background.style"),
                 raw.background.dark.take(4).map { color(it, "background.dark") },
@@ -179,7 +188,7 @@ object ThemeFormat {
                 theme.dark?.let(::raw), theme.light?.let(::raw), RawShape(theme.cornerRadius),
                 RawType(theme.font.name.lowercase(), theme.headlineWeight, theme.textScale),
                 RawWordmark(hex(theme.wordmarkRetro), hex(theme.wordmarkForge), theme.wordmarkGlow),
-                RawLayout(theme.gameView.name.lowercase(), theme.tileAspect.name.lowercase(), theme.systemView.name.lowercase()),
+                RawLayout(theme.gameView.name.lowercase(), theme.tileAspect.name.lowercase(), theme.systemView.name.lowercase(), theme.homeLayout.name.lowercase()),
                 RawBackground(theme.background.style.name.lowercase(), theme.background.dark.map(::hex), theme.background.light.map(::hex), theme.background.angle),
                 RawEffects(theme.scanlines, theme.vignette, theme.focusGlow),
                 theme.importedFrom,

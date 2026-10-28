@@ -177,6 +177,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                             HomeScreen(
                                 showPc = settings.showPcSection, library = libraryViewModel, onOpen = { nav.goTo(it) },
                                 onOpenGame = { nav.navigate("retro/game/$it") }, onOpenSystem = { nav.navigate("retro/system/$it") },
+                                onOpenPlaylist = { nav.navigate("retro/playlist/$it") },
                             )
                         }
                         composable(Section.RETRO.route) {

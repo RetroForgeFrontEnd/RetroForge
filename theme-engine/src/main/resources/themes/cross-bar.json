@@ -34,7 +34,8 @@
   "layout": {
     "gameView": "grid",
     "tileAspect": "wide",
-    "systemView": "carousel"
+    "systemView": "carousel",
+    "home": "crossbar"
   },
   "background": {
     "style": "linear",

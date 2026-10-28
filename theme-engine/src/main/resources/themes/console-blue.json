@@ -44,7 +44,8 @@
   "layout": {
     "gameView": "grid",
     "tileAspect": "portrait",
-    "systemView": "carousel"
+    "systemView": "carousel",
+    "home": "hero"
   },
   "background": {
     "style": "radial",
