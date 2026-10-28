@@ -56,6 +56,33 @@ class LibraryRepository(
     val recentlyPlayed: Flow<List<GameEntity>> = dao.recentlyPlayed(12)
     fun playFor(gameId: Long): Flow<PlayEntity?> = dao.playFor(gameId)
 
+    val favourites: Flow<List<GameEntity>> = dao.favouriteGames()
+    val playlists: Flow<List<PlaylistSummary>> = dao.playlists()
+    fun isFavourite(game: GameEntity): Flow<Boolean> = dao.isFavourite(game.rootId, game.relativePath)
+    fun playlist(id: Long): Flow<PlaylistEntity?> = dao.playlist(id)
+    fun playlistGames(id: Long): Flow<List<GameEntity>> = dao.playlistGames(id)
+    fun playlistsContaining(game: GameEntity): Flow<List<Long>> = dao.playlistsContaining(game.rootId, game.relativePath)
+
+    fun setFavourite(game: GameEntity, favourite: Boolean) {
+        scope.launch {
+            if (favourite) dao.addFavourite(FavouriteEntity(game.rootId, game.relativePath, clock()))
+            else dao.removeFavourite(game.rootId, game.relativePath)
+        }
+    }
+
+    suspend fun createPlaylist(name: String): Long = dao.insertPlaylist(PlaylistEntity(name = name.trim(), createdAt = clock()))
+    fun renamePlaylist(id: Long, name: String) { scope.launch { dao.renamePlaylist(id, name.trim()) } }
+    fun deletePlaylist(id: Long) { scope.launch { dao.deletePlaylist(id) } }
+
+    fun setInPlaylist(id: Long, game: GameEntity, inPlaylist: Boolean) {
+        scope.launch {
+            if (inPlaylist) dao.addToPlaylist(id, game.rootId, game.relativePath, clock())
+            else dao.removePlaylistItem(id, game.rootId, game.relativePath)
+        }
+    }
+
+    fun movePlaylistGame(id: Long, game: GameEntity, by: Int) { scope.launch { dao.movePlaylistItem(id, game.rootId, game.relativePath, by) } }
+
     fun recordPlay(game: GameEntity, core: String) {
         scope.launch { dao.recordPlay(game.rootId, game.relativePath, core, clock()) }
     }

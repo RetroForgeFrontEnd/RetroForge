@@ -53,6 +53,7 @@ import com.retroforge.app.ui.patcher.PatcherViewModel
 import com.retroforge.app.ui.pc.PcViewModel
 import com.retroforge.app.ui.library.CoverPickerScreen
 import com.retroforge.app.ui.library.GameDetailScreen
+import com.retroforge.app.ui.library.PlaylistScreen
 import com.retroforge.app.ui.manager.RomManagerScreen
 import com.retroforge.app.ui.manager.RomManagerViewModel
 import com.retroforge.app.ui.library.LibraryFoldersScreen
@@ -92,6 +93,7 @@ private const val SYSTEM_ROUTE = "retro/system/{system}"
 private const val GAME_ROUTE = "retro/game/{id}"
 private const val COVER_ROUTE = "retro/game/{id}/cover"
 private const val MANAGER_ROUTE = "retro/manager"
+private const val PLAYLIST_ROUTE = "retro/playlist/{id}"
 private const val MANAGER_DELETE_ROUTE = "retro/manager/delete/{id}"
 
 @Composable
@@ -172,9 +174,18 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                                 onOpenGame = { nav.navigate("retro/game/$it") },
                                 onOpenPatcher = { nav.navigate(PATCHER_ROUTE) },
                                 onOpenManager = { nav.navigate(MANAGER_ROUTE) },
+                                onOpenPlaylist = { nav.navigate("retro/playlist/$it") },
                             )
                         }
                         composable(FOLDERS_ROUTE) { LibraryFoldersScreen(libraryViewModel) }
+                        composable(PLAYLIST_ROUTE) { entry ->
+                            PlaylistScreen(
+                                libraryViewModel,
+                                entry.arguments?.getString("id")?.toLongOrNull() ?: -1,
+                                onOpenGame = { nav.navigate("retro/game/$it") },
+                                onDeleted = { nav.popBackStack() },
+                            )
+                        }
                         composable(MANAGER_ROUTE) {
                             val managerViewModel: RomManagerViewModel = viewModel(factory = RomManagerViewModel.factory(container.library, container.romManager))
                             RomManagerScreen(managerViewModel)

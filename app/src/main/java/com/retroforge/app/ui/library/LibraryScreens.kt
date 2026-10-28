@@ -57,6 +57,7 @@ fun RetroScreen(
     onOpenGame: (Long) -> Unit,
     onOpenPatcher: () -> Unit,
     onOpenManager: () -> Unit,
+    onOpenPlaylist: (Long) -> Unit,
 ) {
     val roots by viewModel.roots.collectAsStateWithLifecycle()
     val systems by viewModel.systems.collectAsStateWithLifecycle()
@@ -125,6 +126,8 @@ fun RetroScreen(
                     }
                 }
             }
+
+            FavouritesAndPlaylistsSection(viewModel, rootsById, onOpenGame, onOpenPlaylist)
 
             CardTitle("Systems")
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -262,6 +265,7 @@ fun GameDetailScreen(viewModel: LibraryViewModel, gameId: Long, onOpenGame: (Lon
     ScreenFrame(title = g.title, subtitle = viewModel.systemName(g.system)) {
         GameArt(g, viewModel.art(rootsById, chosen, g), Modifier.fillMaxWidth().heightIn(max = 320.dp).padding(bottom = 4.dp))
         CoverControls(g, viewModel, onChangeCover = { onChangeCover(g.id) })
+        FavouriteAndPlaylists(g, viewModel)
         PlaySection(viewModel, g, rootsById[g.rootId])
         FocusChip("Delete this game…", onClick = { onDelete(g.id) })
         FocusCard(modifier = Modifier.fillMaxWidth()) {

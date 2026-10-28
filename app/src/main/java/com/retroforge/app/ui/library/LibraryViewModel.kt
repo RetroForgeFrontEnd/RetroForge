@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.retroforge.core.library.CoverRepository
 import com.retroforge.core.library.GameEntity
+import com.retroforge.core.library.PlaylistSummary
 import java.io.File
 import com.retroforge.core.library.LibraryRepository
 import com.retroforge.core.library.PlayEntity
@@ -118,6 +119,18 @@ class LibraryViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val recentlyPlayed: StateFlow<List<GameEntity>> = repository.recentlyPlayed.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val favourites: StateFlow<List<GameEntity>> = repository.favourites.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val playlists: StateFlow<List<PlaylistSummary>> = repository.playlists.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    fun isFavourite(game: GameEntity) = repository.isFavourite(game)
+    fun setFavourite(game: GameEntity, favourite: Boolean) = repository.setFavourite(game, favourite)
+    fun playlist(id: Long) = repository.playlist(id)
+    fun playlistGames(id: Long) = repository.playlistGames(id)
+    fun playlistsContaining(game: GameEntity) = repository.playlistsContaining(game)
+    suspend fun createPlaylist(name: String): Long = repository.createPlaylist(name)
+    fun setInPlaylist(id: Long, game: GameEntity, inPlaylist: Boolean) = repository.setInPlaylist(id, game, inPlaylist)
+    fun renamePlaylist(id: Long, name: String) = repository.renamePlaylist(id, name)
+    fun deletePlaylist(id: Long) = repository.deletePlaylist(id)
+    fun movePlaylistGame(id: Long, game: GameEntity, by: Int) = repository.movePlaylistGame(id, game, by)
     fun playFor(gameId: Long): Flow<PlayEntity?> = repository.playFor(gameId)
 
     fun launchPlan(game: GameEntity, root: RootEntity?): LaunchPlan =

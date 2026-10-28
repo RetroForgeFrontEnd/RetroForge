@@ -106,6 +106,36 @@ data class CoverEntity(
     val savedAt: Long,
 )
 
+/** A favourite game, keyed by folder + path so it survives rescans. */
+@Entity(
+    tableName = "favourites",
+    primaryKeys = ["rootId", "relativePath"],
+    foreignKeys = [ForeignKey(entity = RootEntity::class, parentColumns = ["id"], childColumns = ["rootId"], onDelete = ForeignKey.CASCADE)],
+)
+data class FavouriteEntity(val rootId: Long, val relativePath: String, val addedAt: Long)
+
+/** A playlist (collection) the user made. */
+@Entity(tableName = "playlists")
+data class PlaylistEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val name: String,
+    val createdAt: Long,
+)
+
+/** A game in a playlist, in the user's order. Keyed by folder + path like favourites. */
+@Entity(
+    tableName = "playlist_items",
+    primaryKeys = ["playlistId", "rootId", "relativePath"],
+    foreignKeys = [
+        ForeignKey(entity = PlaylistEntity::class, parentColumns = ["id"], childColumns = ["playlistId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = RootEntity::class, parentColumns = ["id"], childColumns = ["rootId"], onDelete = ForeignKey.CASCADE),
+    ],
+    indices = [Index("rootId")],
+)
+data class PlaylistItemEntity(val playlistId: Long, val rootId: Long, val relativePath: String, val position: Int, val addedAt: Long)
+
+data class PlaylistSummary(val id: Long, val name: String, val games: Int)
+
 data class SystemCount(val system: String, val games: Int, val hacks: Int)
 
 @Dao
@@ -200,6 +230,78 @@ interface LibraryDao {
     )
     suspend fun updateScan(rootId: Long, at: Long, layout: String, games: Int, problems: Int, unrecognised: String)
 
+    @Query(
+        "SELECT games.* FROM games JOIN favourites ON games.rootId = favourites.rootId " +
+            "AND games.relativePath = favourites.relativePath ORDER BY favourites.addedAt DESC",
+    )
+    fun favouriteGames(): Flow<List<GameEntity>>
+
+    @Query("SELECT EXISTS(SELECT 1 FROM favourites WHERE rootId = :rootId AND relativePath = :path)")
+    fun isFavourite(rootId: Long, path: String): Flow<Boolean>
+
+    @androidx.room.Upsert
+    suspend fun addFavourite(favourite: FavouriteEntity)
+
+    @Query("DELETE FROM favourites WHERE rootId = :rootId AND relativePath = :path")
+    suspend fun removeFavourite(rootId: Long, path: String)
+
+    @Query(
+        "SELECT playlists.id AS id, playlists.name AS name, COUNT(games.id) AS games FROM playlists " +
+            "LEFT JOIN playlist_items ON playlist_items.playlistId = playlists.id " +
+            "LEFT JOIN games ON games.rootId = playlist_items.rootId AND games.relativePath = playlist_items.relativePath " +
+            "GROUP BY playlists.id ORDER BY playlists.name COLLATE NOCASE",
+    )
+    fun playlists(): Flow<List<PlaylistSummary>>
+
+    @Query("SELECT * FROM playlists WHERE id = :id")
+    fun playlist(id: Long): Flow<PlaylistEntity?>
+
+    @Query(
+        "SELECT games.* FROM games JOIN playlist_items ON games.rootId = playlist_items.rootId " +
+            "AND games.relativePath = playlist_items.relativePath WHERE playlist_items.playlistId = :id ORDER BY playlist_items.position",
+    )
+    fun playlistGames(id: Long): Flow<List<GameEntity>>
+
+    @Query("SELECT playlistId FROM playlist_items WHERE rootId = :rootId AND relativePath = :path")
+    fun playlistsContaining(rootId: Long, path: String): Flow<List<Long>>
+
+    @Insert
+    suspend fun insertPlaylist(playlist: PlaylistEntity): Long
+
+    @Query("UPDATE playlists SET name = :name WHERE id = :id")
+    suspend fun renamePlaylist(id: Long, name: String)
+
+    @Query("DELETE FROM playlists WHERE id = :id")
+    suspend fun deletePlaylist(id: Long)
+
+    @Query("SELECT COALESCE(MAX(position), -1) + 1 FROM playlist_items WHERE playlistId = :id")
+    suspend fun nextPosition(id: Long): Int
+
+    @androidx.room.Upsert
+    suspend fun upsertPlaylistItem(item: PlaylistItemEntity)
+
+    @Query("DELETE FROM playlist_items WHERE playlistId = :id AND rootId = :rootId AND relativePath = :path")
+    suspend fun removePlaylistItem(id: Long, rootId: Long, path: String)
+
+    @Query("SELECT * FROM playlist_items WHERE playlistId = :id ORDER BY position")
+    suspend fun playlistItems(id: Long): List<PlaylistItemEntity>
+
+    @Transaction
+    suspend fun addToPlaylist(id: Long, rootId: Long, path: String, at: Long) {
+        upsertPlaylistItem(PlaylistItemEntity(id, rootId, path, nextPosition(id), at))
+    }
+
+    /** Moves one game up or down within a playlist by swapping places with its neighbour. */
+    @Transaction
+    suspend fun movePlaylistItem(id: Long, rootId: Long, path: String, by: Int) {
+        val items = playlistItems(id)
+        val i = items.indexOfFirst { it.rootId == rootId && it.relativePath == path }
+        val j = i + by
+        if (i < 0 || j !in items.indices) return
+        upsertPlaylistItem(items[i].copy(position = items[j].position))
+        upsertPlaylistItem(items[j].copy(position = items[i].position))
+    }
+
     /** Replaces a folder's index in one transaction, so an interrupted scan leaves the previous index intact. */
     @Transaction
     suspend fun replaceIndex(root: RootEntity, games: List<GameEntity>, problems: List<ProblemEntity>, layout: String, unrecognised: String, at: Long) {
@@ -212,10 +314,13 @@ interface LibraryDao {
 }
 
 @Database(
-    entities = [RootEntity::class, GameEntity::class, ProblemEntity::class, PlayEntity::class, CoverEntity::class],
-    version = 3,
+    entities = [
+        RootEntity::class, GameEntity::class, ProblemEntity::class, PlayEntity::class, CoverEntity::class,
+        FavouriteEntity::class, PlaylistEntity::class, PlaylistItemEntity::class,
+    ],
+    version = 4,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3)],
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4)],
 )
 abstract class LibraryDatabase : RoomDatabase() {
     abstract fun dao(): LibraryDao

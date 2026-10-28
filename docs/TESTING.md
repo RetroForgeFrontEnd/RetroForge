@@ -138,6 +138,13 @@ Not tested: physical gamepad, Android TV device or TV emulator image, tablet, li
 - **Standalone emulator: PPSSPP 1.20.4** (official APK from ppsspp.org, signed by Henrik Rydgård; x86_64 build included). Pinball Dreams (.cso, from the RetroBat collection) launched from RetroForge's "Play with PPSSPP" via a content:// URI with per-file read access: reached the game's table select. "Use by default" made the main Play button launch PPSSPP; play history recorded.
 - Not tested: a physical controller (combos, R2), other standalone emulators (most are ARM64-only).
 
+### 2026-10-28: Favourites and playlists (emulator, software rendering)
+
+- Upgraded the installed app from database v3 to v4: library (251 games), recently played and covers kept.
+- Favourited a game (★ shown, Favourites row on the Retro screen); made a playlist from a game's page, added a second game, opened it, moved a game down, renamed it, deleted it after the confirmation; the games stayed in the library.
+- Known limitation: favourites and playlist entries are keyed by file path, so a game the ROM manager compresses (.cue → .chd) or deletes drops out of them.
+- The emulator crashed with host GPU rendering after a long session; `-gpu swiftshader_indirect` was stable.
+
 ## Release test plan (run in the final stage, before any release)
 
 Everything is re-tested together on real hardware, so nothing that worked earlier is broken by later changes. Record each result here with date, device and evidence.
