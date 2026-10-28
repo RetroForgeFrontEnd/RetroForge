@@ -24,6 +24,10 @@ import com.retroforge.core.settings.ThemeStore
 import com.retroforge.core.settings.createSettingsRepository
 import com.retroforge.pc.DroidDeckBridge
 import com.retroforge.pc.PcStatusRepository
+import com.retroforge.player.CoreManager
+import com.retroforge.player.PlayerCores
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 
 /** Manual dependency wiring; small enough that a DI framework would add more than it saves. */
 class AppContainer(application: Application) {
@@ -42,6 +46,7 @@ class AppContainer(application: Application) {
     val standalone = StandaloneLauncher(application)
     val retroArchHotkeys = RetroArchHotkeys(application)
     val romManager = RomManagerRepository(library, application.contentResolver, File(application.filesDir, "rom-manager"))
+    val cores = CoreManager(File(application.filesDir, "cores"), "RetroForge/${BuildConfig.VERSION_NAME}")
 
     // Read by SteamGridDB calls on a background thread; kept current from settings.
     @Volatile private var steamGridDbKey: String? = null
@@ -53,6 +58,14 @@ class AppContainer(application: Application) {
                 steamGridDbKey = it.steamGridDbKey
                 screenScraperUser = it.screenScraperUser?.let { name -> it.screenScraperPassword?.let { p -> ScreenScraperUser(name, p) } }
             }
+        }
+        // The built-in player's cores, fetched in the background for whatever systems the library has: the user never
+        // has to download one. Runs again when a newly added folder brings new systems.
+        appScope.launch {
+            library.systemCounts
+                .map { counts -> counts.mapNotNull { PlayerCores.forSystem(it.system)?.id }.toSortedSet() }
+                .distinctUntilChanged()
+                .collect { cores.ensureAll(it) }
         }
     }
     val covers = CoverRepository(
@@ -73,11 +86,6 @@ class AppContainer(application: Application) {
 }
 
 class RetroForgeApplication : Application() {
-    lateinit var container: AppContainer
-        private set
-
-    override fun onCreate() {
-        super.onCreate()
-        container = AppContainer(this)
-    }
+    // Created on first use, so the player process (which never touches it) doesn't open the library or settings.
+    val container: AppContainer by lazy { AppContainer(this) }
 }

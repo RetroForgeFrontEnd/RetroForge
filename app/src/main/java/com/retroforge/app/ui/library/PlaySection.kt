@@ -34,6 +34,10 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.ui.unit.dp
 import java.text.DateFormat
+import androidx.compose.runtime.rememberCoroutineScope
+import com.retroforge.player.CoreState
+import com.retroforge.player.PlayerCores
+import kotlinx.coroutines.launch
 import java.util.Date
 
 @Composable
@@ -50,6 +54,12 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
     val chosen = choices[game.system]?.let { id -> standalone.firstOrNull { it.second.id == id } }
         ?.takeIf { remember(it, resumes) { viewModel.installedComponent(it.second) } != null }
 
+    val builtIn = remember(game.id, game.fileName) { viewModel.builtInCore(game) }?.takeIf { root != null }
+    val retroArchChosen = choices[game.system] == RETROARCH_CHOICE
+    // The built-in player is the main Play button wherever it can run the game, unless another emulator was chosen.
+    val builtInMain = builtIn != null && chosen == null && !retroArchChosen
+    if (builtIn != null && root != null && builtInMain) BuiltInCard(viewModel, game, root, builtIn, main = true) { problem = it }
+
     // The system's chosen standalone emulator comes first, as the main Play button.
     if (chosen != null) {
         val (option, emulator) = chosen
@@ -63,7 +73,7 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
         is LaunchPlan.Ready -> {
             plan.cores.forEachIndexed { index, core ->
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { problem = viewModel.play(game, plan, core) }) {
-                    CardTitle(if (index == 0 && chosen == null) "Play" else "Play with ${core.name}")
+                    CardTitle(if (index == 0 && chosen == null && !builtInMain) "Play" else "Play in RetroArch with ${core.name}")
                     if (index == 0) CardBody("In RetroArch with the ${core.name} core.")
                     if (core.id in RetroArchCores.needsBios) CardBody("This core needs BIOS files in RetroArch's system folder.")
                 }
@@ -75,8 +85,13 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
                         "\"${plan.cores.first().name}\". To come back here, quit the game from RetroArch's menu.",
                 )
             }
-            FocusChip("Open RetroArch", onClick = { viewModel.openRetroArch(plan) })
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                FocusChip("Open RetroArch", onClick = { viewModel.openRetroArch(plan) })
+                if (builtIn != null && !retroArchChosen) FocusChip("Use RetroArch by default", onClick = { viewModel.setEmulatorChoice(game.system, RETROARCH_CHOICE) })
+            }
         }
+        // With the built-in player there, RetroArch is optional: no need to warn that it's missing.
+        is LaunchPlan.NotPossible if builtIn != null && plan.reason == LaunchProblem.RetroArchNotInstalled -> Unit
         is LaunchPlan.NotPossible -> FocusCard(
             modifier = Modifier.fillMaxWidth(),
             onClick = if (plan.reason == LaunchProblem.RetroArchNotInstalled) {
@@ -94,6 +109,10 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
             CardBody(describe(plan.reason, viewModel))
         }
     }
+    if (builtIn != null && root != null && !builtInMain) {
+        BuiltInCard(viewModel, game, root, builtIn, main = false) { problem = it }
+        if (retroArchChosen || chosen != null) FocusChip("Use the built-in player by default", onClick = { viewModel.setEmulatorChoice(game.system, null) })
+    }
     if (standalone.isNotEmpty()) StandaloneSection(viewModel, game, root, standalone, choices[game.system], resumes) { problem = it }
 
     problem?.let { p ->
@@ -101,6 +120,42 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
             StatusPill("Problem", StatusTone.BAD)
             CardBody(describe(p, viewModel))
         }
+    }
+}
+
+private const val RETROARCH_CHOICE = "RETROARCH"
+
+@Composable
+private fun BuiltInCard(
+    viewModel: LibraryViewModel,
+    game: GameEntity,
+    root: RootEntity,
+    core: PlayerCores.PlayerCore,
+    main: Boolean,
+    onProblem: (LaunchProblem?) -> Unit,
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val states by viewModel.coreStates.collectAsStateWithLifecycle()
+    val state = states[core.id] ?: viewModel.coreState(core.id)
+    FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
+        onProblem(null)
+        scope.launch {
+            val intent = viewModel.builtInIntent(context, game, root, core)
+            if (intent != null) context.startActivity(intent)
+            else onProblem(LaunchProblem.StartFailed("Couldn't download the ${core.name} emulator. Check the internet connection and try again."))
+        }
+    }) {
+        CardTitle(if (main) "Play" else "Play in RetroForge")
+        CardBody(
+            when (state) {
+                CoreState.Ready -> "In RetroForge's built-in player, with ${core.name}."
+                is CoreState.Downloading -> "Getting the ${core.name} emulator… ${state.percent}%"
+                CoreState.Missing -> "In RetroForge's built-in player. The ${core.name} emulator (under 2 MB) downloads first."
+                is CoreState.Failed -> "Couldn't download the ${core.name} emulator last time (${state.reason}). Select to try again."
+            },
+        )
+        if (core.needsBios) CardBody("${core.name} needs this system's BIOS file.")
     }
 }
 
@@ -137,7 +192,7 @@ private fun StandaloneSection(
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (installed) {
                 FocusChip("Play with ${option.label}", onClick = { onProblem(viewModel.playStandalone(game, root, option, emulator)) })
-                if (choice == emulator.id) FocusChip("Use RetroArch by default", onClick = { viewModel.setEmulatorChoice(game.system, null) })
+                if (choice == emulator.id) FocusChip("Stop using by default", onClick = { viewModel.setEmulatorChoice(game.system, null) })
                 else FocusChip("Use by default", onClick = { viewModel.setEmulatorChoice(game.system, emulator.id) })
             } else {
                 FocusChip("Get ${emulator.name} (free)", onClick = {

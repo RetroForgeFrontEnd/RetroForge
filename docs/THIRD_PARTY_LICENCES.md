@@ -28,6 +28,10 @@ Data adapted into RetroForge: Android launch commands and package names for stan
 
 ScreenScraper system ids (`retro-artwork/src/main/resources/screenscraper_systems.json`) are also adapted from ES-DE (MIT, same notice).
 
+Built-in player: `retro-player/src/main/cpp/libretro.h` is the libretro API header, MIT licence, Copyright (C) 2010-2024 The RetroArch team (notice in Settings → Licences). The player itself (player.cpp, PlayerActivity) is RetroForge's own code; no LibretroDroid or RetroArch code is used, so RetroForge's own licence stays open.
+
+Emulator cores are **not bundled**: RetroForge downloads them at run time from libretro's build server (buildbot.libretro.com/nightly/android/latest/<abi>/) into its private storage. Each core keeps its own licence: mGBA (MPL-2.0), Gambatte, FCEUmm, DeSmuME, Handy, Stella, Beetle cores and PicoDrive's parts (GPL-2.0 or similar), Snes9x and Genesis Plus GX (non-commercial). Non-commercial cores are another reason RetroForge must stay free: a paid RetroForge would need them removed or replaced.
+
 Referenced, not bundled: Obtainium (GPL-3.0; RetroForge only opens its documented `obtainium://add/` link) and the Obtainium Emulation Pack (Unlicense; linked). Standalone emulators are separate apps the user installs.
 
 Online services used at runtime (no code bundled): libretro thumbnails (thumbnails.libretro.com), SteamGridDB API (user's own key; personal non-commercial use per its terms).

@@ -73,6 +73,9 @@ dependencies {
     implementation(project(":core-library"))
     implementation(project(":retro"))
     implementation(project(":retro-artwork"))
+    implementation(project(":retro-player"))
+    implementation(libs.commons.compress)
+    implementation(libs.xz)
     implementation(libs.coil.compose)
 
     implementation(libs.androidx.core.ktx)

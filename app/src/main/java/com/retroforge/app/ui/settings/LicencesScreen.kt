@@ -28,6 +28,17 @@ private val notices = listOf(
             "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files, " +
             "to deal in the Software without restriction, subject to including this notice. THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND.",
     ),
+    Notice(
+        "libretro API header (libretro.h), used by the built-in player", "MIT",
+        "Copyright (C) 2010-2024 The RetroArch team. Permission is hereby granted, free of charge, to any person obtaining a copy of this " +
+            "software and associated documentation files, to deal in the Software without restriction, subject to including this notice. " +
+            "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND.",
+    ),
+    Notice(
+        "Emulator cores (mGBA, Snes9x, Genesis Plus GX, FCEUmm, Gambatte, DeSmuME and others)", "Each core's own licence",
+        "Not part of RetroForge: downloaded from libretro's build server (buildbot.libretro.com) when needed and loaded by the built-in player. " +
+            "Some are licensed for non-commercial use only, one reason RetroForge is free.",
+    ),
     Notice("Press Start 2P font", "SIL Open Font License 1.1", "Copyright 2012 The Press Start 2P Project Authors.", "licences/font-pressstart2p-OFL.txt"),
     Notice("Orbitron font", "SIL Open Font License 1.1", "Copyright The Orbitron Project Authors.", "licences/font-orbitron-OFL.txt"),
     Notice("Rajdhani font", "SIL Open Font License 1.1", "Copyright Indian Type Foundry.", "licences/font-rajdhani-OFL.txt"),

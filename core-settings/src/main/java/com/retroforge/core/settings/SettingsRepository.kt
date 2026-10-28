@@ -28,7 +28,7 @@ data class AppSettings(
     val retroArchSystemUri: String? = null,
     /** The user's own SteamGridDB API key. Stored only in app-private storage, never logged. */
     val steamGridDbKey: String? = null,
-    /** Emulator chosen per system (system id -> "RETROARCH" or a standalone emulator id); absent = RetroArch. */
+    /** Emulator chosen per system (system id -> "RETROARCH" or a standalone emulator id); absent = the built-in player where it can run the system, else RetroArch. */
     val emulatorChoices: Map<String, String> = emptyMap(),
     /** Give games started from RetroForge these RetroArch button combos (RetroArch INPUT_COMBO values). */
     val retroArchHotkeys: Boolean = true,

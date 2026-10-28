@@ -162,6 +162,17 @@ Android 16 (API 36), Exynos 2200 (s5e9925), Xclipse 920 GPU (AMD RDNA2), 7 GB RA
 - Found and fixed: the "ROM hacks" tab label was cut off at this phone's font/display size (labels now shrink further).
 - Not yet tested on this phone: launching games (no RetroArch or emulators installed), controllers.
 
+### 2026-10-28: Built-in player (RetroForge's own libretro frontend)
+
+S22 (arm64) and the Android emulator (x86_64, software GPU). Debug build.
+
+- **Cores need no user action**: on opening RetroForge, the cores for the library's systems downloaded by themselves in seconds (S22: mGBA and DeSmuME for GBA/NDS; emulator: Snes9x, FCEUmm, Genesis Plus GX). No RetroArch involved.
+- Play is now the built-in player; RetroArch and standalone emulators stay as "Play in RetroArch…" / other emulators.
+- S22: Advance Wars (USA) (Rev 1).gba loaded in mGBA (240×160, 59.73 fps, 65536 Hz), save data synced. First attempt drew black (Compose painted over the game surface); fixed, then the phone was unplugged before a screenshot.
+- Emulator: 3 Ninjas Kick Back (USA).7z in Snes9x: **.7z unpacked**, game ran at full width with sharp pixel scaling; touch Start moved to the next screen; **rotating to landscape kept the game running** and used the full screen height; in-game menu (☰) opened with Resume / Save state / Load state / Screen shape / Touch controls / Restart / Quit; **Quit then Play resumed at the same screen** (auto state 823 KB written to Android/data/…/states/snes).
+- Fixed during testing: portrait picture was stuck at the top with a large gap; now centred above the controls.
+- Not yet tested: sound on a real device (audio is the timing clock), physical controller and hotkeys in the player, edge swipes, screen shapes other than Original, DS touchscreen, Save/Load state buttons, every other core.
+
 ## Release test plan (run in the final stage, before any release)
 
 Everything is re-tested together on real hardware, so nothing that worked earlier is broken by later changes. Record each result here with date, device and evidence.

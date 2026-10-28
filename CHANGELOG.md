@@ -11,6 +11,8 @@ Tested on the Android emulator; real-device testing is part of this beta.
 - Multi-disc games play as one game with disc swapping.
 - Favourites and custom playlists; recently played; search.
 
+**Built-in player (new)**: RetroForge plays cartridge games itself: GBA, GB/GBC, NES, SNES, Mega Drive/Genesis, Master System, Game Gear, SG-1000, 32X, PC Engine, Neo Geo Pocket, WonderSwan, Atari 2600, Lynx and DS. The emulator cores download in the background when your library has those systems, so there is nothing to set up. Sharp pixel scaling, touch controls laid out per system (can be turned off), controller support with the same hotkeys, hold R2 to fast-forward, carry on where you left off, save/load state, screen shape (Original, 4:3, 16:9, stretch, pixel perfect), swipe in from either edge for the menu, works in portrait and landscape. Zipped and 7z games play directly. Disc games still use RetroArch or standalone emulators.
+
 **Covers**: free libretro box art (one game or a whole system), SteamGridDB (your own key), ScreenScraper (needs RetroForge's developer ID), or any image on your device.
 
 **ROM tools**: IPS/BPS/UPS patcher with patch chains and readmes; ROM hacks tab with catalogues; ROM manager (duplicates, compress discs to CHD and cartridges to .zip, multi-disc playlists, delete, undo, free up space).

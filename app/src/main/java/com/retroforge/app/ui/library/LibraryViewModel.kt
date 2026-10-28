@@ -28,6 +28,12 @@ import com.retroforge.library.StandaloneEmulators
 import com.retroforge.library.StandaloneOption
 import com.retroforge.library.UnsupportedCommandException
 import com.retroforge.core.settings.SettingsRepository
+import android.content.Context
+import android.content.Intent
+import com.retroforge.app.player.PlayerActivity
+import com.retroforge.player.CoreManager
+import com.retroforge.player.CoreState
+import com.retroforge.player.PlayerCores
 import android.provider.DocumentsContract
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
@@ -54,11 +60,12 @@ class LibraryViewModel(
     private val standalone: StandaloneLauncher,
     private val settings: SettingsRepository,
     private val hotkeys: RetroArchHotkeys,
+    private val cores: CoreManager,
 ) : ViewModel() {
 
     private val emulators = StandaloneEmulators.bundled()
 
-    /** Chosen emulator per system ("RETROARCH" or a standalone id); absent means RetroArch. */
+    /** Chosen emulator per system ("RETROARCH" or a standalone id); absent means the built-in player, or RetroArch where it has no core. */
     val emulatorChoices: StateFlow<Map<String, String>> = settings.settings.map { it.emulatorChoices }
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
 
@@ -154,6 +161,32 @@ class LibraryViewModel(
 
     fun openRetroArch(plan: LaunchPlan.Ready) = retroArch.openRetroArch(plan.install)
 
+    /** The built-in player's core for this game, or null when the game needs RetroArch or a standalone app. */
+    fun builtInCore(game: GameEntity) = PlayerCores.forGame(game.system, game.fileName)
+
+    val coreStates: StateFlow<Map<String, CoreState>> = cores.states
+
+    fun coreState(id: String) = cores.state(id)
+
+    /** Downloads the core if it isn't here yet (normally it already is), then returns the player's intent. */
+    suspend fun builtInIntent(context: Context, game: GameEntity, root: RootEntity, core: PlayerCores.PlayerCore): Intent? {
+        if (!cores.ensure(core.id)) return null
+        val s = appSettings.value
+        repository.recordPlay(game, "retroforge:${core.id}")
+        return PlayerActivity.intent(
+            context,
+            corePath = cores.file(core.id).path,
+            uri = repository.documentUri(root, game.documentId),
+            fileName = game.fileName,
+            system = game.system,
+            title = game.title,
+            resume = s?.resumeGames != false,
+            fastForwardOnR2 = s?.fastForwardOnR2 != false && game.system in RetroArchHotkeys.NO_R2_SYSTEMS,
+            menuCombo = HotkeyCombo.of(s?.menuCombo ?: HotkeyCombo.DOWN_SELECT.value),
+            quitCombo = HotkeyCombo.of(s?.quitCombo ?: HotkeyCombo.START_SELECT.value),
+        )
+    }
+
     fun games(system: String): Flow<List<GameEntity>> = repository.gamesFor(system)
     fun game(id: Long): Flow<GameEntity?> = repository.game(id)
     fun problems(rootId: Long): Flow<List<ProblemEntity>> = repository.problems(rootId)
@@ -177,8 +210,9 @@ class LibraryViewModel(
             standalone: StandaloneLauncher,
             settings: SettingsRepository,
             hotkeys: RetroArchHotkeys,
+            cores: CoreManager,
         ): ViewModelProvider.Factory = viewModelFactory {
-            initializer { LibraryViewModel(repository, retroArch, covers, standalone, settings, hotkeys) }
+            initializer { LibraryViewModel(repository, retroArch, covers, standalone, settings, hotkeys, cores) }
         }
     }
 }

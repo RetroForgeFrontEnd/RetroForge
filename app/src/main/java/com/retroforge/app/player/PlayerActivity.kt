@@ -1,0 +1,551 @@
+package com.retroforge.app.player
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.os.Process
+import android.view.KeyEvent
+import android.view.MotionEvent
+import android.view.Surface
+import android.view.SurfaceHolder
+import android.view.SurfaceView
+import android.view.WindowManager
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import com.retroforge.player.NativePlayer
+import com.retroforge.player.Rect
+import com.retroforge.player.ScreenShape
+import com.retroforge.player.Viewport
+import android.content.SharedPreferences
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.ui.input.pointer.pointerInput
+import com.retroforge.player.Video
+import com.retroforge.retro.HotkeyCombo
+import java.io.File
+import java.io.IOException
+import java.util.concurrent.Executors
+import java.util.zip.ZipInputStream
+import org.apache.commons.compress.archivers.sevenz.SevenZFile
+
+/**
+ * RetroForge's built-in player. Runs in its own process (":player"), so a core that crashes or leaks can't take the
+ * library with it, and every game starts with a clean core. Settings come in the intent; nothing is shared with
+ * the main process except files.
+ */
+class PlayerActivity : ComponentActivity() {
+
+    private sealed interface Phase {
+        data object Loading : Phase
+        data object Playing : Phase
+        data class Failed(val message: String) : Phase
+    }
+
+    private var phase by mutableStateOf<Phase>(Phase.Loading)
+    private var menuOpen by mutableStateOf(false)
+    private var showTouch by mutableStateOf(true)
+    private var video by mutableStateOf<Video?>(null)
+    private var notice by mutableStateOf<String?>(null)
+    private var shape by mutableStateOf(ScreenShape.ORIGINAL)
+    private var touchEnabled by mutableStateOf(true)
+    private lateinit var prefs: SharedPreferences
+    private var surfaceWidth = 0
+    private var surfaceHeight = 0
+    @Volatile private var picture = Rect(0, 0, 0, 0)
+
+    private val worker = Executors.newSingleThreadExecutor()
+    private val surfaceLock = Any()
+    private var surface: Surface? = null
+    @Volatile private var loaded = false
+    @Volatile private var quitting = false
+    private var foreground = false
+
+    private lateinit var system: String
+    private lateinit var input: PlayerInput
+    private var resume = true
+    private lateinit var savesDir: File
+    private lateinit var statesDir: File
+    private lateinit var saveBase: String
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        window.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.BLACK))
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            hide(WindowInsetsCompat.Type.systemBars())
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        }
+
+        val extras = intent.extras ?: return finish()
+        system = extras.getString(EXTRA_SYSTEM).orEmpty()
+        resume = extras.getBoolean(EXTRA_RESUME, true)
+        val fileName = extras.getString(EXTRA_FILE_NAME).orEmpty()
+        saveBase = fileName.substringBeforeLast('.')
+        val base = getExternalFilesDir(null) ?: filesDir
+        // Per-system player choices. Only this process uses these preferences.
+        prefs = getSharedPreferences("player", MODE_PRIVATE)
+        shape = ScreenShape.of(prefs.getString("shape.$system", null))
+        touchEnabled = prefs.getBoolean("touch.$system", true)
+        savesDir = File(base, "saves/$system").apply { mkdirs() }
+        statesDir = File(base, "states/$system").apply { mkdirs() }
+        input = PlayerInput(
+            menuCombo = HotkeyCombo.of(extras.getInt(EXTRA_MENU_COMBO, HotkeyCombo.DOWN_SELECT.value)),
+            quitCombo = HotkeyCombo.of(extras.getInt(EXTRA_QUIT_COMBO, HotkeyCombo.START_SELECT.value)),
+            fastForwardOnR2 = extras.getBoolean(EXTRA_FAST_FORWARD_R2, false),
+            onMask = { if (loaded) NativePlayer.setButtons(0, it) },
+            onAnalog = { stick, x, y -> if (loaded) NativePlayer.setAnalog(0, stick, x, y) },
+            onFastForward = { if (loaded) NativePlayer.setFastForward(it) },
+            onMenu = { runOnUiThread { openMenu() } },
+            onQuit = { runOnUiThread { quit() } },
+        )
+
+        setContent {
+            MaterialTheme(colorScheme = darkColorScheme()) {
+                PlayerScreen(PadLayout.forSystem(system), extras.getString(EXTRA_TITLE).orEmpty())
+            }
+        }
+
+        val corePath = extras.getString(EXTRA_CORE_PATH).orEmpty()
+        val uri = Uri.parse(extras.getString(EXTRA_URI).orEmpty())
+        worker.execute { load(corePath, uri, fileName, File(base, "system").apply { mkdirs() }) }
+    }
+
+    private fun load(corePath: String, uri: Uri, fileName: String, systemDir: File) {
+        val error = NativePlayer.openCore(corePath, systemDir.path, savesDir.path, emptyArray(), emptyArray())
+        if (error != null) return fail(error)
+        val info = NativePlayer.coreInfo()
+        val ok = try {
+            loadContent(uri, fileName, info.needsFile, info.extensions)
+        } catch (e: IOException) {
+            return fail("Couldn't read the game: ${e.message}")
+        } catch (e: SecurityException) {
+            return fail("RetroForge no longer has access to this game's folder. Add the folder again in Settings.")
+        }
+        if (!ok) return fail("${info.name} couldn't start this game. The file may be damaged, or it may need BIOS files.")
+
+        sram().takeIf { it.isFile }?.let { NativePlayer.restoreSaveRam(it.readBytes()) }
+        if (resume) autoState().takeIf { it.isFile }?.let { NativePlayer.loadState(it.readBytes()) }
+        val av = NativePlayer.video()
+        synchronized(surfaceLock) {
+            loaded = true
+            surface?.let { NativePlayer.setSurface(it) }
+        }
+        NativePlayer.start()
+        runOnUiThread {
+            video = av
+            applyViewport()
+            phase = Phase.Playing
+            NativePlayer.setPaused(!foreground || menuOpen)
+            surface?.let { setFrameRate(it, av) }
+        }
+    }
+
+    /**
+     * Gives the core the game the way it wants it: in memory straight from the folder when it can take that,
+     * otherwise as a file copied into the cache. A .zip or .7z is unpacked first unless the core reads it itself.
+     */
+    private fun loadContent(uri: Uri, fileName: String, needsFile: Boolean, extensions: Set<String>): Boolean {
+        val cache = File(cacheDir, "player").apply { deleteRecursively(); mkdirs() }
+        val ext = fileName.substringAfterLast('.', "").lowercase()
+        if (ext == "zip" && "zip" !in extensions) {
+            val file = contentResolver.openInputStream(uri)?.use { stream ->
+                ZipInputStream(stream).use { zip ->
+                    val entries = generateSequence { zip.nextEntry }.filter { !it.isDirectory }
+                    val entry = entries.firstOrNull { it.name.substringAfterLast('.').lowercase() in extensions }
+                        ?: throw IOException("the zip has no file this emulator can open")
+                    File(cache, entry.name.substringAfterLast('/')).also { out -> out.outputStream().use { zip.copyTo(it) } }
+                }
+            } ?: throw IOException("couldn't open it")
+            return NativePlayer.loadGame(file.path, -1, !needsFile)
+        }
+        if (ext == "7z" && "7z" !in extensions) {
+            // 7-Zip needs random access, so the archive is copied to the cache first.
+            val archive = File(cache, "game.7z")
+            contentResolver.openInputStream(uri)?.use { input -> archive.outputStream().use { input.copyTo(it) } } ?: throw IOException("couldn't open it")
+            val file = SevenZFile.builder().setFile(archive).get().use { seven ->
+                val entry = seven.entries.firstOrNull { !it.isDirectory && it.name.substringAfterLast('.').lowercase() in extensions }
+                    ?: throw IOException("the 7z has no file this emulator can open")
+                File(cache, entry.name.substringAfterLast('/')).also { out ->
+                    seven.getInputStream(entry).use { input -> out.outputStream().use { input.copyTo(it) } }
+                }
+            }
+            archive.delete()
+            return NativePlayer.loadGame(file.path, -1, !needsFile)
+        }
+        val named = File(cache, fileName)
+        if (needsFile) {
+            contentResolver.openInputStream(uri)?.use { input -> named.outputStream().use { input.copyTo(it) } } ?: throw IOException("couldn't open it")
+            return NativePlayer.loadGame(named.path, -1, false)
+        }
+        return contentResolver.openFileDescriptor(uri, "r")?.use { pfd -> NativePlayer.loadGame(named.path, pfd.fd, false) }
+            ?: throw IOException("couldn't open it")
+    }
+
+    private fun fail(message: String) = runOnUiThread { phase = Phase.Failed(message) }
+
+    private fun sram() = File(savesDir, "$saveBase.srm")
+    private fun autoState() = File(statesDir, "$saveBase.auto.state")
+    private fun slotState() = File(statesDir, "$saveBase.state")
+
+    private fun writeSafely(file: File, data: ByteArray) {
+        val part = File(file.path + ".part")
+        part.writeBytes(data)
+        if (!part.renameTo(file)) {
+            file.delete()
+            part.renameTo(file)
+        }
+    }
+
+    /** Writes the in-game save (and the resume state when that's on). Called on [worker]. */
+    private fun persist() {
+        if (!loaded) return
+        NativePlayer.saveRam()?.let { writeSafely(sram(), it) }
+        if (resume) NativePlayer.saveState()?.let { writeSafely(autoState(), it) }
+    }
+
+    private fun openMenu() {
+        if (phase != Phase.Playing || menuOpen) return
+        menuOpen = true
+        input.releaseAll()
+        NativePlayer.setPaused(true)
+    }
+
+    private fun closeMenu() {
+        menuOpen = false
+        notice = null
+        if (loaded && foreground) NativePlayer.setPaused(false)
+    }
+
+    private fun quit() {
+        if (quitting) return
+        quitting = true
+        worker.execute {
+            if (loaded) {
+                NativePlayer.stop()
+                persist()
+                NativePlayer.close()
+                loaded = false
+            }
+            runOnUiThread { finish() }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        foreground = true
+        if (loaded && !menuOpen) NativePlayer.setPaused(false)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        foreground = false
+        if (loaded && !quitting) {
+            input.releaseAll()
+            NativePlayer.setPaused(true)
+            // Android may end the player while it's in the background; keep the save and the resume point.
+            worker.execute { if (!quitting) persist() }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isFinishing) {
+            worker.shutdown()
+            // The player process exists for this one game. Ending it gives the next game a clean core.
+            Process.killProcess(Process.myPid())
+        }
+    }
+
+    // ---------- input ----------
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (menuOpen) {
+            when (event.keyCode) {
+                KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_BUTTON_B, KeyEvent.KEYCODE_BUTTON_MODE -> {
+                    if (event.action == KeyEvent.ACTION_UP) closeMenu()
+                    return true
+                }
+                KeyEvent.KEYCODE_BUTTON_A -> return super.dispatchKeyEvent(
+                    KeyEvent(event.downTime, event.eventTime, event.action, KeyEvent.KEYCODE_DPAD_CENTER, event.repeatCount, event.metaState, event.deviceId, event.scanCode, event.flags, event.source),
+                )
+            }
+            return super.dispatchKeyEvent(event)
+        }
+        if (event.keyCode == KeyEvent.KEYCODE_BACK || event.keyCode == KeyEvent.KEYCODE_BUTTON_MODE) {
+            if (event.action == KeyEvent.ACTION_UP) {
+                if (phase is Phase.Failed) finish() else openMenu()
+            }
+            return true
+        }
+        if (phase == Phase.Playing && input.onKey(event)) {
+            showTouch = false
+            return true
+        }
+        return super.dispatchKeyEvent(event)
+    }
+
+    override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
+        if (!menuOpen && phase == Phase.Playing && input.onMotion(event)) {
+            showTouch = false
+            return true
+        }
+        return super.dispatchGenericMotionEvent(event)
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.actionMasked == MotionEvent.ACTION_DOWN) showTouch = true
+        return super.dispatchTouchEvent(event)
+    }
+
+    // ---------- screen ----------
+
+    private val surfaceCallback = object : SurfaceHolder.Callback {
+        override fun surfaceCreated(holder: SurfaceHolder) {}
+
+        override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+            surfaceWidth = width
+            surfaceHeight = height
+            applyViewport()
+            synchronized(surfaceLock) {
+                surface = holder.surface
+                if (loaded) NativePlayer.setSurface(holder.surface)
+            }
+            video?.let { setFrameRate(holder.surface, it) }
+        }
+
+        override fun surfaceDestroyed(holder: SurfaceHolder) {
+            synchronized(surfaceLock) {
+                surface = null
+                if (loaded) NativePlayer.setSurface(null)
+            }
+        }
+    }
+
+    /** Places the picture for the current screen shape; the touchscreen mapping uses the same rectangle. */
+    private fun applyViewport() {
+        val av = video ?: return
+        picture = Viewport.fit(shape, surfaceWidth, surfaceHeight, av)
+        if (loaded) picture.let { NativePlayer.setViewport(it.x, it.y, it.w, it.h) }
+    }
+
+    private fun chooseShape(next: ScreenShape) {
+        shape = next
+        prefs.edit().putString("shape.$system", next.name).apply()
+        applyViewport()
+    }
+
+    private fun chooseTouch(on: Boolean) {
+        touchEnabled = on
+        prefs.edit().putBoolean("touch.$system", on).apply()
+    }
+
+    private fun setFrameRate(surface: Surface, av: Video) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && av.fps > 0) {
+            runCatching { surface.setFrameRate(av.fps, Surface.FRAME_RATE_COMPATIBILITY_FIXED_SOURCE) }
+        }
+    }
+
+    /** Touches on the picture itself go to the core as a touchscreen (the DS's lower screen, for example). */
+    @SuppressLint("ClickableViewAccessibility")
+    private fun pointerListener(view: SurfaceView) = view.setOnTouchListener { v, event ->
+        val rect = picture
+        if (!loaded || rect.w <= 0 || rect.h <= 0) return@setOnTouchListener false
+        val down = event.actionMasked != MotionEvent.ACTION_UP && event.actionMasked != MotionEvent.ACTION_CANCEL
+        NativePlayer.setPointer((event.x - rect.x) / rect.w, (event.y - rect.y) / rect.h, down)
+        true
+    }
+
+    @Composable
+    private fun PlayerScreen(layout: PadLayout, title: String) {
+        // No background here: the game surface sits behind the window, and anything painted would cover it.
+        Box(Modifier.fillMaxSize()) {
+            BoxWithConstraints(Modifier.fillMaxSize()) {
+                val portrait = maxHeight > maxWidth
+                val aspect = video?.aspect ?: (4f / 3f)
+                val controls: @Composable (Modifier) -> Unit = { modifier ->
+                    if (touchEnabled && showTouch && phase == Phase.Playing && !menuOpen) {
+                        TouchControls(layout, onMask = { input.setTouch(it) }, onMenu = { openMenu() }, modifier = modifier)
+                    }
+                }
+                if (portrait) {
+                    // The picture as wide as the phone, centred in the space the controls leave free.
+                    Column(Modifier.fillMaxSize()) {
+                        Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
+                            GameSurface(Modifier.fillMaxWidth().aspectRatio(aspect, matchHeightConstraintsFirst = false))
+                        }
+                        controls(Modifier.fillMaxWidth().padding(bottom = 8.dp))
+                    }
+                } else {
+                    GameSurface(Modifier.fillMaxSize())
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) { controls(Modifier.fillMaxWidth()) }
+                }
+            }
+            if (phase == Phase.Playing && !menuOpen) {
+                // Swipe in from either edge for the menu. (With gesture navigation the system's own back swipe does the same.)
+                EdgeSwipe(Modifier.align(Alignment.CenterStart), fromLeft = true)
+                EdgeSwipe(Modifier.align(Alignment.CenterEnd), fromLeft = false)
+            }
+            when (val p = phase) {
+                Phase.Loading -> Centered {
+                    CircularProgressIndicator()
+                    Text("Starting $title…", color = Color.White, modifier = Modifier.padding(top = 16.dp))
+                }
+                is Phase.Failed -> Centered {
+                    Text("Couldn't start $title", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text(p.message, color = Color(0xFFDDDDDD), textAlign = TextAlign.Center, modifier = Modifier.padding(vertical = 16.dp))
+                    Button(onClick = { finish() }) { Text("Back to RetroForge") }
+                }
+                Phase.Playing -> if (menuOpen) PauseMenu(title)
+            }
+        }
+    }
+
+    @Composable
+    private fun GameSurface(modifier: Modifier) {
+        AndroidView(factory = { context ->
+            SurfaceView(context).apply {
+                holder.addCallback(surfaceCallback)
+                pointerListener(this)
+            }
+        }, modifier = modifier)
+    }
+
+    @Composable
+    private fun EdgeSwipe(modifier: Modifier, fromLeft: Boolean) {
+        Box(
+            modifier.fillMaxHeight().width(20.dp).pointerInput(fromLeft) {
+                var travelled = 0f
+                detectHorizontalDragGestures(onDragStart = { travelled = 0f }) { _, dx ->
+                    travelled += if (fromLeft) dx else -dx
+                    if (travelled > 48.dp.toPx()) {
+                        travelled = Float.NEGATIVE_INFINITY
+                        openMenu()
+                    }
+                }
+            },
+        )
+    }
+
+    @Composable
+    private fun Centered(content: @Composable () -> Unit) {
+        Box(Modifier.fillMaxSize().background(Color(0xCC000000)).padding(32.dp), contentAlignment = Alignment.Center) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) { content() }
+        }
+    }
+
+    @Composable
+    private fun PauseMenu(title: String) {
+        val first = remember { FocusRequester() }
+        LaunchedEffect(Unit) { runCatching { first.requestFocus() } }
+        Box(Modifier.fillMaxSize().background(Color(0xCC000000)), contentAlignment = Alignment.Center) {
+            Column(
+                Modifier.width(300.dp).background(Color(0xFF1C1C22), RoundedCornerShape(16.dp)).padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(title, color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp) }
+                Button(onClick = { closeMenu() }, modifier = Modifier.fillMaxWidth().focusRequester(first)) { Text("Resume") }
+                OutlinedButton(onClick = {
+                    worker.execute {
+                        val saved = NativePlayer.saveState()?.let { writeSafely(slotState(), it); true } == true
+                        runOnUiThread { notice = if (saved) "State saved" else "This core can't save states" }
+                    }
+                }, modifier = Modifier.fillMaxWidth()) { Text("Save state") }
+                OutlinedButton(onClick = {
+                    worker.execute {
+                        val file = slotState()
+                        val done = file.isFile && NativePlayer.loadState(file.readBytes())
+                        runOnUiThread { if (done) closeMenu() else notice = "No saved state yet" }
+                    }
+                }, modifier = Modifier.fillMaxWidth()) { Text("Load state") }
+                OutlinedButton(onClick = { chooseShape(shape.next()) }, modifier = Modifier.fillMaxWidth()) { Text("Screen shape: ${shape.label}") }
+                OutlinedButton(onClick = { chooseTouch(!touchEnabled) }, modifier = Modifier.fillMaxWidth()) {
+                    Text("Touch controls: ${if (touchEnabled) "On" else "Off"}")
+                }
+                OutlinedButton(onClick = {
+                    NativePlayer.reset()
+                    closeMenu()
+                }, modifier = Modifier.fillMaxWidth()) { Text("Restart game") }
+                OutlinedButton(onClick = { quit() }, modifier = Modifier.fillMaxWidth()) { Text("Quit to RetroForge") }
+            }
+        }
+    }
+
+    companion object {
+        private const val EXTRA_CORE_PATH = "core_path"
+        private const val EXTRA_URI = "uri"
+        private const val EXTRA_FILE_NAME = "file_name"
+        private const val EXTRA_SYSTEM = "system"
+        private const val EXTRA_TITLE = "title"
+        private const val EXTRA_RESUME = "resume"
+        private const val EXTRA_FAST_FORWARD_R2 = "fast_forward_r2"
+        private const val EXTRA_MENU_COMBO = "menu_combo"
+        private const val EXTRA_QUIT_COMBO = "quit_combo"
+
+        fun intent(
+            context: Context,
+            corePath: String,
+            uri: Uri,
+            fileName: String,
+            system: String,
+            title: String,
+            resume: Boolean,
+            fastForwardOnR2: Boolean,
+            menuCombo: HotkeyCombo,
+            quitCombo: HotkeyCombo,
+        ): Intent = Intent(context, PlayerActivity::class.java)
+            .putExtra(EXTRA_CORE_PATH, corePath)
+            .putExtra(EXTRA_URI, uri.toString())
+            .putExtra(EXTRA_FILE_NAME, fileName)
+            .putExtra(EXTRA_SYSTEM, system)
+            .putExtra(EXTRA_TITLE, title)
+            .putExtra(EXTRA_RESUME, resume)
+            .putExtra(EXTRA_FAST_FORWARD_R2, fastForwardOnR2)
+            .putExtra(EXTRA_MENU_COMBO, menuCombo.value)
+            .putExtra(EXTRA_QUIT_COMBO, quitCombo.value)
+    }
+}
