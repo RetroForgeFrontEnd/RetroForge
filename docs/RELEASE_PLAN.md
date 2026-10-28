@@ -6,7 +6,7 @@ Written 2026-10-28. Not legal or tax advice: get both before taking money.
 
 | Must have | Status |
 |---|---|
-| Works on at least 3 real devices (a mid-range phone, a high-end phone, a handheld or tablet) | Not started: only the Android emulator so far |
+| Works on at least 3 real devices (a mid-range phone, a high-end phone, a handheld or tablet) | 1 of 3: Galaxy S22 (Exynos) — library, themes, PC check verified; game launch still to test |
 | The smoke test in [TESTING.md](TESTING.md#release-test-plan) passes on each | Not started |
 | Release build signed with a release key kept off GitHub (and backed up: losing it means users can't update) | Set up: create the key with the command in BUILD_AND_INSTALL.md; release build tested |
 | In-app licences screen (MIT notice for ES-DE data, Apache/0BSD libraries, fonts) | Done: Settings → Licences |

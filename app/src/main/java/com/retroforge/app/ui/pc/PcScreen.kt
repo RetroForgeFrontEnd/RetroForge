@@ -81,7 +81,16 @@ private fun DroidDeckCard(status: PcStatus, bridge: DroidDeckBridge) {
     val context = LocalContext.current
     var openError by remember { mutableStateOf<String?>(null) }
     val install = status.droidDeck
-    if (install == null) {
+    if (install == null && status.support.level == PcSupportLevel.UNSUPPORTED) {
+        // No point sending people to install a runtime their device can't run.
+        FocusCard(modifier = Modifier.fillMaxWidth()) {
+            CardTitle("PC game runtime")
+            CardBody(
+                "Not needed on this device. PC games need a phone or handheld with a Qualcomm Snapdragon chip (Adreno GPU), " +
+                    "such as many AYN, Retroid and Snapdragon phones. Your retro games work as normal.",
+            )
+        }
+    } else if (install == null) {
         FocusCard(
             modifier = Modifier.fillMaxWidth(),
             onClick = {

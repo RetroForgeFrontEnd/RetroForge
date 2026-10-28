@@ -152,6 +152,16 @@ Not tested: physical gamepad, Android TV device or TV emulator image, tablet, li
 - Found and fixed: Paper's dark wordmark vanished in dark mode (wordmark colours now fall back to the text colour when too close to the background).
 - Imported canvas-es colours (copied XML only): the report listed each colour's source, the licence (CC0) and what wasn't imported. Found and fixed: white cards with white text, and a near-invisible selected tab; the importer now checks text-on-card and accent-on-background readability.
 
+### 2026-10-28: First real device: Samsung Galaxy S22 (SM-S901B)
+
+Android 16 (API 36), Exynos 2200 (s5e9925), Xclipse 920 GPU (AMD RDNA2), 7 GB RAM, arm64. Debug build installed over USB.
+
+- Legal notice, setup wizard, folder picker: added the phone's `Roms` folder (GBA and NDS folders): **27 games in 2 systems** found.
+- Forge Neon theme, Orbitron headings, systems carousel render correctly at 1080×2340.
+- **PC section verified on real hardware**: detected "ANGLE (Samsung Xclipse 920) on Vulkan 1.3.279", chip s5e9925, and reported "PC games not available" (DroidDeck needs Adreno). Changed: no longer suggests installing DroidDeck on devices that can't run it.
+- Found and fixed: the "ROM hacks" tab label was cut off at this phone's font/display size (labels now shrink further).
+- Not yet tested on this phone: launching games (no RetroArch or emulators installed), controllers.
+
 ## Release test plan (run in the final stage, before any release)
 
 Everything is re-tested together on real hardware, so nothing that worked earlier is broken by later changes. Record each result here with date, device and evidence.

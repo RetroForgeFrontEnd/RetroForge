@@ -66,7 +66,7 @@ fun SectionTab(
                 style = style.copy(color = content),
                 maxLines = 1,
                 softWrap = false,
-                autoSize = TextAutoSize.StepBased(minFontSize = 9.sp, maxFontSize = style.fontSize, stepSize = 0.5.sp),
+                autoSize = TextAutoSize.StepBased(minFontSize = 6.sp, maxFontSize = style.fontSize, stepSize = 0.5.sp),
             )
         }
     }
