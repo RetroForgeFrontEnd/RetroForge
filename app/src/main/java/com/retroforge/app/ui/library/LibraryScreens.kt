@@ -71,7 +71,7 @@ fun RetroScreen(
             roots!!.isEmpty() -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { pickFolder.launch(null) }) {
                 CardTitle("Add your game folder")
                 CardBody(
-                    "Select to choose the folder that holds your system folders, such as RetroBat's or ES-DE's \"roms\" " +
+                    "Select to choose the folder that holds your system folders, such as an existing \"roms\" folder from another frontend " +
                         "(with snes, nes, psx … inside), or a single system folder. RetroForge only reads it: nothing is renamed, moved or written.",
                 )
             }
@@ -106,6 +106,8 @@ fun RetroScreen(
                     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { onOpenGame(game.id) }) {
                         Text(game.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                         CardBody(listOfNotNull(viewModel.systemName(game.system), tagLine(game)).joinToString(" · "))
+                        // With several folders (e.g. internal storage and an SD card), show which one this copy is in.
+                        if (rootsById.size > 1) rootsById[game.rootId]?.let { CardBody("In ${it.name}") }
                     }
                 }
                 if (results.size > 30) CardBody("Showing 30 of ${results.size}+ matches. Type more to narrow it down.")
@@ -187,7 +189,7 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
         }
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { pickFolder.launch(null) }) {
             CardTitle("Add a folder")
-            CardBody("A RetroBat/ES-DE \"roms\" folder, a single system folder, or a USB drive or SD card folder. \"Forget folder\" removes only RetroForge's index.")
+            CardBody("A \"roms\" folder from another frontend, a single system folder, or a folder on an SD card or USB drive. \"Forget folder\" removes only RetroForge's index.")
         }
     }
 }

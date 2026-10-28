@@ -22,6 +22,14 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
     val noticeAcknowledged: StateFlow<Int?> =
         repository.settings.map<AppSettings, Int?> { it.noticeAcknowledged }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
+    /** null until settings have loaded, so the first-run wizard isn't opened for returning users. */
+    val setupDone: StateFlow<Boolean?> =
+        repository.settings.map<AppSettings, Boolean?> { it.setupDone }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    fun markSetupOffered() {
+        viewModelScope.launch { repository.setSetupDone(true) }
+    }
+
     fun acknowledgeNotice(version: Int) {
         viewModelScope.launch { repository.acknowledgeNotice(version) }
     }

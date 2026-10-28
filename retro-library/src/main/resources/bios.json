@@ -1,0 +1,231 @@
+{
+ "source": "Checksums from libretro-database dat/System.dat v1.19.0; which files each core needs from the libretro core documentation.",
+ "rules": [
+  {
+   "systems": [
+    "psx"
+   ],
+   "core": "SwanStation / PCSX ReARMed",
+   "need": "required",
+   "mode": "any",
+   "note": "One BIOS is enough; having the one for your games' region (USA scph5501, Europe scph5502, Japan scph5500) is best.",
+   "files": [
+    {
+     "name": "scph5501.bin",
+     "md5": [
+      "490f666e1afb15b7362b406ed1cea246"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "scph5502.bin",
+     "md5": [
+      "32736f17079d0b2b7024407c39bd3050"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "scph5500.bin",
+     "md5": [
+      "8dd7d5296a650fac7319bce665a6a53c"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "scph1001.bin",
+     "md5": [
+      "924e392ed05558ffdb115408c263dccf"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "scph7001.bin",
+     "md5": [
+      "1e68c231d0896b7eadcad1d7d8e76129"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "scph101.bin",
+     "md5": [
+      "6e3735ff4c7dc899ee98981385f6f3d0"
+     ],
+     "size": 524288
+    }
+   ]
+  },
+  {
+   "systems": [
+    "megacd",
+    "segacd"
+   ],
+   "core": "Genesis Plus GX",
+   "need": "required",
+   "mode": "any",
+   "note": "One per region you play: USA bios_CD_U, Europe bios_CD_E, Japan bios_CD_J.",
+   "files": [
+    {
+     "name": "bios_CD_U.bin",
+     "md5": [
+      "2efd74e3232ff260e371b99f84024f7f"
+     ],
+     "size": 131072
+    },
+    {
+     "name": "bios_CD_E.bin",
+     "md5": [
+      "e66fa1dc5820d254611fdcdba0662372"
+     ],
+     "size": 131072
+    },
+    {
+     "name": "bios_CD_J.bin",
+     "md5": [
+      "278a9397d192149e84e820ac621a8edd"
+     ],
+     "size": 131072
+    }
+   ]
+  },
+  {
+   "systems": [
+    "pcenginecd"
+   ],
+   "core": "Beetle PCE Fast",
+   "need": "required",
+   "mode": "any",
+   "note": "System Card 3.",
+   "files": [
+    {
+     "name": "syscard3.pce",
+     "md5": [
+      "38179df8f4ac870017db21ebcbf53114"
+     ],
+     "size": 262144
+    }
+   ]
+  },
+  {
+   "systems": [
+    "fds"
+   ],
+   "core": "FCEUmm",
+   "need": "required",
+   "mode": "any",
+   "note": "Famicom Disk System BIOS.",
+   "files": [
+    {
+     "name": "disksys.rom",
+     "md5": [
+      "ca30b50f880eb660a320674ed365ef7a"
+     ],
+     "size": 8192
+    }
+   ]
+  },
+  {
+   "systems": [
+    "lynx"
+   ],
+   "core": "Handy",
+   "need": "required",
+   "mode": "any",
+   "note": "",
+   "files": [
+    {
+     "name": "lynxboot.img",
+     "md5": [
+      "fcd403db69f54290b51035d82f835e7b"
+     ],
+     "size": 512
+    }
+   ]
+  },
+  {
+   "systems": [
+    "colecovision"
+   ],
+   "core": "Gearcoleco",
+   "need": "required",
+   "mode": "any",
+   "note": "",
+   "files": [
+    {
+     "name": "colecovision.rom",
+     "md5": [
+      "2c66f5911e5b42b8ebe113403548eee7"
+     ],
+     "size": 8192
+    }
+   ]
+  },
+  {
+   "systems": [
+    "dreamcast"
+   ],
+   "core": "Flycast",
+   "need": "recommended",
+   "mode": "all",
+   "note": "Flycast can run many games without it, but compatibility is better with it. Goes in a \"dc\" sub-folder.",
+   "files": [
+    {
+     "name": "dc/dc_boot.bin",
+     "md5": [
+      "e10c53c2f8b90bab96ead2d368858623"
+     ],
+     "size": 2097152
+    }
+   ]
+  },
+  {
+   "systems": [
+    "gba"
+   ],
+   "core": "mGBA",
+   "need": "optional",
+   "mode": "any",
+   "note": "mGBA works without it; with it you get the real boot logo and slightly better accuracy.",
+   "files": [
+    {
+     "name": "gba_bios.bin",
+     "md5": [
+      "a860e8c0b6d573d191e4ec7db1b1e4f6"
+     ],
+     "size": 16384
+    }
+   ]
+  },
+  {
+   "systems": [
+    "nds"
+   ],
+   "core": "melonDS DS",
+   "need": "optional",
+   "mode": "all",
+   "note": "melonDS DS has a built-in replacement; real files improve compatibility.",
+   "files": [
+    {
+     "name": "bios7.bin",
+     "md5": [
+      "df692a80a5b1bc90728bc3dfc76cd948"
+     ],
+     "size": 16384
+    },
+    {
+     "name": "bios9.bin",
+     "md5": [
+      "a392174eb3e572fed6447e956bde4b25"
+     ],
+     "size": 4096
+    },
+    {
+     "name": "firmware.bin",
+     "md5": [
+      "e45033d9b0fa6b0de071292bba7c9d13"
+     ],
+     "size": 262144
+    }
+   ]
+  }
+ ]
+}

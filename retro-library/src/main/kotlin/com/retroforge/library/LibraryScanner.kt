@@ -126,7 +126,7 @@ class LibraryScanner(private val rules: SystemRules) {
                 return Triple(RootLayout.COLLECTION, nested.sortedBy { it.dir.name.lowercase() }, unrecognised)
             }
         }
-        problems += ScanProblem(root.name, "No system folders found. Pick a folder like RetroBat's \"roms\" (containing snes, nes, psx …) or a single system folder.")
+        problems += ScanProblem(root.name, "No system folders found. Pick a \"roms\" folder (containing snes, nes, psx …) or a single system folder.")
         return Triple(RootLayout.UNRECOGNISED, emptyList(), emptyList())
     }
 

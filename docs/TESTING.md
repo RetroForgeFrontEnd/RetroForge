@@ -18,6 +18,8 @@ Run: `./gradlew testDebugUnitTest` (JVM, no device needed, no ROMs needed).
 | `LibraryScannerTest` | retro-library | 12 | RetroBat-style collection: system folders, media folders skipped, gamelist.xml metadata + artwork, hack folders, .m3u/.cue hiding discs/tracks, zip/7z duplicates, single-system and parent-of-roms layouts, unrecognised folder, denied folder, read-only (ROMs never opened), cancellation, DOCTYPE/XXE refused, game-named folders (`X.pc`) |
 | `RomNamesTest` | retro-library | 4 | No-Intro and GoodTools tags, ", The" titles, flags |
 | `RealCollectionTest` | retro-library | 1 (skipped unless `RETROFORGE_REAL_ROMS` is set) | Read-only scan of a real collection, printing statistics |
+| `BiosCheckerTest` | retro-library | 6 | BIOS verified by MD5 under any file name, right-name-wrong-contents flagged, all/any rules, sub-folders, only library systems checked, bundled rules valid |
+| `RealBiosTest` | retro-library | 1 (skipped unless `RETROFORGE_REAL_BIOS` is set) | Read-only check of a real BIOS folder |
 | `RealPatchTest` | retro-patch | 1 (skipped unless `patch-test/` has `.base` files) | Applies real patches or patch chains from the git-ignored `patch-test/` folder and prints SHA-1 for cross-checking |
 
 Last run: 2026-10-28, **63 passed, 0 failed** (64 incl. opt-in) (+1 real-patch chain test that ran locally). `lintDebug`: 0 errors, 2 accepted warnings (TV banner vector is 320×180 by Android TV requirement; `allowBackup=false` already covers pre-Android-12).
@@ -78,7 +80,8 @@ Input was sent with `adb shell input keyevent` (simulated gamepad/D-pad key code
 
 ### 2026-10-28: Library scanner, real collection (desktop, read-only)
 
-`RETROFORGE_REAL_ROMS=G:\Retrobatoms ./gradlew :retro-library:test --tests '*RealCollectionTest*'`
+`RETROFORGE_REAL_ROMS=G:\Retrobat
+oms ./gradlew :retro-library:test --tests '*RealCollectionTest*'`
 
 | Result | Value |
 |---|---|
@@ -110,5 +113,18 @@ Test data: 371 files copied from `G:` (SNES 64 + gamelist + mixart + SMW/SNES HA
 ### 2026-10-28: Links tab
 
 All six YouTube handles resolved to the named channels on youtube.com (checked 2026-10-28). Opening one launched the YouTube app on the emulator.
+
+### 2026-10-28: Setup wizard and SD card (emulator)
+
+| Check | Result |
+|---|---|
+| Real BIOS folder `G:\Retrobatios` (310 files, read-only) | PS1, Mega CD, PC Engine CD, FDS, Lynx, ColecoVision (found as `coleco.rom`), Dreamcast, GBA all verified; NDS firmware.bin not a recognised dump; PS1 scph1001 and Mega CD bios_CD_U present but different versions from libretro's |
+| Wizard opens once on first run; Settings → Set up RetroForge reopens it | Pass (it first reopened on every launch until "Done"; changed to once) |
+| Steps 1–3: 240 games, RetroArch 1.22.2 detected, 4 cores listed with game counts | Pass |
+| Step 4: BIOS folder check, then copy into RetroArch/system (picker starts there) | Pass: only verified files copied, existing files left alone, copies byte-identical (MD5) |
+| **SD card**: add `/storage/0000-0000/Retrobat` (parent of `roms`) | Pass: 3 games found next to the 240 internal ones |
+| **SD card**: BIOS folder on the SD card checked and copied | Pass |
+| **SD card**: Resident Evil 2 (2-disc .m3u) played from the SD card via Play | **Launch tested**: RetroArch received `/storage/0000-0000/...`, intro plays |
+| Same game in two folders | Search results now show which folder each copy is in |
 
 Not tested: physical gamepad, Android TV device or TV emulator image, tablet, light theme visuals, "System" theme switching, opening the DroidDeck releases page (browser), DroidDeck-installed state, the real Adreno GPU path.

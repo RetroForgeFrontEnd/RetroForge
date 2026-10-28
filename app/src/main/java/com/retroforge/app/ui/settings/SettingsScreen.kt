@@ -21,10 +21,15 @@ import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel) {
+fun SettingsScreen(viewModel: SettingsViewModel, onOpenSetup: () -> Unit) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
 
     ScreenFrame(title = "Settings") {
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSetup) {
+            CardTitle("Set up RetroForge")
+            CardBody("Games folder, RetroArch, the cores your games need, and your BIOS files.")
+        }
+
         CardTitle("Appearance")
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             ThemeMode.entries.forEach { mode ->

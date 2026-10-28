@@ -19,6 +19,11 @@ data class AppSettings(
     val showPcSection: Boolean = true,
     /** Version of the "no games or BIOS included" notice the user has acknowledged; 0 = never. */
     val noticeAcknowledged: Int = 0,
+    val setupDone: Boolean = false,
+    /** Folder holding the user's own BIOS files (e.g. RetroBat's "bios"). */
+    val biosFolderUri: String? = null,
+    /** The folder RetroArch reads BIOS from, granted by the user so RetroForge can copy into it. */
+    val retroArchSystemUri: String? = null,
 )
 
 fun createSettingsRepository(context: Context): SettingsRepository = SettingsRepository(
@@ -33,6 +38,9 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
                 ?: AppSettings().themeMode,
             showPcSection = prefs[SHOW_PC] ?: AppSettings().showPcSection,
             noticeAcknowledged = prefs[NOTICE] ?: 0,
+            setupDone = prefs[SETUP_DONE] ?: false,
+            biosFolderUri = prefs[BIOS_FOLDER],
+            retroArchSystemUri = prefs[RA_SYSTEM],
         )
     }
 
@@ -48,8 +56,23 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
         store.edit { it[NOTICE] = version }
     }
 
+    suspend fun setSetupDone(done: Boolean) {
+        store.edit { it[SETUP_DONE] = done }
+    }
+
+    suspend fun setBiosFolder(uri: String) {
+        store.edit { it[BIOS_FOLDER] = uri }
+    }
+
+    suspend fun setRetroArchSystemFolder(uri: String) {
+        store.edit { it[RA_SYSTEM] = uri }
+    }
+
     private companion object {
         val NOTICE = intPreferencesKey("notice_acknowledged")
+        val SETUP_DONE = booleanPreferencesKey("setup_done")
+        val BIOS_FOLDER = stringPreferencesKey("bios_folder_uri")
+        val RA_SYSTEM = stringPreferencesKey("retroarch_system_uri")
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val SHOW_PC = booleanPreferencesKey("show_pc_section")
     }

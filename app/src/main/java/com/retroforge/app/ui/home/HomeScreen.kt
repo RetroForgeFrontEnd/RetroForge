@@ -42,7 +42,7 @@ fun HomeScreen(showPc: Boolean, onOpen: (Section) -> Unit) {
             if (showPc) {
                 FocusCard(modifier = Modifier.weight(1f), onClick = { onOpen(Section.PC) }) {
                     CardTitle("PC")
-                    CardBody("Windows games through a separately installed DroidDeck.")
+                    CardBody("Windows games through a separately installed PC game runtime.")
                     Column(Modifier.padding(top = 12.dp)) {
                         StatusPill("Check this device", StatusTone.NEUTRAL)
                     }
@@ -54,7 +54,7 @@ fun HomeScreen(showPc: Boolean, onOpen: (Section) -> Unit) {
             CardTitle("Your files stay yours")
             CardBody(
                 "RetroForge reads your game folders in place. It never renames, moves or deletes ROMs, " +
-                    "and keeps its own data separate so RetroBat and ES-DE keep working with the same collection.",
+                    "and keeps its own data separate, so your other frontends keep working with the same collection.",
             )
         }
     }

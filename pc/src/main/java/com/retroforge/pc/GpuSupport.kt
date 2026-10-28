@@ -37,25 +37,25 @@ object GpuClassifier {
             ?: return if (identity.glRenderer.isNullOrBlank() && identity.kgslModel.isNullOrBlank()) {
                 PcSupport(PcSupportLevel.UNKNOWN, null, "The GPU model could not be read on this device.")
             } else {
-                PcSupport(PcSupportLevel.UNSUPPORTED, null, "DroidDeck needs a Qualcomm Adreno GPU, and this device does not have one.")
+                PcSupport(PcSupportLevel.UNSUPPORTED, null, "PC games need a Qualcomm Adreno GPU, and this device does not have one.")
             }
         return when {
-            model == 850 -> PcSupport(PcSupportLevel.EXPERIMENTAL, model, "Adreno 850 support in DroidDeck is experimental.")
-            model in 800..899 -> PcSupport(PcSupportLevel.SUPPORTED, model, "Adreno 8xx is on DroidDeck's supported list.")
-            model in 730..799 -> PcSupport(PcSupportLevel.SUPPORTED, model, "Adreno 730 and newer are on DroidDeck's supported list.")
+            model == 850 -> PcSupport(PcSupportLevel.EXPERIMENTAL, model, "Adreno 850 support is experimental.")
+            model in 800..899 -> PcSupport(PcSupportLevel.SUPPORTED, model, "Adreno 8xx is supported.")
+            model in 730..799 -> PcSupport(PcSupportLevel.SUPPORTED, model, "Adreno 730 and newer are supported.")
             model in 725..729 -> PcSupport(
                 PcSupportLevel.EXPERIMENTAL, model,
-                "Adreno $model is tested in DroidDeck's code but below the 730 minimum in its README.",
+                "Adreno $model has been tested but is below the official 730 minimum.",
             )
             model == 720 || model == 722 -> PcSupport(
-                PcSupportLevel.EXPERIMENTAL, model, "Adreno $model only has test drivers in DroidDeck.",
+                PcSupportLevel.EXPERIMENTAL, model, "Adreno $model only has test drivers.",
             )
-            model in 700..719 -> PcSupport(PcSupportLevel.UNSUPPORTED, model, "DroidDeck lists Adreno 710 as unsupported.")
+            model in 700..719 -> PcSupport(PcSupportLevel.UNSUPPORTED, model, "Adreno 710 is not supported.")
             model in 600..699 -> PcSupport(
                 PcSupportLevel.EXPERIMENTAL, model,
-                "Adreno 6xx is experimental in DroidDeck: DirectX 11 games may run, DirectX 12 games may crash.",
+                "Adreno 6xx is experimental: DirectX 11 games may run, DirectX 12 games may crash.",
             )
-            else -> PcSupport(PcSupportLevel.UNSUPPORTED, model, "Adreno $model is older than DroidDeck supports.")
+            else -> PcSupport(PcSupportLevel.UNSUPPORTED, model, "Adreno $model is older than the PC runtime supports.")
         }
     }
 }

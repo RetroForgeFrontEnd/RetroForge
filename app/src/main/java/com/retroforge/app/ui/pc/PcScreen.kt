@@ -35,7 +35,7 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge) {
     val status by viewModel.status.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
 
-    ScreenFrame(title = "PC", subtitle = "Local Windows games through DroidDeck, a separate app.") {
+    ScreenFrame(title = "PC", subtitle = "Local Windows games through a PC game runtime, a separate app.") {
         val loaded = status
         if (loaded == null) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -50,8 +50,8 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge) {
                 StatusPill("Not built yet", StatusTone.NEUTRAL)
                 CardBody(
                     "Starting a specific Steam game from RetroForge will be added once a test on real hardware " +
-                        "confirms DroidDeck's launch request works. Only Steam games can be started this way; " +
-                        "GOG, Epic and Amazon games stay inside DroidDeck.",
+                        "confirms the runtime's launch request works. Only Steam games can be started this way; " +
+                        "GOG, Epic and Amazon games stay inside the runtime.",
                 )
             }
         }
@@ -72,7 +72,7 @@ private fun DeviceCard(status: PcStatus) {
         CardBody(status.support.reason)
         CardBody("GPU: ${status.gpu.glRenderer ?: "unknown"}")
         status.gpu.socModel?.let { CardBody("Chip: $it") }
-        CardBody("Based on DroidDeck's published requirements; a supported GPU does not guarantee every game runs.")
+        CardBody("Based on the PC runtime's published requirements; a supported GPU does not guarantee every game runs.")
     }
 }
 
@@ -93,10 +93,10 @@ private fun DroidDeckCard(status: PcStatus, bridge: DroidDeckBridge) {
                 }
             },
         ) {
-            CardTitle("DroidDeck")
+            CardTitle("PC game runtime")
             StatusPill("Not installed", StatusTone.NEUTRAL)
             CardBody(
-                "Install DroidDeck only from its GitHub releases page: ${DroidDeckBridge.RELEASES_URL}. " +
+                "RetroForge works with DroidDeck, a free, separately developed app. Install it only from its official releases page: ${DroidDeckBridge.RELEASES_URL}. " +
                     "Select this card to open it in a browser.",
             )
             openError?.let { CardBody(it) }
@@ -107,13 +107,13 @@ private fun DroidDeckCard(status: PcStatus, bridge: DroidDeckBridge) {
             modifier = Modifier.fillMaxWidth(),
             onClick = openIntent?.let { intent -> { context.startActivity(intent) } },
         ) {
-            CardTitle("DroidDeck")
+            CardTitle("PC game runtime")
             StatusPill("Installed ${install.versionName.orEmpty()}".trim(), StatusTone.GOOD)
             CardBody(
-                if (install.acceptsLaunchIntent) "DroidDeck accepts game launch requests from other apps."
-                else "This DroidDeck version does not accept launch requests from other apps.",
+                if (install.acceptsLaunchIntent) "It accepts game launch requests from other apps."
+                else "This version does not accept launch requests from other apps.",
             )
-            if (openIntent != null) CardBody("Select this card to open DroidDeck.")
+            if (openIntent != null) CardBody("Select this card to open it.")
         }
     }
 }

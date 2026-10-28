@@ -45,6 +45,8 @@ import com.retroforge.app.ui.hacks.HacksScreen
 import com.retroforge.app.ui.hacks.HacksViewModel
 import com.retroforge.app.ui.home.HomeScreen
 import com.retroforge.app.ui.links.LinksScreen
+import com.retroforge.app.ui.setup.SetupScreen
+import com.retroforge.app.ui.setup.SetupViewModel
 import com.retroforge.app.ui.pc.PcScreen
 import com.retroforge.app.ui.patcher.PatcherScreen
 import com.retroforge.app.ui.patcher.PatcherViewModel
@@ -78,6 +80,7 @@ private const val PATCHER_ROUTE = "retro/patcher"
 private const val HACK_DETAIL_ROUTE = "hacks/detail/{source}/{hack}"
 private const val HACK_SOURCES_ROUTE = "hacks/sources"
 private const val FOLDERS_ROUTE = "retro/folders"
+private const val SETUP_ROUTE = "setup"
 private const val SYSTEM_ROUTE = "retro/system/{system}"
 private const val GAME_ROUTE = "retro/game/{id}"
 
@@ -105,12 +108,21 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
             return@RetroForgeTheme
         }
         val nav = rememberNavController()
+        // First run (after the notice): offer the setup wizard once; afterwards it's in Settings.
+        val setupDone by settingsViewModel.setupDone.collectAsStateWithLifecycle()
+        LaunchedEffect(setupDone) {
+            if (setupDone == false) {
+                settingsViewModel.markSetupOffered()
+                nav.navigate(SETUP_ROUTE)
+            }
+        }
         val sections = Section.entries.filter { it != Section.PC || settings.showPcSection }
         val backStack by nav.currentBackStackEntryAsState()
         val route = backStack?.destination?.route
         val current = sections.firstOrNull { it.route == route } ?: when {
             route == PATCHER_ROUTE || route?.startsWith("retro/") == true -> Section.RETRO
             route?.startsWith("hacks/") == true -> Section.HACKS
+            route == SETUP_ROUTE -> Section.SETTINGS
             else -> Section.HOME
         }
         val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library, container.retroArch))
@@ -152,6 +164,12 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                             )
                         }
                         composable(FOLDERS_ROUTE) { LibraryFoldersScreen(libraryViewModel) }
+                        composable(SETUP_ROUTE) {
+                            val setupViewModel: SetupViewModel = viewModel(
+                                factory = SetupViewModel.factory(container.library, container.retroArch, container.settings, container.contentResolver),
+                            )
+                            SetupScreen(setupViewModel, onDone = { nav.goTo(Section.RETRO) })
+                        }
                         composable(SYSTEM_ROUTE) { entry ->
                             SystemGamesScreen(libraryViewModel, entry.arguments?.getString("system").orEmpty(), onOpenGame = { nav.navigate("retro/game/$it") })
                         }
@@ -191,7 +209,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                             PcScreen(pcViewModel, container.droidDeck)
                         }
                         composable(Section.LINKS.route) { LinksScreen() }
-                        composable(Section.SETTINGS.route) { SettingsScreen(settingsViewModel) }
+                        composable(Section.SETTINGS.route) { SettingsScreen(settingsViewModel, onOpenSetup = { nav.navigate(SETUP_ROUTE) }) }
                     }
                 }
                 if (maxWidth >= 600.dp) {
