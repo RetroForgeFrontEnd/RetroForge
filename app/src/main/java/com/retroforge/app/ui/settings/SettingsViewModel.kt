@@ -10,6 +10,7 @@ import com.retroforge.core.settings.SettingsRepository
 import com.retroforge.core.settings.ThemeMode
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -17,6 +18,13 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
 
     val settings: StateFlow<AppSettings> =
         repository.settings.stateIn(viewModelScope, SharingStarted.Eagerly, AppSettings())
+
+    val noticeAcknowledged: StateFlow<Int?> =
+        repository.settings.map<AppSettings, Int?> { it.noticeAcknowledged }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    fun acknowledgeNotice(version: Int) {
+        viewModelScope.launch { repository.acknowledgeNotice(version) }
+    }
 
     fun setThemeMode(mode: ThemeMode) {
         viewModelScope.launch { repository.setThemeMode(mode) }

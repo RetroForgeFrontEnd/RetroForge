@@ -3,6 +3,7 @@ package com.retroforge.app.ui
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -91,6 +92,18 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
     }
 
     RetroForgeTheme(dark = dark) {
+        // null until settings have loaded, so returning users never see the notice flash up.
+        val acknowledged by settingsViewModel.noticeAcknowledged.collectAsStateWithLifecycle()
+        if (acknowledged == null || acknowledged!! < LEGAL_NOTICE_VERSION) {
+            Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
+                if (acknowledged != null) {
+                    Box(Modifier.fillMaxSize().safeDrawingPadding()) {
+                        LegalNoticeScreen(onAcknowledge = { settingsViewModel.acknowledgeNotice(LEGAL_NOTICE_VERSION) })
+                    }
+                }
+            }
+            return@RetroForgeTheme
+        }
         val nav = rememberNavController()
         val sections = Section.entries.filter { it != Section.PC || settings.showPcSection }
         val backStack by nav.currentBackStackEntryAsState()

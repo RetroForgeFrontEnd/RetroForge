@@ -30,6 +30,7 @@ class SettingsRepositoryTest {
         val repo = repository()
         repo.setThemeMode(ThemeMode.LIGHT)
         repo.setShowPcSection(false)
-        assertEquals(AppSettings(ThemeMode.LIGHT, showPcSection = false), repo.settings.first())
+        repo.acknowledgeNotice(1)
+        assertEquals(AppSettings(ThemeMode.LIGHT, showPcSection = false, noticeAcknowledged = 1), repo.settings.first())
     }
 }

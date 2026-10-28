@@ -14,6 +14,7 @@ import com.retroforge.app.BuildConfig
 import com.retroforge.app.ui.CardBody
 import com.retroforge.app.ui.CardTitle
 import com.retroforge.app.ui.ScreenFrame
+import com.retroforge.app.ui.legalNoticeParagraphs
 import com.retroforge.core.settings.ThemeMode
 import com.retroforge.core.ui.FocusCard
 import com.retroforge.core.ui.StatusPill
@@ -55,6 +56,11 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
             CardTitle("Show PC section")
             StatusPill(if (settings.showPcSection) "On" else "Off", if (settings.showPcSection) StatusTone.GOOD else StatusTone.NEUTRAL)
             CardBody("Hide the PC section if you only play retro games or this device cannot run PC games.")
+        }
+
+        FocusCard(modifier = Modifier.fillMaxWidth()) {
+            CardTitle("Games, BIOS and the law")
+            legalNoticeParagraphs.forEach { CardBody(it) }
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
