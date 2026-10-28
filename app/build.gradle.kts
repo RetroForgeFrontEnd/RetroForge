@@ -3,6 +3,9 @@ import java.util.Properties
 // ScreenScraper developer credentials, issued to RetroForge by ScreenScraper. Kept in local.properties (not in git):
 // screenscraper.devid=… / screenscraper.devpassword=…. Without them the app builds and ScreenScraper says it's unavailable.
 val localProps = Properties().apply { rootProject.file("local.properties").takeIf { it.isFile }?.inputStream()?.use(::load) }
+// Release signing key: your own keystore, described in keystore.properties (not in git). See docs/BUILD_AND_INSTALL.md.
+val keystoreProps = Properties().apply { rootProject.file("keystore.properties").takeIf { it.isFile }?.inputStream()?.use(::load) }
+
 fun quoted(key: String) = "\"" + (localProps.getProperty(key) ?: "").replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 
 plugins {
@@ -18,15 +21,34 @@ android {
         applicationId = "com.retroforge.app"
         minSdk = 26
         targetSdk = 37
-        versionCode = 2
-        versionName = "0.2.0-preview"
+        versionCode = 5
+        versionName = "0.5.0-beta"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "SCREENSCRAPER_DEV_ID", quoted("screenscraper.devid"))
         buildConfigField("String", "SCREENSCRAPER_DEV_PASSWORD", quoted("screenscraper.devpassword"))
+        buildConfigField("String", "BUG_REPORT_URL", quoted("bugreport.url"))
+        // Optional support links (local.properties): support.buymeacoffee, support.kofi, support.patreon, support.github
+        buildConfigField("String", "SUPPORT_BUYMEACOFFEE", quoted("support.buymeacoffee"))
+        buildConfigField("String", "SUPPORT_KOFI", quoted("support.kofi"))
+        buildConfigField("String", "SUPPORT_PATREON", quoted("support.patreon"))
+        buildConfigField("String", "SUPPORT_GITHUB", quoted("support.github"))
+    }
+
+    signingConfigs {
+        if (keystoreProps.getProperty("storeFile") != null) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))
+                storePassword = keystoreProps.getProperty("storePassword")
+                keyAlias = keystoreProps.getProperty("keyAlias")
+                keyPassword = keystoreProps.getProperty("keyPassword")
+            }
+        }
     }
 
     buildTypes {
         release {
+            // Without keystore.properties the release APK is built unsigned (fine for testing, not for users).
+            signingConfigs.findByName("release")?.let { signingConfig = it }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

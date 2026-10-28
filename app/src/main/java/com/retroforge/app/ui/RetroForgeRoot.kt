@@ -65,6 +65,8 @@ import com.retroforge.app.ui.library.SystemGamesScreen
 import com.retroforge.app.ui.settings.AboutScreen
 import com.retroforge.app.ui.settings.HotkeysScreen
 import com.retroforge.app.ui.settings.TutorialScreen
+import com.retroforge.app.ui.settings.LicencesScreen
+import com.retroforge.app.ui.settings.PrivacyScreen
 import com.retroforge.app.ui.settings.ThemesScreen
 import com.retroforge.app.ui.settings.ThemesViewModel
 import com.retroforge.app.ui.settings.SettingsScreen
@@ -96,6 +98,8 @@ private const val ABOUT_ROUTE = "settings/about"
 private const val HOTKEYS_ROUTE = "settings/hotkeys"
 private const val TUTORIAL_ROUTE = "settings/tutorial"
 private const val THEMES_ROUTE = "settings/themes"
+private const val LICENCES_ROUTE = "settings/licences"
+private const val PRIVACY_ROUTE = "settings/privacy"
 private const val SYSTEM_ROUTE = "retro/system/{system}"
 private const val GAME_ROUTE = "retro/game/{id}"
 private const val COVER_ROUTE = "retro/game/{id}/cover"
@@ -144,7 +148,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
         val current = sections.firstOrNull { it.route == route } ?: when {
             route == PATCHER_ROUTE || route?.startsWith("retro/") == true -> Section.RETRO
             route?.startsWith("hacks/") == true -> Section.HACKS
-            route == SETUP_ROUTE || route == ABOUT_ROUTE || route == HOTKEYS_ROUTE || route == TUTORIAL_ROUTE || route == THEMES_ROUTE -> Section.SETTINGS
+            route == SETUP_ROUTE || route == ABOUT_ROUTE || route == HOTKEYS_ROUTE || route == TUTORIAL_ROUTE || route == THEMES_ROUTE || route == LICENCES_ROUTE || route == PRIVACY_ROUTE -> Section.SETTINGS
             else -> Section.HOME
         }
         val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library, container.retroArch, container.covers, container.standalone, container.settings, container.retroArchHotkeys))
@@ -265,11 +269,15 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         }
                         composable(Section.LINKS.route) { LinksScreen() }
                         composable(Section.SETTINGS.route) {
-                            SettingsScreen(settingsViewModel, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) })
+                            SettingsScreen(settingsViewModel, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
+                                onOpenLicences = { nav.navigate(LICENCES_ROUTE) }, onOpenPrivacy = { nav.navigate(PRIVACY_ROUTE) },
+                            )
                         }
                         composable(ABOUT_ROUTE) { AboutScreen() }
                         composable(HOTKEYS_ROUTE) { HotkeysScreen(settingsViewModel) }
                         composable(TUTORIAL_ROUTE) { TutorialScreen() }
+                        composable(LICENCES_ROUTE) { LicencesScreen() }
+                        composable(PRIVACY_ROUTE) { PrivacyScreen() }
                         composable(THEMES_ROUTE) {
                             val themesViewModel: ThemesViewModel = viewModel(factory = ThemesViewModel.factory(container.settings, container.themes, container.contentResolver))
                             ThemesScreen(themesViewModel)

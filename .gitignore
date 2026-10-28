@@ -11,3 +11,8 @@ captures/
 
 # Real-world patch files and ROMs used for manual testing
 /patch-test/
+
+# Release signing: never commit the key or its passwords
+keystore.properties
+*.jks
+*.keystore

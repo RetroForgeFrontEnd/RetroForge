@@ -47,6 +47,8 @@ fun AboutScreen() {
             )
         }
 
+        SupportCard()
+
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("Your games, your BIOS")
             CardBody("RetroForge comes with no games and no BIOS files. Use your own copies of games and BIOS you own.")

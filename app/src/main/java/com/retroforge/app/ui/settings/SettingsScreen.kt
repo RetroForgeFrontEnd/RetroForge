@@ -37,7 +37,16 @@ import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel, onOpenSetup: () -> Unit, onOpenAbout: () -> Unit, onOpenHotkeys: () -> Unit, onOpenTutorial: () -> Unit, onOpenThemes: () -> Unit) {
+fun SettingsScreen(
+    viewModel: SettingsViewModel,
+    onOpenSetup: () -> Unit,
+    onOpenAbout: () -> Unit,
+    onOpenHotkeys: () -> Unit,
+    onOpenTutorial: () -> Unit,
+    onOpenThemes: () -> Unit,
+    onOpenLicences: () -> Unit,
+    onOpenPrivacy: () -> Unit,
+) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
 
     ScreenFrame(title = "Settings") {
@@ -91,6 +100,13 @@ fun SettingsScreen(viewModel: SettingsViewModel, onOpenSetup: () -> Unit, onOpen
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("Games, BIOS and the law")
             legalNoticeParagraphs.forEach { CardBody(it) }
+        }
+
+        SupportCard()
+        ReportProblemCard()
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            FocusChip("Licences", onClick = onOpenLicences)
+            FocusChip("Privacy", onClick = onOpenPrivacy)
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenAbout) {
@@ -222,5 +238,23 @@ private fun ScreenScraperCard(savedUser: String?, onSave: (String?, String?) -> 
         FocusChip("Save", onClick = { onSave(user, password); password = "" }, enabled = user.isNotBlank() && password.isNotEmpty())
         FocusChip("Create a free account", onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, ScreenScraper.SIGN_UP.toUri())) } })
         if (!savedUser.isNullOrBlank()) FocusChip("Sign out", onClick = { onSave(null, null) })
+    }
+}
+
+/** Opens the project's issue page with the app and device details filled in (no personal data). */
+@Composable
+private fun ReportProblemCard() {
+    val context = LocalContext.current
+    val url = BuildConfig.BUG_REPORT_URL
+    if (url.isBlank()) return
+    FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
+        val body = "What happened:\n\nWhat you expected:\n\nSteps to repeat it:\n\n---\n" +
+            "RetroForge ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
+            "Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}, Android ${android.os.Build.VERSION.RELEASE} (API ${android.os.Build.VERSION.SDK_INT})"
+        val link = url.trimEnd('/') + "/new?labels=bug&body=" + java.net.URLEncoder.encode(body, "UTF-8")
+        runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, link.toUri())) }
+    }) {
+        CardTitle("Report a problem")
+        CardBody("Opens a bug report on GitHub with your RetroForge version and device model filled in. Nothing else is sent; you see everything before posting.")
     }
 }

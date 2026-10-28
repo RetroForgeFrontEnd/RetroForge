@@ -8,11 +8,11 @@ Written 2026-10-28. Not legal or tax advice: get both before taking money.
 |---|---|
 | Works on at least 3 real devices (a mid-range phone, a high-end phone, a handheld or tablet) | Not started: only the Android emulator so far |
 | The smoke test in [TESTING.md](TESTING.md#release-test-plan) passes on each | Not started |
-| Release build signed with a release key kept off GitHub (and backed up: losing it means users can't update) | Not started |
-| In-app licences screen (MIT notice for ES-DE data, Apache/0BSD libraries, theme and artwork credits) | Not started |
-| Privacy policy page (what goes to libretro, SteamGridDB, ScreenScraper, nothing else; no tracking) | Draft content exists in [SECURITY_AND_PRIVACY.md](SECURITY_AND_PRIVACY.md) |
-| A way for testers to report bugs (GitHub Issues template; in-app "Report a problem" link with app/device version) | Not started |
-| Version name/number, changelog | Not started |
+| Release build signed with a release key kept off GitHub (and backed up: losing it means users can't update) | Set up: create the key with the command in BUILD_AND_INSTALL.md; release build tested |
+| In-app licences screen (MIT notice for ES-DE data, Apache/0BSD libraries, fonts) | Done: Settings → Licences |
+| Privacy policy page | Done: [PRIVACY_POLICY.md](PRIVACY_POLICY.md) and Settings → Privacy; still to publish on a web page for Play |
+| A way for testers to report bugs | Done: issue template and Settings → Report a problem (needs the repo's issues URL in local.properties) |
+| Version name/number, changelog | Done: 0.5.0-beta, [CHANGELOG.md](../CHANGELOG.md) |
 | Features that need permission switched off or clearly marked (ScreenScraper without a developer ID already says "not available") | Done |
 
 Nice to have for the beta: the in-game edge-swipe menu, theme engine v2, the feature comparison against other frontends.
@@ -33,5 +33,7 @@ Charging £2 up front would make RetroForge a commercial app: ScreenScraper's AP
 | Patreon with supporter perks that aren't features | Name in credits, vote on the roadmap, behind-the-scenes posts, Discord role | Generally yes |
 | Patreon early access (like Socket) | Supporters get new builds first; everyone gets them later | Grey area: ask ScreenScraper and SteamGridDB first |
 | Paid app or paid features | £2 upfront or unlocks | Only with ScreenScraper's and SteamGridDB's written permission, or with those features removed from the paid version |
+
+Support links: Settings and About show Buy Me a Coffee / Ko-fi / Patreon / GitHub Sponsors buttons for whichever links are set in local.properties.
 
 Recommendation: release free, with a donation link and a Patreon for perks that aren't features. Ask ScreenScraper and SteamGridDB about early access before trying it.

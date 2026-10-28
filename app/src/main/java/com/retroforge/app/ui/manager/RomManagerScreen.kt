@@ -341,7 +341,7 @@ private fun MultiDiscTab(viewModel: RomManagerViewModel) {
                 }
             }
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                FocusChip("Make ${plural(report.jobs.size, "playlist")}", onClick = viewModel::askMakePlaylists, enabled = report.jobs.isNotEmpty())
+                if (report.jobs.isNotEmpty()) FocusChip("Make ${plural(report.jobs.size, "playlist")}", onClick = viewModel::askMakePlaylists)
                 FocusChip("Check again", onClick = viewModel::findMultiDisc)
             }
         }
