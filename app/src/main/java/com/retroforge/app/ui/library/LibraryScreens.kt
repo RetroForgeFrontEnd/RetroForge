@@ -246,7 +246,14 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
 }
 
 @Composable
-fun GameDetailScreen(viewModel: LibraryViewModel, gameId: Long, onOpenGame: (Long) -> Unit, onChangeCover: (Long) -> Unit, onDelete: (Long) -> Unit) {
+fun GameDetailScreen(
+    viewModel: LibraryViewModel,
+    gameId: Long,
+    onOpenGame: (Long) -> Unit,
+    onChangeCover: (Long) -> Unit,
+    onDelete: (Long) -> Unit,
+    onEditDetails: (Long) -> Unit = {},
+) {
     val game by remember(gameId) { viewModel.game(gameId) }.collectAsStateWithLifecycle(initialValue = null)
     val roots by viewModel.roots.collectAsStateWithLifecycle()
     val rootsById = remember(roots) { roots.orEmpty().associateBy { it.id } }
@@ -262,6 +269,7 @@ fun GameDetailScreen(viewModel: LibraryViewModel, gameId: Long, onOpenGame: (Lon
     ScreenFrame(title = null) {
         GameHero(g, viewModel.art(rootsById, chosen, g), eyebrow = viewModel.systemName(g.system), subtitle = tagLine(g), actionLabel = null, onAction = null)
         CoverControls(g, viewModel, onChangeCover = { onChangeCover(g.id) })
+        FocusChip("Edit details", onClick = { onEditDetails(g.id) })
         FavouriteAndPlaylists(g, viewModel)
         PlaySection(viewModel, g, rootsById[g.rootId])
         FocusChip("Delete this game…", onClick = { onDelete(g.id) })

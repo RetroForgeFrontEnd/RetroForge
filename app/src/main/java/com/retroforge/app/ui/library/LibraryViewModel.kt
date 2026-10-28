@@ -140,6 +140,9 @@ class LibraryViewModel(
     fun deletePlaylist(id: Long) = repository.deletePlaylist(id)
     fun movePlaylistGame(id: Long, game: GameEntity, by: Int) = repository.movePlaylistGame(id, game, by)
     fun playFor(gameId: Long): Flow<PlayEntity?> = repository.playFor(gameId)
+    fun editFor(game: GameEntity) = repository.editFor(game)
+    suspend fun saveDetails(game: GameEntity, details: com.retroforge.core.library.GameDetails) = repository.saveDetails(game, details)
+    suspend fun resetDetails(game: GameEntity) = repository.resetDetails(game)
 
     fun launchPlan(game: GameEntity, root: RootEntity?): LaunchPlan =
         if (root == null) LaunchPlan.NotPossible(LaunchProblem.LocationNotSupported)

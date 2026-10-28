@@ -191,6 +191,14 @@ S22 (arm64) and the Android emulator (x86_64, software GPU). Debug build.
 - Pause menu "Console look: On/Off" switches live (plain see-through controls when off) and is kept per system.
 - Not yet checked by eye: GBA, GB/GBC, Mega Drive, Master System, Game Gear, PC Engine and DS skins (colours defined, same drawing code). Not testable from adb: starting a second game while one is open in the background (the player now saves and switches to the new game).
 
+### 2026-10-28: Edit game details (emulator)
+
+- Database upgraded 4 → 5 by installing over the old version: library intact (251 games in 6 systems).
+- Edited an NES hack's title ("TMNT Ultimate Hack") and genre: shown at once on the game page and in search.
+- Rescanned all three folders: the edit was put back by the scan.
+- "Reset to the scanned details" showed the scanned title and restored it.
+- Not tested: an edit following a file through ROM manager compress/undo (uses the same relink as favourites, which is tested).
+
 ## Release test plan (run in the final stage, before any release)
 
 Everything is re-tested together on real hardware, so nothing that worked earlier is broken by later changes. Record each result here with date, device and evidence.

@@ -1,0 +1,735 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 5,
+    "identityHash": "cb832ee64b6d33cf16532a2e2a56e3b8",
+    "entities": [
+      {
+        "tableName": "roots",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `treeUri` TEXT NOT NULL, `name` TEXT NOT NULL, `addedAt` INTEGER NOT NULL, `lastScanAt` INTEGER, `layout` TEXT, `gameCount` INTEGER NOT NULL, `problemCount` INTEGER NOT NULL, `unrecognisedFolders` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "treeUri",
+            "columnName": "treeUri",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "addedAt",
+            "columnName": "addedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastScanAt",
+            "columnName": "lastScanAt",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "layout",
+            "columnName": "layout",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "gameCount",
+            "columnName": "gameCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "problemCount",
+            "columnName": "problemCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "unrecognisedFolders",
+            "columnName": "unrecognisedFolders",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_roots_treeUri",
+            "unique": true,
+            "columnNames": [
+              "treeUri"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_roots_treeUri` ON `${TABLE_NAME}` (`treeUri`)"
+          }
+        ]
+      },
+      {
+        "tableName": "games",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `rootId` INTEGER NOT NULL, `system` TEXT NOT NULL, `relativePath` TEXT NOT NULL, `fileName` TEXT NOT NULL, `documentId` TEXT NOT NULL, `title` TEXT NOT NULL, `sortKey` TEXT NOT NULL, `tags` TEXT NOT NULL, `regions` TEXT NOT NULL, `isHack` INTEGER NOT NULL, `hackFolder` TEXT, `sizeBytes` INTEGER NOT NULL, `modifiedAt` INTEGER NOT NULL, `duplicateKey` TEXT, `discs` INTEGER, `description` TEXT, `releaseDate` TEXT, `developer` TEXT, `publisher` TEXT, `genre` TEXT, `players` TEXT, `rating` REAL, `imageDocumentId` TEXT, FOREIGN KEY(`rootId`) REFERENCES `roots`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rootId",
+            "columnName": "rootId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "system",
+            "columnName": "system",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "relativePath",
+            "columnName": "relativePath",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fileName",
+            "columnName": "fileName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "documentId",
+            "columnName": "documentId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sortKey",
+            "columnName": "sortKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tags",
+            "columnName": "tags",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "regions",
+            "columnName": "regions",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isHack",
+            "columnName": "isHack",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hackFolder",
+            "columnName": "hackFolder",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sizeBytes",
+            "columnName": "sizeBytes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "modifiedAt",
+            "columnName": "modifiedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "duplicateKey",
+            "columnName": "duplicateKey",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "discs",
+            "columnName": "discs",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "releaseDate",
+            "columnName": "releaseDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "developer",
+            "columnName": "developer",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "publisher",
+            "columnName": "publisher",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "genre",
+            "columnName": "genre",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "players",
+            "columnName": "players",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "rating",
+            "columnName": "rating",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "imageDocumentId",
+            "columnName": "imageDocumentId",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_games_rootId",
+            "unique": false,
+            "columnNames": [
+              "rootId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_games_rootId` ON `${TABLE_NAME}` (`rootId`)"
+          },
+          {
+            "name": "index_games_system",
+            "unique": false,
+            "columnNames": [
+              "system"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_games_system` ON `${TABLE_NAME}` (`system`)"
+          },
+          {
+            "name": "index_games_isHack",
+            "unique": false,
+            "columnNames": [
+              "isHack"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_games_isHack` ON `${TABLE_NAME}` (`isHack`)"
+          },
+          {
+            "name": "index_games_sortKey",
+            "unique": false,
+            "columnNames": [
+              "sortKey"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_games_sortKey` ON `${TABLE_NAME}` (`sortKey`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "roots",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "rootId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "scan_problems",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `rootId` INTEGER NOT NULL, `path` TEXT NOT NULL, `message` TEXT NOT NULL, FOREIGN KEY(`rootId`) REFERENCES `roots`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rootId",
+            "columnName": "rootId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "path",
+            "columnName": "path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "message",
+            "columnName": "message",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_scan_problems_rootId",
+            "unique": false,
+            "columnNames": [
+              "rootId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_scan_problems_rootId` ON `${TABLE_NAME}` (`rootId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "roots",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "rootId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "play_history",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rootId` INTEGER NOT NULL, `relativePath` TEXT NOT NULL, `lastPlayedAt` INTEGER NOT NULL, `playCount` INTEGER NOT NULL, `core` TEXT, PRIMARY KEY(`rootId`, `relativePath`), FOREIGN KEY(`rootId`) REFERENCES `roots`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "rootId",
+            "columnName": "rootId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "relativePath",
+            "columnName": "relativePath",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastPlayedAt",
+            "columnName": "lastPlayedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "playCount",
+            "columnName": "playCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "core",
+            "columnName": "core",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "rootId",
+            "relativePath"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "roots",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "rootId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "covers",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rootId` INTEGER NOT NULL, `relativePath` TEXT NOT NULL, `file` TEXT NOT NULL, `source` TEXT NOT NULL, `sourceUrl` TEXT NOT NULL, `author` TEXT, `savedAt` INTEGER NOT NULL, PRIMARY KEY(`rootId`, `relativePath`), FOREIGN KEY(`rootId`) REFERENCES `roots`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "rootId",
+            "columnName": "rootId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "relativePath",
+            "columnName": "relativePath",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "file",
+            "columnName": "file",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceUrl",
+            "columnName": "sourceUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "author",
+            "columnName": "author",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "savedAt",
+            "columnName": "savedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "rootId",
+            "relativePath"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "roots",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "rootId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "favourites",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rootId` INTEGER NOT NULL, `relativePath` TEXT NOT NULL, `addedAt` INTEGER NOT NULL, PRIMARY KEY(`rootId`, `relativePath`), FOREIGN KEY(`rootId`) REFERENCES `roots`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "rootId",
+            "columnName": "rootId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "relativePath",
+            "columnName": "relativePath",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "addedAt",
+            "columnName": "addedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "rootId",
+            "relativePath"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "roots",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "rootId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "playlists",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "playlist_items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`playlistId` INTEGER NOT NULL, `rootId` INTEGER NOT NULL, `relativePath` TEXT NOT NULL, `position` INTEGER NOT NULL, `addedAt` INTEGER NOT NULL, PRIMARY KEY(`playlistId`, `rootId`, `relativePath`), FOREIGN KEY(`playlistId`) REFERENCES `playlists`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`rootId`) REFERENCES `roots`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "playlistId",
+            "columnName": "playlistId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rootId",
+            "columnName": "rootId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "relativePath",
+            "columnName": "relativePath",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "position",
+            "columnName": "position",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "addedAt",
+            "columnName": "addedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "playlistId",
+            "rootId",
+            "relativePath"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_playlist_items_rootId",
+            "unique": false,
+            "columnNames": [
+              "rootId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_playlist_items_rootId` ON `${TABLE_NAME}` (`rootId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "playlists",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "playlistId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "roots",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "rootId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "game_edits",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rootId` INTEGER NOT NULL, `relativePath` TEXT NOT NULL, `editedAt` INTEGER NOT NULL, `edited_title` TEXT NOT NULL, `edited_description` TEXT, `edited_releaseDate` TEXT, `edited_developer` TEXT, `edited_publisher` TEXT, `edited_genre` TEXT, `edited_players` TEXT, `scanned_title` TEXT NOT NULL, `scanned_description` TEXT, `scanned_releaseDate` TEXT, `scanned_developer` TEXT, `scanned_publisher` TEXT, `scanned_genre` TEXT, `scanned_players` TEXT, PRIMARY KEY(`rootId`, `relativePath`), FOREIGN KEY(`rootId`) REFERENCES `roots`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "rootId",
+            "columnName": "rootId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "relativePath",
+            "columnName": "relativePath",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "editedAt",
+            "columnName": "editedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "edited.title",
+            "columnName": "edited_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "edited.description",
+            "columnName": "edited_description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "edited.releaseDate",
+            "columnName": "edited_releaseDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "edited.developer",
+            "columnName": "edited_developer",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "edited.publisher",
+            "columnName": "edited_publisher",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "edited.genre",
+            "columnName": "edited_genre",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "edited.players",
+            "columnName": "edited_players",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "scanned.title",
+            "columnName": "scanned_title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scanned.description",
+            "columnName": "scanned_description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "scanned.releaseDate",
+            "columnName": "scanned_releaseDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "scanned.developer",
+            "columnName": "scanned_developer",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "scanned.publisher",
+            "columnName": "scanned_publisher",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "scanned.genre",
+            "columnName": "scanned_genre",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "scanned.players",
+            "columnName": "scanned_players",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "rootId",
+            "relativePath"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "roots",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "rootId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cb832ee64b6d33cf16532a2e2a56e3b8')"
+    ]
+  }
+}

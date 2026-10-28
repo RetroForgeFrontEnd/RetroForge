@@ -83,6 +83,12 @@ class LibraryRepository(
 
     fun movePlaylistGame(id: Long, game: GameEntity, by: Int) { scope.launch { dao.movePlaylistItem(id, game.rootId, game.relativePath, by) } }
 
+    fun editFor(game: GameEntity): Flow<GameEditEntity?> = dao.edit(game.rootId, game.relativePath)
+
+    suspend fun saveDetails(game: GameEntity, details: GameDetails) = dao.saveEdit(game, details, clock())
+
+    suspend fun resetDetails(game: GameEntity) = dao.resetEdit(game)
+
     fun recordPlay(game: GameEntity, core: String) {
         scope.launch { dao.recordPlay(game.rootId, game.relativePath, core, clock()) }
     }

@@ -2,6 +2,8 @@ package com.retroforge.core.library
 
 import android.content.Context
 import androidx.room.AutoMigration
+import androidx.room.OnConflictStrategy
+import androidx.room.Update
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
@@ -104,6 +106,41 @@ data class CoverEntity(
     val sourceUrl: String,
     val author: String?,
     val savedAt: Long,
+)
+
+/** The details a game can have edited by hand. */
+data class GameDetails(
+    val title: String,
+    val description: String?,
+    val releaseDate: String?,
+    val developer: String?,
+    val publisher: String?,
+    val genre: String?,
+    val players: String?,
+)
+
+fun GameEntity.details() = GameDetails(title, description, releaseDate, developer, publisher, genre, players)
+
+fun GameEntity.withDetails(d: GameDetails) = copy(
+    title = d.title, sortKey = com.retroforge.library.RomNames.sortKey(d.title), description = d.description,
+    releaseDate = d.releaseDate, developer = d.developer, publisher = d.publisher, genre = d.genre, players = d.players,
+)
+
+/**
+ * A game's details as edited by hand, keyed by folder + path so the edit survives rescans (each scan puts it back)
+ * and follows the file through ROM manager changes. [scanned] keeps what the scan found, for "Reset".
+ */
+@Entity(
+    tableName = "game_edits",
+    primaryKeys = ["rootId", "relativePath"],
+    foreignKeys = [ForeignKey(entity = RootEntity::class, parentColumns = ["id"], childColumns = ["rootId"], onDelete = ForeignKey.CASCADE)],
+)
+data class GameEditEntity(
+    val rootId: Long,
+    val relativePath: String,
+    @androidx.room.Embedded(prefix = "edited_") val edited: GameDetails,
+    @androidx.room.Embedded(prefix = "scanned_") val scanned: GameDetails,
+    val editedAt: Long,
 )
 
 /** A favourite game, keyed by folder + path so it survives rescans. */
@@ -314,6 +351,43 @@ interface LibraryDao {
     @Query("UPDATE OR IGNORE covers SET relativePath = :to WHERE rootId = :rootId AND relativePath = :from")
     suspend fun relinkCover(rootId: Long, from: String, to: String)
 
+    @Query("UPDATE OR IGNORE game_edits SET relativePath = :to WHERE rootId = :rootId AND relativePath = :from")
+    suspend fun relinkEdit(rootId: Long, from: String, to: String)
+
+    @Query("SELECT * FROM game_edits WHERE rootId = :rootId")
+    suspend fun editsFor(rootId: Long): List<GameEditEntity>
+
+    @Query("SELECT * FROM game_edits WHERE rootId = :rootId AND relativePath = :path")
+    fun edit(rootId: Long, path: String): Flow<GameEditEntity?>
+
+    @Query("SELECT * FROM game_edits WHERE rootId = :rootId AND relativePath = :path")
+    suspend fun editNow(rootId: Long, path: String): GameEditEntity?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertEdit(edit: GameEditEntity)
+
+    @Query("DELETE FROM game_edits WHERE rootId = :rootId AND relativePath = :path")
+    suspend fun deleteEdit(rootId: Long, path: String)
+
+    @Update
+    suspend fun updateGame(game: GameEntity)
+
+    /** Saves an edit and shows it at once; the first edit remembers what the scan had found. */
+    @Transaction
+    suspend fun saveEdit(game: GameEntity, details: GameDetails, at: Long) {
+        val scanned = editNow(game.rootId, game.relativePath)?.scanned ?: game.details()
+        upsertEdit(GameEditEntity(game.rootId, game.relativePath, details, scanned, at))
+        updateGame(game.withDetails(details))
+    }
+
+    /** Back to the scanned details. */
+    @Transaction
+    suspend fun resetEdit(game: GameEntity) {
+        val edit = editNow(game.rootId, game.relativePath) ?: return
+        deleteEdit(game.rootId, game.relativePath)
+        updateGame(game.withDetails(edit.scanned))
+    }
+
     /**
      * Moves RetroForge's own records for a game whose file changed path (compressed, or replaced by its kept
      * duplicate). Where the new path already has a record of its own, that one is kept and the old one stays put.
@@ -324,14 +398,22 @@ interface LibraryDao {
         relinkPlaylistItems(rootId, from, to)
         relinkPlay(rootId, from, to)
         relinkCover(rootId, from, to)
+        relinkEdit(rootId, from, to)
     }
 
     /** Replaces a folder's index in one transaction, so an interrupted scan leaves the previous index intact. */
     @Transaction
     suspend fun replaceIndex(root: RootEntity, games: List<GameEntity>, problems: List<ProblemEntity>, layout: String, unrecognised: String, at: Long) {
+        // Hand edits win over what the scan found; the scanned values are kept up to date for "Reset".
+        val edits = editsFor(root.id).associateBy { it.relativePath }
+        val merged = games.map { game ->
+            val edit = edits[game.relativePath] ?: return@map game
+            upsertEdit(edit.copy(scanned = game.details()))
+            game.withDetails(edit.edited)
+        }
         deleteGames(root.id)
         deleteProblems(root.id)
-        games.chunked(500).forEach { insertGames(it) }
+        merged.chunked(500).forEach { insertGames(it) }
         insertProblems(problems)
         updateScan(root.id, at, layout, games.size, problems.size, unrecognised)
     }
@@ -340,11 +422,11 @@ interface LibraryDao {
 @Database(
     entities = [
         RootEntity::class, GameEntity::class, ProblemEntity::class, PlayEntity::class, CoverEntity::class,
-        FavouriteEntity::class, PlaylistEntity::class, PlaylistItemEntity::class,
+        FavouriteEntity::class, PlaylistEntity::class, PlaylistItemEntity::class, GameEditEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4)],
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5)],
 )
 abstract class LibraryDatabase : RoomDatabase() {
     abstract fun dao(): LibraryDao

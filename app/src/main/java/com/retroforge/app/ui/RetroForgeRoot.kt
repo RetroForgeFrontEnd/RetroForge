@@ -103,6 +103,7 @@ private const val PRIVACY_ROUTE = "settings/privacy"
 private const val SYSTEM_ROUTE = "retro/system/{system}"
 private const val GAME_ROUTE = "retro/game/{id}"
 private const val COVER_ROUTE = "retro/game/{id}/cover"
+private const val EDIT_ROUTE = "retro/game/{id}/edit"
 private const val MANAGER_ROUTE = "retro/manager"
 private const val PLAYLIST_ROUTE = "retro/playlist/{id}"
 private const val MANAGER_DELETE_ROUTE = "retro/manager/delete/{id}"
@@ -228,6 +229,14 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                                 onOpenGame = { nav.navigate("retro/game/$it") },
                                 onChangeCover = { nav.navigate("retro/game/$it/cover") },
                                 onDelete = { nav.navigate("retro/manager/delete/$it") },
+                                onEditDetails = { nav.navigate("retro/game/$it/edit") },
+                            )
+                        }
+                        composable(EDIT_ROUTE) { entry ->
+                            com.retroforge.app.ui.library.EditDetailsScreen(
+                                libraryViewModel,
+                                entry.arguments?.getString("id")?.toLongOrNull() ?: -1,
+                                onDone = { nav.popBackStack() },
                             )
                         }
                         composable(COVER_ROUTE) { entry ->
