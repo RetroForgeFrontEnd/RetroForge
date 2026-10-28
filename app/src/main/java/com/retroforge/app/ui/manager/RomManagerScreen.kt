@@ -178,7 +178,7 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
                 CardBody("Files move back where they were and gamelist.xml / .m3u changes are reversed. Files RetroForge made go to $DUPLICATES_FOLDER rather than being deleted.")
             }
         }
-        CardBody("If RetroBat or another frontend uses this folder on a PC, close it first: it rewrites gamelist.xml when it exits.")
+        CardBody("If another frontend uses this folder on a PC, close it first: some rewrite gamelist.xml when they exit.")
         if (!canWrite) {
             StatusPill("Needs permission to change files", StatusTone.CAUTION)
             CardBody(
