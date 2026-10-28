@@ -120,6 +120,7 @@ class ManageTest {
 
         val result = DuplicateMover(files).run(listOf(set to b), journal)
         assertEquals(1, result.moved)
+        assertEquals(listOf(a.relativePath to b.relativePath), result.replacedBy)
         assertEquals(1, result.gamelistsUpdated)
         assertTrue(File(root, "_duplicates/snes/Super Mario World (USA).7z").isFile)
         assertFalse(File(root, "snes/Super Mario World (USA).7z").exists())
@@ -127,7 +128,8 @@ class ManageTest {
         assertFalse(File(root, "snes/gamelist.xml").readText().contains("World (USA).7z"))
 
         // The log round-trips through JSON and undoes exactly.
-        val saved = OperationLog.decode(logs.last().encode())
+        val saved = OperationLog.decode(logs.last().copy(steps = logs.last().steps + Step.Relinked("x", "y", reverseOnUndo = false)).encode())
+        assertEquals(Step.Relinked("x", "y", reverseOnUndo = false), saved.steps.last())
         assertEquals(emptyList<String>(), Undo.run(files, saved))
         assertTrue(File(root, "snes/Super Mario World (USA).7z").isFile)
         assertEquals(gamelist, File(root, "snes/gamelist.xml").readText())

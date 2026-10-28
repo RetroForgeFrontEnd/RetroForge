@@ -302,6 +302,30 @@ interface LibraryDao {
         upsertPlaylistItem(items[j].copy(position = items[i].position))
     }
 
+    @Query("UPDATE OR IGNORE favourites SET relativePath = :to WHERE rootId = :rootId AND relativePath = :from")
+    suspend fun relinkFavourite(rootId: Long, from: String, to: String)
+
+    @Query("UPDATE OR IGNORE playlist_items SET relativePath = :to WHERE rootId = :rootId AND relativePath = :from")
+    suspend fun relinkPlaylistItems(rootId: Long, from: String, to: String)
+
+    @Query("UPDATE OR IGNORE play_history SET relativePath = :to WHERE rootId = :rootId AND relativePath = :from")
+    suspend fun relinkPlay(rootId: Long, from: String, to: String)
+
+    @Query("UPDATE OR IGNORE covers SET relativePath = :to WHERE rootId = :rootId AND relativePath = :from")
+    suspend fun relinkCover(rootId: Long, from: String, to: String)
+
+    /**
+     * Moves RetroForge's own records for a game whose file changed path (compressed, or replaced by its kept
+     * duplicate). Where the new path already has a record of its own, that one is kept and the old one stays put.
+     */
+    @Transaction
+    suspend fun relink(rootId: Long, from: String, to: String) {
+        relinkFavourite(rootId, from, to)
+        relinkPlaylistItems(rootId, from, to)
+        relinkPlay(rootId, from, to)
+        relinkCover(rootId, from, to)
+    }
+
     /** Replaces a folder's index in one transaction, so an interrupted scan leaves the previous index intact. */
     @Transaction
     suspend fun replaceIndex(root: RootEntity, games: List<GameEntity>, problems: List<ProblemEntity>, layout: String, unrecognised: String, at: Long) {

@@ -155,13 +155,15 @@ object ContentFingerprint {
     }
 }
 
-data class DuplicateRunResult(val moved: Int, val gamelistsUpdated: Int, val problems: List<String>)
+/** [replacedBy]: each moved copy's path and the kept copy that stands in for it, for the app's own records. */
+data class DuplicateRunResult(val moved: Int, val gamelistsUpdated: Int, val problems: List<String>, val replacedBy: List<Pair<String, String>> = emptyList())
 
 /** Moves the copies the user chose not to keep into _duplicates/, and points gamelist.xml entries at the kept copy. */
 class DuplicateMover(private val files: CollectionFiles) {
 
     fun run(selections: List<Pair<DuplicateSet, DuplicateCandidate>>, journal: Journal, isCancelled: () -> Boolean = { false }): DuplicateRunResult {
         val problems = mutableListOf<String>()
+        val replacedBy = mutableListOf<Pair<String, String>>()
         var moved = 0
         val gamelistChanges = mutableMapOf<String, MutableList<Pair<String, String>>>()
         for ((set, keep) in selections) {
@@ -174,6 +176,7 @@ class DuplicateMover(private val files: CollectionFiles) {
                     files.move(file.relativePath, holding)
                     journal.record(Step.Moved(file.relativePath, join(holding, file.fileName)))
                     moved++
+                    replacedBy += file.relativePath to keep.relativePath
                     gamelistChanges.getOrPut(file.systemFolder) { mutableListOf() } +=
                         file.relativePath.removePrefix(file.systemFolder).trimStart('/') to keep.relativePath.removePrefix(keep.systemFolder).trimStart('/')
                 } catch (e: IOException) {
@@ -197,6 +200,6 @@ class DuplicateMover(private val files: CollectionFiles) {
                 problems += "$gamelist: ${e.message}"
             }
         }
-        return DuplicateRunResult(moved, updated, problems)
+        return DuplicateRunResult(moved, updated, problems, replacedBy)
     }
 }

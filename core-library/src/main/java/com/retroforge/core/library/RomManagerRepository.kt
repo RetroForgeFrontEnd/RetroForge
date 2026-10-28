@@ -28,6 +28,7 @@ import com.retroforge.library.manage.PlaylistSkip
 import com.retroforge.library.manage.OperationLog
 import com.retroforge.library.manage.SkippedSet
 import com.retroforge.library.manage.Undo
+import com.retroforge.library.manage.Step
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -131,6 +132,7 @@ class RomManagerRepository(
     fun moveDuplicates(root: RootEntity, selections: List<Pair<DuplicateSet, DuplicateCandidate>>) = start(root, "duplicates", "Moving ${selections.sumOf { it.first.files.size - 1 }} copies") { files, journal ->
         _run.value = ManagerRun.Running("Tidying duplicates", "Moving copies to _duplicates …", null)
         val r = DuplicateMover(files).run(selections, journal) { !isActive }
+        relink(root, journal, r.replacedBy, reverseOnUndo = false)
         val summary = "Moved ${r.moved} ${if (r.moved == 1) "copy" else "copies"} to _duplicates" +
             if (r.gamelistsUpdated > 0) " and updated ${r.gamelistsUpdated} gamelist.xml" else ""
         journal.finish(summary)
@@ -145,6 +147,7 @@ class RomManagerRepository(
                 (p.job + p.done.toFloat() / maxOf(p.total, 1)) / p.jobs,
             )
         }) { !isActive }
+        relink(root, journal, r.renamed, reverseOnUndo = true)
         val saved = r.bytesBefore - r.bytesAfter
         val summary = "Compressed ${r.converted} of ${jobs.size} games, saving ${formatBytes(saved)}; originals are in _originals"
         journal.finish(summary)
@@ -181,9 +184,19 @@ class RomManagerRepository(
         startRaw {
             _run.value = ManagerRun.Running("Undoing", log.summary, null)
             val problems = Undo.run(SafCollectionFiles(resolver, Uri.parse(root.treeUri)), log)
+            // Point favourites, playlists, history and covers back at the restored files.
+            log.steps.filterIsInstance<Step.Relinked>().filter { it.reverseOnUndo }.asReversed().forEach { dao.relink(root.id, it.to, it.from) }
             save(log.copy(undoneAt = clock()))
             library.scan(root.id)
             ManagerRun.Done("Undone", "Put back: ${log.summary.replaceFirstChar { it.lowercase() }}.", problems)
+        }
+    }
+
+    /** Keeps favourites, playlists, play history and chosen covers with the game when its path changed. */
+    private suspend fun relink(root: RootEntity, journal: Journal, moves: List<Pair<String, String>>, reverseOnUndo: Boolean) {
+        for ((from, to) in moves) {
+            dao.relink(root.id, from, to)
+            journal.record(Step.Relinked(from, to, reverseOnUndo))
         }
     }
 

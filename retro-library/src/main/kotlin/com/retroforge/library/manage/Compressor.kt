@@ -130,7 +130,8 @@ object CompressPlanner {
 
 data class CompressProgress(val job: Int, val jobs: Int, val title: String, val stage: String, val done: Long, val total: Long)
 
-data class CompressResult(val converted: Int, val bytesBefore: Long, val bytesAfter: Long, val problems: List<String>)
+/** [renamed]: each converted game's path before and after (e.g. ".cue" to ".chd"), for the app's own records. */
+data class CompressResult(val converted: Int, val bytesBefore: Long, val bytesAfter: Long, val problems: List<String>, val renamed: List<Pair<String, String>> = emptyList())
 
 /**
  * Converts games one at a time. Each output is written as "<name>.retroforge-part", read back and checked, and only
@@ -140,6 +141,7 @@ class Compressor(private val files: CollectionFiles) {
 
     fun run(jobs: List<CompressJob>, journal: Journal, onProgress: (CompressProgress) -> Unit = {}, isCancelled: () -> Boolean = { false }): CompressResult {
         val problems = mutableListOf<String>()
+        val renamed = mutableListOf<Pair<String, String>>()
         var converted = 0
         var before = 0L
         var after = 0L
@@ -169,6 +171,8 @@ class Compressor(private val files: CollectionFiles) {
                 }
                 updateReferences(job, journal, problems)
                 converted++
+                // Playlist (.m3u) games keep their path; only the disc inside changed.
+                if (job.playlists.isEmpty()) renamed += job.source to job.output
                 before += job.inputBytes
                 after += size
             } catch (_: CancelledException) {
@@ -177,7 +181,7 @@ class Compressor(private val files: CollectionFiles) {
                 problems += "${job.title}: ${e.message ?: e.javaClass.simpleName}"
             }
         }
-        return CompressResult(converted, before, after, problems)
+        return CompressResult(converted, before, after, problems, renamed)
     }
 
     /** Returns the size of the new file. */

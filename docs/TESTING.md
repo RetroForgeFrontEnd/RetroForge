@@ -142,7 +142,7 @@ Not tested: physical gamepad, Android TV device or TV emulator image, tablet, li
 
 - Upgraded the installed app from database v3 to v4: library (251 games), recently played and covers kept.
 - Favourited a game (★ shown, Favourites row on the Retro screen); made a playlist from a game's page, added a second game, opened it, moved a game down, renamed it, deleted it after the confirmation; the games stayed in the library.
-- Known limitation: favourites and playlist entries are keyed by file path, so a game the ROM manager compresses (.cue → .chd) or deletes drops out of them.
+- Fixed the same day: when the ROM manager compresses a game or tidies a duplicate, its favourite, playlist entries, play history and chosen cover move with it (journalled; compression undo moves them back). Emulator: Batman Forever favourited, compressed to .chd (still a favourite), undone (still a favourite). A deleted game's entries stay hidden and return if the delete is undone.
 - The emulator crashed with host GPU rendering after a long session; `-gpu swiftshader_indirect` was stable.
 
 ## Release test plan (run in the final stage, before any release)

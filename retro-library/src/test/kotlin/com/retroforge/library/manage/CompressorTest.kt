@@ -56,6 +56,8 @@ class CompressorTest {
         val result = Compressor(files).run(jobs, Journal(OperationLog("1", "compress", 1, 0, "t")) { log = it })
         assertEquals(emptyList<String>(), result.problems)
         assertEquals(2, result.converted)
+        // The .m3u game keeps its path; the cartridge's path changes, so the app can move its records along.
+        assertEquals(listOf("snes/Rom (USA).sfc" to "snes/Rom (USA).zip"), result.renamed)
         assertEquals(chdAndZipSize(root), result.bytesAfter)
 
         val chd = File(root, "psx/discs/Game (Disc 1).chd")

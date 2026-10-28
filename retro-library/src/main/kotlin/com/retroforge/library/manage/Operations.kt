@@ -47,6 +47,14 @@ sealed interface Step {
 
     @Serializable @SerialName("backed_up")
     data class BackedUp(val path: String) : Step
+
+    /**
+     * RetroForge's own records (favourites, playlists, play history, chosen cover) for the game at [from] were moved
+     * to [to]. No file changes. With [reverseOnUndo] the app moves them back on undo (a compressed game's original
+     * returns); without it they stay, because the kept copy of a duplicate still exists and may have had its own.
+     */
+    @Serializable @SerialName("relinked")
+    data class Relinked(val from: String, val to: String, val reverseOnUndo: Boolean = true) : Step
 }
 
 @Serializable
@@ -241,7 +249,7 @@ object Undo {
                         }
                         if (restored != text) files.replace(step.path, restored.toByteArray(Charsets.UTF_8))
                     }
-                    is Step.BackedUp -> Unit
+                    is Step.BackedUp, is Step.Relinked -> Unit
                 }
             } catch (e: IOException) {
                 problems += e.message ?: "couldn't undo a step"
