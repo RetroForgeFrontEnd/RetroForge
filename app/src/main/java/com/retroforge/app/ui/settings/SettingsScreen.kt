@@ -37,10 +37,15 @@ import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel, onOpenSetup: () -> Unit, onOpenAbout: () -> Unit, onOpenHotkeys: () -> Unit) {
+fun SettingsScreen(viewModel: SettingsViewModel, onOpenSetup: () -> Unit, onOpenAbout: () -> Unit, onOpenHotkeys: () -> Unit, onOpenTutorial: () -> Unit) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
 
     ScreenFrame(title = "Settings") {
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenTutorial) {
+            CardTitle("How to use RetroForge")
+            CardBody("A short guide to every feature: playing, emulators, hotkeys, covers, playlists, the ROM manager and more.")
+        }
+
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSetup) {
             CardTitle("Set up RetroForge")
             CardBody("Games folder, RetroArch, the cores your games need, and your BIOS files.")
