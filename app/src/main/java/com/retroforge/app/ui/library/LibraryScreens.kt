@@ -21,7 +21,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items as rowItems
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import com.retroforge.core.ui.ControllerTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -100,7 +100,7 @@ fun RetroScreen(
         }
 
         if (systems.isNotEmpty()) {
-            OutlinedTextField(
+            ControllerTextField(
                 value = query,
                 onValueChange = { viewModel.query.value = it },
                 singleLine = true,
@@ -231,7 +231,7 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
                 Text(viewModel.systemName(system), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
                 if (games == null) LinearProgressIndicator(Modifier.fillMaxWidth())
                 else CardBody("${shown.size} of ${games!!.size} games")
-                OutlinedTextField(value = filter, onValueChange = { filter = it }, singleLine = true, label = { Text("Filter") }, modifier = Modifier.fillMaxWidth())
+                ControllerTextField(value = filter, onValueChange = { filter = it }, singleLine = true, label = { Text("Filter") }, modifier = Modifier.fillMaxWidth())
                 SystemCoverBatch(viewModel, system, games.orEmpty(), chosen)
                 if (games.orEmpty().any { it.duplicateKey != null }) {
                     FocusChip(if (hideCopies) "• Showing one copy of each game" else "Show one copy of each game", onClick = { hideCopies = !hideCopies })

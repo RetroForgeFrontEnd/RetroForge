@@ -148,6 +148,8 @@ class PlayerInput(
             KeyEvent.KEYCODE_DPAD_DOWN -> Pad.DOWN
             KeyEvent.KEYCODE_DPAD_LEFT -> Pad.LEFT
             KeyEvent.KEYCODE_DPAD_RIGHT -> Pad.RIGHT
+            // A TV remote's OK button.
+            KeyEvent.KEYCODE_DPAD_CENTER -> Pad.A
             else -> null
         }
     }

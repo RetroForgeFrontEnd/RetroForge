@@ -46,4 +46,13 @@ object PlayerCores {
         bySystem[system]?.takeIf { fileName.substringAfterLast('.', "").lowercase() !in discExtensions }
 
     val all: Collection<PlayerCore> get() = bySystem.values.toSet()
+
+    /**
+     * Core options that follow the screen's orientation: the DS's two screens stacked in portrait and side by
+     * side in landscape, so they always use the most of the screen.
+     */
+    fun orientationOptions(coreId: String, landscape: Boolean): Map<String, String> = when (coreId) {
+        "desmume" -> mapOf("desmume_screens_layout" to if (landscape) "left/right" else "top/bottom")
+        else -> emptyMap()
+    }
 }

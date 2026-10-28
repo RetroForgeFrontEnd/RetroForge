@@ -6,10 +6,14 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -70,10 +74,19 @@ fun touchControlsHeight(layout: PadLayout, compact: Boolean) = when {
  * Transparent touch controls: d-pad left, face buttons right, shoulders on top, Start/Select in the middle.
  * [compact] puts everything in one band (shoulders above the d-pad and buttons, Start/Select stacked in the
  * middle) for tall pictures like the DS's, so the picture can stay full width.
+ * [landscape] keeps everything in the two side columns (shoulders top, Select/menu and Start bottom), so nothing
+ * covers the middle of the picture, such as the DS's touchscreen.
  * Each control keeps its own pressed state, so several can be held at once.
  */
 @Composable
-fun TouchControls(layout: PadLayout, onMask: (Int) -> Unit, onMenu: () -> Unit, modifier: Modifier = Modifier, compact: Boolean = false) {
+fun TouchControls(
+    layout: PadLayout,
+    onMask: (Int) -> Unit,
+    onMenu: () -> Unit,
+    modifier: Modifier = Modifier,
+    compact: Boolean = false,
+    landscape: Boolean = false,
+) {
     val parts = remember { IntArray(16) }
     val mask = remember { mutableIntStateOf(0) }
     fun set(slot: Int, value: Int) {
@@ -81,6 +94,34 @@ fun TouchControls(layout: PadLayout, onMask: (Int) -> Unit, onMenu: () -> Unit, 
         parts[slot] = value
         mask.intValue = parts.fold(0) { acc, part -> acc or part }
         onMask(mask.intValue)
+    }
+
+    if (landscape) {
+        // Sized from the screen height (about a phone's 410 dp in landscape = 1x), smaller than in portrait and
+        // fainter, since they sit over the picture.
+        BoxWithConstraints(modifier) {
+            val k = (maxHeight / 410.dp).coerceIn(0.7f, 1.3f)
+            Row(Modifier.fillMaxSize().padding(horizontal = 8.dp * k, vertical = 8.dp * k), horizontalArrangement = Arrangement.SpaceBetween) {
+                Column(Modifier.fillMaxHeight(), verticalArrangement = Arrangement.SpaceBetween) {
+                    layout.shoulders.getOrNull(0)?.let { (label, button) ->
+                        PadButton(label, RoundedCornerShape(10.dp), 60.dp * k, 28.dp * k, small = true, faint = true) { down -> set(10, if (down) Pad.bit(button) else 0) }
+                    } ?: Spacer(Modifier.height(32.dp * k))
+                    DPad(116.dp * k, faint = true) { set(0, it) }
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp * k), verticalAlignment = Alignment.CenterVertically) {
+                        if (layout.hasSelect) PadButton("Select", RoundedCornerShape(50), 60.dp * k, 26.dp * k, small = true, faint = true) { set(8, if (it) Pad.bit(Pad.SELECT) else 0) }
+                        PadButton("☰", CircleShape, 32.dp * k, 32.dp * k, small = true, faint = true) { if (it) onMenu() }
+                    }
+                }
+                Column(Modifier.fillMaxHeight(), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.SpaceBetween) {
+                    layout.shoulders.getOrNull(1)?.let { (label, button) ->
+                        PadButton(label, RoundedCornerShape(10.dp), 60.dp * k, 28.dp * k, small = true, faint = true) { down -> set(11, if (down) Pad.bit(button) else 0) }
+                    } ?: Spacer(Modifier.height(32.dp * k))
+                    FaceButtons(layout.face, 42.dp * k, faint = true) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
+                    PadButton("Start", RoundedCornerShape(50), 60.dp * k, 26.dp * k, small = true, faint = true) { set(9, if (it) Pad.bit(Pad.START) else 0) }
+                }
+            }
+        }
+        return
     }
 
     if (compact) {
@@ -131,31 +172,31 @@ fun TouchControls(layout: PadLayout, onMask: (Int) -> Unit, onMenu: () -> Unit, 
 }
 
 @Composable
-private fun FaceButtons(face: List<Pair<String, Int>>, size: Dp, onPress: (Int, Boolean) -> Unit) {
+private fun FaceButtons(face: List<Pair<String, Int>>, size: Dp, faint: Boolean = false, onPress: (Int, Boolean) -> Unit) {
     when (face.size) {
         4 -> Box(Modifier.size(size * 3)) {
             // SNES diamond: X top, Y left, A right, B bottom.
             val at = mapOf("X" to Alignment.TopCenter, "Y" to Alignment.CenterStart, "A" to Alignment.CenterEnd, "B" to Alignment.BottomCenter)
             face.forEachIndexed { i, (label, _) ->
-                Box(Modifier.align(at[label] ?: Alignment.Center)) { PadButton(label, CircleShape, size, size) { onPress(i, it) } }
+                Box(Modifier.align(at[label] ?: Alignment.Center)) { PadButton(label, CircleShape, size, size, faint = faint) { onPress(i, it) } }
             }
         }
         else -> Row(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalAlignment = Alignment.Bottom) {
             face.forEachIndexed { i, (label, _) ->
                 // A slight upward step to the right, like a Game Boy's B/A.
-                Box(Modifier.padding(bottom = (i * 18).dp)) { PadButton(label, CircleShape, size, size) { onPress(i, it) } }
+                Box(Modifier.padding(bottom = size * (i * 0.28f))) { PadButton(label, CircleShape, size, size, faint = faint) { onPress(i, it) } }
             }
         }
     }
 }
 
 @Composable
-private fun PadButton(label: String, shape: Shape, width: Dp, height: Dp, small: Boolean = false, onPress: (Boolean) -> Unit) {
+private fun PadButton(label: String, shape: Shape, width: Dp, height: Dp, small: Boolean = false, faint: Boolean = false, onPress: (Boolean) -> Unit) {
     val pressed = remember { mutableIntStateOf(0) }
     Box(
         Modifier
             .size(width, height)
-            .alpha(if (pressed.intValue == 1) 0.85f else 0.5f)
+            .alpha(if (pressed.intValue == 1) 0.85f else if (faint) 0.35f else 0.5f)
             .background(Color(0x55FFFFFF), shape)
             .border(1.5.dp, Color(0xAAFFFFFF), shape)
             .pointerInput(Unit) {
@@ -178,11 +219,11 @@ private fun PadButton(label: String, shape: Shape, width: Dp, height: Dp, small:
 
 /** Eight-way d-pad: the direction follows the finger while it's down, with a small dead zone in the middle. */
 @Composable
-private fun DPad(size: Dp, onMask: (Int) -> Unit) {
+private fun DPad(size: Dp, faint: Boolean = false, onMask: (Int) -> Unit) {
     Box(
         Modifier
             .size(size)
-            .alpha(0.5f)
+            .alpha(if (faint) 0.35f else 0.5f)
             .pointerInput(Unit) {
                 fun directions(at: Offset): Int {
                     val x = (at.x - this.size.width / 2f) / (this.size.width / 2f)

@@ -42,6 +42,9 @@ object NativePlayer {
     external fun setButtons(port: Int, mask: Int)
     external fun setAnalog(port: Int, stick: Int, x: Int, y: Int)
 
+    /** Changes a core option while the game runs. */
+    external fun setOption(key: String, value: String)
+
     /** Where the picture goes on the surface, in pixels from the top left ([Viewport.fit]). */
     external fun setViewport(x: Int, y: Int, w: Int, h: Int)
 

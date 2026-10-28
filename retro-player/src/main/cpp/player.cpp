@@ -835,6 +835,17 @@ JNIEXPORT void JNI(setAnalog)(JNIEnv *, jobject, jint port, jint stick, jint x, 
     P->analog[port][stick][1] = static_cast<int16_t>(y);
 }
 
+// Changes a core option while the game runs (e.g. the DS screen layout on rotation); the core picks it up
+// through GET_VARIABLE_UPDATE on its next frame.
+JNIEXPORT void JNI(setOption)(JNIEnv *env, jobject, jstring key, jstring value) {
+    if (!P) return;
+    std::string k = str(env, key), v = str(env, value);
+    std::lock_guard<std::mutex> lock(P->coreMutex);
+    P->overrides[k] = v;
+    if (P->variables.count(k)) P->variables[k] = v;
+    P->variablesChanged = true;
+}
+
 JNIEXPORT void JNI(setViewport)(JNIEnv *, jobject, jint x, jint y, jint w, jint h) {
     if (!P) return;
     P->viewX = x;

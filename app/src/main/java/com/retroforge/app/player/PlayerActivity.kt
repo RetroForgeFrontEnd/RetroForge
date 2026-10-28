@@ -30,6 +30,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
@@ -52,6 +56,10 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.retroforge.player.NativePlayer
+import com.retroforge.player.PlayerCores
+import android.content.res.Configuration
+import android.os.Handler
+import android.os.Looper
 import com.retroforge.player.Rect
 import com.retroforge.player.ScreenShape
 import com.retroforge.player.Viewport
@@ -98,6 +106,13 @@ class PlayerActivity : ComponentActivity() {
     @Volatile private var loaded = false
     @Volatile private var quitting = false
     private var foreground = false
+    private var hasTouch = true
+
+    private fun controllerConnected() = android.view.InputDevice.getDeviceIds().any { id ->
+        val device = android.view.InputDevice.getDevice(id) ?: return@any false
+        !device.isVirtual && (device.sources and android.view.InputDevice.SOURCE_GAMEPAD == android.view.InputDevice.SOURCE_GAMEPAD ||
+            device.sources and android.view.InputDevice.SOURCE_JOYSTICK == android.view.InputDevice.SOURCE_JOYSTICK)
+    }
 
     private lateinit var system: String
     private lateinit var input: PlayerInput
@@ -120,6 +135,9 @@ class PlayerActivity : ComponentActivity() {
         }
 
         val extras = intent.extras ?: return finish()
+        // TV boxes and handhelds with a pad: no touch controls unless the screen is actually touched.
+        hasTouch = packageManager.hasSystemFeature(android.content.pm.PackageManager.FEATURE_TOUCHSCREEN)
+        showTouch = hasTouch && !controllerConnected()
         system = extras.getString(EXTRA_SYSTEM).orEmpty()
         resume = extras.getBoolean(EXTRA_RESUME, true)
         val fileName = extras.getString(EXTRA_FILE_NAME).orEmpty()
@@ -153,8 +171,15 @@ class PlayerActivity : ComponentActivity() {
         worker.execute { load(corePath, uri, fileName, File(base, "system").apply { mkdirs() }) }
     }
 
+    private lateinit var coreId: String
+    private val handler = Handler(Looper.getMainLooper())
+
+    private fun isLandscape() = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     private fun load(corePath: String, uri: Uri, fileName: String, systemDir: File) {
-        val error = NativePlayer.openCore(corePath, systemDir.path, savesDir.path, emptyArray(), emptyArray())
+        coreId = File(corePath).name.substringBefore("_libretro")
+        val options = PlayerCores.orientationOptions(coreId, isLandscape())
+        val error = NativePlayer.openCore(corePath, systemDir.path, savesDir.path, options.keys.toTypedArray(), options.values.toTypedArray())
         if (error != null) return fail(error)
         val info = NativePlayer.coreInfo()
         val ok = try {
@@ -273,6 +298,30 @@ class PlayerActivity : ComponentActivity() {
         }
     }
 
+    // Rotating can change the picture itself (the DS's screens go side by side); the new shape is picked up once
+    // the core has drawn with it.
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (!loaded) return
+        val options = PlayerCores.orientationOptions(coreId, newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        if (options.isEmpty()) return
+        options.forEach { (key, value) -> NativePlayer.setOption(key, value) }
+        refreshVideo(15)
+    }
+
+    private fun refreshVideo(tries: Int) {
+        handler.postDelayed({
+            if (!loaded) return@postDelayed
+            val now = NativePlayer.video()
+            if (now != video) {
+                video = now
+                applyViewport()
+            } else if (tries > 1) {
+                refreshVideo(tries - 1)
+            }
+        }, 100)
+    }
+
     override fun onResume() {
         super.onResume()
         foreground = true
@@ -304,7 +353,7 @@ class PlayerActivity : ComponentActivity() {
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (menuOpen) {
             when (event.keyCode) {
-                KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_BUTTON_B, KeyEvent.KEYCODE_BUTTON_MODE -> {
+                KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_BUTTON_B, KeyEvent.KEYCODE_BUTTON_MODE, KeyEvent.KEYCODE_MENU -> {
                     if (event.action == KeyEvent.ACTION_UP) closeMenu()
                     return true
                 }
@@ -314,7 +363,7 @@ class PlayerActivity : ComponentActivity() {
             }
             return super.dispatchKeyEvent(event)
         }
-        if (event.keyCode == KeyEvent.KEYCODE_BACK || event.keyCode == KeyEvent.KEYCODE_BUTTON_MODE) {
+        if (event.keyCode == KeyEvent.KEYCODE_BACK || event.keyCode == KeyEvent.KEYCODE_BUTTON_MODE || event.keyCode == KeyEvent.KEYCODE_MENU) {
             if (event.action == KeyEvent.ACTION_UP) {
                 if (phase is Phase.Failed) finish() else openMenu()
             }
@@ -336,7 +385,7 @@ class PlayerActivity : ComponentActivity() {
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        if (event.actionMasked == MotionEvent.ACTION_DOWN) showTouch = true
+        if (event.actionMasked == MotionEvent.ACTION_DOWN && hasTouch) showTouch = true
         return super.dispatchTouchEvent(event)
     }
 
@@ -409,7 +458,10 @@ class PlayerActivity : ComponentActivity() {
                 val compact = portrait && maxHeight - maxWidth / aspect < touchControlsHeight(layout, compact = false)
                 val controls: @Composable (Modifier) -> Unit = { modifier ->
                     if (touchEnabled && showTouch && phase == Phase.Playing && !menuOpen) {
-                        TouchControls(layout, onMask = { input.setTouch(it) }, onMenu = { openMenu() }, modifier = modifier, compact = compact)
+                        TouchControls(
+                            layout, onMask = { input.setTouch(it) }, onMenu = { openMenu() }, modifier = modifier,
+                            compact = compact, landscape = !portrait,
+                        )
                     }
                 }
                 if (portrait) {
@@ -422,8 +474,9 @@ class PlayerActivity : ComponentActivity() {
                         controls(Modifier.fillMaxWidth().padding(bottom = 8.dp))
                     }
                 } else {
+                    // Landscape: the picture uses the full height; the controls sit over it at the sides.
                     GameSurface(Modifier.fillMaxSize())
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) { controls(Modifier.fillMaxWidth()) }
+                    controls(Modifier.fillMaxSize())
                 }
             }
             if (phase == Phase.Playing && !menuOpen) {
@@ -491,29 +544,29 @@ class PlayerActivity : ComponentActivity() {
             ) {
                 Text(title, color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                 notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp) }
-                Button(onClick = { closeMenu() }, modifier = Modifier.fillMaxWidth().focusRequester(first)) { Text("Resume") }
-                OutlinedButton(onClick = {
+                MenuButton(onClick = { closeMenu() }, modifier = Modifier.fillMaxWidth().focusRequester(first)) { Text("Resume") }
+                MenuButton(onClick = {
                     worker.execute {
                         val saved = NativePlayer.saveState()?.let { writeSafely(slotState(), it); true } == true
                         runOnUiThread { notice = if (saved) "State saved" else "This core can't save states" }
                     }
                 }, modifier = Modifier.fillMaxWidth()) { Text("Save state") }
-                OutlinedButton(onClick = {
+                MenuButton(onClick = {
                     worker.execute {
                         val file = slotState()
                         val done = file.isFile && NativePlayer.loadState(file.readBytes())
                         runOnUiThread { if (done) closeMenu() else notice = "No saved state yet" }
                     }
                 }, modifier = Modifier.fillMaxWidth()) { Text("Load state") }
-                OutlinedButton(onClick = { chooseShape(shape.next()) }, modifier = Modifier.fillMaxWidth()) { Text("Screen shape: ${shape.label}") }
-                OutlinedButton(onClick = { chooseTouch(!touchEnabled) }, modifier = Modifier.fillMaxWidth()) {
+                MenuButton(onClick = { chooseShape(shape.next()) }, modifier = Modifier.fillMaxWidth()) { Text("Screen shape: ${shape.label}") }
+                MenuButton(onClick = { chooseTouch(!touchEnabled) }, modifier = Modifier.fillMaxWidth()) {
                     Text("Touch controls: ${if (touchEnabled) "On" else "Off"}")
                 }
-                OutlinedButton(onClick = {
+                MenuButton(onClick = {
                     NativePlayer.reset()
                     closeMenu()
                 }, modifier = Modifier.fillMaxWidth()) { Text("Restart game") }
-                OutlinedButton(onClick = { quit() }, modifier = Modifier.fillMaxWidth()) { Text("Quit to RetroForge") }
+                MenuButton(onClick = { quit() }, modifier = Modifier.fillMaxWidth()) { Text("Quit to RetroForge") }
             }
         }
     }
@@ -551,4 +604,18 @@ class PlayerActivity : ComponentActivity() {
             .putExtra(EXTRA_MENU_COMBO, menuCombo.value)
             .putExtra(EXTRA_QUIT_COMBO, quitCombo.value)
     }
+}
+
+/** Menu entry with an unmistakable focus outline, for controllers and TV remotes. */
+@Composable
+private fun MenuButton(onClick: () -> Unit, modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit) {
+    val interaction = remember { MutableInteractionSource() }
+    val focused by interaction.collectIsFocusedAsState()
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier,
+        interactionSource = interaction,
+        border = BorderStroke(if (focused) 3.dp else 1.dp, if (focused) Color(0xFFFF8A1F) else Color(0xFF55555F)),
+        content = content,
+    )
 }

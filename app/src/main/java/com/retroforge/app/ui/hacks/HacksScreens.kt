@@ -16,7 +16,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import com.retroforge.core.ui.ControllerTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -252,7 +252,7 @@ fun CatalogueSourcesScreen(viewModel: HacksViewModel) {
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("Add from a link")
             CardBody("Paste the https:// address of a catalogue .json file. RetroForge downloads only that file, and only when you confirm.")
-            OutlinedTextField(
+            ControllerTextField(
                 value = url,
                 onValueChange = { url = it; confirming = false },
                 singleLine = true,

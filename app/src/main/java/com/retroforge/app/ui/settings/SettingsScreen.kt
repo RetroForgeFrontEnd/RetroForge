@@ -7,7 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import android.content.Intent
-import androidx.compose.material3.OutlinedTextField
+import com.retroforge.core.ui.ControllerTextField
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -133,7 +133,7 @@ private fun SteamGridDbKeyCard(saved: String?, onSave: (String?) -> Unit) {
             StatusPill("API key saved (…${saved.takeLast(4)})", StatusTone.GOOD)
             CardBody("Use \"Change cover\" on any game to browse SteamGridDB covers.")
         }
-        OutlinedTextField(
+        ControllerTextField(
             value = draft,
             onValueChange = { draft = it.trim() },
             singleLine = true,
@@ -228,8 +228,8 @@ private fun ScreenScraperCard(savedUser: String?, onSave: (String?, String?) -> 
             "Optional: your free ScreenScraper account raises your daily limit. It stays on this device and is sent only to ScreenScraper. " +
                 "Use \"Change cover\" on a game to look it up.",
         )
-        OutlinedTextField(value = user, onValueChange = { user = it.trim() }, singleLine = true, label = { Text("ScreenScraper username") }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
-        OutlinedTextField(
+        ControllerTextField(value = user, onValueChange = { user = it.trim() }, singleLine = true, label = { Text("ScreenScraper username") }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
+        ControllerTextField(
             value = password, onValueChange = { password = it }, singleLine = true, label = { Text("Password") },
             visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )

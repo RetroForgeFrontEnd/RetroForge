@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import com.retroforge.core.ui.ControllerTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -60,7 +60,7 @@ fun FavouriteAndPlaylists(game: GameEntity, viewModel: LibraryViewModel) {
                 FocusChip((if (inIt) "☑ " else "☐ ") + p.name, onClick = { viewModel.setInPlaylist(p.id, game, !inIt) })
             }
         }
-        OutlinedTextField(value = newName, onValueChange = { newName = it.take(60) }, singleLine = true, label = { Text("New playlist name") }, modifier = Modifier.fillMaxWidth())
+        ControllerTextField(value = newName, onValueChange = { newName = it.take(60) }, singleLine = true, label = { Text("New playlist name") }, modifier = Modifier.fillMaxWidth())
         FocusChip("Make playlist and add this game", enabled = newName.isNotBlank(), onClick = {
             val name = newName
             newName = ""
@@ -136,7 +136,7 @@ fun PlaylistScreen(viewModel: LibraryViewModel, playlistId: Long, onOpenGame: (L
 
         val name = renaming
         if (name != null) {
-            OutlinedTextField(value = name, onValueChange = { renaming = it.take(60) }, singleLine = true, label = { Text("Playlist name") }, modifier = Modifier.fillMaxWidth())
+            ControllerTextField(value = name, onValueChange = { renaming = it.take(60) }, singleLine = true, label = { Text("Playlist name") }, modifier = Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 FocusChip("Save name", enabled = name.isNotBlank(), onClick = { viewModel.renamePlaylist(playlistId, name); renaming = null })
                 FocusChip("Cancel", onClick = { renaming = null })
