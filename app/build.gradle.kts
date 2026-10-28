@@ -1,3 +1,10 @@
+import java.util.Properties
+
+// ScreenScraper developer credentials, issued to RetroForge by ScreenScraper. Kept in local.properties (not in git):
+// screenscraper.devid=… / screenscraper.devpassword=…. Without them the app builds and ScreenScraper says it's unavailable.
+val localProps = Properties().apply { rootProject.file("local.properties").takeIf { it.isFile }?.inputStream()?.use(::load) }
+fun quoted(key: String) = "\"" + (localProps.getProperty(key) ?: "").replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -14,6 +21,8 @@ android {
         versionCode = 2
         versionName = "0.2.0-preview"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "SCREENSCRAPER_DEV_ID", quoted("screenscraper.devid"))
+        buildConfigField("String", "SCREENSCRAPER_DEV_PASSWORD", quoted("screenscraper.devpassword"))
     }
 
     buildTypes {
