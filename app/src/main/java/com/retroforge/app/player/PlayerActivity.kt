@@ -705,6 +705,16 @@ class PlayerActivity : ComponentActivity() {
                             NativePlayer.setFastForward(fastForwardOn)
                         }, modifier = wide) { Text("Fast-forward: ${if (fastForwardOn) "On" else "Off"}") }
                         MenuButton(onClick = { chooseShape(shape.next()) }, modifier = wide) { Text("Screen shape: ${shape.label}") }
+                        // Multi-disc games (an .m3u): put in the next disc when the game asks for it.
+                        val discs = remember(menuPage) { if (loaded) NativePlayer.discInfo() else null }
+                        if (discs != null) {
+                            val (count, current) = discs
+                            MenuButton(onClick = {
+                                val next = (current + 1) % count
+                                notice = if (NativePlayer.insertDisc(next)) "Disc ${next + 1} inserted" else "Couldn't change disc"
+                                closeMenu()
+                            }, modifier = wide) { Text("Disc ${current + 1} of $count · change to disc ${(current + 1) % count + 1}") }
+                        }
                         MenuButton(onClick = { chooseVolume() }, modifier = wide) { Text("Volume: ${(volume * 100).toInt()}%") }
                         MenuButton(onClick = { chooseFilter(filter.next()) }, modifier = wide) { Text("Screen filter: ${filter.label}") }
                         MenuButton(onClick = { chooseLook(!consoleLook) }, modifier = wide) { Text("Console look: ${if (consoleLook) "On" else "Off"}") }

@@ -115,7 +115,8 @@ struct Player {
     std::mutex coreMutex; // every call into the core
     std::thread loop;
     std::atomic<bool> running{false}, paused{false}, fastForward{false};
-    std::atomic<float> volume{1.0f}; // boost for quiet systems; samples are clamped, not wrapped
+    std::atomic<float> volume{1.0f};
+    retro_disk_control_ext_callback disks{}; // multi-disc games (the core's eject/insert); zeroed when not offered // boost for quiet systems; samples are clamped, not wrapped
     std::atomic<int> viewX{0}, viewY{0}, viewW{0}, viewH{0}; // picture rectangle in surface pixels; 0 = fit
 
     // Window hand-over between the UI thread and the core thread.
@@ -279,6 +280,17 @@ bool environment(unsigned cmd, void *data) {
         case RETRO_ENVIRONMENT_SET_MESSAGE: {
             auto *m = static_cast<const retro_message *>(data);
             if (m && m->msg) LOGI("core message: %s", m->msg);
+            return true;
+        }
+        case RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION:
+            *static_cast<unsigned *>(data) = 1;
+            return true;
+        case RETRO_ENVIRONMENT_SET_DISK_CONTROL_EXT_INTERFACE:
+            P->disks = data ? *static_cast<const retro_disk_control_ext_callback *>(data) : retro_disk_control_ext_callback{};
+            return true;
+        case RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE: {
+            P->disks = {};
+            if (data) std::memcpy(&P->disks, data, sizeof(retro_disk_control_callback));
             return true;
         }
         case RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
@@ -905,6 +917,26 @@ JNIEXPORT void JNI(setViewport)(JNIEnv *, jobject, jint x, jint y, jint w, jint 
     P->viewY = y;
     P->viewW = w;
     P->viewH = h;
+}
+
+// Multi-disc games: [number of discs, current disc (0-based)], or [0, 0] when the core has no disc control.
+JNIEXPORT jintArray JNI(discs)(JNIEnv *env, jobject) {
+    jintArray out = env->NewIntArray(2);
+    if (!P || !P->gameLoaded || !P->disks.get_num_images || !P->disks.get_image_index) return out;
+    std::lock_guard<std::mutex> lock(P->coreMutex);
+    jint values[2] = {static_cast<jint>(P->disks.get_num_images()), static_cast<jint>(P->disks.get_image_index())};
+    env->SetIntArrayRegion(out, 0, 2, values);
+    return out;
+}
+
+// Changes disc the way a console would: open the tray, swap, close it.
+JNIEXPORT jboolean JNI(insertDisc)(JNIEnv *, jobject, jint index) {
+    if (!P || !P->gameLoaded || !P->disks.set_eject_state || !P->disks.set_image_index) return JNI_FALSE;
+    std::lock_guard<std::mutex> lock(P->coreMutex);
+    if (!P->disks.set_eject_state(true)) return JNI_FALSE;
+    bool ok = P->disks.set_image_index(static_cast<unsigned>(index));
+    P->disks.set_eject_state(false);
+    return ok ? JNI_TRUE : JNI_FALSE;
 }
 
 // Game volume: 1.0 as the core made it, up to 2.0 for quiet systems.

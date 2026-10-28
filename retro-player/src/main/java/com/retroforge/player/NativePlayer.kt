@@ -61,6 +61,14 @@ object NativePlayer {
     /** Where the picture goes on the surface, in pixels from the top left ([Viewport.fit]). */
     external fun setViewport(x: Int, y: Int, w: Int, h: Int)
 
+    private external fun discs(): IntArray
+
+    /** (number of discs, current disc from 0), or null when the game has one disc / the core can't swap. */
+    fun discInfo(): Pair<Int, Int>? = discs().let { (count, current) -> if (count > 1) count to current else null }
+
+    /** Opens the tray, puts in disc [index] (from 0) and closes it. */
+    external fun insertDisc(index: Int): Boolean
+
     /** Game volume, 1.0 = as the emulator made it; up to 2.0 for quiet systems. */
     external fun setVolume(volume: Float)
 
