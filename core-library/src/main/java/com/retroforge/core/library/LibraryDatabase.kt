@@ -1,6 +1,7 @@
 package com.retroforge.core.library
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
@@ -73,6 +74,20 @@ data class ProblemEntity(
     val message: String,
 )
 
+/** Keyed by folder + path, not game id, so history survives rescans (which recreate game rows). */
+@Entity(
+    tableName = "play_history",
+    primaryKeys = ["rootId", "relativePath"],
+    foreignKeys = [ForeignKey(entity = RootEntity::class, parentColumns = ["id"], childColumns = ["rootId"], onDelete = ForeignKey.CASCADE)],
+)
+data class PlayEntity(
+    val rootId: Long,
+    val relativePath: String,
+    val lastPlayedAt: Long,
+    val playCount: Int,
+    val core: String?,
+)
+
 data class SystemCount(val system: String, val games: Int, val hacks: Int)
 
 @Dao
@@ -113,6 +128,27 @@ interface LibraryDao {
     @Query("SELECT * FROM scan_problems WHERE rootId = :rootId")
     fun problems(rootId: Long): Flow<List<ProblemEntity>>
 
+    @Query("SELECT * FROM play_history WHERE rootId = :rootId AND relativePath = :path")
+    suspend fun play(rootId: Long, path: String): PlayEntity?
+
+    @androidx.room.Upsert
+    suspend fun upsertPlay(play: PlayEntity)
+
+    @Transaction
+    suspend fun recordPlay(rootId: Long, path: String, core: String, at: Long) {
+        val previous = play(rootId, path)
+        upsertPlay(PlayEntity(rootId, path, at, (previous?.playCount ?: 0) + 1, core))
+    }
+
+    @Query(
+        "SELECT games.* FROM games JOIN play_history ON games.rootId = play_history.rootId " +
+            "AND games.relativePath = play_history.relativePath ORDER BY play_history.lastPlayedAt DESC LIMIT :limit",
+    )
+    fun recentlyPlayed(limit: Int): Flow<List<GameEntity>>
+
+    @Query("SELECT play_history.* FROM play_history JOIN games ON games.rootId = play_history.rootId AND games.relativePath = play_history.relativePath WHERE games.id = :gameId")
+    fun playFor(gameId: Long): Flow<PlayEntity?>
+
     @Insert
     suspend fun insertGames(games: List<GameEntity>)
 
@@ -142,7 +178,12 @@ interface LibraryDao {
     }
 }
 
-@Database(entities = [RootEntity::class, GameEntity::class, ProblemEntity::class], version = 1, exportSchema = true)
+@Database(
+    entities = [RootEntity::class, GameEntity::class, ProblemEntity::class, PlayEntity::class],
+    version = 2,
+    exportSchema = true,
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
+)
 abstract class LibraryDatabase : RoomDatabase() {
     abstract fun dao(): LibraryDao
 

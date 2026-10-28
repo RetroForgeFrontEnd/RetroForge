@@ -100,7 +100,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
             route?.startsWith("hacks/") == true -> Section.HACKS
             else -> Section.HOME
         }
-        val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library))
+        val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library, container.retroArch))
         val hacksViewModel: HacksViewModel = viewModel(
             factory = HacksViewModel.factory(container.catalogues, container.catalogueFetcher, container.contentResolver),
         )

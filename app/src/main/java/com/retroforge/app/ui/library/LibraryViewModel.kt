@@ -8,7 +8,12 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.retroforge.core.library.GameEntity
 import com.retroforge.core.library.LibraryRepository
+import com.retroforge.core.library.PlayEntity
 import com.retroforge.core.library.ProblemEntity
+import com.retroforge.retro.Core
+import com.retroforge.retro.LaunchPlan
+import com.retroforge.retro.LaunchProblem
+import com.retroforge.retro.RetroArchLauncher
 import com.retroforge.core.library.RootEntity
 import com.retroforge.core.library.ScanState
 import kotlinx.coroutines.FlowPreview
@@ -25,7 +30,7 @@ import kotlinx.coroutines.flow.stateIn
 data class SystemSummary(val id: String, val name: String, val games: Int, val hacks: Int)
 
 @OptIn(FlowPreview::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
-class LibraryViewModel(private val repository: LibraryRepository) : ViewModel() {
+class LibraryViewModel(private val repository: LibraryRepository, private val retroArch: RetroArchLauncher) : ViewModel() {
 
     val roots: StateFlow<List<RootEntity>?> = repository.roots.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
     val scans: StateFlow<Map<Long, ScanState>> = repository.scans
@@ -41,6 +46,19 @@ class LibraryViewModel(private val repository: LibraryRepository) : ViewModel() 
         .debounce(250)
         .flatMapLatest { q -> if (q.trim().length < 2) flowOf(emptyList()) else repository.search(q.trim()) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val recentlyPlayed: StateFlow<List<GameEntity>> = repository.recentlyPlayed.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    fun playFor(gameId: Long): Flow<PlayEntity?> = repository.playFor(gameId)
+
+    fun launchPlan(game: GameEntity, root: RootEntity?): LaunchPlan =
+        if (root == null) LaunchPlan.NotPossible(LaunchProblem.LocationNotSupported)
+        else retroArch.plan(game.system, root.treeUri, game.documentId)
+
+    /** Starts the game; history is recorded only when RetroArch actually opened. */
+    fun play(game: GameEntity, plan: LaunchPlan.Ready, core: Core): LaunchProblem? =
+        retroArch.launch(plan.install, plan.romPath, core).also { if (it == null) repository.recordPlay(game, core.id) }
+
+    fun openRetroArch(plan: LaunchPlan.Ready) = retroArch.openRetroArch(plan.install)
 
     fun games(system: String): Flow<List<GameEntity>> = repository.gamesFor(system)
     fun game(id: Long): Flow<GameEntity?> = repository.game(id)
@@ -58,8 +76,8 @@ class LibraryViewModel(private val repository: LibraryRepository) : ViewModel() 
         documentId?.let { id -> rootsById[rootId]?.let { repository.documentUri(it, id) } }
 
     companion object {
-        fun factory(repository: LibraryRepository): ViewModelProvider.Factory = viewModelFactory {
-            initializer { LibraryViewModel(repository) }
+        fun factory(repository: LibraryRepository, retroArch: RetroArchLauncher): ViewModelProvider.Factory = viewModelFactory {
+            initializer { LibraryViewModel(repository, retroArch) }
         }
     }
 }

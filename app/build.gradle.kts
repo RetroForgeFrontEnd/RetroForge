@@ -11,8 +11,8 @@ android {
         applicationId = "com.retroforge.app"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.1.0-milestone-a"
+        versionCode = 2
+        versionName = "0.2.0-preview"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -40,6 +40,7 @@ dependencies {
     implementation(project(":retro-patch"))
     implementation(project(":retro-hacks"))
     implementation(project(":core-library"))
+    implementation(project(":retro"))
     implementation(libs.coil.compose)
 
     implementation(libs.androidx.core.ktx)

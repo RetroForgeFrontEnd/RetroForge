@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items as rowItems
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -58,6 +60,8 @@ fun RetroScreen(
     val scans by viewModel.scans.collectAsStateWithLifecycle()
     val query by viewModel.query.collectAsStateWithLifecycle()
     val results by viewModel.searchResults.collectAsStateWithLifecycle()
+    val recent by viewModel.recentlyPlayed.collectAsStateWithLifecycle()
+    val rootsById = remember(roots) { roots.orEmpty().associateBy { it.id } }
     val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::addFolder) }
 
     ScreenFrame(title = "Retro", subtitle = "Your consoles, arcade and computer games.") {
@@ -107,6 +111,15 @@ fun RetroScreen(
                 if (results.size > 30) CardBody("Showing 30 of ${results.size}+ matches. Type more to narrow it down.")
             }
 
+            if (recent.isNotEmpty()) {
+                CardTitle("Recently played")
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    rowItems(recent, key = { it.id }) { game ->
+                        GameTile(game, viewModel.documentUri(rootsById, game.rootId, game.imageDocumentId), onClick = { onOpenGame(game.id) }, modifier = Modifier.width(190.dp))
+                    }
+                }
+            }
+
             CardTitle("Systems")
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 systems.forEach { system ->
@@ -122,11 +135,7 @@ fun RetroScreen(
             CardTitle("ROM Patcher")
             CardBody("Apply IPS, BPS or UPS patches (ROM hacks, translations) to make a new copy. Originals are never changed.")
         }
-        FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Playing games")
-            StatusPill("Not built yet", StatusTone.NEUTRAL)
-            CardBody("Launching games in RetroArch is the next milestone. Browsing and searching work now; nothing launches yet.")
-        }
+
     }
 }
 
@@ -236,6 +245,7 @@ fun GameDetailScreen(viewModel: LibraryViewModel, gameId: Long, onOpenGame: (Lon
     }
     ScreenFrame(title = g.title, subtitle = viewModel.systemName(g.system)) {
         GameArt(g, viewModel.documentUri(rootsById, g.rootId, g.imageDocumentId), Modifier.fillMaxWidth().heightIn(max = 320.dp).padding(bottom = 4.dp))
+        PlaySection(viewModel, g, rootsById[g.rootId])
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             g.description?.let { CardBody(it) }
             listOfNotNull(
@@ -269,11 +279,6 @@ fun GameDetailScreen(viewModel: LibraryViewModel, gameId: Long, onOpenGame: (Lon
                 CardBody("Same game and tags, different file. RetroForge doesn't delete anything; this is for your information.")
             }
             duplicates.forEach { other -> FocusChip(other.relativePath, onClick = { onOpenGame(other.id) }) }
-        }
-        FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Play")
-            StatusPill("Not built yet", StatusTone.NEUTRAL)
-            CardBody("Launching in RetroArch comes in the next milestone.")
         }
     }
 }

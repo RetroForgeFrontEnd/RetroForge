@@ -7,6 +7,7 @@ import com.retroforge.core.library.LibraryDatabase
 import com.retroforge.core.library.LibraryRepository
 import com.retroforge.hacks.CatalogueStore
 import java.io.File
+import com.retroforge.retro.RetroArchLauncher
 import com.retroforge.core.settings.SettingsRepository
 import com.retroforge.core.settings.createSettingsRepository
 import com.retroforge.pc.DroidDeckBridge
@@ -24,6 +25,7 @@ class AppContainer(application: Application) {
     )
     val catalogueFetcher = CatalogueFetcher("RetroForge/${BuildConfig.VERSION_NAME}")
     val library = LibraryRepository(LibraryDatabase.create(application), application.contentResolver)
+    val retroArch = RetroArchLauncher(application)
 }
 
 class RetroForgeApplication : Application() {

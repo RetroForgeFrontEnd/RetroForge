@@ -53,6 +53,12 @@ class LibraryRepository(
     fun search(query: String): Flow<List<GameEntity>> = dao.search(query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_"))
     suspend fun duplicatesOf(game: GameEntity): List<GameEntity> = game.duplicateKey?.let { dao.duplicatesOf(it, game.id) }.orEmpty()
     suspend fun rootOf(game: GameEntity): RootEntity? = dao.root(game.rootId)
+    val recentlyPlayed: Flow<List<GameEntity>> = dao.recentlyPlayed(12)
+    fun playFor(gameId: Long): Flow<PlayEntity?> = dao.playFor(gameId)
+
+    fun recordPlay(game: GameEntity, core: String) {
+        scope.launch { dao.recordPlay(game.rootId, game.relativePath, core, clock()) }
+    }
 
     fun systemName(id: String): String = rules.byId(id)?.name ?: id
 

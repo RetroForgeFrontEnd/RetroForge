@@ -29,14 +29,14 @@ fun HomeScreen(showPc: Boolean, onOpen: (Section) -> Unit) {
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        StatusPill("Preview build ${BuildConfig.VERSION_NAME}: no games can be launched yet", StatusTone.CAUTION)
+        StatusPill("Preview build ${BuildConfig.VERSION_NAME}", StatusTone.CAUTION)
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             FocusCard(modifier = Modifier.weight(1f), onClick = { onOpen(Section.RETRO) }) {
                 CardTitle("Retro")
                 CardBody("Consoles, arcade and classic computers.")
                 Column(Modifier.padding(top = 12.dp)) {
-                    StatusPill("Library scanning: next milestone", StatusTone.NEUTRAL)
+                    StatusPill("Browse and play in RetroArch", StatusTone.GOOD)
                 }
             }
             if (showPc) {

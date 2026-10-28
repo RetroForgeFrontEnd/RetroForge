@@ -1,0 +1,94 @@
+package com.retroforge.app.ui.library
+
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.retroforge.app.ui.CardBody
+import com.retroforge.app.ui.CardTitle
+import com.retroforge.core.library.GameEntity
+import com.retroforge.core.library.RootEntity
+import com.retroforge.core.ui.FocusCard
+import com.retroforge.core.ui.FocusChip
+import com.retroforge.core.ui.StatusPill
+import com.retroforge.core.ui.StatusTone
+import com.retroforge.retro.LaunchPlan
+import com.retroforge.retro.LaunchProblem
+import com.retroforge.retro.RetroArchCores
+import com.retroforge.retro.RetroArchLauncher
+import java.text.DateFormat
+import java.util.Date
+
+@Composable
+fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?) {
+    val context = LocalContext.current
+    // Re-check after returning from RetroArch or the store, in case RetroArch was just installed.
+    var resumes by remember { mutableIntStateOf(0) }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { resumes++ }
+    val plan = remember(game, root, resumes) { viewModel.launchPlan(game, root) }
+    val play by remember(game.id) { viewModel.playFor(game.id) }.collectAsStateWithLifecycle(initialValue = null)
+    var problem by remember(game.id) { mutableStateOf<LaunchProblem?>(null) }
+
+    when (plan) {
+        is LaunchPlan.Ready -> {
+            plan.cores.forEachIndexed { index, core ->
+                FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { problem = viewModel.play(game, plan, core) }) {
+                    CardTitle(if (index == 0) "Play" else "Play with ${core.name}")
+                    if (index == 0) CardBody("In RetroArch with the ${core.name} core.")
+                    if (core.id in RetroArchCores.needsBios) CardBody("This core needs BIOS files in RetroArch's system folder.")
+                }
+            }
+            FocusCard(modifier = Modifier.fillMaxWidth()) {
+                play?.let { CardBody("Played ${plural(it.playCount, "time")}, last on ${DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(it.lastPlayedAt))}.") }
+                CardBody(
+                    "First time with a core? If RetroArch says the core is missing, open RetroArch → Online Updater → Core Downloader and get " +
+                        "\"${plan.cores.first().name}\". To come back here, quit the game from RetroArch's menu.",
+                )
+            }
+            FocusChip("Open RetroArch", onClick = { viewModel.openRetroArch(plan) })
+        }
+        is LaunchPlan.NotPossible -> FocusCard(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = if (plan.reason == LaunchProblem.RetroArchNotInstalled) {
+                {
+                    try {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, RetroArchLauncher.DOWNLOAD_URL.toUri()))
+                    } catch (_: ActivityNotFoundException) {
+                        problem = LaunchProblem.StartFailed("No browser installed. Get RetroArch from ${RetroArchLauncher.DOWNLOAD_URL}")
+                    }
+                }
+            } else null,
+        ) {
+            CardTitle("Play")
+            StatusPill("Can't play yet", StatusTone.CAUTION)
+            CardBody(describe(plan.reason, viewModel))
+        }
+    }
+    problem?.let { p ->
+        FocusCard(modifier = Modifier.fillMaxWidth()) {
+            StatusPill("Problem", StatusTone.BAD)
+            CardBody(describe(p, viewModel))
+        }
+    }
+}
+
+private fun describe(problem: LaunchProblem, viewModel: LibraryViewModel): String = when (problem) {
+    LaunchProblem.RetroArchNotInstalled ->
+        "RetroForge plays games through RetroArch, a free app installed separately. Select to open RetroArch's official download page (${RetroArchLauncher.DOWNLOAD_URL})."
+    is LaunchProblem.SystemNotSupported ->
+        "Launching ${viewModel.systemName(problem.system)} games isn't set up in RetroForge yet. See docs/EMULATOR_COMPATIBILITY.md for what's supported."
+    LaunchProblem.LocationNotSupported ->
+        "This game is in a location RetroArch can't open directly (for example a cloud drive). Games on internal storage, an SD card or a USB drive work."
+    is LaunchProblem.StartFailed -> problem.detail
+}

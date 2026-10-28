@@ -38,6 +38,23 @@ am start -n com.retroarch/.browser.retroactivity.RetroActivityFuture \
 - Cores live in RetroArch's private data dir. RetroForge can't install them, so it should guide the user to RetroArch's Core Downloader and detect missing cores.
 - adb `KEYCODE_ENTER` / D-pad keyevents were **not** delivered as game input with default settings; touch overlay input was. Physical gamepad still untested.
 
+## Launching from RetroForge (Milestone D, 2026-10-28)
+
+RetroForge's game page has a **Play** button that starts the game in RetroArch with the system's default core (alternatives listed below it). Implementation: `retro/RetroArchLauncher.kt`, core table `retro/RetroArchCores.kt`.
+
+| Check | Result |
+|---|---|
+| Star Fox (USA).zip, SNES, Snes9x, from the game page | **Launch tested**: Super FX intro renders |
+| Play history | "Played 1 time" on the game page; "Recently played" row on the Retro tab |
+| Return to RetroForge after quitting RetroArch | RetroForge resumes on the same game page |
+| Super Mario World (USA).7z via the same intent and path | **Launch tested**: title screen |
+| Resident Evil 2 (USA).m3u (2 discs), PS1, SwanStation | **Not working on this emulator**: RetroArch received the correct path but showed a black screen. SwanStation was never downloaded here and no PS1 BIOS is installed; cause not yet confirmed |
+| First launch bug | RetroForge crashed (missing `FLAG_ACTIVITY_NEW_TASK` from the application context). Fixed; launch errors are now reported, never thrown |
+
+How file locations become paths: games in folders picked from internal storage, SD cards or USB drives (Android's external-storage provider) map to `/storage/emulated/0/...` or `/storage/<volume>/...`. Cloud and network providers have no path, and Play says so. RetroArch needs its own storage permission to read those paths (it asks on first run).
+
+Not yet: choosing the default core per system in Settings, RetroArch core download from RetroForge (cores live in RetroArch's private storage), BIOS checks, standalone emulators (PPSSPP, Dolphin, DuckStation, AetherSX2/NetherSX2 …), automatic return to RetroForge.
+
 ## Planned systems
 
 The full roadmap (all systems in the master brief) will be populated as each is evaluated. Priorities follow your collection: SNES, NES, GB/GBC/GBA, Mega Drive/MS/GG, N64, PSX, arcade (FBNeo/MAME), DOS/ScummVM.
