@@ -279,7 +279,7 @@ class PlayerActivity : ComponentActivity() {
             val root = File(externalCacheDir ?: cacheDir, "games")
             val dir = File(root, Integer.toHexString(uri.toString().hashCode()))
             GameFiles.prune(root, keep = 2, current = dir)
-            val path = GameFiles(contentResolver, dir).expose(uri, fileName) { percent ->
+            val path = GameFiles(contentResolver, dir).expose(uri, fileName, PlayerCores.companions(system)) { percent ->
                 runOnUiThread { loadingDetail = "Preparing the game for the first time… $percent%" }
             }
             return NativePlayer.loadGame(path, -1, false)

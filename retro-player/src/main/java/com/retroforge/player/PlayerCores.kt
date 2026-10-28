@@ -36,6 +36,12 @@ object PlayerCores {
     private val melonds = PlayerCore("melonds", "melonDS", needsBios = true)
     // Has its own BIOS replacement; uses the real one when it's in the BIOS folder.
     private val pcsx = PlayerCore("pcsx_rearmed", "PCSX ReARMed")
+    // CD add-ons need the add-on's BIOS (Sega CD / Mega-CD, PC Engine CD System Card).
+    private val gpgxCd = PlayerCore("genesis_plus_gx", "Genesis Plus GX", needsBios = true)
+    private val picodriveCd = PlayerCore("picodrive", "PicoDrive", needsBios = true)
+    private val pceCd = PlayerCore("mednafen_pce_fast", "Beetle PCE Fast", needsBios = true)
+    private val fbneo = PlayerCore("fbneo", "FinalBurn Neo")
+    private val mame2003 = PlayerCore("mame2003_plus", "MAME 2003-Plus")
     private val swanstation = PlayerCore("swanstation", "SwanStation", needsBios = true)
 
     private val sega = listOf(gpgx, picodrive)
@@ -55,10 +61,20 @@ object PlayerCores {
         "lynx" to listOf(handy),
         "nds" to listOf(desmume, desmume2015, melonds),
         "psx" to listOf(pcsx, swanstation),
+        "megacd" to listOf(gpgxCd, picodriveCd), "segacd" to listOf(gpgxCd, picodriveCd),
+        "pcenginecd" to listOf(pceCd),
+        "fbneo" to listOf(fbneo), "neogeo" to listOf(fbneo), "cps1" to listOf(fbneo), "cps2" to listOf(fbneo), "cps3" to listOf(fbneo),
+        "mame" to listOf(mame2003, fbneo),
     )
 
+    /** Arcade systems: games are romset .zips that may need the board's BIOS set from the same folder. */
+    val arcadeSystems = setOf("fbneo", "neogeo", "cps1", "cps2", "cps3", "mame")
+
+    /** Files to bring along with a game when they're next to it (Neo Geo BIOS for arcade sets). */
+    fun companions(system: String): List<String> = if (system in arcadeSystems) listOf("neogeo.zip") else emptyList()
+
     /** Disc systems the built-in player runs; their disc images (cue/bin, chd, pbp …) are allowed. */
-    private val discSystems = setOf("psx")
+    private val discSystems = setOf("psx", "megacd", "segacd", "pcenginecd")
 
     /** Disc images and playlists: only for the [discSystems]. */
     private val discExtensions = setOf("cue", "bin", "chd", "iso", "m3u", "ccd", "img", "gdi", "cdi", "pbp", "toc")

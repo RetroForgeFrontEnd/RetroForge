@@ -67,10 +67,15 @@ data class PadLayout(
                 listOf("L" to Pad.L, "R" to Pad.R),
             )
             // Genesis Plus GX: libretro Y, B, A are the Mega Drive's A, B, C.
-            "megadrive", "genesis", "sega32x" -> PadLayout(listOf("A" to Pad.Y, "B" to Pad.B, "C" to Pad.A), hasSelect = false)
+            "megadrive", "genesis", "sega32x", "megacd", "segacd" -> PadLayout(listOf("A" to Pad.Y, "B" to Pad.B, "C" to Pad.A), hasSelect = false)
             "mastersystem", "sg1000" -> PadLayout(listOf("1" to Pad.B, "2" to Pad.A), hasSelect = false)
             "gamegear" -> PadLayout(listOf("1" to Pad.B, "2" to Pad.A), hasSelect = false)
-            "pcengine" -> PadLayout(listOf("II" to Pad.B, "I" to Pad.A))
+            "pcengine", "pcenginecd" -> PadLayout(listOf("II" to Pad.B, "I" to Pad.A))
+            // Arcade (FinalBurn Neo / MAME): four buttons, Coin (Select) and Start.
+            "fbneo", "neogeo", "cps1", "cps2", "cps3", "mame" -> PadLayout(
+                listOf("Y" to Pad.Y, "X" to Pad.X, "B" to Pad.B, "A" to Pad.A),
+                listOf("L" to Pad.L, "R" to Pad.R),
+            )
             "atari2600" -> PadLayout(listOf("Fire" to Pad.B))
             // PlayStation: △ top, ○ right, ✕ bottom, □ left (libretro X, A, B, Y), L1/R1, L2/R2 and both sticks.
             "psx" -> PadLayout(

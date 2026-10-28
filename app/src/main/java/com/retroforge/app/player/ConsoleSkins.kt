@@ -71,7 +71,7 @@ data class ConsoleSkin(
                 pill = Color(0xFF8A8B96), pillLabel = Color(0xFF26262E), shoulder = Color(0xFF9C9DA8),
                 face = mapOf("X" to Color(0xFF2F5BD3), "A" to Color(0xFFD32F2F), "B" to Color(0xFFE2B300), "Y" to Color(0xFF2E9D48)),
             )
-            "megadrive", "genesis", "sega32x" -> ConsoleSkin(
+            "megadrive", "genesis", "sega32x", "megacd", "segacd" -> ConsoleSkin(
                 body = Color(0xFF1D1D20), bodyShade = Color(0xFF131315), bezel = Color(0xFF0B0B0D),
                 button = Color(0xFF2E2E33), label = Color(0xFFE8E8EC), dpad = Color(0xFF2E2E33),
                 pill = Color(0xFF2E2E33), pillLabel = Color(0xFFE8E8EC),
@@ -86,7 +86,7 @@ data class ConsoleSkin(
                 button = Color(0xFF34406A), label = Color(0xFFEDEFF7), dpad = Color(0xFF2C2C33),
                 pill = Color(0xFF34406A), pillLabel = Color(0xFFEDEFF7),
             )
-            "pcengine" -> ConsoleSkin(
+            "pcengine", "pcenginecd" -> ConsoleSkin(
                 body = Color(0xFFECEDEF), bodyShade = Color(0xFFD5D6DA), bezel = Color(0xFF2B2B30),
                 button = Color(0xFF202024), label = Color(0xFFFFFFFF), dpad = Color(0xFF202024),
                 pill = Color(0xFF9C9CA4), pillLabel = Color(0xFF202024),
