@@ -1,5 +1,8 @@
 package com.retroforge.core.ui
 
+import com.retroforge.theme.BackgroundStyle
+import androidx.compose.ui.draw.shadow
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.focusable
@@ -39,7 +42,14 @@ fun FocusCard(
         else -> BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f))
     }
     val shape = MaterialTheme.shapes.medium
-    val surfaceModifier = modifier.graphicsLayer { scaleX = scale; scaleY = scale }
+    val theme = LocalThemeSpec.current
+    // Glowing themes light the focused card up in the focus colour.
+    val glow by animateDpAsState(if (focused && theme.focusGlow) 20.dp else 0.dp, label = "focusGlow")
+    val surfaceModifier = modifier
+        .graphicsLayer { scaleX = scale; scaleY = scale }
+        .shadow(glow, shape, ambientColor = forge.focusRing, spotColor = forge.focusRing)
+    // Over a gradient background, cards let a little of it through.
+    val cardColor = MaterialTheme.colorScheme.surface.copy(alpha = if (theme.background.style == BackgroundStyle.SOLID) 1f else 0.86f)
     val body: @Composable () -> Unit = { Column(Modifier.padding(20.dp), content = content) }
     if (onClick != null) {
         Surface(
@@ -47,7 +57,7 @@ fun FocusCard(
             modifier = surfaceModifier,
             shape = shape,
             border = border,
-            color = MaterialTheme.colorScheme.surface,
+            color = cardColor,
             interactionSource = interaction,
             content = body,
         )
@@ -56,7 +66,7 @@ fun FocusCard(
             modifier = surfaceModifier.focusable(interactionSource = interaction),
             shape = shape,
             border = border,
-            color = MaterialTheme.colorScheme.surface,
+            color = cardColor,
             content = body,
         )
     }

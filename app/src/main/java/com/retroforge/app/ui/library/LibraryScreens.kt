@@ -132,14 +132,7 @@ fun RetroScreen(
             FavouritesAndPlaylistsSection(viewModel, rootsById, onOpenGame, onOpenPlaylist)
 
             CardTitle("Systems")
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                systems.forEach { system ->
-                    FocusCard(modifier = Modifier.width(220.dp).heightIn(min = 110.dp), onClick = { onOpenSystem(system.id) }) {
-                        Text(system.name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 2)
-                        CardBody(plural(system.games, "game") + if (system.hacks > 0) " · ${plural(system.hacks, "hack")}" else "")
-                    }
-                }
-            }
+            SystemsView(systems.map { SystemSummary(it.id, it.name, it.games, it.hacks) }, onOpenSystem)
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenPatcher) {
@@ -266,8 +259,8 @@ fun GameDetailScreen(viewModel: LibraryViewModel, gameId: Long, onOpenGame: (Lon
         ScreenFrame(title = "Game") { CardBody("Loading…") }
         return
     }
-    ScreenFrame(title = g.title, subtitle = viewModel.systemName(g.system)) {
-        GameArt(g, viewModel.art(rootsById, chosen, g), Modifier.fillMaxWidth().heightIn(max = 320.dp).padding(bottom = 4.dp))
+    ScreenFrame(title = null) {
+        GameHero(g, viewModel.art(rootsById, chosen, g), eyebrow = viewModel.systemName(g.system), subtitle = tagLine(g), actionLabel = null, onAction = null)
         CoverControls(g, viewModel, onChangeCover = { onChangeCover(g.id) })
         FavouriteAndPlaylists(g, viewModel)
         PlaySection(viewModel, g, rootsById[g.rootId])

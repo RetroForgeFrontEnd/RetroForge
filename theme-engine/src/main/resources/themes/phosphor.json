@@ -1,14 +1,51 @@
 {
-  "format": "retroforge-theme", "version": 1,
-  "id": "phosphor", "name": "Phosphor", "author": "RetroForge", "license": "CC0-1.0",
-  "description": "A green-screen terminal: phosphor green on black, square corners, monospaced type.",
+  "format": "retroforge-theme",
+  "version": 1,
+  "id": "phosphor",
+  "name": "Phosphor",
+  "author": "RetroForge",
+  "license": "CC0-1.0",
+  "description": "A green-screen terminal: phosphor glow, scanlines, square corners, pixel headings.",
   "dark": {
-    "background": "#020A04", "surface": "#06150A", "surfaceVariant": "#0B2412",
-    "primary": "#39FF6A", "onPrimary": "#001A07", "secondary": "#FFB000", "onSecondary": "#1A1200",
-    "text": "#9BFFB4", "textMuted": "#4FB46B", "outline": "#1F6B34", "focus": "#FFB000"
+    "background": "#020A04",
+    "surface": "#06150A",
+    "surfaceVariant": "#0B2412",
+    "primary": "#39FF6A",
+    "onPrimary": "#001A07",
+    "secondary": "#FFB000",
+    "onSecondary": "#1A1200",
+    "text": "#9BFFB4",
+    "textMuted": "#4FB46B",
+    "outline": "#1F6B34",
+    "focus": "#FFB000"
   },
-  "shape": { "cornerRadius": 0 },
-  "type": { "font": "mono", "headlineWeight": 700 },
-  "wordmark": { "retro": "#39FF6A", "forge": "#FFB000", "glow": true },
-  "layout": { "gameView": "grid", "tileAspect": "wide" }
+  "shape": {
+    "cornerRadius": 0
+  },
+  "type": {
+    "font": "pixel",
+    "headlineWeight": 400
+  },
+  "wordmark": {
+    "retro": "#39FF6A",
+    "forge": "#FFB000",
+    "glow": true
+  },
+  "layout": {
+    "gameView": "grid",
+    "tileAspect": "wide",
+    "systemView": "grid"
+  },
+  "background": {
+    "style": "radial",
+    "dark": [
+      "#082A12",
+      "#020A04"
+    ]
+  },
+  "effects": {
+    "scanlines": true,
+    "vignette": true,
+    "focusGlow": true
+  }
 }

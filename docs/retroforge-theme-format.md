@@ -28,12 +28,15 @@ A theme is one small JSON file (64 KB at most). Themes are data only: nothing in
 | `author`, `description`, `license` | no | plain text (60 / 300 / 60 characters) |
 | `dark`, `light` | at least one | palettes (below); a theme with only one keeps that look in both brightness modes |
 | `shape.cornerRadius` | no (16) | 0-32 dp; smaller elements get proportionally smaller corners |
-| `type.font` | no (`sans`) | `sans`, `serif`, `mono`, `rounded` (Android's default face) |
+| `type.font` | no (`sans`) | `sans`, `serif`, `mono`, `rounded` (Android's default face), and bundled open-licence pairs: `pixel` (Press Start 2P headings, Exo 2 text), `tech` (Orbitron, Exo 2), `display` (Rajdhani) |
 | `type.headlineWeight` | no (700) | 300-900 |
 | `type.scale` | no (1.0) | 0.85-1.3, scales all text |
 | `wordmark.retro`, `.forge`, `.glow` | no | the two "RETROFORGE" colours (default: primary and secondary) and the neon glow in dark mode. A colour too close to the background is replaced by the text colour |
 | `layout.gameView` | no (`grid`) | `grid` (tiles) or `list` (rows with small art) |
 | `layout.tileAspect` | no (`wide`) | `wide` (4:3 screenshots), `square`, `portrait` (3:4 box art) |
+| `layout.systemView` | no (`grid`) | `grid` or `carousel` (a swipeable row of big system cards) |
+| `background.style` | no (`solid`) | `solid`, `linear`, `radial`; `background.dark` / `.light`: up to 4 colours; `background.angle` for `linear` |
+| `effects.scanlines`, `.vignette`, `.focusGlow` | no (false) | CRT scanlines, darkened edges, focused cards glow in the focus colour |
 
 **Palette** — required: `background`, `surface` (cards), `primary` (selection, buttons, focus), `secondary`, `text`. Optional, worked out if missing: `surfaceVariant`, `onPrimary`, `onSecondary` (black or white, whichever reads better), `textMuted`, `outline`, `focus`, `good`, `caution`, `bad`. Colours are `#RRGGBB` or `#AARRGGBB`.
 
@@ -43,4 +46,4 @@ Settings → Themes → Import a theme file. User themes are stored in the app's
 
 ## Planned (version 2)
 
-Theme packages (a .zip with images), background images and gradients, bundled open-licence fonts, a system carousel with system artwork, and motion.
+Theme packages (a .zip with images), background images, system artwork, layout templates (different home and game-list structures per theme), and motion.

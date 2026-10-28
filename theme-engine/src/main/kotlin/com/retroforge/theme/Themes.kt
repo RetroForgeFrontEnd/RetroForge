@@ -2,7 +2,7 @@ package com.retroforge.theme
 
 /** The themes that ship with RetroForge (resources/themes), all original and CC0. */
 object BuiltInThemes {
-    val ids = listOf("forge-neon", "paper", "phosphor", "console-blue", "arcade-sunset")
+    val ids = listOf("forge-neon", "hero-row", "cross-bar", "blades", "console-blue", "arcade-sunset", "phosphor", "paper")
     const val DEFAULT = "forge-neon"
 
     val all: List<ThemeSpec> by lazy {

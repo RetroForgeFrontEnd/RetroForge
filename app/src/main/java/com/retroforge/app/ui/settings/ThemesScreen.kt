@@ -1,5 +1,13 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.core.ui.ThemeBackdrop
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.pager.HorizontalPager
 import android.content.ContentResolver
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -164,12 +172,30 @@ fun ThemesScreen(viewModel: ThemesViewModel) {
         pending?.let { p -> PendingCard(p, dark, viewModel) }
         if (working) CardBody("Reading the theme's colours …")
 
-        CardTitle("Built in")
-        viewModel.builtIn.forEach { t -> ThemeRow(t, t.id == current?.themeId, dark, onUse = { viewModel.use(t) }, onDelete = null) }
-
-        CardTitle("Your themes")
-        if (user.isEmpty()) CardBody("None yet. Import a RetroForge theme file, or the colours of a theme from ES-DE, RetroBat or Batocera.")
-        user.forEach { t -> ThemeRow(t, t.id == current?.themeId, dark, onUse = { viewModel.use(t) }, onDelete = { viewModel.delete(t) }) }
+        // Swipe (or press left/right) through every theme; each page is drawn in its own theme.
+        val all = viewModel.builtIn + user
+        val startPage = all.indexOfFirst { it.id == current?.themeId }.coerceAtLeast(0)
+        val pager = rememberPagerState(initialPage = startPage) { all.size }
+        val scope = rememberCoroutineScope()
+        HorizontalPager(state = pager, contentPadding = PaddingValues(horizontal = 24.dp), pageSpacing = 16.dp, modifier = Modifier.fillMaxWidth()) { page ->
+            ThemePreview(all[page], dark)
+        }
+        val shown = all.getOrNull(pager.currentPage)
+        if (shown != null) {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                FocusChip("‹", enabled = pager.currentPage > 0, onClick = { scope.launch { pager.animateScrollToPage(pager.currentPage - 1) } })
+                Text("${pager.currentPage + 1} / ${all.size}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.padding(top = 10.dp))
+                FocusChip("›", enabled = pager.currentPage < all.lastIndex, onClick = { scope.launch { pager.animateScrollToPage(pager.currentPage + 1) } })
+            }
+            Text(shown.name, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
+            if (shown.description.isNotEmpty()) CardBody(shown.description)
+            CardBody(listOfNotNull(shown.author.ifEmpty { null }, shown.license, shown.importedFrom).joinToString(" · "))
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (shown.id == current?.themeId) StatusPill("In use", StatusTone.GOOD)
+                else FocusChip("Use this theme", onClick = { viewModel.use(shown) })
+                if (shown in user) FocusChip("Delete", onClick = { viewModel.delete(shown) })
+            }
+        }
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("Add a theme")
@@ -206,50 +232,39 @@ private fun PendingCard(p: PendingImport, dark: Boolean, viewModel: ThemesViewMo
     }
 }
 
-@Composable
-private fun ThemeRow(theme: ThemeSpec, inUse: Boolean, dark: Boolean, onUse: () -> Unit, onDelete: (() -> Unit)?) {
-    FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onUse, selected = inUse) {
-        val details: @Composable () -> Unit = {
-            Text(theme.name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-            if (inUse) StatusPill("In use", StatusTone.GOOD)
-            if (theme.description.isNotEmpty()) CardBody(theme.description)
-            CardBody(listOfNotNull(theme.author.ifEmpty { null }, theme.license, theme.importedFrom).joinToString(" · "))
-        }
-        // Side by side when there's room (landscape, tablets, TV); stacked on a phone held upright.
-        BoxWithConstraints {
-            if (maxWidth >= 560.dp) {
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Box(Modifier.width(240.dp)) { ThemePreview(theme, dark) }
-                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) { details() }
-                }
-            } else {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ThemePreview(theme, dark)
-                    details()
-                }
-            }
-        }
-    }
-    onDelete?.let { FocusChip("Delete ${theme.name}", onClick = it) }
-}
-
-/** A small mock-up drawn with the real components in [theme]'s look. */
+/** A mock-up of the home screen drawn with the real components in [theme]'s look, backdrop and fonts. */
 @Composable
 fun ThemePreview(theme: ThemeSpec, dark: Boolean) {
     RetroForgeTheme(theme = theme, dark = dark) {
-        Column(
-            Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background, MaterialTheme.shapes.medium).padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Wordmark(fontSize = 20.sp)
-            FocusCard(modifier = Modifier.fillMaxWidth()) {
-                Text("Super Game", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-                Text("Super Nintendo · USA", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                StatusPill("Ready", StatusTone.GOOD)
-                Box(Modifier.background(MaterialTheme.colorScheme.primary, MaterialTheme.shapes.small).padding(horizontal = 10.dp, vertical = 4.dp)) {
-                    Text("Play", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onPrimary)
+        val colors = MaterialTheme.colorScheme
+        Box(Modifier.fillMaxWidth().height(340.dp).clip(MaterialTheme.shapes.large)) {
+            ThemeBackdrop {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Wordmark(fontSize = 22.sp)
+                    // Hero banner.
+                    Box(
+                        Modifier.fillMaxWidth().height(96.dp).clip(MaterialTheme.shapes.medium)
+                            .background(Brush.linearGradient(listOf(colors.primary.copy(alpha = 0.55f), colors.secondary.copy(alpha = 0.35f), colors.surface))),
+                    ) {
+                        Column(Modifier.padding(14.dp)) {
+                            Text("JUMP BACK IN", style = MaterialTheme.typography.labelMedium, color = colors.primary)
+                            Text("Super Game", style = MaterialTheme.typography.headlineSmall, color = colors.onBackground, maxLines = 1)
+                        }
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        listOf("Kart", "Quest", "Racer").forEachIndexed { i, label ->
+                            FocusCard(modifier = Modifier.weight(1f)) {
+                                Box(Modifier.fillMaxWidth().height(28.dp).clip(MaterialTheme.shapes.small).background(if (i == 0) colors.primary else colors.surfaceVariant))
+                                Text(label, style = MaterialTheme.typography.titleSmall, color = colors.onSurface, modifier = Modifier.padding(top = 6.dp))
+                            }
+                        }
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        StatusPill("Ready", StatusTone.GOOD)
+                        Box(Modifier.background(colors.primary, MaterialTheme.shapes.small).padding(horizontal = 12.dp, vertical = 5.dp)) {
+                            Text("Play", style = MaterialTheme.typography.labelLarge, color = colors.onPrimary)
+                        }
+                    }
                 }
             }
         }

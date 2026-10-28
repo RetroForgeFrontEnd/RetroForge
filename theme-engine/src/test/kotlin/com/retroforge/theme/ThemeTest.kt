@@ -14,7 +14,9 @@ class ThemeTest {
     fun builtInThemesParse() {
         assertEquals(BuiltInThemes.ids, BuiltInThemes.all.map { it.id })
         val phosphor = BuiltInThemes.all.first { it.id == "phosphor" }
-        assertEquals(FontStyle.MONO, phosphor.font)
+        assertEquals(FontStyle.PIXEL, phosphor.font)
+        assertTrue(phosphor.scanlines && phosphor.vignette)
+        assertEquals(BackgroundStyle.RADIAL, phosphor.background.style)
         assertEquals(0, phosphor.cornerRadius)
         // A dark-only theme uses its dark palette for light mode too.
         assertEquals(phosphor.dark, phosphor.palette(dark = false))

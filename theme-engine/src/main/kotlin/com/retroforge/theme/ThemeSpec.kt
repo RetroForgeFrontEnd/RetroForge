@@ -24,9 +24,15 @@ data class Palette(
     val bad: Argb,
 )
 
-enum class FontStyle { SANS, SERIF, MONO, ROUNDED }
+/** SANS/SERIF/MONO/ROUNDED use Android's faces; PIXEL, TECH and DISPLAY use bundled open-licence fonts. */
+enum class FontStyle { SANS, SERIF, MONO, ROUNDED, PIXEL, TECH, DISPLAY }
 enum class GameView { GRID, LIST }
 enum class TileAspect(val ratio: Float) { WIDE(4f / 3f), SQUARE(1f), PORTRAIT(3f / 4f) }
+enum class SystemView { GRID, CAROUSEL }
+enum class BackgroundStyle { SOLID, LINEAR, RADIAL }
+
+/** The page background: flat, or a gradient through [colors] (per brightness; empty means the palette's background). */
+data class Background(val style: BackgroundStyle, val dark: List<Argb>, val light: List<Argb>, val angle: Int)
 
 /** A RetroForge theme: colours, shapes, type and layout. Pure data; core-ui turns it into Compose theming. */
 data class ThemeSpec(
@@ -46,6 +52,14 @@ data class ThemeSpec(
     val wordmarkGlow: Boolean,
     val gameView: GameView,
     val tileAspect: TileAspect,
+    val systemView: SystemView = SystemView.GRID,
+    val background: Background = Background(BackgroundStyle.SOLID, emptyList(), emptyList(), 135),
+    /** CRT-style scanlines over every screen. */
+    val scanlines: Boolean = false,
+    /** Darkened edges. */
+    val vignette: Boolean = false,
+    /** Focused cards glow in the focus colour. */
+    val focusGlow: Boolean = false,
     /** Where it came from, for imported themes ("ES-DE theme canvas-es"). */
     val importedFrom: String? = null,
 ) {
@@ -82,7 +96,13 @@ object ThemeFormat {
     private data class RawWordmark(val retro: String? = null, val forge: String? = null, val glow: Boolean = true)
 
     @Serializable
-    private data class RawLayout(val gameView: String = "grid", val tileAspect: String = "wide")
+    private data class RawLayout(val gameView: String = "grid", val tileAspect: String = "wide", val systemView: String = "grid")
+
+    @Serializable
+    private data class RawBackground(val style: String = "solid", val dark: List<String> = emptyList(), val light: List<String> = emptyList(), val angle: Int = 135)
+
+    @Serializable
+    private data class RawEffects(val scanlines: Boolean = false, val vignette: Boolean = false, val focusGlow: Boolean = false)
 
     @Serializable
     private data class RawTheme(
@@ -91,6 +111,7 @@ object ThemeFormat {
         val dark: RawPalette? = null, val light: RawPalette? = null,
         val shape: RawShape = RawShape(), val type: RawType = RawType(),
         val wordmark: RawWordmark = RawWordmark(), val layout: RawLayout = RawLayout(),
+        val background: RawBackground = RawBackground(), val effects: RawEffects = RawEffects(),
         val importedFrom: String? = null,
     )
 
@@ -130,6 +151,16 @@ object ThemeFormat {
             wordmarkGlow = raw.wordmark.glow,
             gameView = enumOf(raw.layout.gameView, GameView.entries, "layout.gameView"),
             tileAspect = enumOf(raw.layout.tileAspect, TileAspect.entries, "layout.tileAspect"),
+            systemView = enumOf(raw.layout.systemView, SystemView.entries, "layout.systemView"),
+            background = Background(
+                enumOf(raw.background.style, BackgroundStyle.entries, "background.style"),
+                raw.background.dark.take(4).map { color(it, "background.dark") },
+                raw.background.light.take(4).map { color(it, "background.light") },
+                ((raw.background.angle % 360) + 360) % 360,
+            ),
+            scanlines = raw.effects.scanlines,
+            vignette = raw.effects.vignette,
+            focusGlow = raw.effects.focusGlow,
             importedFrom = raw.importedFrom?.let { clean(it, 120) },
         )
     }
@@ -148,7 +179,10 @@ object ThemeFormat {
                 theme.dark?.let(::raw), theme.light?.let(::raw), RawShape(theme.cornerRadius),
                 RawType(theme.font.name.lowercase(), theme.headlineWeight, theme.textScale),
                 RawWordmark(hex(theme.wordmarkRetro), hex(theme.wordmarkForge), theme.wordmarkGlow),
-                RawLayout(theme.gameView.name.lowercase(), theme.tileAspect.name.lowercase()), theme.importedFrom,
+                RawLayout(theme.gameView.name.lowercase(), theme.tileAspect.name.lowercase(), theme.systemView.name.lowercase()),
+                RawBackground(theme.background.style.name.lowercase(), theme.background.dark.map(::hex), theme.background.light.map(::hex), theme.background.angle),
+                RawEffects(theme.scanlines, theme.vignette, theme.focusGlow),
+                theme.importedFrom,
             ),
         )
     }

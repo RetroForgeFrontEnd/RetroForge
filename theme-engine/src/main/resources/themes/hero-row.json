@@ -1,0 +1,50 @@
+{
+  "format": "retroforge-theme",
+  "version": 1,
+  "id": "hero-row",
+  "name": "Hero Row",
+  "author": "RetroForge",
+  "license": "CC0-1.0",
+  "description": "Inspired by modern console homes: near-black, big tall box art, one bright accent, a carousel up top.",
+  "dark": {
+    "background": "#07080B",
+    "surface": "#13151B",
+    "surfaceVariant": "#1D2029",
+    "primary": "#FFFFFF",
+    "onPrimary": "#07080B",
+    "secondary": "#4C8DFF",
+    "onSecondary": "#FFFFFF",
+    "text": "#F5F6FA",
+    "textMuted": "#9CA1B0",
+    "outline": "#2C303B",
+    "focus": "#FFFFFF"
+  },
+  "shape": {
+    "cornerRadius": 14
+  },
+  "type": {
+    "font": "display",
+    "headlineWeight": 700
+  },
+  "wordmark": {
+    "retro": "#FFFFFF",
+    "forge": "#4C8DFF",
+    "glow": false
+  },
+  "layout": {
+    "gameView": "grid",
+    "tileAspect": "portrait",
+    "systemView": "carousel"
+  },
+  "background": {
+    "style": "radial",
+    "dark": [
+      "#1A2238",
+      "#07080B"
+    ]
+  },
+  "effects": {
+    "focusGlow": true,
+    "vignette": true
+  }
+}

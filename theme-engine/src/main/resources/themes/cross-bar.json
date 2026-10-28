@@ -1,0 +1,52 @@
+{
+  "format": "retroforge-theme",
+  "version": 1,
+  "id": "cross-bar",
+  "name": "Cross Bar",
+  "author": "RetroForge",
+  "license": "CC0-1.0",
+  "description": "Inspired by classic console media bars: a sweeping deep-blue gradient, light type, everything in rows.",
+  "dark": {
+    "background": "#04122B",
+    "surface": "#0A2149",
+    "surfaceVariant": "#123063",
+    "primary": "#E8F1FF",
+    "onPrimary": "#04122B",
+    "secondary": "#7FB2FF",
+    "onSecondary": "#001A40",
+    "text": "#F4F8FF",
+    "textMuted": "#9FB6DA",
+    "outline": "#2A4C86",
+    "focus": "#E8F1FF"
+  },
+  "shape": {
+    "cornerRadius": 10
+  },
+  "type": {
+    "font": "display",
+    "headlineWeight": 600
+  },
+  "wordmark": {
+    "retro": "#FFFFFF",
+    "forge": "#7FB2FF",
+    "glow": true
+  },
+  "layout": {
+    "gameView": "grid",
+    "tileAspect": "wide",
+    "systemView": "carousel"
+  },
+  "background": {
+    "style": "linear",
+    "angle": 20,
+    "dark": [
+      "#0B3A7A",
+      "#04122B",
+      "#0E5A8A",
+      "#04122B"
+    ]
+  },
+  "effects": {
+    "focusGlow": true
+  }
+}

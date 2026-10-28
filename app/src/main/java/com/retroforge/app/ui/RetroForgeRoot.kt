@@ -174,7 +174,10 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                 val content: @Composable (Modifier) -> Unit = { modifier ->
                     NavHost(nav, startDestination = Section.HOME.route, modifier = modifier) {
                         composable(Section.HOME.route) {
-                            HomeScreen(showPc = settings.showPcSection, onOpen = { nav.goTo(it) })
+                            HomeScreen(
+                                showPc = settings.showPcSection, library = libraryViewModel, onOpen = { nav.goTo(it) },
+                                onOpenGame = { nav.navigate("retro/game/$it") }, onOpenSystem = { nav.navigate("retro/system/$it") },
+                            )
                         }
                         composable(Section.RETRO.route) {
                             RetroScreen(

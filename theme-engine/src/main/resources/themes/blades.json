@@ -1,0 +1,51 @@
+{
+  "format": "retroforge-theme",
+  "version": 1,
+  "id": "blades",
+  "name": "Blades",
+  "author": "RetroForge",
+  "license": "CC0-1.0",
+  "description": "Inspired by mid-2000s console dashboards: green glow on dark steel, futuristic type.",
+  "dark": {
+    "background": "#0C0F0D",
+    "surface": "#161B17",
+    "surfaceVariant": "#202821",
+    "primary": "#7BE33C",
+    "onPrimary": "#0B1A03",
+    "secondary": "#D9E3DA",
+    "onSecondary": "#0C0F0D",
+    "text": "#ECF3ED",
+    "textMuted": "#9AAA9D",
+    "outline": "#334036",
+    "focus": "#7BE33C"
+  },
+  "shape": {
+    "cornerRadius": 6
+  },
+  "type": {
+    "font": "tech",
+    "headlineWeight": 700
+  },
+  "wordmark": {
+    "retro": "#7BE33C",
+    "forge": "#ECF3ED",
+    "glow": true
+  },
+  "layout": {
+    "gameView": "grid",
+    "tileAspect": "wide",
+    "systemView": "carousel"
+  },
+  "background": {
+    "style": "radial",
+    "dark": [
+      "#24451A",
+      "#0C0F0D",
+      "#050605"
+    ]
+  },
+  "effects": {
+    "focusGlow": true,
+    "vignette": true
+  }
+}

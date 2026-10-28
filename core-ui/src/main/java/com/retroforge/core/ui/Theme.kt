@@ -14,7 +14,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,24 +77,42 @@ private fun colorScheme(p: Palette, dark: Boolean) = if (dark) {
     )
 }
 
+// Bundled fonts (SIL Open Font License; licences in assets/licences). Orbitron and Exo 2 are variable fonts.
+private val pressStart = FontFamily(Font(R.font.press_start_2p))
+private val orbitron = FontFamily((400..900 step 100).map { w ->
+    Font(R.font.orbitron, FontWeight(w), variationSettings = FontVariation.Settings(FontVariation.weight(w)))
+})
+private val exo2 = FontFamily((300..900 step 100).map { w ->
+    Font(R.font.exo2, FontWeight(w), variationSettings = FontVariation.Settings(FontVariation.weight(w)))
+})
+private val rajdhani = FontFamily(Font(R.font.rajdhani_medium, FontWeight.Normal), Font(R.font.rajdhani_medium, FontWeight.Medium), Font(R.font.rajdhani_bold, FontWeight.SemiBold), Font(R.font.rajdhani_bold, FontWeight.Bold))
+
 private fun typography(theme: ThemeSpec): Typography {
-    val family = when (theme.font) {
-        FontStyle.SANS -> FontFamily.SansSerif
-        FontStyle.SERIF -> FontFamily.Serif
-        FontStyle.MONO -> FontFamily.Monospace
+    // Headings and body text can use different faces: a pixel or futuristic face reads well large, not in paragraphs.
+    val (headingFamily, family) = when (theme.font) {
+        FontStyle.SANS -> FontFamily.SansSerif to FontFamily.SansSerif
+        FontStyle.SERIF -> FontFamily.Serif to FontFamily.Serif
+        FontStyle.MONO -> FontFamily.Monospace to FontFamily.Monospace
         // Android has no system rounded face; the default face with heavier headings gives the softer look.
-        FontStyle.ROUNDED -> FontFamily.Default
+        FontStyle.ROUNDED -> FontFamily.Default to FontFamily.Default
+        FontStyle.PIXEL -> pressStart to exo2
+        FontStyle.TECH -> orbitron to exo2
+        FontStyle.DISPLAY -> rajdhani to rajdhani
     }
+    // Press Start 2P is very wide; its headings are set smaller so titles still fit.
+    val headingScale = if (theme.font == FontStyle.PIXEL) 0.62f else 1f
     val heading = FontWeight(theme.headlineWeight)
     fun TextStyle.themed(weight: FontWeight? = null) =
         copy(fontFamily = family, fontWeight = weight ?: fontWeight, fontSize = fontSize * theme.textScale, lineHeight = lineHeight * theme.textScale)
+    fun TextStyle.headline(weight: FontWeight? = null) =
+        copy(fontFamily = headingFamily, fontWeight = weight ?: fontWeight, fontSize = fontSize * theme.textScale * headingScale, lineHeight = lineHeight * theme.textScale * maxOf(headingScale, 0.8f))
     val base = Typography()
     return Typography(
-        displayLarge = base.displayLarge.themed(heading), displayMedium = base.displayMedium.themed(heading),
-        displaySmall = base.displaySmall.themed(FontWeight.Black).copy(letterSpacing = 1.sp),
-        headlineLarge = base.headlineLarge.themed(heading), headlineMedium = base.headlineMedium.themed(heading),
-        headlineSmall = base.headlineSmall.themed(heading),
-        titleLarge = base.titleLarge.themed(FontWeight.SemiBold), titleMedium = base.titleMedium.themed(), titleSmall = base.titleSmall.themed(),
+        displayLarge = base.displayLarge.headline(heading), displayMedium = base.displayMedium.headline(heading),
+        displaySmall = base.displaySmall.headline(FontWeight.Black).copy(letterSpacing = 1.sp),
+        headlineLarge = base.headlineLarge.headline(heading), headlineMedium = base.headlineMedium.headline(heading),
+        headlineSmall = base.headlineSmall.headline(heading),
+        titleLarge = base.titleLarge.headline(FontWeight.SemiBold), titleMedium = base.titleMedium.themed(FontWeight.SemiBold), titleSmall = base.titleSmall.themed(),
         bodyLarge = base.bodyLarge.themed(), bodyMedium = base.bodyMedium.themed(), bodySmall = base.bodySmall.themed(),
         labelLarge = TextStyle(fontFamily = family, fontWeight = FontWeight.SemiBold, fontSize = 15.sp * theme.textScale, letterSpacing = 0.5.sp),
         labelMedium = base.labelMedium.themed(), labelSmall = base.labelSmall.themed(),

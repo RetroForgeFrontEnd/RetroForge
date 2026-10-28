@@ -14,12 +14,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.retroforge.core.ui.ThemeBackdrop
 
 /** Common scrolling page frame so every section has the same title treatment and spacing. */
 @Composable
 fun ScreenFrame(title: String?, subtitle: String? = null, content: @Composable ColumnScope.() -> Unit) {
     // NavHost hands destinations fixed-width constraints; the Box relaxes them so the cap applies.
-    Box(Modifier.fillMaxSize()) {
+    ThemeBackdrop {
         Column(
             modifier = Modifier
                 .widthIn(max = 960.dp)
