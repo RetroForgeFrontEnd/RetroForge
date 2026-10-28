@@ -52,7 +52,7 @@ import kotlin.math.absoluteValue
  * Swipe, d-pad or L1/R1-style left/right to browse; tap the middle tile or press A to open.
  */
 @Composable
-fun CanvasSystemsView(systems: List<SystemSummary>, art: SystemArtIndex?, consoles: Boolean, onOpenSystem: (String) -> Unit) {
+fun CanvasSystemsView(systems: List<SystemSummary>, art: SystemArtIndex?, style: TileStyle, onOpenSystem: (String) -> Unit) {
     if (systems.isEmpty()) return
     val pager = rememberPagerState { systems.size }
     val scope = rememberCoroutineScope()
@@ -68,11 +68,17 @@ fun CanvasSystemsView(systems: List<SystemSummary>, art: SystemArtIndex?, consol
     ) {
         val tile = (maxWidth * 0.58f).coerceIn(150.dp, 320.dp)
         val side = (maxWidth - tile) / 2
-        Box(Modifier.fillMaxWidth().height(tile + 220.dp)) {
+        val logoSize = (maxWidth.value / 9f).sp
+        Box(Modifier.fillMaxWidth().height(tile + 280.dp)) {
             // The theme's wallpaper, faded so the artwork stands out.
             art?.wallpaper?.let {
                 AsyncImage(model = it, contentDescription = null, contentScale = ContentScale.Crop, alpha = 0.35f, modifier = Modifier.fillMaxSize())
-            } ?: Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(colors.surface.copy(alpha = 0.6f), Color.Transparent))))
+            } ?: run {
+                // The RetroForge logo, large and faded, behind the systems (in the theme's own logo colours).
+                Box(Modifier.fillMaxSize().padding(bottom = 4.dp), contentAlignment = Alignment.BottomCenter) {
+                    com.retroforge.core.ui.Wordmark(fontSize = logoSize, modifier = Modifier.graphicsLayer { alpha = 0.12f })
+                }
+            }
 
             Column(Modifier.fillMaxSize().padding(top = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 HorizontalPager(
@@ -104,10 +110,10 @@ fun CanvasSystemsView(systems: List<SystemSummary>, art: SystemArtIndex?, consol
                             }
                             .focusable(interactionSource = interaction),
                     ) {
-                        val artwork = art?.systems?.get(system.id)
-                        if (consoles && artwork?.console != null) {
-                            // The console itself, on a backdrop in the system's colour.
-                            NamePlate("", artwork.color)
+                        val artwork = art?.systems?.get(system.id)?.takeIf { style != TileStyle.PLAIN }
+                        if (style == TileStyle.CONSOLES && artwork?.console != null) {
+                            // The console itself, on a backdrop in RetroForge's colours.
+                            NamePlate("")
                             AsyncImage(
                                 model = artwork.console, contentDescription = system.name, contentScale = ContentScale.Fit,
                                 modifier = Modifier.fillMaxSize().padding(6.dp),
@@ -115,13 +121,13 @@ fun CanvasSystemsView(systems: List<SystemSummary>, art: SystemArtIndex?, consol
                         } else if (artwork?.tile != null) {
                             AsyncImage(model = artwork.tile, contentDescription = system.name, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
                         } else {
-                            NamePlate(system.name, artwork?.color)
+                            NamePlate(system.name)
                         }
                     }
                 }
 
                 val current = systems.getOrNull(pager.currentPage) ?: return@Column
-                val artwork = art?.systems?.get(current.id)
+                val artwork = art?.systems?.get(current.id)?.takeIf { style != TileStyle.PLAIN }
                 Box(Modifier.padding(top = 18.dp).height(72.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
                     if (artwork?.logo != null) {
                         AsyncImage(
@@ -150,12 +156,12 @@ fun CanvasSystemsView(systems: List<SystemSummary>, art: SystemArtIndex?, consol
     }
 }
 
-/** A tile without artwork: the system's name on its theme colour (or the app's). */
+/** A tile backdrop in RetroForge's own theme colours, with the system's name when there's no artwork. */
 @Composable
-private fun NamePlate(name: String, color: String?) {
-    val base = color?.let { runCatching { Color(android.graphics.Color.parseColor("#$it")) }.getOrNull() } ?: MaterialTheme.colorScheme.primary
+private fun NamePlate(name: String) {
+    val colors = MaterialTheme.colorScheme
     Box(
-        Modifier.fillMaxSize().background(Brush.linearGradient(listOf(base, base.copy(alpha = 0.55f), Color(0xFF15151B)))),
+        Modifier.fillMaxSize().background(Brush.linearGradient(listOf(colors.primary.copy(alpha = 0.85f), colors.secondary.copy(alpha = 0.6f), colors.surface))),
         contentAlignment = Alignment.Center,
     ) {
         Text(

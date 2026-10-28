@@ -39,6 +39,11 @@ private val notices = listOf(
         "Not part of RetroForge: downloaded from libretro's build server (buildbot.libretro.com) when needed and loaded by the built-in player. " +
             "Some are licensed for non-commercial use only, one reason RetroForge is free.",
     ),
+    Notice(
+        "canvas-es system artwork (Retro tab)", "CC0 1.0",
+        "By Siddy212, github.com/Siddy212/canvas-es. Not part of RetroForge: downloaded from that repository for the systems in your " +
+            "library. Console and game names, logos and characters shown in it belong to their owners.",
+    ),
     Notice("Press Start 2P font", "SIL Open Font License 1.1", "Copyright 2012 The Press Start 2P Project Authors.", "licences/font-pressstart2p-OFL.txt"),
     Notice("Orbitron font", "SIL Open Font License 1.1", "Copyright The Orbitron Project Authors.", "licences/font-orbitron-OFL.txt"),
     Notice("Rajdhani font", "SIL Open Font License 1.1", "Copyright Indian Type Foundry.", "licences/font-rajdhani-OFL.txt"),

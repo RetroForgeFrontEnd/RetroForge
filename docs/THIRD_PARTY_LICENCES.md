@@ -32,6 +32,8 @@ Built-in player: `retro-player/src/main/cpp/libretro.h` is the libretro API head
 
 Emulator cores are **not bundled**: RetroForge downloads them at run time from libretro's build server (buildbot.libretro.com/nightly/android/latest/<abi>/) into its private storage. Each core keeps its own licence: mGBA (MPL-2.0), Gambatte, FCEUmm, DeSmuME, Handy, Stella, Beetle cores and PicoDrive's parts (GPL-2.0 or similar), Snes9x and Genesis Plus GX (non-commercial). Non-commercial cores are another reason RetroForge must stay free: a paid RetroForge would need them removed or replaced.
 
+Retro tab artwork: canvas-es by Siddy212 (CC0-1.0, github.com/Siddy212/canvas-es) is **not bundled**; console pictures, logos and system details (and game art if that tile style is chosen) are downloaded from its repository for the systems in the user's library. The artwork depicts trademarks and characters of their owners; RetroForge doesn't host it.
+
 Referenced, not bundled: Obtainium (GPL-3.0; RetroForge only opens its documented `obtainium://add/` link) and the Obtainium Emulation Pack (Unlicense; linked). Standalone emulators are separate apps the user installs.
 
 Online services used at runtime (no code bundled): libretro thumbnails (thumbnails.libretro.com), SteamGridDB API (user's own key; personal non-commercial use per its terms).

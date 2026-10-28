@@ -50,6 +50,8 @@ class AppContainer(application: Application) {
     val systemArt = com.retroforge.core.library.SystemArtStore(application.contentResolver, File(application.filesDir, "system-art.json"))
     /** Small view choices (Retro tab tile style). */
     val viewPrefs: android.content.SharedPreferences = application.getSharedPreferences("views", android.content.Context.MODE_PRIVATE)
+    /** Default Retro tab artwork, canvas-es by Siddy212 (CC0), fetched for the library's systems only. */
+    val canvasArt = com.retroforge.core.library.CanvasArtDownloader(File(application.filesDir, "system-art/canvas-es"), "RetroForge/${BuildConfig.VERSION_NAME}")
     val coreChoices = com.retroforge.player.CoreChoices(File(application.filesDir, "player/cores.properties"))
     /** The built-in player's BIOS folder (the cores' "system" directory); PlayerActivity uses the same path. */
     val playerSystemDir = File(application.getExternalFilesDir(null) ?: application.filesDir, "system")
@@ -73,6 +75,14 @@ class AppContainer(application: Application) {
                 .map { counts -> counts.mapNotNull { PlayerCores.forSystem(it.system)?.id }.toSortedSet() }
                 .distinctUntilChanged()
                 .collect { cores.ensureAll(it) }
+        }
+        // The Retro tab's artwork for every system in the library, also in the background (console pictures, logos,
+        // details; game art only when that tile style is chosen).
+        appScope.launch {
+            library.systemCounts
+                .map { counts -> counts.map { it.system }.toSortedSet() }
+                .distinctUntilChanged()
+                .collect { canvasArt.ensure(it, withGameArt = viewPrefs.getString("tile_style", null) == "GAME_ART") }
         }
     }
     val covers = CoverRepository(

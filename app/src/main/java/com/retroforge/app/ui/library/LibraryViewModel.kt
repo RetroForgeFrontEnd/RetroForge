@@ -48,6 +48,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 
 data class SystemSummary(val id: String, val name: String, val games: Int, val hacks: Int)
@@ -65,18 +66,29 @@ class LibraryViewModel(
     private val systemArtStore: com.retroforge.core.library.SystemArtStore,
     private val resolver: android.content.ContentResolver,
     private val viewPrefs: android.content.SharedPreferences,
+    private val canvasArt: com.retroforge.core.library.CanvasArtDownloader,
 ) : ViewModel() {
 
     private val _systemArt = MutableStateFlow(systemArtStore.cached())
-    /** Artwork from the theme folder the user chose for the Retro tab's systems, or null. */
-    val systemArt: StateFlow<com.retroforge.core.library.SystemArtIndex?> = _systemArt
+    /** The user's own theme folder's artwork, when they chose one. */
+    val ownArt: StateFlow<com.retroforge.core.library.SystemArtIndex?> = _systemArt
+
+    /** The Retro tab's artwork: the user's own theme folder if chosen, else canvas-es (downloaded for their systems). */
+    val systemArt: StateFlow<com.retroforge.core.library.SystemArtIndex?> =
+        kotlinx.coroutines.flow.combine(_systemArt, canvasArt.index) { own, canvas -> own ?: canvas }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, _systemArt.value ?: canvasArt.index.value)
     val indexingArt = MutableStateFlow(false)
 
-    /** Retro tab tiles: pictures of the consoles (true) or game art. */
-    val consoleTiles = MutableStateFlow(viewPrefs.getBoolean("console_tiles", true))
-    fun setConsoleTiles(on: Boolean) {
-        consoleTiles.value = on
-        viewPrefs.edit().putBoolean("console_tiles", on).apply()
+    /** Retro tab tiles: console pictures, game art or plain name plates. */
+    val tileStyle = MutableStateFlow(TileStyle.of(viewPrefs.getString("tile_style", null)))
+    fun nextTileStyle() {
+        val next = tileStyle.value.next()
+        tileStyle.value = next
+        viewPrefs.edit().putString("tile_style", next.name).apply()
+        // Game art is larger, so it's only downloaded once someone chooses it.
+        if (next == TileStyle.GAME_ART && _systemArt.value == null) {
+            viewModelScope.launch { canvasArt.ensure(repository.systemCounts.first().map { it.system }, withGameArt = true) }
+        }
     }
 
     init {
@@ -258,8 +270,20 @@ class LibraryViewModel(
             systemArt: com.retroforge.core.library.SystemArtStore,
             resolver: android.content.ContentResolver,
             viewPrefs: android.content.SharedPreferences,
+            canvasArt: com.retroforge.core.library.CanvasArtDownloader,
         ): ViewModelProvider.Factory = viewModelFactory {
-            initializer { LibraryViewModel(repository, retroArch, covers, standalone, settings, hotkeys, cores, coreChoices, systemArt, resolver, viewPrefs) }
+            initializer { LibraryViewModel(repository, retroArch, covers, standalone, settings, hotkeys, cores, coreChoices, systemArt, resolver, viewPrefs, canvasArt) }
         }
+    }
+}
+
+/** How the Retro tab's system tiles look. */
+enum class TileStyle(val label: String) {
+    CONSOLES("consoles"), GAME_ART("game art"), PLAIN("plain");
+
+    fun next() = entries[(ordinal + 1) % entries.size]
+
+    companion object {
+        fun of(name: String?) = entries.firstOrNull { it.name == name } ?: CONSOLES
     }
 }

@@ -206,6 +206,7 @@ S22 (arm64) and the Android emulator (x86_64, software GPU). Debug build.
 - "Tiles: consoles" (default): Mega Drive pad picture on its blue system colour with the SEGA MEGA DRIVE logo and 1990. The old index rebuilt itself to pick up console pictures.
 - Swipe and d-pad left/right browse; tapping the middle tile opened Mega Drive (25 games).
 - Not yet: on the S22 / a real controller; Alekfull-NX folder (layout rules written, not tried on device).
+- Automatic artwork (no folder chosen): canvas-es console pictures, logos and details downloaded by themselves for the library's systems only (c64, megadrive, nes, psp, psx …) into private storage; tiles drawn on RetroForge's theme colours (Forge Neon orange-to-cyan) with the faded RetroForge logo in the background.
 
 ## Release test plan (run in the final stage, before any release)
 

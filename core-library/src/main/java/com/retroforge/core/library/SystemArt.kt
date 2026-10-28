@@ -4,9 +4,14 @@ import android.content.ContentResolver
 import android.net.Uri
 import android.provider.DocumentsContract
 import android.provider.DocumentsContract.Document
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.io.File
+
+/** `<systemReleaseYear>1989</systemReleaseYear>` and friends from an ES-DE theme metadata file. */
+internal fun parseMetadata(text: String): Map<String, String> =
+    Regex("<(system[A-Za-z]+)>([^<]{1,200})</\\1>").findAll(text).associate { it.groupValues[1] to it.groupValues[2].trim() }
 
 /** Artwork for one system, read from a theme folder the user chose (never shipped with RetroForge). */
 @Serializable
@@ -115,13 +120,93 @@ class SystemArtStore(private val resolver: ContentResolver, private val cacheFil
 
     /** `<systemReleaseYear>1989</systemReleaseYear>` and friends from an ES-DE theme metadata file. */
     private fun readMetadata(uri: Uri): Map<String, String> = runCatching {
-        val text = resolver.openInputStream(uri)?.use { it.readBytes().take(64 * 1024).toByteArray().decodeToString() }.orEmpty()
-        Regex("<(system[A-Za-z]+)>([^<]{1,200})</\\1>").findAll(text).associate { it.groupValues[1] to it.groupValues[2].trim() }
+        parseMetadata(resolver.openInputStream(uri)?.use { it.readBytes().take(64 * 1024).toByteArray().decodeToString() }.orEmpty())
     }.getOrDefault(emptyMap())
 
     companion object {
         const val VERSION = 2
         private val RASTER = setOf("webp", "png", "jpg", "jpeg")
         private val SKIP_DIRS = setOf("fonts", "sounds", "uisounds", "lang", "colorsets", "iconsets")
+    }
+}
+
+/**
+ * The Retro tab's default artwork: canvas-es by Siddy212 (CC0-1.0, github.com/Siddy212/canvas-es), fetched from its
+ * official repository for the systems in the library only, into RetroForge's private storage. Nothing is bundled
+ * with the app. Console pictures, logos and details are small and fetched in the background; the larger game-art
+ * tiles only when [withGameArt].
+ */
+class CanvasArtDownloader(private val dir: java.io.File, private val userAgent: String) {
+
+    private val json = Json { ignoreUnknownKeys = true }
+    private val cache = java.io.File(dir, "index.json")
+    private val _index = kotlinx.coroutines.flow.MutableStateFlow(load())
+    val index: kotlinx.coroutines.flow.StateFlow<SystemArtIndex?> = _index
+    private val lock = kotlinx.coroutines.sync.Mutex()
+
+    private fun load(): SystemArtIndex? = runCatching { json.decodeFromString<SystemArtIndex>(cache.readText()) }.getOrNull()
+
+    /** Fetches what's missing for [systems]; files already here (or missing upstream) aren't asked for again. */
+    suspend fun ensure(systems: Collection<String>, withGameArt: Boolean) = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+        lock.withLock {
+            val known = _index.value?.systems.orEmpty().toMutableMap()
+            for (id in systems.distinct()) {
+                val console = fetch("carousel-icons-icons", id, "webp")
+                val logo = fetch("logos", id, "svg")
+                val meta = fetch("metadata", id, "xml")?.let { runCatching { parseMetadata(it.readText()) }.getOrNull() }.orEmpty()
+                val art = if (withGameArt) fetch("carousel-icons-art", id, "webp") else local("carousel-icons-art", id, "webp")
+                if (console == null && logo == null && art == null && meta.isEmpty()) continue
+                known[id] = SystemArtwork(
+                    tile = art?.uri(), logo = logo?.uri(), console = console?.uri(),
+                    year = meta["systemReleaseYear"], manufacturer = meta["systemManufacturer"],
+                    color = meta["systemColor"]?.takeIf { it.matches(Regex("[0-9A-Fa-f]{6}")) },
+                )
+            }
+            val index = SystemArtIndex(treeUri = "", themeName = "canvas-es", systems = known, wallpaper = null, version = SystemArtStore.VERSION)
+            dir.mkdirs()
+            cache.writeText(json.encodeToString(SystemArtIndex.serializer(), index))
+            _index.value = index
+        }
+    }
+
+    private fun local(kind: String, id: String, ext: String) = java.io.File(dir, "$kind/$id.$ext").takeIf { it.isFile }
+
+    private fun java.io.File.uri() = android.net.Uri.fromFile(this).toString()
+
+    /** The file, downloading it first if needed; null when canvas-es has none for [id] or the download fails. */
+    private fun fetch(kind: String, id: String, ext: String): java.io.File? {
+        local(kind, id, ext)?.let { return it }
+        val missing = java.io.File(dir, "$kind/$id.$ext.none")
+        if (missing.isFile) return null
+        val connection = (java.net.URL("$BASE/$kind/$id.$ext").openConnection() as java.net.HttpURLConnection).apply {
+            connectTimeout = 15_000
+            readTimeout = 30_000
+            setRequestProperty("User-Agent", userAgent)
+        }
+        return try {
+            when (connection.responseCode) {
+                200 -> {
+                    val target = java.io.File(dir, "$kind/$id.$ext").apply { parentFile?.mkdirs() }
+                    val part = java.io.File(target.path + ".part")
+                    connection.inputStream.use { input -> part.outputStream().use { input.copyTo(it) } }
+                    if (part.renameTo(target)) target else null
+                }
+                404 -> {
+                    missing.parentFile?.mkdirs()
+                    missing.writeText("")
+                    null
+                }
+                else -> null
+            }
+        } catch (_: java.io.IOException) {
+            null
+        } finally {
+            connection.disconnect()
+        }
+    }
+
+    companion object {
+        const val BASE = "https://raw.githubusercontent.com/Siddy212/canvas-es/main/_inc/systems"
+        const val CREDIT = "System artwork: canvas-es by Siddy212 (CC0-1.0), github.com/Siddy212/canvas-es"
     }
 }

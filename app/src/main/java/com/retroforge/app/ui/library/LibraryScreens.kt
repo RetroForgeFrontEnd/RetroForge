@@ -77,19 +77,19 @@ fun RetroScreen(
     val pickArt = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::useArtFolder) }
 
     ScreenFrame(title = "Retro", subtitle = "Your consoles, arcade and computer games.") {
-        // Systems first, canvas style, with artwork from the user's own theme folder when chosen.
+        // Systems first, canvas style: canvas-es artwork (downloaded for the library's systems) or the user's own theme
+        // folder, drawn in RetroForge's colours.
         if (systems.isNotEmpty()) {
-            val consoles by viewModel.consoleTiles.collectAsStateWithLifecycle()
-            CanvasSystemsView(systems.map { SystemSummary(it.id, it.name, it.games, it.hacks) }, systemArt, consoles, onOpenSystem)
+            val style by viewModel.tileStyle.collectAsStateWithLifecycle()
+            val ownArt by viewModel.ownArt.collectAsStateWithLifecycle()
+            CanvasSystemsView(systems.map { SystemSummary(it.id, it.name, it.games, it.hacks) }, systemArt, style, onOpenSystem)
             androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                FocusChip("Tiles: ${style.label}", onClick = viewModel::nextTileStyle)
                 FocusChip(
-                    if (systemArt == null) "Use system artwork from a theme folder" else "System artwork: ${systemArt!!.themeName.ifBlank { "theme" }} · change",
+                    if (ownArt == null) "Use my own theme folder" else "Artwork: ${ownArt!!.themeName.ifBlank { "your theme" }} · change",
                     onClick = { pickArt.launch(null) },
                 )
-                if (systemArt != null) {
-                    FocusChip(if (consoles) "Tiles: consoles" else "Tiles: game art", onClick = { viewModel.setConsoleTiles(!consoles) })
-                    FocusChip("Plain tiles", onClick = viewModel::clearArtFolder)
-                }
+                if (ownArt != null) FocusChip("Back to built-in artwork", onClick = viewModel::clearArtFolder)
             }
             if (indexingArt) LinearProgressIndicator(Modifier.fillMaxWidth())
         }
