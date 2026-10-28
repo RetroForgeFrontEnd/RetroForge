@@ -11,9 +11,10 @@ Generated from the in-app tutorial (Settings → How to use RetroForge) by `tool
 ## Finding and playing games
 
 - Retro shows your systems, Recently played, Favourites, Playlists and a search box.
-- Open a game and press Play. It starts in RetroArch with the best core for that system; other cores are listed underneath.
-- If RetroArch says a core is missing: in RetroArch open Online Updater → Core Downloader and get the one named on the game's page.
-- Some systems need BIOS files. Settings → Set up RetroForge checks yours and copies them where RetroArch looks.
+- Open a game and press Play. Cartridge systems (Game Boy, GBA, NES, SNES, Mega Drive, DS and more) play in RetroForge's built-in player: its emulators download by themselves in the background.
+- Pause a game (the ☰ button, a swipe in from either edge, Back, or Home/Guide on a controller) for save states, fast-forward, screen shape, screen filter, console look, touch controls, emulator settings and Switch emulator.
+- Disc systems (PlayStation, PSP, Dreamcast …) play in RetroArch or a standalone emulator. If RetroArch says a core is missing: in RetroArch open Online Updater → Core Downloader and get the one named on the game's page.
+- Some systems need BIOS files. Settings → Set up RetroForge checks yours and copies them where the built-in player and RetroArch look.
 
 ## Other emulators
 
@@ -67,9 +68,27 @@ Generated from the in-app tutorial (Settings → How to use RetroForge) by `tool
 - Games and BIOS can live on an SD card or USB drive: add that folder like any other.
 - Everything works with a controller: D-pad to move, A to select, B to go back, L1/R1 to switch sections.
 
-## PC games
+## PC games: how it works
 
-- The PC section checks whether this device can run PC games and works with a separately installed PC game app. Only some high-end devices can.
+- RetroForge doesn't run Windows games itself. A free PC game app does, installed separately: DroidDeck on Snapdragon devices, or GameNative and Winlator on others.
+- The PC section checks your device's graphics chip and shows which of these apps suit it, with links to their official release pages.
+- Use only games you own. RetroForge never shares your store logins or game files.
+
+## PC games with DroidDeck (Snapdragon)
+
+- Needs a Qualcomm Snapdragon chip with an Adreno 730 or newer GPU (many AYN and Retroid handhelds and Snapdragon phones). The PC section tells you if yours qualifies.
+- PC → PC game runtime → open the official releases page, download the latest DroidDeck APK and install it (Android asks you to allow installing from your browser once).
+- Open DroidDeck, sign in to Steam inside it and install a game you own. Back in RetroForge, the PC section shows DroidDeck as installed and opens it for you.
+
+## PC games with GameNative (Snapdragon, Exynos, Mali)
+
+- GameNative is free and open source (GPL-3.0). It plays Steam, Epic, GOG and Amazon games you own, and games you add from a folder. Tested here: TCG Card Shop Simulator reached its main menu on a Galaxy S22 (Exynos).
+- Install: PC → GameNative releases, download the latest APK (about 575 MB) and install it.
+- Store games: sign in to Steam (scan the QR code with the Steam app), Epic, GOG or Amazon inside GameNative and download a game.
+- Your own game folder: copy the game's folder to the phone (a file manager or USB cable), then in GameNative tap Skip login, then +, and choose that folder. GameNative asks for All files access: allow it so it can read the folder.
+- If Play says the executable couldn't be chosen: Edit container → Executable Path → pick the game's .exe (not UnityCrashHandler or setup files), save, and press Play again.
+- The first start downloads Proton (the Windows layer) and sets things up: a minute or two. Later starts are quicker.
+- Mods (for example a large BepInEx folder) can be left out to save space: the game runs without them.
 
 ## Learn more
 

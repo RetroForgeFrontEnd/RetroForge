@@ -26,11 +26,11 @@ The app's PC screen ([PcScreen.kt](../app/src/main/java/com/retroforge/app/ui/pc
 | GPU detection and classification | Tested on the S22 (Xclipse 920 correctly reported as not supported by DroidDeck) |
 | DroidDeck detection / open | Built; not tested with DroidDeck installed (no Adreno device available) |
 | Starting a specific PC game from RetroForge | **Not built.** DroidDeck's `LAUNCH_GAME` intent exists, but it's untested on real hardware, so there's no launch button |
-| GameNative / Winlator | Links only. GameNative is GPL-3.0 and plays Steam, Epic, GOG and Amazon games you own. Its README states no GPU requirements; its release notes, seen only via mirrors, mention Mali and Exynos. Winlator's official project doesn't state Mali/Xclipse support; that's in community forks. Neither documents a launch intent for other apps |
+| GameNative / Winlator | Links only. **GameNative tested on the S22:** a Unity game you own, added as a custom game, reached its main menu (see [pc-game-compatibility.md](pc-game-compatibility.md)). Earlier note: GameNative is GPL-3.0 and plays Steam, Epic, GOG and Amazon games you own. Its README states no GPU requirements; its release notes, seen only via mirrors, mention Mali and Exynos. Winlator's official project doesn't state Mali/Xclipse support; that's in community forks. Neither documents a launch intent for other apps |
 | PC games in the unified library | Not built |
 
 ## Next steps (need hardware or your test files)
 
 1. On an Adreno 730+ device: install DroidDeck, verify detection, then test `LAUNCH_GAME` with a game you own, and only then add Play for PC games.
-2. On the S22 (Xclipse): install GameNative from its official release and test a Steam game you own, to learn what really runs before RetroForge says anything more.
+2. Done 2026-10-28 on the S22 with a custom game (boots). Next: check sound/controls in play, and whether GameNative can be started for a specific game from another app (its source would show any intent or deep link); only then could RetroForge's library start PC games.
 3. Non-Steam games (e.g. the TCG Card Shop Simulator folder you mentioned): Winlator and GameNative's custom-game support are the candidates; test once the files are on the device.
