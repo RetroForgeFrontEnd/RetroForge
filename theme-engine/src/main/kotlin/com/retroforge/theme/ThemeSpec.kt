@@ -61,6 +61,8 @@ data class ThemeSpec(
     val tileAspect: TileAspect,
     val systemView: SystemView = SystemView.GRID,
     val homeLayout: HomeLayout = HomeLayout.DASHBOARD,
+    /** Artwork across the top of the dashboard home. Only "key-art" (RetroForge's own banner) for now; theme packages will add images. */
+    val banner: String? = null,
     val background: Background = Background(BackgroundStyle.SOLID, emptyList(), emptyList(), 135),
     /** CRT-style scanlines over every screen. */
     val scanlines: Boolean = false,
@@ -85,6 +87,8 @@ object ThemeFormat {
     const val FORMAT = "retroforge-theme"
     const val VERSION = 1
     const val MAX_BYTES = 64 * 1024
+    /** Banner art a theme may name. */
+    val BANNERS = setOf("key-art")
 
     @Serializable
     private data class RawPalette(
@@ -104,7 +108,7 @@ object ThemeFormat {
     private data class RawWordmark(val retro: String? = null, val forge: String? = null, val glow: Boolean = true)
 
     @Serializable
-    private data class RawLayout(val gameView: String = "grid", val tileAspect: String = "wide", val systemView: String = "grid", val home: String = "dashboard")
+    private data class RawLayout(val gameView: String = "grid", val tileAspect: String = "wide", val systemView: String = "grid", val home: String = "dashboard", val banner: String? = null)
 
     @Serializable
     private data class RawBackground(val style: String = "solid", val dark: List<String> = emptyList(), val light: List<String> = emptyList(), val angle: Int = 135)
@@ -161,6 +165,7 @@ object ThemeFormat {
             tileAspect = enumOf(raw.layout.tileAspect, TileAspect.entries, "layout.tileAspect"),
             systemView = enumOf(raw.layout.systemView, SystemView.entries, "layout.systemView"),
             homeLayout = enumOf(raw.layout.home, HomeLayout.entries, "layout.home"),
+            banner = raw.layout.banner?.takeIf { it in BANNERS },
             background = Background(
                 enumOf(raw.background.style, BackgroundStyle.entries, "background.style"),
                 raw.background.dark.take(4).map { color(it, "background.dark") },
@@ -188,7 +193,7 @@ object ThemeFormat {
                 theme.dark?.let(::raw), theme.light?.let(::raw), RawShape(theme.cornerRadius),
                 RawType(theme.font.name.lowercase(), theme.headlineWeight, theme.textScale),
                 RawWordmark(hex(theme.wordmarkRetro), hex(theme.wordmarkForge), theme.wordmarkGlow),
-                RawLayout(theme.gameView.name.lowercase(), theme.tileAspect.name.lowercase(), theme.systemView.name.lowercase(), theme.homeLayout.name.lowercase()),
+                RawLayout(theme.gameView.name.lowercase(), theme.tileAspect.name.lowercase(), theme.systemView.name.lowercase(), theme.homeLayout.name.lowercase(), theme.banner),
                 RawBackground(theme.background.style.name.lowercase(), theme.background.dark.map(::hex), theme.background.light.map(::hex), theme.background.angle),
                 RawEffects(theme.scanlines, theme.vignette, theme.focusGlow),
                 theme.importedFrom,

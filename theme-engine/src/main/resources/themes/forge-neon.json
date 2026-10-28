@@ -47,7 +47,8 @@
   "layout": {
     "gameView": "grid",
     "tileAspect": "wide",
-    "systemView": "carousel"
+    "systemView": "carousel",
+    "banner": "key-art"
   },
   "background": {
     "style": "radial",

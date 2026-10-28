@@ -1,5 +1,11 @@
 package com.retroforge.app.ui.home
 
+import com.retroforge.app.R
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -63,7 +69,16 @@ fun HomeScreen(
     val chosen by library.chosenCovers.collectAsStateWithLifecycle()
 
     ScreenFrame(title = null) {
-        Wordmark(fontSize = 32.sp)
+        if (LocalThemeSpec.current.banner == "key-art") {
+            // RetroForge's key art already carries the logo and tagline, so it replaces the text wordmark.
+            Image(
+                painterResource(R.drawable.key_art), contentDescription = "RetroForge: merging the past, building the future",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxWidth().aspectRatio(1584f / 672f).clip(MaterialTheme.shapes.large),
+            )
+        } else {
+            Wordmark(fontSize = 32.sp)
+        }
         StatusPill("Preview ${BuildConfig.VERSION_NAME}", StatusTone.CAUTION)
 
         val last = recent.firstOrNull()

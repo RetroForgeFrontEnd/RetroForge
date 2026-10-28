@@ -22,7 +22,7 @@ Test-only (not shipped): JUnit 4.13.2 (EPL-1.0), kotlinx-coroutines-test (Apache
 
 Not shipped, interacted with as separate apps: DroidDeck (GPL-3.0) — see [pc-runtime-licences.md](pc-runtime-licences.md).
 
-Artwork: icons, banner and wordmark are original to this project. The RetroForge key art shared on 2026-10-27 is not yet included in the app.
+Artwork: icons, TV banner and wordmark are original to this project. The RetroForge key art (app/src/main/res/drawable-nodpi/key_art.jpg, the Forge Neon home banner) was made by the project owner with Google Gemini; it depicts recognisable console hardware designs, so consider a version with generic consoles before a store release (see RELEASE_PLAN.md).
 
 Data adapted into RetroForge: Android launch commands and package names for standalone emulators (`retro-library/src/main/resources/standalone.json`) from ES-DE Frontend (`resources/systems/android`), MIT licence, Copyright (c) 2024-2026 Northwestern Software AB, (c) 2020-2024 Leon Styhre, (c) 2014 Alec Lofquist. The MIT notice must be included with the app.
 
