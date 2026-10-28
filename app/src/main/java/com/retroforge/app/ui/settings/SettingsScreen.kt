@@ -57,6 +57,12 @@ fun SettingsScreen(
             CardBody("A short guide to every feature: playing, emulators, hotkeys, covers, playlists, the ROM manager and more.")
         }
 
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenAbout) {
+            CardTitle("About RetroForge")
+            CardBody("Version ${BuildConfig.VERSION_NAME}. What RetroForge stands for (sort of), and what it's for.")
+            CardBody("Controller: D-pad to move, A to select, B to go back, L1/R1 to switch sections.")
+        }
+
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSetup) {
             CardTitle("Set up RetroForge")
             CardBody("Games folder, RetroArch, the cores your games need, and your BIOS files.")
@@ -113,11 +119,6 @@ fun SettingsScreen(
             FocusChip("Privacy", onClick = onOpenPrivacy)
         }
 
-        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenAbout) {
-            CardTitle("About RetroForge")
-            CardBody("Version ${BuildConfig.VERSION_NAME}. Select to read what RetroForge is for.")
-            CardBody("Controller: D-pad to move, A to select, B to go back, L1/R1 to switch sections.")
-        }
     }
 }
 

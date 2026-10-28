@@ -216,6 +216,13 @@ S22 (arm64) and the Android emulator (x86_64, software GPU). Debug build.
 - PS1 pad: L2/L1/R1/R2, split d-pad, △○✕□ drawn as shapes, two floating thumbsticks (tap = L3/R3), Select/Start/menu; DualShock-style dark console look with shaded buttons. Portrait surround slimmed to 4 dp so the picture is wider.
 - Not yet: analog input confirmed in a game, Resident Evil 2 (.m3u/.chd) and multi-disc swapping (disc control not implemented), on the S22.
 
+### 2026-10-28: Pre-phone-test checks (emulator)
+
+- Multi-disc: Resident Evil 2 (.m3u, two .chd, copied once with progress shown) — pause menu "Disc 1 of 2 · change to disc 2" swapped; the core read disc 2 (SLES-10972).
+- Release (R8) build, signed with the debug key for testing: Retro tab with downloaded canvas-es art and SVG logo, a PS1 game, pause menu (disc, volume) — no crashes.
+- Unit tests: all modules pass. New: cue sheet track names, theme metadata. `SettingsRepositoryTest.persistsChanges` now skips on Windows hosts (DataStore's rename-over-existing-file is refused by Windows; fine on Android/Linux).
+- Added without game tests: Sega CD, PC Engine CD (need their BIOS), arcade via FinalBurn Neo / MAME 2003-Plus (neogeo.zip copied alongside when present; clone parent sets not handled yet).
+
 ## Release test plan (run in the final stage, before any release)
 
 Everything is re-tested together on real hardware, so nothing that worked earlier is broken by later changes. Record each result here with date, device and evidence.

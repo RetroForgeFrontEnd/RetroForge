@@ -6,6 +6,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assume.assumeFalse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -27,6 +28,9 @@ class SettingsRepositoryTest {
 
     @Test
     fun persistsChanges() = runTest(UnconfinedTestDispatcher()) {
+        // DataStore saves by renaming a temp file over the old one. Android (Linux) allows that; a Windows build
+        // machine refuses the second save ("Unable to rename"), so this check runs on Linux/macOS hosts only.
+        assumeFalse(System.getProperty("os.name").orEmpty().startsWith("Windows"))
         val repo = repository()
         repo.setThemeMode(ThemeMode.LIGHT)
         repo.setShowPcSection(false)
