@@ -48,6 +48,10 @@ object PlayerCores {
     private val yabause = PlayerCore("yabause", "Yabause (experimental)")
     private val beetleSaturn = PlayerCore("mednafen_saturn", "Beetle Saturn (accurate, needs a fast phone)", needsBios = true)
 
+    // Draw with the GPU (OpenGL ES).
+    private val mupen = PlayerCore("mupen64plus_next_gles3", "Mupen64Plus-Next")
+    private val parallelN64 = PlayerCore("parallel_n64", "ParaLLEl N64")
+
     private val sega = listOf(gpgx, picodrive)
     private val gameBoy = listOf(gambatte, sameboy, gearboy, mgba)
 
@@ -68,6 +72,7 @@ object PlayerCores {
         "megacd" to listOf(gpgxCd, picodriveCd), "segacd" to listOf(gpgxCd, picodriveCd),
         "pcenginecd" to listOf(pceCd),
         "saturn" to listOf(yabause, beetleSaturn),
+        "n64" to listOf(mupen, parallelN64),
         "fbneo" to listOf(fbneo), "neogeo" to listOf(fbneo), "cps1" to listOf(fbneo), "cps2" to listOf(fbneo), "cps3" to listOf(fbneo),
         "mame" to listOf(mame2003, fbneo),
     )

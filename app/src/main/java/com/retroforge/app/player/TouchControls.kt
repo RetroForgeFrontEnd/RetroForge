@@ -74,6 +74,14 @@ data class PadLayout(
                 listOf("L" to Pad.L2, "R" to Pad.R2),
                 hasSelect = false,
             )
+            // N64 (Mupen64Plus-Next): A/B are libretro B/Y, Z is L2, C buttons are the right stick.
+            "n64" -> PadLayout(
+                listOf("B" to Pad.Y, "A" to Pad.B),
+                listOf("L" to Pad.L, "R" to Pad.R),
+                triggers = listOf("Z" to Pad.L2),
+                hasSelect = false,
+                sticks = true,
+            )
             "mastersystem", "sg1000" -> PadLayout(listOf("1" to Pad.B, "2" to Pad.A), hasSelect = false)
             "gamegear" -> PadLayout(listOf("1" to Pad.B, "2" to Pad.A), hasSelect = false)
             "pcengine", "pcenginecd" -> PadLayout(listOf("II" to Pad.B, "I" to Pad.A))
