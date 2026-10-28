@@ -41,3 +41,12 @@ External emulators (RetroArch etc.) need to read the ROM file themselves. With S
 ## Saves
 
 RetroBat stores saves in `G:\Retrobat\saves\<system>`. RetroArch `.srm` battery saves are generally portable between RetroArch on Windows and Android **for the same core**. Save states are core- and version-specific: never promised portable. Any save import will back up first.
+
+## Implemented (Milestone B, 2026-10-28)
+
+- System rules: `retro-library/src/main/resources/systems.json`, 221 systems generated from RetroBat 8.3.1.1 `es_systems.cfg` (ids, names, extensions only; Windows-only systems and extensions removed; common ES-DE aliases such as `genesis` added).
+- Accepted folders: a collection root (`roms`), its parent (e.g. the RetroBat folder), or one system folder.
+- Skipped as media: `images`, `media`, `mixart`, `snap`, `videos`, `wheel`, `manuals`, `downloaded_media` and similar.
+- `gamelist.xml` is read for titles, descriptions, dates, developer/publisher, genre, players, rating and artwork paths. It is never written.
+- `.m3u`, `.cue` and `.gdi` hide the files they list; folders named like games (`X.pc`, `X.ps3`) count as one game.
+- RetroForge's index lives in its own database; "Forget folder" deletes only that index and the access grant.

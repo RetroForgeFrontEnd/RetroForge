@@ -36,15 +36,50 @@ import com.retroforge.core.ui.FocusCard
 import com.retroforge.core.ui.FocusChip
 import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
+import com.retroforge.app.ui.library.GameTile
+import com.retroforge.app.ui.library.LibraryViewModel
 import com.retroforge.hacks.ListedHack
 import java.text.DateFormat
 import java.util.Date
 
 @Composable
-fun HacksScreen(viewModel: HacksViewModel, onOpenHack: (String) -> Unit, onOpenSources: () -> Unit) {
+fun HacksScreen(
+    viewModel: HacksViewModel,
+    library: LibraryViewModel,
+    onOpenGame: (Long) -> Unit,
+    onOpenRetro: () -> Unit,
+    onOpenHack: (String) -> Unit,
+    onOpenSources: () -> Unit,
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    ScreenFrame(title = "Hacks", subtitle = "ROM hacks from your catalogues. Each one links to its official page.") {
+    val ownHacks by library.hacks.collectAsStateWithLifecycle()
+    val roots by library.roots.collectAsStateWithLifecycle()
+    val rootsById = remember(roots) { roots.orEmpty().associateBy { it.id } }
+    ScreenFrame(title = "Hacks", subtitle = "Hacks you already have, and more to discover from your catalogues.") {
         if (state.loading) LinearProgressIndicator(Modifier.fillMaxWidth())
+
+        Text("Your hack ROMs", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
+        when {
+            roots.isNullOrEmpty() -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenRetro) {
+                CardBody("Add your game folder in Retro and the hacks you already have (folders such as \"SMW HACKS\") will appear here.")
+            }
+            ownHacks.isEmpty() -> CardBody("No hacks found in your folders. Folders with \"hack\" in their name, and files tagged (Hack) or [h], are listed here.")
+            else -> ownHacks.groupBy { it.system }.forEach { (system, games) ->
+                CardTitle("${library.systemName(system)} · ${games.size}")
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    items(games, key = { it.id }) { game ->
+                        GameTile(
+                            game,
+                            library.documentUri(rootsById, game.rootId, game.imageDocumentId),
+                            onClick = { onOpenGame(game.id) },
+                            modifier = Modifier.width(190.dp),
+                        )
+                    }
+                }
+            }
+        }
+
+        Text("Discover", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.padding(top = 12.dp))
 
         if (state.systems.size > 1) {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

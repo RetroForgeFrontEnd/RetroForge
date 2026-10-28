@@ -15,9 +15,12 @@ Run: `./gradlew testDebugUnitTest` (JVM, no device needed, no ROMs needed).
 | `RomPatcherTest` | retro-patch | 17 | IPS (records, RLE, grow, truncate, missing EOF); UPS (grow/shrink targets, wrong ROM, damaged patch); BPS (all four commands incl. overlapping target copy, negative offsets, metadata, out-of-range copy); SNES copier-header retry; patch chains (order, failing-step index, output naming); originals never modified |
 | `ArchiveInputTest` | retro-patch | 12 | ROM/patch selection inside .zip and .7z, choosing one of several patches, readme extraction (UTF-8/Latin-1, size cap), corrupt archives |
 | `CatalogueTest` | retro-hacks | 7 | Catalogue parsing (unknown fields, wrong format/version, HTML pages, unsafe ids), per-entry rejection (http:// and javascript: links, bad checksums, duplicates, missing requires), built-in catalogue validity, store add/update/remove/order, de-duplication by page |
+| `LibraryScannerTest` | retro-library | 12 | RetroBat-style collection: system folders, media folders skipped, gamelist.xml metadata + artwork, hack folders, .m3u/.cue hiding discs/tracks, zip/7z duplicates, single-system and parent-of-roms layouts, unrecognised folder, denied folder, read-only (ROMs never opened), cancellation, DOCTYPE/XXE refused, game-named folders (`X.pc`) |
+| `RomNamesTest` | retro-library | 4 | No-Intro and GoodTools tags, ", The" titles, flags |
+| `RealCollectionTest` | retro-library | 1 (skipped unless `RETROFORGE_REAL_ROMS` is set) | Read-only scan of a real collection, printing statistics |
 | `RealPatchTest` | retro-patch | 1 (skipped unless `patch-test/` has `.base` files) | Applies real patches or patch chains from the git-ignored `patch-test/` folder and prints SHA-1 for cross-checking |
 
-Last run: 2026-10-27, **46 passed, 0 failed** (+1 real-patch chain test that ran locally). `lintDebug`: 0 errors, 2 accepted warnings (TV banner vector is 320×180 by Android TV requirement; `allowBackup=false` already covers pre-Android-12).
+Last run: 2026-10-28, **63 passed, 0 failed** (64 incl. opt-in) (+1 real-patch chain test that ran locally). `lintDebug`: 0 errors, 2 accepted warnings (TV banner vector is 320×180 by Android TV requirement; `allowBackup=false` already covers pre-Android-12).
 
 No instrumented (on-device) automated UI tests exist yet. Planned for Milestone B alongside the scanner.
 
@@ -72,5 +75,40 @@ Input was sent with `adb shell input keyevent` (simulated gamepad/D-pad key code
 | `requires` link resolves even when the target was merged as a duplicate | Pass after a fix (it first showed a disabled raw id) |
 | Add from link: confirmation required, then fetch | Pass: example.com returned HTML, now reported as "That's a web page, not a catalogue file" (message improved after this test) |
 | Open official page | Hand-off to Chrome works; Chrome stopped at its own first-run screen on this fresh emulator |
+
+### 2026-10-28: Library scanner, real collection (desktop, read-only)
+
+`RETROFORGE_REAL_ROMS=G:\Retrobatoms ./gradlew :retro-library:test --tests '*RealCollectionTest*'`
+
+| Result | Value |
+|---|---|
+| Games / systems | **28,274 games in 107 systems**, 9.6 s |
+| With gamelist metadata / artwork | 26,809 / 26,779 |
+| Hacks | 248 (SMW HACKS 49, SNES HACKS 31, N64 HACKS 64, NES HACKS 30, GBA HACKS 16, DS 7, PS1 3, PSP 2, DC 1, plus tagged files) |
+| Multi-disc playlists | 394 `.m3u` games, discs hidden |
+| Possible duplicates | 98 (e.g. `Sentinel, The.zip` / `Sentinel.zip`; MSU-MD `.md` + `.cue` pairs) |
+| Problems | 1: six MUGEN folders nested > 6 levels |
+| Unrecognised folders | 92 (ports, Windows stores and systems not in es_systems.cfg) |
+
+Found and fixed on the real data: folders named like games (`Skate (EUR).ps3`, `XCOM.pc`) were entered and their inner files listed as games; they are now one game each.
+
+### 2026-10-28: Library on emulator (SAF)
+
+Test data: 371 files copied from `G:` (SNES 64 + gamelist + mixart + SMW/SNES HACKS, NES 40 + gamelist + mixart + NES HACKS, Mega Drive 25 + media/images, PS1 Resident Evil 2 two-disc `.m3u`, a decoy folder).
+
+| Check | Result |
+|---|---|
+| Pick the folder *above* `roms` via the system folder picker | Pass: `roms` found, 240 games in 4 systems |
+| Read access kept after app restart | Pass |
+| `.m3u` whose name says (USA) but lists (Europe) discs | Pass: one game, discs hidden |
+| Artwork from gamelist `mixart` via SAF | Pass |
+| Titles from gamelist (e.g. "Super Baseball 2020" for `2020 Super Baseball`) | Pass; sorted by shown title after a fix |
+| Filter, duplicate badge, "Other copies" link on detail page | Pass |
+| Hacks tab "Your hack ROMs": NES 30, SNES 80 | Pass |
+| Unrecognised folder reported; Rescan with live progress | Pass |
+
+### 2026-10-28: Links tab
+
+All six YouTube handles resolved to the named channels on youtube.com (checked 2026-10-28). Opening one launched the YouTube app on the emulator.
 
 Not tested: physical gamepad, Android TV device or TV emulator image, tablet, light theme visuals, "System" theme switching, opening the DroidDeck releases page (browser), DroidDeck-installed state, the real Adreno GPU path.

@@ -11,7 +11,8 @@ This file is the single source of truth for what exists, what has been verified 
 | 1 — Environment and feasibility audit | Done. PC approach **approved 2026-10-27: separate DroidDeck app via its launch intent.** |
 | 2 — PC runtime proof of concept | Blocked on a physical device (see [pc-runtime-proof-of-concept.md](pc-runtime-proof-of-concept.md)) |
 | 3 — Android foundation (Milestone A) | **Done: build verified, unit tested, emulator tested.** Physical device / TV / gamepad not tested. |
-| 4 — Retro library (Milestone B) | Next |
+| 4 — Retro library (Milestone B) | **Done: unit tested, real-collection tested (28,274 games, read-only), emulator tested via SAF.** USB/OTG drives and very large SAF trees not yet tried on a real device |
+| Links tab | Done: six verified YouTube channels |
 | Emulation path check (RetroArch, outside RetroForge) | 6 ROMs from your collection launch-tested on the emulator (SNES ×3 incl. `.7z`, Mega Drive, GBA, NES with gameplay): [EMULATOR_COMPATIBILITY.md](EMULATOR_COMPATIBILITY.md) |
 | ROM Patcher (IPS/BPS/UPS, zip/7z input) | **Built; 29 unit tests; emulator tested.** Patch chains, readmes and multi-patch archives work; a real 2-patch hack chain (Giant Mario → 2B) is gameplay-tested. Next: download a patch from a link. [FEATURE_PROPOSAL_ROM_TOOLS.md](FEATURE_PROPOSAL_ROM_TOOLS.md) |
 | Hacks tab (catalogues) | **Built; 7 unit tests; emulator tested.** Built-in starter catalogue (5 hacks, links to romhacking.net pages); add catalogues from file or https link. [hack-catalogue-format.md](hack-catalogue-format.md). romhacking.net isn't scraped: it is read-only since Aug 2024 and its robots.txt disallows its download and listing pages |

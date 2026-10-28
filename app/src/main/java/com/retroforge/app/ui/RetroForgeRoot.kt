@@ -43,11 +43,16 @@ import com.retroforge.app.ui.hacks.HackDetailScreen
 import com.retroforge.app.ui.hacks.HacksScreen
 import com.retroforge.app.ui.hacks.HacksViewModel
 import com.retroforge.app.ui.home.HomeScreen
+import com.retroforge.app.ui.links.LinksScreen
 import com.retroforge.app.ui.pc.PcScreen
 import com.retroforge.app.ui.patcher.PatcherScreen
 import com.retroforge.app.ui.patcher.PatcherViewModel
 import com.retroforge.app.ui.pc.PcViewModel
-import com.retroforge.app.ui.retro.RetroScreen
+import com.retroforge.app.ui.library.GameDetailScreen
+import com.retroforge.app.ui.library.LibraryFoldersScreen
+import com.retroforge.app.ui.library.LibraryViewModel
+import com.retroforge.app.ui.library.RetroScreen
+import com.retroforge.app.ui.library.SystemGamesScreen
 import com.retroforge.app.ui.settings.SettingsScreen
 import com.retroforge.app.ui.settings.SettingsViewModel
 import com.retroforge.core.settings.ThemeMode
@@ -64,12 +69,16 @@ enum class Section(val route: String, val label: String, @DrawableRes val icon: 
     RETRO("retro", "Retro", R.drawable.ic_section_retro),
     HACKS("hacks", "Hacks", R.drawable.ic_section_hacks),
     PC("pc", "PC", R.drawable.ic_section_pc),
+    LINKS("links", "Links", R.drawable.ic_section_links),
     SETTINGS("settings", "Settings", R.drawable.ic_section_settings),
 }
 
 private const val PATCHER_ROUTE = "retro/patcher"
 private const val HACK_DETAIL_ROUTE = "hacks/detail/{source}/{hack}"
 private const val HACK_SOURCES_ROUTE = "hacks/sources"
+private const val FOLDERS_ROUTE = "retro/folders"
+private const val SYSTEM_ROUTE = "retro/system/{system}"
+private const val GAME_ROUTE = "retro/game/{id}"
 
 @Composable
 fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
@@ -87,10 +96,11 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
         val backStack by nav.currentBackStackEntryAsState()
         val route = backStack?.destination?.route
         val current = sections.firstOrNull { it.route == route } ?: when {
-            route == PATCHER_ROUTE -> Section.RETRO
+            route == PATCHER_ROUTE || route?.startsWith("retro/") == true -> Section.RETRO
             route?.startsWith("hacks/") == true -> Section.HACKS
             else -> Section.HOME
         }
+        val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library))
         val hacksViewModel: HacksViewModel = viewModel(
             factory = HacksViewModel.factory(container.catalogues, container.catalogueFetcher, container.contentResolver),
         )
@@ -119,7 +129,26 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         composable(Section.HOME.route) {
                             HomeScreen(showPc = settings.showPcSection, onOpen = { nav.goTo(it) })
                         }
-                        composable(Section.RETRO.route) { RetroScreen(onOpenPatcher = { nav.navigate(PATCHER_ROUTE) }) }
+                        composable(Section.RETRO.route) {
+                            RetroScreen(
+                                libraryViewModel,
+                                onOpenFolders = { nav.navigate(FOLDERS_ROUTE) },
+                                onOpenSystem = { nav.navigate("retro/system/$it") },
+                                onOpenGame = { nav.navigate("retro/game/$it") },
+                                onOpenPatcher = { nav.navigate(PATCHER_ROUTE) },
+                            )
+                        }
+                        composable(FOLDERS_ROUTE) { LibraryFoldersScreen(libraryViewModel) }
+                        composable(SYSTEM_ROUTE) { entry ->
+                            SystemGamesScreen(libraryViewModel, entry.arguments?.getString("system").orEmpty(), onOpenGame = { nav.navigate("retro/game/$it") })
+                        }
+                        composable(GAME_ROUTE) { entry ->
+                            GameDetailScreen(
+                                libraryViewModel,
+                                entry.arguments?.getString("id")?.toLongOrNull() ?: -1,
+                                onOpenGame = { nav.navigate("retro/game/$it") },
+                            )
+                        }
                         composable(PATCHER_ROUTE) {
                             val patcherViewModel: PatcherViewModel = viewModel(factory = PatcherViewModel.factory(container.contentResolver))
                             PatcherScreen(patcherViewModel)
@@ -127,6 +156,9 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         composable(Section.HACKS.route) {
                             HacksScreen(
                                 hacksViewModel,
+                                libraryViewModel,
+                                onOpenGame = { nav.navigate("retro/game/$it") },
+                                onOpenRetro = { nav.goTo(Section.RETRO) },
                                 onOpenHack = { key -> nav.navigate("hacks/detail/$key") },
                                 onOpenSources = { nav.navigate(HACK_SOURCES_ROUTE) },
                             )
@@ -145,6 +177,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                             val pcViewModel: PcViewModel = viewModel(factory = PcViewModel.factory(container.pcStatus))
                             PcScreen(pcViewModel, container.droidDeck)
                         }
+                        composable(Section.LINKS.route) { LinksScreen() }
                         composable(Section.SETTINGS.route) { SettingsScreen(settingsViewModel) }
                     }
                 }
@@ -172,13 +205,14 @@ private fun SectionNav(sections: List<Section>, current: Section, vertical: Bool
     LaunchedEffect(Unit) {
         if (inputMode == InputMode.Keyboard) runCatching { initialFocus.requestFocus() }
     }
-    val tab: @Composable (Section) -> Unit = { section ->
+    val tab: @Composable (Section, Modifier) -> Unit = { section, modifier ->
         SectionTab(
             label = section.label,
             icon = painterResource(section.icon),
             selected = section == current,
             onClick = { onSelect(section) },
-            modifier = if (section == current) Modifier.focusRequester(initialFocus) else Modifier,
+            modifier = if (section == current) modifier.focusRequester(initialFocus) else modifier,
+            compact = !vertical,
         )
     }
     if (vertical) {
@@ -189,14 +223,14 @@ private fun SectionNav(sections: List<Section>, current: Section, vertical: Bool
         ) {
             Wordmark(short = true, fontSize = 24.sp)
             Spacer(Modifier.height(16.dp))
-            sections.forEach { tab(it) }
+            sections.forEach { tab(it, Modifier) }
         }
     } else {
         Row(
-            modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(horizontal = 4.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
         ) {
-            sections.forEach { tab(it) }
+            sections.forEach { tab(it, Modifier.weight(1f)) }
         }
     }
 }

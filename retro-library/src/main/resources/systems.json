@@ -1,0 +1,2713 @@
+{
+ "source": "Generated from RetroBat 8.3.1.1 es_systems.cfg: system ids, display names and file extensions only. Windows-only systems and extensions removed. RetroBat's own menu entry removed.",
+ "systems": [
+  {
+   "id": "2ship",
+   "name": "2 Ship 2 Harkinian",
+   "extensions": [
+    "n64",
+    "z64"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "3do",
+   "name": "3DO",
+   "extensions": [
+    "chd",
+    "cue",
+    "iso"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "3ds",
+   "name": "Nintendo 3DS",
+   "extensions": [
+    "3ds",
+    "3dsx",
+    "7z",
+    "app",
+    "axf",
+    "cci",
+    "cia",
+    "cxi",
+    "elf",
+    "m3u",
+    "squashfs",
+    "z3dsx",
+    "zcci",
+    "zcia",
+    "zcxi",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "Windows",
+   "name": "Windows",
+   "extensions": [
+    "7z",
+    "pc",
+    "rar",
+    "win",
+    "windows",
+    "wine",
+    "wsquashfs",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "actionmax",
+   "name": "Actionmax",
+   "extensions": [
+    "actionmax"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "adam",
+   "name": "ADAM",
+   "extensions": [
+    "1dd",
+    "7z",
+    "bin",
+    "col",
+    "cqi",
+    "cqm",
+    "d77",
+    "d88",
+    "ddp",
+    "dfi",
+    "dsk",
+    "hfe",
+    "imd",
+    "m3u",
+    "mfi",
+    "mfm",
+    "rom",
+    "td0",
+    "wav",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "advision",
+   "name": "Adventure Vision",
+   "extensions": [
+    "7z",
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "amiga1200",
+   "name": "Amiga AGA",
+   "extensions": [
+    "7z",
+    "adf",
+    "adz",
+    "dms",
+    "hdf",
+    "ipf",
+    "lha",
+    "m3u",
+    "rp9",
+    "uae",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "amiga4000",
+   "name": "Amiga 4000",
+   "extensions": [
+    "7z",
+    "adf",
+    "adz",
+    "dms",
+    "hdf",
+    "ipf",
+    "lha",
+    "m3u",
+    "rp9",
+    "uae",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "amiga500",
+   "name": "Amiga OCS/ECS",
+   "extensions": [
+    "7z",
+    "adf",
+    "adz",
+    "ags",
+    "dms",
+    "hdf",
+    "ipf",
+    "lha",
+    "m3u",
+    "rp9",
+    "uae",
+    "zip"
+   ],
+   "aliases": [
+    "amiga"
+   ]
+  },
+  {
+   "id": "amigacd32",
+   "name": "Amiga CD32",
+   "extensions": [
+    "7z",
+    "ccd",
+    "chd",
+    "cso",
+    "cue",
+    "iso",
+    "lha",
+    "mds",
+    "nrg",
+    "rp9",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "amigacdtv",
+   "name": "Amiga CDTV",
+   "extensions": [
+    "7z",
+    "ccd",
+    "chd",
+    "cso",
+    "cue",
+    "iso",
+    "m3u",
+    "mds",
+    "nrg",
+    "rp9",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "amstradcpc",
+   "name": "Amstrad CPC",
+   "extensions": [
+    "7z",
+    "cdt",
+    "dsk",
+    "kcr",
+    "m3u",
+    "sna",
+    "tap",
+    "voc",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "apfm1000",
+   "name": "APF M-1000",
+   "extensions": [
+    "7z",
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "apple2",
+   "name": "Apple II",
+   "extensions": [
+    "do",
+    "dsk",
+    "hdv",
+    "m3u",
+    "nib",
+    "po",
+    "woz",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "apple2gs",
+   "name": "Apple IIGS",
+   "extensions": [
+    "2mg",
+    "hdv",
+    "m3u",
+    "woz",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "aquarius",
+   "name": "Mattel Aquarius",
+   "extensions": [
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "arcadia",
+   "name": "Arcadia 2001",
+   "extensions": [
+    "7z",
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "archimedes",
+   "name": "Archimedes",
+   "extensions": [
+    "1dd",
+    "360",
+    "7z",
+    "adf",
+    "adl",
+    "adm",
+    "ads",
+    "apd",
+    "bbc",
+    "cqi",
+    "cqm",
+    "d77",
+    "d88",
+    "dfi",
+    "dsd",
+    "dsk",
+    "hfe",
+    "ima",
+    "imd",
+    "img",
+    "ipf",
+    "jfd",
+    "mfi",
+    "mfm",
+    "msa",
+    "ssd",
+    "st",
+    "td0",
+    "ufi",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "arduboy",
+   "name": "Arduboy",
+   "extensions": [
+    "7z",
+    "hex",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "astrocade",
+   "name": "Astrocade",
+   "extensions": [
+    "7z",
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "atari2600",
+   "name": "Atari 2600",
+   "extensions": [
+    "7z",
+    "a26",
+    "bin",
+    "gz",
+    "rom",
+    "zip"
+   ],
+   "aliases": [
+    "2600"
+   ]
+  },
+  {
+   "id": "atari5200",
+   "name": "Atari 5200",
+   "extensions": [
+    "7z",
+    "a52",
+    "atr",
+    "atx",
+    "bin",
+    "cas",
+    "cdm",
+    "rom",
+    "xex",
+    "xfd",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "atari7800",
+   "name": "Atari 7800",
+   "extensions": [
+    "7z",
+    "a78",
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "atari800",
+   "name": "Atari 800",
+   "extensions": [
+    "7z",
+    "a52",
+    "atr",
+    "atx",
+    "bin",
+    "cas",
+    "cdm",
+    "m3u",
+    "rom",
+    "xex",
+    "xfd",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "atarist",
+   "name": "Atari ST",
+   "extensions": [
+    "7z",
+    "dim",
+    "gemdos",
+    "ipf",
+    "m3u",
+    "msa",
+    "st",
+    "stx",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "atom",
+   "name": "Atom",
+   "extensions": [
+    "1dd",
+    "40t",
+    "7z",
+    "atm",
+    "bin",
+    "cqi",
+    "cqm",
+    "csw",
+    "d77",
+    "d88",
+    "dfi",
+    "dsk",
+    "hfe",
+    "imd",
+    "mfi",
+    "mfm",
+    "rom",
+    "tap",
+    "td0",
+    "uef",
+    "wav",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "atomiswave",
+   "name": "Atomiswave",
+   "extensions": [
+    "7z",
+    "bin",
+    "lst",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "bbcmicro",
+   "name": "BBC Micro",
+   "extensions": [
+    "7z",
+    "dsd",
+    "ssd",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "bennugd",
+   "name": "BennuGD",
+   "extensions": [
+    "dat",
+    "dcb"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "bk",
+   "name": "Elektronika BK",
+   "extensions": [
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "bstone",
+   "name": "Blake Stone",
+   "extensions": [
+    "bstone"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "c128",
+   "name": "Commodore 128",
+   "extensions": [
+    "7z",
+    "d64",
+    "d81",
+    "lnx",
+    "m3u",
+    "prg",
+    "tap",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "c16",
+   "name": "Commodore 16",
+   "extensions": [
+    "7z",
+    "d64",
+    "m3u",
+    "prg",
+    "tap",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "c20",
+   "name": "VIC-20",
+   "extensions": [
+    "a0",
+    "b0",
+    "crt",
+    "d64",
+    "d81",
+    "nib",
+    "prg",
+    "t64",
+    "tap",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "c64",
+   "name": "Commodore 64",
+   "extensions": [
+    "7z",
+    "crt",
+    "d64",
+    "d71",
+    "d81",
+    "g64",
+    "m3u",
+    "nib",
+    "prg",
+    "t64",
+    "tap",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "camplynx",
+   "name": "Camputers Lynx",
+   "extensions": [
+    "bin",
+    "squashfs",
+    "tap",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "casloopy",
+   "name": "Casio Loopy",
+   "extensions": [
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "cassettevision",
+   "name": "Cassette Vision",
+   "extensions": [
+    "bin777",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "cave",
+   "name": "CAVE",
+   "extensions": [
+    "7z",
+    "fba",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "cavestory",
+   "name": "Cavestory",
+   "extensions": [
+    "libretro"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "cdi",
+   "name": "Philips CD-i",
+   "extensions": [
+    "cdr",
+    "chd",
+    "cue",
+    "gdi",
+    "iso",
+    "nrg",
+    "toc"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "cgenius",
+   "name": "Commander Genius",
+   "extensions": [
+    "cgenius"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "channelf",
+   "name": "Fairchild Channel F",
+   "extensions": [
+    "7z",
+    "bin",
+    "rom",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "chihiro",
+   "name": "Chihiro",
+   "extensions": [
+    "bin",
+    "iso",
+    "xbe"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "coco",
+   "name": "TRS-80 Color Computer",
+   "extensions": [
+    "7z",
+    "cas",
+    "ccc",
+    "dsk",
+    "rom",
+    "wav",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "colecovision",
+   "name": "ColecoVision",
+   "extensions": [
+    "7z",
+    "cas",
+    "col",
+    "ddp",
+    "dsk",
+    "m3u",
+    "mx1",
+    "mx2",
+    "ri",
+    "rom",
+    "sc",
+    "sg",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "cplus4",
+   "name": "Commodore Plus4",
+   "extensions": [
+    "7z",
+    "d64",
+    "m3u",
+    "prg",
+    "tap",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "cps1",
+   "name": "CPS-I",
+   "extensions": [
+    "7z",
+    "fba",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "cps2",
+   "name": "CPS-II",
+   "extensions": [
+    "7z",
+    "fba",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "cps3",
+   "name": "CPS-III",
+   "extensions": [
+    "7z",
+    "decomp",
+    "fba",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "crvision",
+   "name": "CreatiVision",
+   "extensions": [
+    "7z",
+    "bin",
+    "rom",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "daphne",
+   "name": "Laserdisc",
+   "extensions": [
+    "7z",
+    "daphne",
+    "hypseus",
+    "rar",
+    "squashfs"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "devilutionx",
+   "name": "DevilutionX - Diablo Open-Source Implementation",
+   "extensions": [
+    "win"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "dice",
+   "name": "DICE",
+   "extensions": [
+    "dmy",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "doom",
+   "name": "Doom",
+   "extensions": [
+    "gzdoom",
+    "ipk3",
+    "iwad",
+    "pk3",
+    "pwad",
+    "uzdoom",
+    "wad"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "doom3",
+   "name": "Doom 3",
+   "extensions": [
+    "boom3"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "dos",
+   "name": "DOS",
+   "extensions": [
+    "dos",
+    "dosbox",
+    "dosz",
+    "m3u8",
+    "pc",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "dragon32",
+   "name": "Dragon 32/64",
+   "extensions": [
+    "cas",
+    "dmk",
+    "dsk",
+    "jvc",
+    "os9",
+    "vdk",
+    "wav"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "dreamcast",
+   "name": "Dreamcast",
+   "extensions": [
+    "cdi",
+    "chd",
+    "cue",
+    "gdi",
+    "m3u",
+    "mdf",
+    "mds"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "dusklight",
+   "name": "DuskLight",
+   "extensions": [
+    "iso",
+    "m3u",
+    "rvz"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "easyrpg",
+   "name": "EasyRPG - RPG Maker 2000/2003 player",
+   "extensions": [
+    "7z",
+    "easyrpg",
+    "lbd",
+    "rar",
+    "squashfs",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "ecwolf",
+   "name": "ECWolf",
+   "extensions": [
+    "pk3"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "eduke32",
+   "name": "Duke Nukem 3D",
+   "extensions": [
+    "eduke32"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "electron",
+   "name": "Electron",
+   "extensions": [
+    "7z",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "enterprise",
+   "name": "Enterprise",
+   "extensions": [
+    "bas",
+    "com",
+    "dsk",
+    "dtf",
+    "img",
+    "tap",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "fbneo",
+   "name": "Final Burn",
+   "extensions": [
+    "7z",
+    "bin",
+    "chd",
+    "fba",
+    "zip"
+   ],
+   "aliases": [
+    "finalburn"
+   ]
+  },
+  {
+   "id": "fds",
+   "name": "Nintendo Family Computer Disk System",
+   "extensions": [
+    "7z",
+    "fds",
+    "nes",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "flash",
+   "name": "flash",
+   "extensions": [
+    "swf"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "fm7",
+   "name": "FM-7",
+   "extensions": [
+    "1dd",
+    "7z",
+    "cqi",
+    "cqm",
+    "d77",
+    "d88",
+    "dfi",
+    "dsk",
+    "hfe",
+    "imd",
+    "mfi",
+    "mfm",
+    "t77",
+    "td0",
+    "wav",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "fmtowns",
+   "name": "FM Towns",
+   "extensions": [
+    "cd",
+    "chd",
+    "cue",
+    "d77",
+    "d88",
+    "iso",
+    "m3u",
+    "xdf"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "fpinball",
+   "name": "Future Pinball",
+   "extensions": [
+    "7z",
+    "fpt",
+    "rar",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gaelco",
+   "name": "Gaelco PowerVR",
+   "extensions": [
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gamate",
+   "name": "Gamate",
+   "extensions": [
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gamecom",
+   "name": "Game.com",
+   "extensions": [
+    "7z",
+    "bin",
+    "tgc",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gamecube",
+   "name": "GameCube",
+   "extensions": [
+    "7z",
+    "ciso",
+    "decomp",
+    "dol",
+    "gcz",
+    "iso",
+    "json",
+    "m3u",
+    "rvz",
+    "squashfs",
+    "wad",
+    "wbfs",
+    "wia",
+    "zip"
+   ],
+   "aliases": [
+    "gc"
+   ]
+  },
+  {
+   "id": "gamegear",
+   "name": "Game Gear",
+   "extensions": [
+    "7z",
+    "bin",
+    "gg",
+    "zip"
+   ],
+   "aliases": [
+    "gg"
+   ]
+  },
+  {
+   "id": "gamepock",
+   "name": "Game Pocket Computer",
+   "extensions": [
+    "7z",
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gb",
+   "name": "Game Boy",
+   "extensions": [
+    "7z",
+    "gb",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gb2players",
+   "name": "Game Boy 2 Players",
+   "extensions": [
+    "7z",
+    "gb",
+    "m3u",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gba",
+   "name": "Game Boy Advance",
+   "extensions": [
+    "7z",
+    "decomp",
+    "gba",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gba2players",
+   "name": "Game Boy Advance 2 Players",
+   "extensions": [
+    "gba"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gbc",
+   "name": "Game Boy Color",
+   "extensions": [
+    "7z",
+    "gbc",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gbc2players",
+   "name": "Game Boy Color 2 Players",
+   "extensions": [
+    "7z",
+    "gbc",
+    "m3u",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gemrb",
+   "name": "GemRB - Infinity Engine Open-Source Implementation",
+   "extensions": [
+    "auto",
+    "bg1",
+    "bg2",
+    "how",
+    "iwd",
+    "iwd2",
+    "pst"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gmaster",
+   "name": "Game Master",
+   "extensions": [
+    "7z",
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gp32",
+   "name": "Game Park 32",
+   "extensions": [
+    "smc",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gw",
+   "name": "Game and Watch",
+   "extensions": [
+    "7z",
+    "mgw",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "gx4000",
+   "name": "Amstrad GX4000",
+   "extensions": [
+    "7z",
+    "cpr",
+    "dsk",
+    "m3u",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "hbmame",
+   "name": "MAME Homebrew",
+   "extensions": [
+    "hb",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "hikaru",
+   "name": "Hikaru",
+   "extensions": [
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "ikemen",
+   "name": "IKEMEN",
+   "extensions": [
+    "ikemen",
+    "pc",
+    "win"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "intellivision",
+   "name": "Mattel Intellivision",
+   "extensions": [
+    "7z",
+    "bin",
+    "int",
+    "rom",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "j2me",
+   "name": "Java 2 MicroEdition",
+   "extensions": [
+    "jar"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "jaguar",
+   "name": "Jaguar",
+   "extensions": [
+    "7z",
+    "abs",
+    "bin",
+    "cdi",
+    "cof",
+    "cue",
+    "j64",
+    "jag",
+    "prg",
+    "rom",
+    "squashfs",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "jaguarcd",
+   "name": "Jaguar CD",
+   "extensions": [
+    "7z",
+    "bigpimg",
+    "cdi",
+    "cue",
+    "squashfs",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "karaoke",
+   "name": "Karaoke",
+   "extensions": [
+    "cdg"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "laseractive",
+   "name": "Pioneer Laserdisc",
+   "extensions": [
+    "mmi"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "lcdgames",
+   "name": "LCD Games",
+   "extensions": [
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "love",
+   "name": "LÖVE",
+   "extensions": [
+    "7z",
+    "love",
+    "lua",
+    "lutro",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "lowresnx",
+   "name": "Lowres NX",
+   "extensions": [
+    "nx"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "lutro",
+   "name": "Lutro Lua Framework",
+   "extensions": [
+    "7z",
+    "love",
+    "lua",
+    "lutro",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "lynx",
+   "name": "Lynx",
+   "extensions": [
+    "7z",
+    "lnx",
+    "o",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "mame",
+   "name": "MAME",
+   "extensions": [
+    "7z",
+    "decomp",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "mastersystem",
+   "name": "Master System - Mark III",
+   "extensions": [
+    "7z",
+    "bin",
+    "sms",
+    "wad",
+    "zip"
+   ],
+   "aliases": [
+    "sms"
+   ]
+  },
+  {
+   "id": "megacd",
+   "name": "Mega CD",
+   "extensions": [
+    "7z",
+    "chd",
+    "cso",
+    "cue",
+    "iso",
+    "m3u",
+    "zip"
+   ],
+   "aliases": [
+    "segacd"
+   ]
+  },
+  {
+   "id": "megadrive",
+   "name": "Megadrive - Genesis",
+   "extensions": [
+    "68k",
+    "7z",
+    "bin",
+    "gen",
+    "md",
+    "sg",
+    "sgd",
+    "smd",
+    "wad",
+    "zip"
+   ],
+   "aliases": [
+    "genesis"
+   ]
+  },
+  {
+   "id": "megadrive-msu",
+   "name": "MD-MSU",
+   "extensions": [
+    "68k",
+    "7z",
+    "bin",
+    "cue",
+    "gen",
+    "md",
+    "sg",
+    "sgd",
+    "smd",
+    "wad",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "megaduck",
+   "name": "Mega Duck",
+   "extensions": [
+    "7z",
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "mess",
+   "name": "MESS",
+   "extensions": [
+    "fake"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "model2",
+   "name": "Model 2",
+   "extensions": [
+    "decomp",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "model3",
+   "name": "Model 3",
+   "extensions": [
+    "decomp",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "msx1",
+   "name": "MSX",
+   "extensions": [
+    "7z",
+    "cas",
+    "col",
+    "dsk",
+    "m3u",
+    "mx1",
+    "mx2",
+    "ogv",
+    "ri",
+    "rom",
+    "sc",
+    "sg",
+    "wav",
+    "zip"
+   ],
+   "aliases": [
+    "msx"
+   ]
+  },
+  {
+   "id": "msx2",
+   "name": "MSX2",
+   "extensions": [
+    "7z",
+    "cas",
+    "col",
+    "dsk",
+    "m3u",
+    "mx1",
+    "mx2",
+    "ogv",
+    "ri",
+    "rom",
+    "sc",
+    "sg",
+    "wav",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "msx2+",
+   "name": "MSX2+",
+   "extensions": [
+    "7z",
+    "cas",
+    "col",
+    "dsk",
+    "m3u",
+    "mx1",
+    "mx2",
+    "ogv",
+    "ri",
+    "rom",
+    "sc",
+    "sg",
+    "wav",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "msxturbor",
+   "name": "MSX turbo R",
+   "extensions": [
+    "7z",
+    "cas",
+    "col",
+    "dsk",
+    "m3u",
+    "mx1",
+    "mx2",
+    "ogv",
+    "ri",
+    "rom",
+    "sc",
+    "sg",
+    "wav",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "mugen",
+   "name": "MUGEN",
+   "extensions": [
+    "mugen",
+    "pc",
+    "win"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "multivision",
+   "name": "Multivision",
+   "extensions": [
+    "7z",
+    "bin",
+    "gg",
+    "rom",
+    "sg",
+    "sms",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "n64",
+   "name": "Nintendo 64",
+   "extensions": [
+    "7z",
+    "decomp",
+    "n64",
+    "v64",
+    "wad",
+    "z64",
+    "zip"
+   ],
+   "aliases": [
+    "nintendo64"
+   ]
+  },
+  {
+   "id": "n64dd",
+   "name": "Nintendo 64 Disk Drive",
+   "extensions": [
+    "7z",
+    "n64",
+    "ndd",
+    "v64",
+    "wad",
+    "z64",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "namco2x6",
+   "name": "Namco 246/256",
+   "extensions": [
+    "acgame",
+    "m3u",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "naomi",
+   "name": "Naomi",
+   "extensions": [
+    "7z",
+    "bin",
+    "dat",
+    "decomp",
+    "lst",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "naomi2",
+   "name": "Naomi 2",
+   "extensions": [
+    "7z",
+    "decomp",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "nds",
+   "name": "Nintendo DS",
+   "extensions": [
+    "7z",
+    "bin",
+    "nds",
+    "zip"
+   ],
+   "aliases": [
+    "ds"
+   ]
+  },
+  {
+   "id": "neogeo",
+   "name": "Neo Geo",
+   "extensions": [
+    "7z",
+    "neo",
+    "wad",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "neogeo64",
+   "name": "Hyper Neo Geo 64",
+   "extensions": [
+    "7z",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "neogeocd",
+   "name": "Neo Geo CD",
+   "extensions": [
+    "7z",
+    "chd",
+    "cso",
+    "cue",
+    "iso",
+    "m3u",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "nes",
+   "name": "Nintendo Entertainment System - Famicom",
+   "extensions": [
+    "7z",
+    "fds",
+    "nes",
+    "wad",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "ngage",
+   "name": "N-Gage",
+   "extensions": [
+    "ngage",
+    "symbian"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "ngp",
+   "name": "Neo Geo Pocket",
+   "extensions": [
+    "7z",
+    "ngc",
+    "ngp",
+    "zip"
+   ],
+   "aliases": [
+    "neogeopocket"
+   ]
+  },
+  {
+   "id": "ngpc",
+   "name": "Neo Geo Pocket Color",
+   "extensions": [
+    "7z",
+    "ngc",
+    "ngp",
+    "zip"
+   ],
+   "aliases": [
+    "neogeopocketcolor"
+   ]
+  },
+  {
+   "id": "odyssey2",
+   "name": "Odyssey² - Videopac",
+   "extensions": [
+    "7z",
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "openbor",
+   "name": "Openbor",
+   "extensions": [
+    "pak"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "opengoal",
+   "name": "OpenGOAL",
+   "extensions": [
+    "opengoal"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "openjazz",
+   "name": "OpenJazz",
+   "extensions": [
+    "openjazz"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "openlara",
+   "name": "OpenLara",
+   "extensions": [
+    "croft"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "oricatmos",
+   "name": "Oric/Atmos",
+   "extensions": [
+    "dsk",
+    "tap"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "p2000t",
+   "name": "P2000T",
+   "extensions": [
+    "cas",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "pc88",
+   "name": "PC-8800",
+   "extensions": [
+    "d88",
+    "m3u",
+    "u88"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "pc98",
+   "name": "PC-9800",
+   "extensions": [
+    "2hd",
+    "88d",
+    "98d",
+    "cue",
+    "d88",
+    "d98",
+    "dup",
+    "fdd",
+    "fdi",
+    "hdd",
+    "hdi",
+    "hdm",
+    "hdn",
+    "m3u",
+    "nhd",
+    "tfd",
+    "thd",
+    "xdf",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "pcengine",
+   "name": "PC Engine",
+   "extensions": [
+    "7z",
+    "bin",
+    "pce",
+    "squashfs",
+    "wad",
+    "zip"
+   ],
+   "aliases": [
+    "tg16",
+    "turbografx16"
+   ]
+  },
+  {
+   "id": "pcenginecd",
+   "name": "PC Engine CD",
+   "extensions": [
+    "7z",
+    "bin",
+    "ccd",
+    "chd",
+    "cso",
+    "cue",
+    "img",
+    "iso",
+    "m3u",
+    "pce",
+    "squashfs",
+    "zip"
+   ],
+   "aliases": [
+    "tg-cd",
+    "turbografxcd"
+   ]
+  },
+  {
+   "id": "pcfx",
+   "name": "PC-FX",
+   "extensions": [
+    "ccd",
+    "chd",
+    "cue",
+    "m3u",
+    "toc"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "pdark",
+   "name": "Perfect Dark",
+   "extensions": [
+    "z64"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "pegasus",
+   "name": "Pegasus",
+   "extensions": [
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "pet",
+   "name": "Commodore PET",
+   "extensions": [
+    "7z",
+    "a0",
+    "b0",
+    "crt",
+    "d64",
+    "d81",
+    "m3u",
+    "prg",
+    "t64",
+    "tap",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "pico8",
+   "name": "PICO-8",
+   "extensions": [
+    "p8",
+    "png"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "pinballfx",
+   "name": "Pinball FX",
+   "extensions": [
+    "table"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "pinballfx2",
+   "name": "Pinball FX2",
+   "extensions": [
+    "pxp",
+    "table"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "pinballfx3",
+   "name": "Pinball FX3",
+   "extensions": [
+    "pxp",
+    "table"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "pinballm",
+   "name": "Pinball M",
+   "extensions": [
+    "table"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "pokemini",
+   "name": "Pokemon-Mini",
+   "extensions": [
+    "7z",
+    "min",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "powerbomberman",
+   "name": "Power Bomberman",
+   "extensions": [
+    "pb"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "ps2",
+   "name": "Playstation 2",
+   "extensions": [
+    "7z",
+    "bin",
+    "chd",
+    "cso",
+    "decomp",
+    "gz",
+    "iso",
+    "m3u",
+    "mdf",
+    "squashfs",
+    "zip"
+   ],
+   "aliases": [
+    "playstation2"
+   ]
+  },
+  {
+   "id": "ps3",
+   "name": "Playstation 3",
+   "extensions": [
+    "7z",
+    "decomp",
+    "iso",
+    "m3u",
+    "ps3",
+    "rar",
+    "squashfs",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "ps4",
+   "name": "Playstation 4",
+   "extensions": [
+    "m3u",
+    "ps4",
+    "zar"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "psp",
+   "name": "PlayStation Portable",
+   "extensions": [
+    "7z",
+    "chd",
+    "cso",
+    "elf",
+    "iso",
+    "pbp",
+    "prx",
+    "squashfs",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "psvita",
+   "name": "PlayStation Vita",
+   "extensions": [
+    "m3u",
+    "psvita",
+    "vpk"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "psx",
+   "name": "PlayStation",
+   "extensions": [
+    "7z",
+    "cbn",
+    "ccd",
+    "chd",
+    "cso",
+    "cue",
+    "decomp",
+    "img",
+    "iso",
+    "m3u",
+    "mdf",
+    "pbp",
+    "squashfs",
+    "toc",
+    "zip"
+   ],
+   "aliases": [
+    "ps1",
+    "playstation"
+   ]
+  },
+  {
+   "id": "pv1000",
+   "name": "PV-1000",
+   "extensions": [
+    "7z",
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "quake",
+   "name": "Quake",
+   "extensions": [
+    "pak",
+    "quake"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "quake2",
+   "name": "Quake II",
+   "extensions": [
+    "pak",
+    "quake2"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "raze",
+   "name": "Raze",
+   "extensions": [
+    "raze"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "reminiscence",
+   "name": "REminiscence",
+   "extensions": [
+    "rem"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "rtcw",
+   "name": "RealRTCW",
+   "extensions": [
+    "rtcw"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "samcoupe",
+   "name": "Samcoupé",
+   "extensions": [
+    "dsk",
+    "mgt",
+    "sad",
+    "sbt"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "satellaview",
+   "name": "Satellaview",
+   "extensions": [
+    "7z",
+    "bs",
+    "fig",
+    "sfc",
+    "smc",
+    "st",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "saturn",
+   "name": "Saturn",
+   "extensions": [
+    "ccd",
+    "chd",
+    "cso",
+    "cue",
+    "iso",
+    "m3u",
+    "mds",
+    "squashfs",
+    "toc",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "screenshots",
+   "name": "Screenshots",
+   "extensions": [
+    "bmp",
+    "gif",
+    "hdr",
+    "jpeg",
+    "jpg",
+    "pgm",
+    "pic",
+    "png",
+    "ppm",
+    "psd",
+    "tga"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "scummvm",
+   "name": "ScummVM",
+   "extensions": [
+    "7z",
+    "rar",
+    "scummvm",
+    "squashfs",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "scv",
+   "name": "Super Cassette Vision",
+   "extensions": [
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "sega32x",
+   "name": "32X",
+   "extensions": [
+    "32x",
+    "7z",
+    "bin",
+    "md",
+    "smd",
+    "zip"
+   ],
+   "aliases": [
+    "32x"
+   ]
+  },
+  {
+   "id": "segastv",
+   "name": "ST-V",
+   "extensions": [
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "sg1000",
+   "name": "SG-1000",
+   "extensions": [
+    "7z",
+    "bin",
+    "gg",
+    "rom",
+    "sg",
+    "sms",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "sgb",
+   "name": "Super Game Boy",
+   "extensions": [
+    "7z",
+    "gb",
+    "gbc",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "sgb-msu1",
+   "name": "GameBoy MSU",
+   "extensions": [
+    "gb",
+    "gbc",
+    "squashfs"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "singe",
+   "name": "Singe",
+   "extensions": [
+    "hypseus",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "snes",
+   "name": "Super Nintendo Entertainment System",
+   "extensions": [
+    "7z",
+    "bsx",
+    "decomp",
+    "dx2",
+    "fig",
+    "gd3",
+    "gd7",
+    "rom",
+    "sfc",
+    "smc",
+    "swc",
+    "wad",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "snes-msu1",
+   "name": "Super NES MSU-1",
+   "extensions": [
+    "m3u",
+    "sfc",
+    "smc",
+    "squashfs"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "soh",
+   "name": "Ship of Harkinian",
+   "extensions": [
+    "n64",
+    "z64"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "solarus",
+   "name": "Solarus",
+   "extensions": [
+    "solarus",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "sonic-mania",
+   "name": "Sonic Mania",
+   "extensions": [
+    "rsdk"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "sonic3-air",
+   "name": "Sonic 3 AIR",
+   "extensions": [
+    "bin"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "sonicretro",
+   "name": "Sonic Retro",
+   "extensions": [
+    "rsdk"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "spectravideo",
+   "name": "Spectravideo SV-318",
+   "extensions": [
+    "7z",
+    "bin",
+    "cas",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "starship",
+   "name": "Ghostship",
+   "extensions": [
+    "z64"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "starship",
+   "name": "Starship",
+   "extensions": [
+    "z64"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "sufami",
+   "name": "SuFami Turbo",
+   "extensions": [
+    "7z",
+    "bs",
+    "fig",
+    "sfc",
+    "smc",
+    "st",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "superbroswar",
+   "name": "Super Mario War",
+   "extensions": [
+    "sbw"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "supergrafx",
+   "name": "SuperGrafx",
+   "extensions": [
+    "7z",
+    "fba",
+    "pce",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "supervision",
+   "name": "Watara SuperVision",
+   "extensions": [
+    "7z",
+    "sv",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "supracan",
+   "name": "Super A'Can",
+   "extensions": [
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "switch",
+   "name": "Switch",
+   "extensions": [
+    "decomp",
+    "kip",
+    "nca",
+    "nro",
+    "nso",
+    "nsp",
+    "xci"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "thomson",
+   "name": "Thomson - MO/TO",
+   "extensions": [
+    "7z",
+    "fd",
+    "k7",
+    "m5",
+    "m7",
+    "rom",
+    "sap",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "ti99",
+   "name": "TI-99/4A",
+   "extensions": [
+    "rpk",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "tic80",
+   "name": "TIC-80",
+   "extensions": [
+    "tic"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "triforce",
+   "name": "Triforce",
+   "extensions": [
+    "7z",
+    "cue",
+    "iso",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "tutor",
+   "name": "Tutor",
+   "extensions": [
+    "7z",
+    "bin",
+    "wav",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "tvgames",
+   "name": "TV Games",
+   "extensions": [
+    "7z",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "uzebox",
+   "name": "Uzebox",
+   "extensions": [
+    "uze"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "vc4000",
+   "name": "VC4000",
+   "extensions": [
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "vectrex",
+   "name": "Vectrex",
+   "extensions": [
+    "7z",
+    "bin",
+    "gam",
+    "vec",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "vg5k",
+   "name": "VG5000",
+   "extensions": [
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "vircon32",
+   "name": "Vircon32",
+   "extensions": [
+    "v32",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "virtualboy",
+   "name": "Virtual Boy",
+   "extensions": [
+    "7z",
+    "bin",
+    "vb",
+    "vboy",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "vpinball",
+   "name": "Visual Pinball",
+   "extensions": [
+    "7z",
+    "rar",
+    "vpx",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "vsmile",
+   "name": "V.Smile",
+   "extensions": [
+    "bin",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "wasm4",
+   "name": "WASM-4",
+   "extensions": [
+    "wasm",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "wii",
+   "name": "Wii",
+   "extensions": [
+    "7z",
+    "ciso",
+    "decomp",
+    "dol",
+    "elf",
+    "gcz",
+    "iso",
+    "json",
+    "rvz",
+    "squashfs",
+    "wad",
+    "wbfs",
+    "wia",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "wiiu",
+   "name": "Wii U",
+   "extensions": [
+    "iso",
+    "m3u",
+    "rpx",
+    "wua",
+    "wud",
+    "wux"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "wswan",
+   "name": "WonderSwan",
+   "extensions": [
+    "7z",
+    "ws",
+    "zip"
+   ],
+   "aliases": [
+    "wonderswan"
+   ]
+  },
+  {
+   "id": "wswanc",
+   "name": "WonderSwan Color",
+   "extensions": [
+    "7z",
+    "wsc",
+    "zip"
+   ],
+   "aliases": [
+    "wonderswancolor"
+   ]
+  },
+  {
+   "id": "x1",
+   "name": "Sharp X1",
+   "extensions": [
+    "2d",
+    "2hd",
+    "7z",
+    "88d",
+    "d88",
+    "dup",
+    "dx1",
+    "hdm",
+    "tfd",
+    "xdf",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "x68000",
+   "name": "Sharp X68000",
+   "extensions": [
+    "2hd",
+    "7z",
+    "88d",
+    "d88",
+    "dim",
+    "dup",
+    "hdf",
+    "hdm",
+    "img",
+    "m3u",
+    "xdf",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "xbox",
+   "name": "Xbox",
+   "extensions": [
+    "decomp",
+    "iso",
+    "xbe"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "xegs",
+   "name": "Atari XE Game System",
+   "extensions": [
+    "7z",
+    "atr",
+    "bin",
+    "car",
+    "dsk",
+    "rom",
+    "xfd",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "zaccariapinball",
+   "name": "Zaccaria Pinball",
+   "extensions": [
+    "table"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "zeldaclassic",
+   "name": "Zelda Classic",
+   "extensions": [
+    "7z",
+    "qst",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "zinc",
+   "name": "Zinc",
+   "extensions": [
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "zx81",
+   "name": "ZX 81",
+   "extensions": [
+    "7z",
+    "p",
+    "rzx",
+    "scl",
+    "tap",
+    "trd",
+    "tzx",
+    "z80",
+    "zip"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "zxspectrum",
+   "name": "ZX Spectrum",
+   "extensions": [
+    "7z",
+    "dsk",
+    "rzx",
+    "scl",
+    "tap",
+    "trd",
+    "tzx",
+    "z80",
+    "zip"
+   ],
+   "aliases": [
+    "spectrum"
+   ]
+  }
+ ]
+}

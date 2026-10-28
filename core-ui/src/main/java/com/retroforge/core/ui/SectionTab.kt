@@ -35,6 +35,8 @@ fun SectionTab(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    /** Narrow padding and a smaller one-line label, for a phone's bottom bar. */
+    compact: Boolean = false,
 ) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
@@ -49,13 +51,19 @@ fun SectionTab(
         interactionSource = interaction,
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+            modifier = Modifier.padding(horizontal = if (compact) 4.dp else 14.dp, vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
             Icon(icon, contentDescription = null, tint = content, modifier = Modifier.size(26.dp))
             Spacer(Modifier.height(4.dp))
-            Text(label, style = MaterialTheme.typography.labelLarge, color = content)
+            Text(
+                label,
+                style = if (compact) MaterialTheme.typography.labelMedium else MaterialTheme.typography.labelLarge,
+                color = content,
+                maxLines = 1,
+                softWrap = false,
+            )
         }
     }
 }

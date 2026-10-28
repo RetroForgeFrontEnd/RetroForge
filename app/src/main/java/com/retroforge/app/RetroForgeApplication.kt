@@ -3,6 +3,8 @@ package com.retroforge.app
 import android.app.Application
 import android.content.ContentResolver
 import com.retroforge.app.ui.hacks.CatalogueFetcher
+import com.retroforge.core.library.LibraryDatabase
+import com.retroforge.core.library.LibraryRepository
 import com.retroforge.hacks.CatalogueStore
 import java.io.File
 import com.retroforge.core.settings.SettingsRepository
@@ -21,6 +23,7 @@ class AppContainer(application: Application) {
         builtIn = { application.assets.open("catalogues/retroforge-starter.json").bufferedReader().use { it.readText() } },
     )
     val catalogueFetcher = CatalogueFetcher("RetroForge/${BuildConfig.VERSION_NAME}")
+    val library = LibraryRepository(LibraryDatabase.create(application), application.contentResolver)
 }
 
 class RetroForgeApplication : Application() {
