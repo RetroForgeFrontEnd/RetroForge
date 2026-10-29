@@ -57,6 +57,13 @@ See [BUILD_AND_INSTALL](docs/BUILD_AND_INSTALL.md). In short: Android Studio, JD
 - [Third-party licences](docs/THIRD_PARTY_LICENCES.md): the emulators RetroForge downloads are their
   own projects under their own licences.
 
+## Support RetroForge
+
+RetroForge is free, with every feature included, and always will be. If you're enjoying it, a coffee
+helps pay for new features and bug fixes: **[buymeacoffee.com/darrenglant](https://buymeacoffee.com/darrenglant)**
+
+<img src="docs/images/buy-me-a-coffee-qr.png" alt="Buy Me a Coffee QR code" width="180">
+
 ## Licence
 
 RetroForge is free software under the [GNU General Public License v3.0](LICENSE).

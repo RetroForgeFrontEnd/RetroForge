@@ -313,18 +313,18 @@ fun GameDetailScreen(
     }
     ScreenFrame(title = null) {
         GameHero(g, art, eyebrow = viewModel.systemName(g.system), subtitle = tagLine(g), actionLabel = null, onAction = null)
-        // RetroBat's manual and gameplay video for this game, when its folder has them.
+        // Play first, so it's in reach without scrolling; then RetroBat's video and manual, when the folder has them.
+        PlaySection(viewModel, g, rootsById[g.rootId])
         val media by androidx.compose.runtime.produceState(GameMedia(null, null), g.id) { value = findGameMedia(context.contentResolver, rootsById[g.rootId], g) }
         var manualOpen by remember { mutableStateOf(false) }
-        media.video?.let { GameVideo(it) }
         media.manual?.let { manual ->
             FocusChip("Read the manual", onClick = { manualOpen = true })
             if (manualOpen) ManualViewer(manual, g.title, onClose = { manualOpen = false })
         }
+        media.video?.let { GameVideo(it) }
         CoverControls(g, viewModel, onChangeCover = { onChangeCover(g.id) })
         FocusChip("Edit details", onClick = { onEditDetails(g.id) })
         FavouriteAndPlaylists(g, viewModel)
-        PlaySection(viewModel, g, rootsById[g.rootId])
         FocusChip("Delete this game…", onClick = { onDelete(g.id) })
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             g.description?.let { CardBody(it) }

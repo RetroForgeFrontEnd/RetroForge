@@ -29,7 +29,8 @@ android {
         // Bug reports go to the project's GitHub issues unless local.properties names another tracker.
         buildConfigField("String", "BUG_REPORT_URL", "\"" + (localProps.getProperty("bugreport.url") ?: "https://github.com/RetroForgeFrontEnd/RetroForge/issues") + "\"")
         // Optional support links (local.properties): support.buymeacoffee, support.kofi, support.patreon, support.github
-        buildConfigField("String", "SUPPORT_BUYMEACOFFEE", quoted("support.buymeacoffee"))
+        // Darren's Buy Me a Coffee page unless local.properties says otherwise (the Play version must leave it out).
+        buildConfigField("String", "SUPPORT_BUYMEACOFFEE", "\"" + (localProps.getProperty("support.buymeacoffee") ?: "https://buymeacoffee.com/darrenglant") + "\"")
         buildConfigField("String", "SUPPORT_KOFI", quoted("support.kofi"))
         buildConfigField("String", "SUPPORT_PATREON", quoted("support.patreon"))
         buildConfigField("String", "SUPPORT_GITHUB", quoted("support.github"))
