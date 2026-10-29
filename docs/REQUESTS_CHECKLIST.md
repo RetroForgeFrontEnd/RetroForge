@@ -108,7 +108,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Links: Modern Vintage Gamer, Digital Foundry, My Life in Gaming, The Gaming Historian | ✅ |
 | Scan for new games when the app starts | ✅ on by default, switch in Settings |
 | Use RetroForge as the Android home screen (launcher), with Android apps and Android settings | ✅ Android apps screen (Home and Settings), settings shortcuts, launcher-mode switch; tested on the emulator (Home button opens RetroForge) |
-| Media section (films, Plex-style, artwork, Plex servers, network drives) | ❌ idea |
+| Media section (films, Plex-style, artwork, Plex servers, network drives) | ✅ see the Media rows below |
 | Games from network drives, Google Drive, Dropbox | ✅ network drives (see above); cloud: guide explains a sync app (Android apps can't open Drive/Dropbox as folders) |
 | PC / iOS / Linux / Raspberry Pi versions | ❌ question |
 | How to fund updates when free | ❌ question (support links exist) |
@@ -125,7 +125,7 @@ Requests that were never fully done, or only answered:
 
 | Request | Status |
 |---|---|
-| Media section: films on the phone, Plex-style layout, artwork, Plex servers, network drives; 3D films for VR | 🟡 Media tab: films folder, poster grid (TMDB with your key, else a frame), tidy titles, 3D badge, built-in player (ExoPlayer); ❌ Plex servers, network drives |
+| Media section: films on the phone, Plex-style layout, artwork, Plex servers, network drives; 3D films for VR | ✅ Media tab: films folder, poster grid (TMDB with your key, else a frame), tidy titles, 3D badge, built-in player (ExoPlayer); network drives; Plex and other DLNA servers (see below) |
 | Media player for 3D films | ✅ tested on the S22: a 1080p half side-by-side film opens in Cardboard 3D side by side by itself (picked from the file name) and plays; View button cycles Normal / Cardboard cinema / 3D side by side / 3D top and bottom; RetroForge film folders (Movies/RetroForge/Films and 3D Films) |
 | Scan for loose ROMs, not only in system-named folders | ✅ loose files and other folders searched by file type (gba, nds, sfc, z64 …); zip/iso/chd outside system folders reported, not guessed; tested on the emulator |
 | Direct downloads for ports (Android APK and Windows versions), and test both | ✅ Download and install (APK from the official release, Android's installer confirms; tested: download + installer prompt, Super Metroid's old APK blocked by Play Protect) and Download Windows version (unzipped into Download/RetroForge/Ports; tested with Zelda64Recomp). Windows port in GameNative: needs your phone |
@@ -174,3 +174,7 @@ Requests that were never fully done, or only answered:
 | Cores that ask to fast-forward (VICE warp while loading) | ✅ supported |
 | Mouse for computers (Amiga, Atari ST, DOS, ScummVM …) | ✅ the picture is a trackpad: drag moves, tap clicks, two-finger tap right-clicks (tested: Amiga 1200 Workbench, pointer moved and Cancel clicked) |
 | BIOS rules for the new systems | ✅ 21 more rules from libretro's System.dat (Amiga Kickstarts, 3DO, Atari ST/5200/800, CD-i, Intellivision, Neo Geo CD, PC-88/98, PC-FX, X1, X68000 …); recognised by checksum whatever the file is called (tested: TOSEC-named Kickstarts found and copied) |
+| PlayStation memory card tools | ✅ Settings → Playing: a game's card and its saves, copy a save to another game's card, delete, open .mcr/.mcd/.mc/.gme, save as .mcr (tested on the emulator) |
+| Plex and DLNA servers with no sign-in (like Bigscreen) | ✅ Media → Find media servers: DLNA search on every network plus Plex's DLNA port, servers remembered, folders, the server's posters, films stream in the built-in player; 3D from the folder name. Tested on the S22 with Plex over USB tethering: found by itself, 39 3D films with posters, 300: Rise of an Empire played in Cardboard 3D |
+| Movie artwork without TMDB's commercial licence | ❌ to do: artwork from media servers (done) and Kodi/Plex-style poster.jpg and .nfo files next to films (Media Companion, tinyMediaManager); TMDB only with the user's own key, never built in |
+| A way back from every page and section | ❌ to do: check every page has a visible back (not only Android's back gesture) |

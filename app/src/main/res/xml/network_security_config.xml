@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Media servers on the home network (Plex's DLNA server, Jellyfin, a NAS) only speak plain http, both for listing
+     folders and for streaming films, so it's allowed. RetroForge's own internet requests use https. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

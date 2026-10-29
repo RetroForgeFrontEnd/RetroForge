@@ -128,10 +128,7 @@ fun MediaScreen(prefs: SharedPreferences) {
             val count = withContext(Dispatchers.IO) { runCatching { scan(context, uri).size }.getOrDefault(0) }
             if (count == 0) "Added, but no films were found there." else "Added: $count film${if (count == 1) "" else "s"} found. They're above."
         })
-        FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Coming next")
-            CardBody("Plex servers.")
-        }
+        MediaServersCard(prefs)
     }
 }
 

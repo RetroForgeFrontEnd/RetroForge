@@ -137,6 +137,8 @@ The same guide as Settings → How to use RetroForge in the app.
 - 3D films: their file name needs 3D, SBS, HSBS (side by side) or TAB, HOU (top and bottom), as most 3D films have. They get a 3D badge.
 - To watch in 3D: open the film, turn the phone sideways and put it in a Cardboard-style viewer. The View button switches between normal, Cardboard cinema (a 2D film on a big screen for each eye), 3D side by side and 3D top and bottom. RetroForge picks the right 3D mode from the file name.
 - If a film can't play here, RetroForge offers to open it in another video app.
+- Plex, Jellyfin, Emby or a NAS: Media → Find media servers. RetroForge finds them on your home network the way smart TVs and Bigscreen do (DLNA), with no account or sign-in, and remembers them. Open a server, step into its folders, tap a poster to play. Films in a folder with 3D in its name play in 3D.
+- Plex not found? In Plex on the PC: Settings → DLNA → tick Enable the DLNA server. Make sure the phone is on the same network (Wi-Fi or the PC's USB tethering) and that the PC's firewall lets Plex through.
 
 ## VR
 

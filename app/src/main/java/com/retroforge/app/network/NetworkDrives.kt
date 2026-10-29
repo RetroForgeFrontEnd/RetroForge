@@ -225,7 +225,7 @@ object NetworkSearch {
     }.getOrDefault(false)
 
     /** This device's local IPv4 addresses on every network interface that's up (not loopback or link-local). */
-    private fun ownAddresses(): List<String> = runCatching {
+    internal fun ownAddresses(): List<String> = runCatching {
         java.net.NetworkInterface.getNetworkInterfaces().toList().filter { it.isUp && !it.isLoopback }
             .flatMap { it.inetAddresses.toList() }.filterIsInstance<java.net.Inet4Address>()
             .filter { !it.isLinkLocalAddress && it.isSiteLocalAddress }.mapNotNull { it.hostAddress }
