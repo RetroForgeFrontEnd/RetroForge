@@ -41,6 +41,8 @@ data class LibrarySummary(val folders: Int, val games: Int, val systemIds: List<
 
 data class BiosState(
     val checking: Boolean = false,
+    /** 0..1 while checking, across every BIOS folder being read. */
+    val progress: Float = 0f,
     val reports: List<BiosReport>? = null,
     val copying: Boolean = false,
     val copyResult: CopyResult? = null,
@@ -161,14 +163,19 @@ class SetupViewModel(
     private fun checkBios(uri: Uri) {
         val systems = summary.value?.systemIds.orEmpty()
         viewModelScope.launch {
-            _bios.update { it.copy(checking = true, error = null, copyResult = null) }
-            val result = withContext(Dispatchers.IO) {
-                runCatching { checker.check(SafScanNode.root(resolver, uri, "bios"), systems) }
-            }
+            _bios.update { it.copy(checking = true, progress = 0f, error = null, copyResult = null) }
             // Other BIOS folders RetroForge can read (a RetroBat "bios" beside the games on a network drive) fill in
-            // what the chosen one lacks: each system takes the best result from any of them.
+            // what the chosen one lacks: each system takes the best result from any of them. Progress covers them all.
+            val otherFolders = withContext(Dispatchers.IO) { foundBiosFolders().filter { it != uri } }
+            val folderCount = 1 + otherFolders.size
+            fun progressOf(index: Int): (Float) -> Unit = { p -> _bios.update { it.copy(progress = (index + p) / folderCount) } }
+            val result = withContext(Dispatchers.IO) {
+                runCatching { checker.check(SafScanNode.root(resolver, uri, "bios"), systems, progressOf(0)) }
+            }
             val others = withContext(Dispatchers.IO) {
-                foundBiosFolders().filter { it != uri }.mapNotNull { f -> runCatching { f to checker.check(SafScanNode.root(resolver, f, "bios"), systems) }.getOrNull() }
+                otherFolders.mapIndexedNotNull { i, f ->
+                    runCatching { f to checker.check(SafScanNode.root(resolver, f, "bios"), systems, progressOf(i + 1)) }.getOrNull()
+                }
             }
             val sources = result.getOrNull()?.let { primary -> primary.map { report ->
                 (listOf(uri to report) + others.mapNotNull { (f, reports) -> reports.firstOrNull { it.rule == report.rule }?.let { f to it } })

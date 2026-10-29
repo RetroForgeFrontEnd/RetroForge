@@ -58,7 +58,8 @@ class BiosChecker(val rules: List<BiosRule>) {
 
     fun rulesFor(systems: Collection<String>): List<BiosRule> = rules.filter { rule -> rule.systems.any { it in systems } }
 
-    fun check(folder: ScanNode, systems: Collection<String>): List<BiosReport> {
+    /** [onProgress] gets 0..1 as the folder's possible BIOS files are checked (listing first, then hashing). */
+    fun check(folder: ScanNode, systems: Collection<String>, onProgress: (Float) -> Unit = {}): List<BiosReport> {
         val wanted = rulesFor(systems)
         if (wanted.isEmpty()) return emptyList()
         val sizes = wanted.flatMap { r -> r.files.map { it.size } }.toSet()
@@ -66,13 +67,19 @@ class BiosChecker(val rules: List<BiosRule>) {
 
         val byMd5 = mutableMapOf<String, ScanNode>()
         val byName = mutableMapOf<String, ScanNode>()
+        // Listed first, so the hashing (the slow part, on a network drive) can report how far it has got.
+        val candidates = mutableListOf<ScanNode>()
         collect(folder, depth = 0) { node ->
             val lower = node.name.lowercase()
             if (lower in names) byName.putIfAbsent(lower, node)
-            if (node.size in sizes || lower in names) {
-                runCatching { md5(node) }.getOrNull()?.let { byMd5.putIfAbsent(it, node) }
-            }
+            if (node.size in sizes || lower in names) candidates += node
         }
+        onProgress(0f)
+        candidates.forEachIndexed { i, node ->
+            runCatching { md5(node) }.getOrNull()?.let { byMd5.putIfAbsent(it, node) }
+            onProgress((i + 1f) / candidates.size)
+        }
+        onProgress(1f)
 
         return wanted.map { rule ->
             val found = rule.files.mapNotNull { file ->

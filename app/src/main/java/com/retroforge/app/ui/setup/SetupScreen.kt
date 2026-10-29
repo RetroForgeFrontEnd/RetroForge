@@ -151,10 +151,17 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, onDone: 
                 "Some systems need BIOS files from the original console. RetroForge doesn't provide them. If you have your own, " +
                     "select this to choose the folder they're in (for example another frontend's \"bios\" folder) and RetroForge will check them.",
             )
-            if (settings?.biosFolderUri != null && bios.reports == null && !bios.checking) CardBody("Select to check your BIOS folder again.")
         }
-        if (settings?.biosFolderUri != null) FocusChip("Choose another BIOS folder", onClick = { pickBios.launch(null) })
-        if (bios.checking) LinearProgressIndicator(Modifier.fillMaxWidth())
+        if (settings?.biosFolderUri != null) {
+            ChipRow {
+                FocusChip(if (bios.reports == null) "Scan for BIOS files" else "Scan again", enabled = !bios.checking, onClick = { viewModel.recheckBios() })
+                FocusChip("Choose another BIOS folder", onClick = { pickBios.launch(null) })
+            }
+        }
+        if (bios.checking) {
+            CardBody("Scanning your BIOS files… ${(bios.progress * 100).toInt()}%")
+            LinearProgressIndicator(progress = { bios.progress }, modifier = Modifier.fillMaxWidth())
+        }
         bios.error?.let { CardBody(it) }
         bios.reports?.let { reports ->
             if (reports.isEmpty()) CardBody("None of the systems in your library need BIOS files.")
