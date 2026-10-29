@@ -175,7 +175,7 @@ private fun BuiltInCard(
         if (game.system == "saturn") CardBody("Saturn in the built-in player is experimental: some games stay on a black screen. RetroArch or Yaba Sanshiro 2 (below) play more of them.")
         if (played > 0) CardBody("Time played here: ${Playtime.format(played)}.")
     }
-    if (main) {
+    if (main && com.retroforge.app.player.Netplay.supports(game.system)) {
         // Netplay: the same game on two devices, one hosting (player 1), the other joining (player 2).
         fun start(how: String) {
             onProblem(null)

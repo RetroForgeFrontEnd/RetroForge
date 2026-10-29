@@ -27,7 +27,7 @@ private val topics = listOf(
         "Over the internet: when you host, RetroForge asks your router to let your friend in and shows your internet address in Netplay. Your friend types it under Join by address. If your router doesn't allow it, forward port 55450 (TCP) to your device in the router's settings. Mobile data can't host.",
         "Input delay (Settings → Playing → Play together): buttons work a few frames late on both devices so they arrive in time. 2 or 3 on Wi-Fi, 4 to 6 over the internet.",
         "During netplay both devices run at the same speed: fast-forward is off, and only player 1 can load a state or restart. If the game gets out of step, player 1's game is sent again by itself.",
-        "Works with every system the built-in player runs. Systems where the game must be identical in memory (most consoles) work best; computers that load from disks may need a restart after joining.",
+        "Play together shows on the games it suits: NES, SNES, Mega Drive, Master System, PC Engine, PlayStation, Atari, arcade (FinalBurn Neo, MAME, Neo Geo, CPS) and the two-player Game Boy. Handhelds, computers and 3D systems like N64, GameCube and PS2 don't have it: their emulators drift apart between devices.",
     )),
     Topic("Getting started", listOf(
         "Settings → Set up RetroForge walks you through it: pick your games folder, check your BIOS files and choose emulators. The built-in player's emulators download by themselves.",

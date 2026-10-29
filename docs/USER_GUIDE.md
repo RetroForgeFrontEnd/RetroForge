@@ -50,6 +50,8 @@ The same guide as Settings → How to use RetroForge in the app.
 - Join on the same Wi-Fi: open the same game → **Play together → Join** and pick the host, or Retro tab → **Play together → Find games on this Wi-Fi**.
 - Join over the internet: the host's Netplay page shows their internet address (RetroForge asks the router to let you in); type it under **Join by address**. If the host's router doesn't allow that, they forward port 55450 (TCP) to their device. Mobile data can't host.
 - Input delay (Settings → Playing → Play together): 2 or 3 frames on Wi-Fi, 4 to 6 over the internet.
+- Play together shows on the games it suits: NES, SNES, Mega Drive, Master System, PC Engine, PlayStation, Atari,
+  arcade and the two-player Game Boy. Handhelds, computers and 3D systems (N64, GameCube, PS2) don't have it.
 - During netplay fast-forward is off, and only player 1 can load a state or restart. If the two games drift apart, player 1's game is sent again automatically.
 
 ## The in-game menu

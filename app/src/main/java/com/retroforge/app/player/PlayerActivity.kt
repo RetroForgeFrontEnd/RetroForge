@@ -251,6 +251,7 @@ class PlayerActivity : ComponentActivity() {
         val error = NativePlayer.netplayHost(Netplay.GAME_PORT, netGameId, Netplay.delay(this))
         if (error != null) { notice = error; return }
         connectPlayerTwo()
+        closeMenu()  // the game has to run to take part: a paused one holds both players up
         announcer?.stop()
         announcer = Netplay.Announcer(this, intent.getStringExtra(EXTRA_TITLE).orEmpty(), netGameId, Netplay.name(this))
         pollNetplay()
@@ -280,6 +281,7 @@ class PlayerActivity : ComponentActivity() {
     private fun joinNetplay(address: String, port: Int = Netplay.GAME_PORT) {
         NativePlayer.netplayJoin(address, port, netGameId, Netplay.delay(this))?.let { notice = it; return }
         connectPlayerTwo()
+        closeMenu()
         pollNetplay()
     }
 
@@ -1369,7 +1371,7 @@ class PlayerActivity : ComponentActivity() {
                         MenuButton(onClick = { menuPage = MenuPage.PICTURE }, modifier = wide) { Text("Picture ›") }
                         MenuButton(onClick = { menuPage = MenuPage.SOUND_CONTROLS }, modifier = wide) { Text("Sound and controls ›") }
                         MenuButton(onClick = { menuPage = MenuPage.EMULATOR }, modifier = wide) { Text("Emulator ›") }
-                        MenuButton(onClick = { menuPage = MenuPage.NETPLAY; if (netState == 0 && netHosts == null) findNetplayHosts() }, modifier = wide) {
+                        if (Netplay.supports(system)) MenuButton(onClick = { menuPage = MenuPage.NETPLAY; if (netState == 0 && netHosts == null) findNetplayHosts() }, modifier = wide) {
                             Text(if (netPlaying) "Netplay: player ${NativePlayer.netplayPlayer() + 1} ›" else "Netplay ›")
                         }
                         MenuButton(onClick = {
@@ -1417,18 +1419,26 @@ class PlayerActivity : ComponentActivity() {
                                 }, modifier = wide) { Text(if (same) "Join ${host.player}" else "${host.player}: ${host.title}") }
                             }
                             MenuButton(onClick = { findNetplayHosts() }, modifier = wide) { Text("Look again") }
+                            val joinAddress = {
+                                if (netAddress.isNotBlank()) {
+                                    val port = netAddress.substringAfterLast(':', "").toIntOrNull()
+                                    joinNetplay(if (port != null) netAddress.substringBeforeLast(':') else netAddress, port ?: Netplay.GAME_PORT)
+                                }
+                            }
+                            // The keyboard's Go key joins too: the button can sit under the keyboard.
                             androidx.compose.material3.OutlinedTextField(
                                 value = netAddress,
                                 onValueChange = { netAddress = it.trim() },
                                 singleLine = true,
                                 label = { Text("Join by address (internet)") },
+                                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                                    keyboardType = androidx.compose.ui.text.input.KeyboardType.Uri,
+                                    imeAction = androidx.compose.ui.text.input.ImeAction.Go,
+                                ),
+                                keyboardActions = androidx.compose.foundation.text.KeyboardActions(onGo = { joinAddress() }),
                                 modifier = wide,
                             )
-                            MenuButton(onClick = {
-                                if (netAddress.isBlank()) return@MenuButton
-                                val port = netAddress.substringAfterLast(':', "").toIntOrNull()
-                                joinNetplay(if (port != null) netAddress.substringBeforeLast(':') else netAddress, port ?: Netplay.GAME_PORT)
-                            }, modifier = wide) { Text("Join this address") }
+                            MenuButton(onClick = joinAddress, modifier = wide) { Text("Join this address") }
                         }
                     }
                     MenuPage.PICTURE -> {

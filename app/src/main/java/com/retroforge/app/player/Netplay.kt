@@ -20,6 +20,19 @@ data class NetplayHost(val address: String, val port: Int, val title: String, va
  */
 object Netplay {
     const val GAME_PORT = 55450
+
+    /**
+     * Systems netplay suits: two-player consoles and arcade whose emulators run the same frames on both devices.
+     * Left out: one-player handhelds, computers, and 3D systems drawn on the GPU (N64, GameCube, PS2, Dreamcast…),
+     * which drift apart between devices.
+     */
+    private val SYSTEMS = setOf(
+        "nes", "fds", "snes", "sfc", "satellaview", "megadrive", "genesis", "sega32x", "megacd", "segacd", "mastersystem", "sg1000",
+        "pcengine", "pcenginecd", "supergrafx", "psx", "atari2600", "atari7800", "colecovision", "intellivision", "odyssey2",
+        "gb2players", "gbc2players", "fbneo", "neogeo", "cps1", "cps2", "cps3", "mame",
+    )
+
+    fun supports(system: String) = system in SYSTEMS
     private const val ASK_PORT = 55451
     private const val ASK = "RFNP?"
     private const val ANSWER = "RFNP!"
