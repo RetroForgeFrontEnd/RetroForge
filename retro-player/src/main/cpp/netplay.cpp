@@ -391,7 +391,7 @@ bool active() {
 
 int localPlayer() { return isHost ? 0 : 1; }
 
-bool beginFrame(uint32_t localButtons, const int16_t localAnalog[4], FrameInput &out, const Hooks &hooks) {
+bool beginFrame(uint32_t localButtons, const int16_t localAnalog[4], FrameInput &out, const Hooks &hooks, bool *sentLocal) {
     std::unique_lock<std::mutex> lock(m);
     if (isHost && sendState) {
         // The guest gets the game as it is now: at the start, and whenever it asks after a mismatch.
@@ -452,6 +452,7 @@ bool beginFrame(uint32_t localButtons, const int16_t localAnalog[4], FrameInput 
         std::memcpy(in.analog, localAnalog, sizeof in.analog);
         local[ahead] = in;
         sentUpTo = ahead;
+        if (sentLocal) *sentLocal = true;
         lock.unlock();
         sendMsg(INPUT, inputMsg(ahead, in));
         lock.lock();

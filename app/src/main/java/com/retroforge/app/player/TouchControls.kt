@@ -66,7 +66,13 @@ data class PadLayout(
     companion object {
         private val twoButton = PadLayout(listOf("B" to Pad.B, "A" to Pad.A))
 
-        fun forSystem(system: String): PadLayout = when (system) {
+        /**
+         * The layout for [system]. Systems without one of their own get the buttons the core says it uses
+         * ([coreButtons]: libretro id → the core's name for it), else two buttons.
+         */
+        fun forSystem(system: String, coreButtons: Map<Int, String> = emptyMap()): PadLayout = when (system) {
+            "nes", "fds", "gb", "gbc", "sgb", "gb2players", "gbc2players", "megaduck", "ngp", "ngpc", "wswan", "wswanc",
+            "supervision", "arduboy", "gw", "lcdgames" -> twoButton
             "gba" -> PadLayout(listOf("B" to Pad.B, "A" to Pad.A), listOf("L" to Pad.L, "R" to Pad.R))
             "snes", "sfc", "nds" -> PadLayout(
                 listOf("Y" to Pad.Y, "X" to Pad.X, "B" to Pad.B, "A" to Pad.A),
@@ -119,6 +125,8 @@ data class PadLayout(
                 listOf("L" to Pad.L, "R" to Pad.R),
             )
             "atari2600" -> PadLayout(listOf("Fire" to Pad.B))
+            // Channel F (FreeChaF): the handle pushes, pulls and twists; Select swaps the controllers.
+            "channelf" -> PadLayout(listOf("↺" to Pad.Y, "Pull" to Pad.X, "Push" to Pad.B, "↻" to Pad.A))
             // Vectrex (vecx): buttons 1-4 are libretro A, B, X, Y; laid out 1 left to 4 right, as on the real pad.
             "vectrex" -> PadLayout(
                 listOf("1" to Pad.A, "2" to Pad.B, "3" to Pad.X, "4" to Pad.Y),
@@ -160,7 +168,28 @@ data class PadLayout(
                 triggers = listOf("L2" to Pad.L2, "R2" to Pad.R2),
                 sticks = true,
             )
-            else -> twoButton
+            else -> fromCore(coreButtons) ?: twoButton
+        }
+
+        /** A pad of the face and shoulder buttons the core names, labelled with its names (shortened to fit). */
+        private fun fromCore(names: Map<Int, String>): PadLayout? {
+            fun pick(vararg ids: Int) = ids.filter { it in names }.map { label(names.getValue(it)) to it }
+            val face = pick(Pad.Y, Pad.X, Pad.B, Pad.A)
+            if (face.isEmpty()) return null
+            return PadLayout(
+                face,
+                shoulders = pick(Pad.L, Pad.R),
+                triggers = pick(Pad.L2, Pad.R2),
+                hasSelect = Pad.SELECT in names,
+            )
+        }
+
+        /** "Button 1" → "1", "Fire" stays, longer names cut to fit on a button. */
+        private fun label(name: String): String {
+            val plain = name.substringAfterLast(" / ").replace(Regex("""\(.*?\)"""), "").trim()
+                .replace(Regex("""^(Button|Fire Button|Joystick Button|Joypad)\s+""", RegexOption.IGNORE_CASE), "").trim()
+                .ifEmpty { name.trim() }.replaceFirstChar { it.uppercase() }
+            return if (plain.length <= 6) plain else plain.split(' ').let { w -> if (w.size > 1 && w.last().length <= 2) w.first().take(3) + " " + w.last() else plain.take(5) }
         }
     }
 }

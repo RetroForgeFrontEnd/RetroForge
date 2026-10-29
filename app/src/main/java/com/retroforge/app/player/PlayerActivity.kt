@@ -164,14 +164,14 @@ class PlayerActivity : ComponentActivity() {
 
     /** The system's pad with the user's on-screen choices applied. */
     private fun touchLayout(): PadLayout {
-        val base = PadLayout.forSystem(system)
+        val base = padLayout()
         fun List<Pair<String, Int>>.mapped() = map { (label, button) -> label to (touchMap[label] ?: button) }
         return base.copy(face = base.face.mapped(), shoulders = base.shoulders.mapped(), triggers = base.triggers.mapped())
     }
 
     /** The system's game buttons, named as on its controller. */
     private fun gameButtons(): List<Pair<String, Int>> {
-        val layout = PadLayout.forSystem(system)
+        val layout = padLayout()
         return (layout.face + layout.shoulders + layout.triggers).distinctBy { it.second } +
             listOfNotNull(if (layout.hasSelect) "Select" to Pad.SELECT else null, "Start" to Pad.START)
     }
@@ -183,6 +183,9 @@ class PlayerActivity : ComponentActivity() {
         return code?.let { KeyEvent.keyCodeToString(it).removePrefix("KEYCODE_").removePrefix("BUTTON_").replace('_', ' ') } ?: "none"
     }
     private var cheats by mutableStateOf<List<Cheat>>(emptyList())
+    /** What the core calls player 1's buttons (libretro id → name), once the game has loaded. */
+    private var coreButtons by mutableStateOf<Map<Int, String>>(emptyMap())
+    private fun padLayout() = PadLayout.forSystem(system, coreButtons)
     private var cheatStatus by mutableStateOf<String?>(null)
     // While the first download runs, only the status shows (no half-built list or code boxes flashing past).
     private var fetchingCheats by mutableStateOf(false)
@@ -247,6 +250,7 @@ class PlayerActivity : ComponentActivity() {
     private fun hostNetplay() {
         val error = NativePlayer.netplayHost(Netplay.GAME_PORT, netGameId, Netplay.delay(this))
         if (error != null) { notice = error; return }
+        connectPlayerTwo()
         announcer?.stop()
         announcer = Netplay.Announcer(this, intent.getStringExtra(EXTRA_TITLE).orEmpty(), netGameId, Netplay.name(this))
         pollNetplay()
@@ -275,8 +279,12 @@ class PlayerActivity : ComponentActivity() {
 
     private fun joinNetplay(address: String, port: Int = Netplay.GAME_PORT) {
         NativePlayer.netplayJoin(address, port, netGameId, Netplay.delay(this))?.let { notice = it; return }
+        connectPlayerTwo()
         pollNetplay()
     }
+
+    /** Plugs a controller into port 2 for the other player (only port 1 has one otherwise). */
+    private fun connectPlayerTwo() = NativePlayer.setPortDevice(1, PlayerCores.portDevice(coreId) ?: 1)
 
     private fun leaveNetplay() {
         announcer?.stop()
@@ -477,6 +485,10 @@ class PlayerActivity : ComponentActivity() {
         runOnUiThread { if (foreground && playingSince == 0L) playingSince = android.os.SystemClock.elapsedRealtime() }
         cheatStore.load().also { saved -> runOnUiThread { cheats = saved } }.let(::applyCheats)
         PlayerCores.portDevice(coreId)?.let { NativePlayer.setPortDevice(0, it) }
+        NativePlayer.buttonNames().toList().chunked(2).associate { (id, name) -> id.toInt() to name }.let { names ->
+            android.util.Log.i("RetroForgePlayer", "buttons $coreId: " + names.entries.joinToString { "${it.key}=${it.value}" })
+            runOnUiThread { coreButtons = names }
+        }
         netGameId = Netplay.gameId(system, fileName, runCatching {
             contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.SIZE), null, null, null)?.use { c ->
                 if (c.moveToFirst()) c.getLong(0) else -1L
@@ -1540,7 +1552,7 @@ class PlayerActivity : ComponentActivity() {
                         if (remap.isNotEmpty()) MenuButton(onClick = { saveRemap(emptyMap()) }, modifier = wide) { Text("Controller back to normal") }
                         Text("On-screen buttons", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
                         Text("Select one to change which game button it presses.", color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
-                        val onScreen = PadLayout.forSystem(system).let { it.face + it.shoulders + it.triggers }
+                        val onScreen = padLayout().let { it.face + it.shoulders + it.triggers }
                         onScreen.forEach { (label, default) ->
                             val now = touchMap[label] ?: default
                             MenuButton(onClick = {

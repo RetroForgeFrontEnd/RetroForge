@@ -205,6 +205,12 @@ struct Player {
 
     // Controls: libretro joypad bitmask and analog sticks per port.
     std::atomic<uint32_t> buttons[4]{};
+    // Every button pressed since the frame last used them, so a tap shorter than a frame still counts (slow games,
+    // netplay waiting for the other player): latched by setButtons, carried until used, read once per frame.
+    std::atomic<uint32_t> latched[4]{};
+    uint32_t carried[4]{}, frameButtons[4]{};
+    // What the core says player 1's joypad buttons do (id → its name for it), for the on-screen buttons.
+    std::map<unsigned, std::string> buttonNames;
     std::atomic<int16_t> analog[4][2][2]{};
     // Touchscreen (DS bottom screen and similar), in libretro's -0x7fff..0x7fff over the drawn game.
     std::atomic<int16_t> pointerX{0}, pointerY{0};
@@ -419,8 +425,14 @@ bool environment(unsigned cmd, void *data) {
         }
         case RETRO_ENVIRONMENT_SET_HW_SHARED_CONTEXT:
             return true;
+        case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS: {
+            if (!P || !data) return true;
+            P->buttonNames.clear();
+            for (auto *d = static_cast<const retro_input_descriptor *>(data); d->description; d++)
+                if (d->port == 0 && d->device == RETRO_DEVICE_JOYPAD && d->id <= RETRO_DEVICE_ID_JOYPAD_R3) P->buttonNames[d->id] = d->description;
+            return true;
+        }
         case RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
-        case RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS:
         case RETRO_ENVIRONMENT_SET_CONTROLLER_INFO:
         case RETRO_ENVIRONMENT_SET_MEMORY_MAPS:
         case RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO:
@@ -991,7 +1003,7 @@ int16_t inputState(unsigned port, unsigned device, unsigned index, unsigned id) 
     switch (device & RETRO_DEVICE_MASK) {
         case RETRO_DEVICE_JOYPAD: {
             if (P->netInput && port >= 2) return 0;
-            uint32_t mask = P->netInput ? P->netFrame.buttons[port] : P->buttons[port].load();
+            uint32_t mask = P->netInput ? P->netFrame.buttons[port] : P->frameButtons[port];
             if (id == RETRO_DEVICE_ID_JOYPAD_MASK) return static_cast<int16_t>(mask);
             return id < 16 ? static_cast<int16_t>((mask >> id) & 1u) : 0;
         }
@@ -1072,10 +1084,19 @@ void runLoop() {
                 },
                 [&p](const std::vector<uint8_t> &state) { return p.core.unserialize(state.data(), state.size()); },
             };
+            for (int i = 0; i < 4; i++) {
+                p.carried[i] |= p.latched[i].exchange(0);
+                p.frameButtons[i] = p.buttons[i] | p.carried[i];
+            }
             p.netInput = netplay::active();
             if (p.netInput) {
                 int16_t sticks[4] = {p.analog[0][0][0], p.analog[0][0][1], p.analog[0][1][0], p.analog[0][1][1]};
-                if (!netplay::beginFrame(p.buttons[0], sticks, p.netFrame, hooks)) continue;
+                bool sent = false;
+                bool ready = netplay::beginFrame(p.frameButtons[0], sticks, p.netFrame, hooks, &sent);
+                if (sent) p.carried[0] = 0;  // the other player has them now
+                if (!ready) continue;
+            } else {
+                for (uint32_t &c : p.carried) c = 0;  // this frame uses them
             }
             p.core.run();
             if (p.netInput) netplay::endFrame(hooks);
@@ -1352,7 +1373,10 @@ JNIEXPORT void JNI(setSecondSurface)(JNIEnv *env, jobject, jobject surface) {
 }
 
 JNIEXPORT void JNI(setButtons)(JNIEnv *, jobject, jint port, jint mask) {
-    if (P && port >= 0 && port < 4) P->buttons[port] = static_cast<uint32_t>(mask);
+    if (P && port >= 0 && port < 4) {
+        P->buttons[port] = static_cast<uint32_t>(mask);
+        P->latched[port] |= static_cast<uint32_t>(mask);
+    }
 }
 
 JNIEXPORT void JNI(setAnalog)(JNIEnv *, jobject, jint port, jint stick, jint x, jint y) {
@@ -1374,6 +1398,18 @@ JNIEXPORT jobjectArray JNI(coreOptions)(JNIEnv *env, jobject) {
             auto current = P->variables.find(key);
             out.push_back(current != P->variables.end() ? current->second : "");
         }
+    }
+    jobjectArray array = env->NewObjectArray(static_cast<jsize>(out.size()), env->FindClass("java/lang/String"), nullptr);
+    for (size_t i = 0; i < out.size(); i++) env->SetObjectArrayElement(array, static_cast<jsize>(i), env->NewStringUTF(out[i].c_str()));
+    return array;
+}
+
+// What the core calls each of player 1's buttons: id and name, two per button (empty when the core doesn't say).
+JNIEXPORT jobjectArray JNI(buttonNames)(JNIEnv *env, jobject) {
+    std::vector<std::string> out;
+    if (P) {
+        std::lock_guard<std::mutex> lock(P->coreMutex);
+        for (auto &[id, name] : P->buttonNames) { out.push_back(std::to_string(id)); out.push_back(name); }
     }
     jobjectArray array = env->NewObjectArray(static_cast<jsize>(out.size()), env->FindClass("java/lang/String"), nullptr);
     for (size_t i = 0; i < out.size(); i++) env->SetObjectArrayElement(array, static_cast<jsize>(i), env->NewStringUTF(out[i].c_str()));

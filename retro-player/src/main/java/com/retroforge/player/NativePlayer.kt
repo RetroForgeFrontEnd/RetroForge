@@ -64,6 +64,9 @@ object NativePlayer {
         CoreOption(key, label, choices.split('|').filter { it.isNotEmpty() }, current)
     }
 
+    /** What the core calls player 1's buttons: libretro id and name, two entries per button. */
+    external fun buttonNames(): Array<String>
+
     /** What's plugged into [port]: a libretro device id ([PlayerCores.portDevice]). */
     external fun setPortDevice(port: Int, device: Int)
 

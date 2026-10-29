@@ -40,11 +40,11 @@ bool active();
 int localPlayer();
 
 /**
- * Before each frame, on the core thread. Sends this device's buttons (for a frame [delay] ahead), loads a state the
+ * Before each frame, on the core thread. [sentLocal] is set when this call sent [localButtons] to the other player. Sends this device's buttons (for a frame [delay] ahead), loads a state the
  * host sent, and fills [out] with both players' buttons for this frame. False when the frame can't run yet (the other
  * player's buttons haven't come): the caller tries again shortly without running the core.
  */
-bool beginFrame(uint32_t localButtons, const int16_t localAnalog[4], FrameInput &out, const Hooks &hooks);
+bool beginFrame(uint32_t localButtons, const int16_t localAnalog[4], FrameInput &out, const Hooks &hooks, bool *sentLocal = nullptr);
 /** After the frame ran: moves on, and now and then compares checksums. */
 void endFrame(const Hooks &hooks);
 /** The host loaded a save state itself: the guest is sent the new state. */
