@@ -19,6 +19,8 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Saves and storage**: Settings → Built-in player → Back up saves writes one zip with in-game saves, save states and cheats; Restore puts them back (on this or another device), replacing same-named saves and keeping the rest. A Storage card shows the space emulators and copied CD/arcade games use, with Clear copied games. Each game's page shows its time played in the built-in player.
 
+**Ports** (PC tab): native Android ports of classic games (Ship of Harkinian, Ghostship, SpaghettiKart, Zelda 3, Perfect Dark, DevilutionX and more). RetroForge shows which ones your games can use, gets them through Obtainium from their official releases, opens them once installed, and copies your ROM (unzipped) to Download/RetroForge/Ports for the port to read. Your original stays where it is; RetroForge never supplies game files.
+
 **N64 in the built-in player**: the player now runs emulators that draw with the GPU (OpenGL ES 3). Nintendo 64 plays with Mupen64Plus-Next (or ParaLLEl N64), with an N64 pad: stick, C buttons on the right stick, A, B, Z, L, R.
 
 **Saturn (experimental)** in the built-in player with Yabause (or Beetle Saturn on fast phones): disc images (chd, cue/bin), six-button pad (X Y Z over A B C, L and R), Saturn BIOS in the BIOS check. Some games stay on a black screen; RetroArch and Yaba Sanshiro 2 are offered on the game page. YabaSanshiro, which plays far more, follows once the player draws with the GPU.

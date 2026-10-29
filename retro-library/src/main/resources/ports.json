@@ -1,0 +1,359 @@
+{
+ "source": "Compiled by RetroForge from each project's own GitHub page. Every port needs the user's own copy of the game; RetroForge links to the official releases and never downloads game files.",
+ "ports": [
+  {
+   "id": "banjo-kazooie",
+   "name": "Banjo-Kazooie",
+   "kind": "recomp",
+   "repo": "https://github.com/AurelioB/BanjoRecomp-Android",
+   "systems": [
+    "n64"
+   ],
+   "titleMatch": "^banjo-kazooie\\b",
+   "needs": "Your own Banjo-Kazooie N64 ROM (USA).",
+   "status": "verified",
+   "package": "com.aure.banjorecomp"
+  },
+  {
+   "id": "cv-lod",
+   "name": "Castlevania: Legacy of Darkness",
+   "kind": "recomp",
+   "repo": "https://github.com/sergiomanzur/cvlod_recomp",
+   "systems": [
+    "n64"
+   ],
+   "titleMatch": "castlevania.*legacy of darkness",
+   "needs": "Your own Castlevania: Legacy of Darkness N64 ROM.",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "cv-sotn",
+   "name": "Castlevania: Symphony of the Night",
+   "kind": "recomp",
+   "repo": "https://github.com/sergiomanzur/SymphonyRecomp",
+   "systems": [
+    "psx"
+   ],
+   "titleMatch": "castlevania.*symphony of the night",
+   "needs": "Your own Symphony of the Night PlayStation disc image.",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "crash",
+   "name": "Crash Bandicoot",
+   "kind": "decomp",
+   "repo": "https://github.com/Matteo842/CrashBandicoot-Launcher",
+   "systems": [
+    "psx"
+   ],
+   "titleMatch": "^crash bandicoot$",
+   "needs": "Your own Crash Bandicoot PlayStation disc image.",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "ctr",
+   "name": "Crash Team Racing",
+   "kind": "decomp",
+   "repo": "https://github.com/Simon358/ctr-native-android",
+   "systems": [
+    "psx"
+   ],
+   "titleMatch": "crash team racing|^ctr\\b",
+   "needs": "Your own Crash Team Racing PlayStation disc image.",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "goemon64",
+   "name": "Mystical Ninja Starring Goemon",
+   "kind": "recomp",
+   "repo": "https://github.com/ogdanimal/Goemon64Recomp-Android",
+   "systems": [
+    "n64"
+   ],
+   "titleMatch": "mystical ninja|ganbare goemon",
+   "needs": "Your own Mystical Ninja Starring Goemon N64 ROM.",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "harvest-moon-64",
+   "name": "Harvest Moon 64",
+   "kind": "recomp",
+   "repo": "https://github.com/igawa6/HarvestMoon64Recomp",
+   "systems": [
+    "n64"
+   ],
+   "titleMatch": "^harvest moon 64",
+   "needs": "Your own Harvest Moon 64 ROM.",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "spaghettikart",
+   "name": "Mario Kart 64 (SpaghettiKart)",
+   "kind": "decomp",
+   "repo": "https://github.com/izzy2lost/SpaghettiKart",
+   "systems": [
+    "n64"
+   ],
+   "titleMatch": "^mario kart 64",
+   "needs": "Your own Mario Kart 64 ROM (USA).",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "perfect-dark",
+   "name": "Perfect Dark",
+   "kind": "decomp",
+   "repo": "https://github.com/izzy2lost/perfect_dark",
+   "systems": [
+    "n64"
+   ],
+   "titleMatch": "^perfect dark",
+   "needs": "Your own Perfect Dark N64 ROM (USA 1.1).",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "pokemon-gen1",
+   "name": "Pokémon Red and Blue",
+   "kind": "recomp",
+   "repo": "https://github.com/bryanthaboi/gen1recomp",
+   "systems": [
+    "gb"
+   ],
+   "titleMatch": "^pok.mon - (red|blue)|^pok.mon (red|blue)",
+   "needs": "Your own Pokémon Red or Blue Game Boy ROM.",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "pokemon-gen2",
+   "name": "Pokémon Gold and Silver",
+   "kind": "recomp",
+   "repo": "https://github.com/UNDERdecoded/Gen2Recomped",
+   "systems": [
+    "gbc"
+   ],
+   "titleMatch": "^pok.mon - (gold|silver)|^pok.mon (gold|silver)",
+   "needs": "Your own Pokémon Gold or Silver ROM.",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "silent-hill",
+   "name": "Silent Hill",
+   "kind": "decomp",
+   "repo": "https://github.com/SlickAmogus/silent-hill-decomp",
+   "systems": [
+    "psx"
+   ],
+   "titleMatch": "^silent hill$",
+   "needs": "Your own Silent Hill PlayStation disc image.",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "starship",
+   "name": "Star Fox 64 (Starship)",
+   "kind": "decomp",
+   "repo": "https://github.com/izzy2lost/Starship",
+   "systems": [
+    "n64"
+   ],
+   "titleMatch": "^star ?fox 64|^lylat wars",
+   "needs": "Your own Star Fox 64 ROM (USA 1.1).",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "ghostship",
+   "name": "Super Mario 64 (Ghostship)",
+   "kind": "decomp",
+   "repo": "https://github.com/izzy2lost/Ghostship",
+   "systems": [
+    "n64"
+   ],
+   "titleMatch": "^super mario 64$",
+   "needs": "Your own Super Mario 64 ROM (USA).",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "super-metroid",
+   "name": "Super Metroid",
+   "kind": "decomp",
+   "repo": "https://github.com/Raekwon1603/super_metroid-android",
+   "systems": [
+    "snes"
+   ],
+   "titleMatch": "^super metroid$",
+   "needs": "Your own Super Metroid (Japan, USA) ROM. The author has moved on to a RetroArch-based version; this build still works.",
+   "status": "experimental",
+   "package": null
+  },
+  {
+   "id": "battleship",
+   "name": "Super Smash Bros. (BattleShip)",
+   "kind": "decomp",
+   "repo": "https://github.com/JRickey/BattleShip",
+   "systems": [
+    "n64"
+   ],
+   "titleMatch": "^super smash bros",
+   "needs": "Your own Super Smash Bros. N64 ROM (USA).",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "zelda3",
+   "name": "Zelda: A Link to the Past",
+   "kind": "decomp",
+   "repo": "https://github.com/samyost1/zelda3-android",
+   "systems": [
+    "snes"
+   ],
+   "titleMatch": "link to the past",
+   "needs": "Your own A Link to the Past SNES ROM (USA): pick it when the app asks. It builds its game data from the ROM once.",
+   "status": "verified",
+   "package": "com.dishii.zelda3"
+  },
+  {
+   "id": "2ship",
+   "name": "Zelda: Majora's Mask (2 Ship 2 Harkinian)",
+   "kind": "decomp",
+   "repo": "https://github.com/linkzenic/2ship2harkinian-Android",
+   "systems": [
+    "n64"
+   ],
+   "titleMatch": "majora",
+   "needs": "Your own Majora's Mask N64 ROM (USA).",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "shipwright",
+   "name": "Zelda: Ocarina of Time (Ship of Harkinian)",
+   "kind": "decomp",
+   "repo": "https://github.com/Waterdish/Shipwright-Android",
+   "systems": [
+    "n64"
+   ],
+   "titleMatch": "ocarina of time",
+   "needs": "Your own Ocarina of Time N64 ROM (a supported version, e.g. PAL GameCube or USA 1.0).",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "minish-cap",
+   "name": "Zelda: The Minish Cap",
+   "kind": "decomp",
+   "repo": "https://github.com/samyost1/tmc-android",
+   "systems": [
+    "gba"
+   ],
+   "titleMatch": "minish cap",
+   "needs": "Your own Minish Cap GBA ROM (USA).",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "dusklight",
+   "name": "Zelda: Twilight Princess (Dusklight)",
+   "kind": "decomp",
+   "repo": "https://github.com/TwilitRealm/dusklight",
+   "systems": [
+    "gamecube"
+   ],
+   "titleMatch": "twilight princess",
+   "needs": "Your own Twilight Princess GameCube disc image.",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "mario-kart-wii",
+   "name": "Mario Kart Wii (kartpad)",
+   "kind": "decomp",
+   "repo": "https://github.com/chrissotraidis/kartpad",
+   "systems": [
+    "wii"
+   ],
+   "titleMatch": "^mario kart wii",
+   "needs": "Your own Mario Kart Wii disc image.",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "goldeneye-xbla",
+   "name": "GoldenEye 007 (XBLA)",
+   "kind": "recomp",
+   "repo": "https://github.com/jeffory/GoldenEye-Recomp",
+   "systems": [],
+   "titleMatch": null,
+   "needs": "Your own GoldenEye 007 Xbox Live Arcade files.",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "unleashed",
+   "name": "Sonic Unleashed",
+   "kind": "recomp",
+   "repo": "https://github.com/SansNope/UnleashedRecomp-Android",
+   "systems": [],
+   "titleMatch": null,
+   "needs": "Your own Xbox 360 copy of Sonic Unleashed. Experimental; needs a very strong phone.",
+   "status": "experimental",
+   "package": null
+  },
+  {
+   "id": "skate3",
+   "name": "Skate 3",
+   "kind": "recomp",
+   "repo": "https://github.com/Buku313/Skate3-Mobile",
+   "systems": [],
+   "titleMatch": null,
+   "needs": "Your own Xbox 360 copy of Skate 3. Experimental.",
+   "status": "experimental",
+   "package": null
+  },
+  {
+   "id": "devilutionx",
+   "name": "Diablo (DevilutionX)",
+   "kind": "pc",
+   "repo": "https://github.com/diasurgical/DevilutionX",
+   "systems": [
+    "devilutionx"
+   ],
+   "titleMatch": "diablo|diabdat",
+   "needs": "DIABDAT.MPQ from your own copy of Diablo (GOG or CD). The free shareware version also works.",
+   "status": "verified",
+   "package": "org.diasurgical.devilutionx"
+  },
+  {
+   "id": "openmw",
+   "name": "Morrowind (OpenMW)",
+   "kind": "pc",
+   "repo": "https://github.com/xyzz/openmw-android",
+   "systems": [],
+   "titleMatch": null,
+   "needs": "The Data Files folder from your own copy of The Elder Scrolls III: Morrowind.",
+   "status": "verified",
+   "package": null
+  },
+  {
+   "id": "hit-and-run",
+   "name": "The Simpsons Hit & Run",
+   "kind": "pc",
+   "repo": "https://github.com/Carlox33/The-Simpsons-Hit-and-Run-Android",
+   "systems": [],
+   "titleMatch": null,
+   "needs": "The game files from your own PC copy.",
+   "status": "verified",
+   "package": null
+  }
+ ]
+}

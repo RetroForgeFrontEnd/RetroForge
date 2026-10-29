@@ -104,7 +104,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | ROM hacks: patched ROM showed as a duplicate of the original after rescan | ✅ the patch name now shows in the subtitle |
 | ROM hacks: more consoles (only 2) | 🟡 now NES, SNES, N64, GBC, GBA (12 hacks); more to add |
 | Original Xbox and Xbox 360 emulation | ❌ look into (Android options are very limited) |
-| PC ports for ROMs the user owns (like Quiver), in the PC section | ❌ |
+| PC ports for ROMs the user owns (like Quiver), in the PC section | 🟡 Ports section in the PC tab: 28 Android-native ports, matched to your games (hacks excluded), Get via Obtainium, Open when installed, Prepare files copies your ROM to Download/RetroForge/Ports (original kept). Tested: matching, Open (Zelda 3 port starts), Prepare files. Windows-only ports via GameNative: not yet |
 | Links: Modern Vintage Gamer, Digital Foundry, My Life in Gaming, The Gaming Historian | ✅ |
 | Scan for new games when the app starts | ✅ on by default, switch in Settings |
 | Use RetroForge as the Android home screen (launcher), with Android apps and Android settings | ❌ |

@@ -296,7 +296,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         composable(HACK_SOURCES_ROUTE) { CatalogueSourcesScreen(hacksViewModel) }
                         composable(Section.PC.route) {
                             val pcViewModel: PcViewModel = viewModel(factory = PcViewModel.factory(container.pcStatus))
-                            PcScreen(pcViewModel, container.droidDeck)
+                            PcScreen(pcViewModel, container.droidDeck, container.library)
                         }
                         composable(Section.LINKS.route) { LinksScreen() }
                         composable(Section.SETTINGS.route) {
