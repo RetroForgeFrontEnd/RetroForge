@@ -158,7 +158,13 @@ object NetworkDrives {
     }
 
     /** Checks the share can be opened and read; returns how many entries its top holds. */
-    fun test(share: NetworkShare): Int = list(share, "").size
+    fun test(share: NetworkShare): Int = runCatching { list(share, "") }.getOrElse { e ->
+        if ("ACCESS_DENIED" in e.message.orEmpty()) throw java.io.IOException(
+            "${share.address} can't be read. On the PC: right-click that folder → Properties → Security → Edit → Add " +
+                "Everyone → tick Read & execute → OK. Or pick a folder inside it that's readable (e.g. ${share.shareName}/roms).", e,
+        )
+        throw e
+    }.size
 
     private fun smbPath(share: NetworkShare, path: String) =
         listOf(share.base, path).filter { it.isNotEmpty() }.joinToString("/").replace('/', '\\')

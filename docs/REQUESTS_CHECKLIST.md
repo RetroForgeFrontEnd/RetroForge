@@ -167,3 +167,4 @@ Requests that were never fully done, or only answered:
 | Texture packs all in one place | ✅ one Texture packs page (downloads, N64 and PSP folders) |
 | Vulkan in the built-in player | ❌ planned milestone: libretro Vulkan rendering (faster Dolphin/Citra/PCSX2, and Turnip drivers in our own player); OpenGL ES works now |
 | Android tab as a phone-style home screen | ❌ to do: icon grid, a dock of the most-used apps (counted from launches in RetroForge, pinnable), search, like a normal phone home screen |
+| CTR-native (Crash Team Racing PC port) via GameNative | ❌ to try: decompilation (GPL-3.0), no releases yet, needs building and the user's own CTR disc data |
