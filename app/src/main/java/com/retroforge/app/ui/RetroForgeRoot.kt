@@ -216,8 +216,11 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                 // Inner pages (anything that isn't a main tab) get a close button, so touch users never need the
                 // phone's back gesture. A controller's B does the same.
                 val inner = route != null && sections.none { it.route == route }
+                // Main tabs other than Home get one too, back to Home; a page's own steps can take it over.
+                val closeOverride = remember { mutableStateOf<(() -> Unit)?>(null) }
                 val content: @Composable (Modifier) -> Unit = { modifier ->
                   Box(modifier) {
+                   androidx.compose.runtime.CompositionLocalProvider(LocalCloseOverride provides closeOverride) {
                     NavHost(nav, startDestination = Section.HOME.route, modifier = Modifier.fillMaxSize()) {
                         composable(Section.HOME.route) {
                             HomeScreen(
@@ -355,9 +358,15 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                             ThemesScreen(themesViewModel)
                         }
                     }
-                    if (inner) CloseButton(Modifier.align(Alignment.TopEnd).padding(top = 12.dp, end = 12.dp)) {
+                   }
+                    val override = closeOverride.value
+                    if (inner || override != null || current != Section.HOME) CloseButton(Modifier.align(Alignment.TopEnd).padding(top = 12.dp, end = 12.dp)) {
                         com.retroforge.core.ui.UiSounds.back()
-                        nav.popBackStack()
+                        when {
+                            override != null -> override()
+                            inner -> nav.popBackStack()
+                            else -> nav.goTo(Section.HOME)
+                        }
                     }
                   }
                 }
@@ -432,7 +441,7 @@ private fun NavHostController.goTo(section: Section) {
     }
 }
 
-/** Red ✕ in the corner of inner pages: goes back one step. */
+/** Red ✕ in the corner of every page but Home: goes back one step (from a main tab, to Home). */
 @Composable
 private fun CloseButton(modifier: Modifier, onClick: () -> Unit) {
     var focused by remember { mutableStateOf(false) }

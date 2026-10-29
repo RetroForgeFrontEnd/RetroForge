@@ -60,7 +60,7 @@ fun SettingsScreen(
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     // Settings in a few groups, each on its own page, so nothing is far down a long list. Back returns to the groups.
     var group by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf<String?>(null) }
-    androidx.activity.compose.BackHandler(enabled = group != null) { group = null }
+    com.retroforge.app.ui.CloseStep(enabled = group != null) { group = null }
     val groups = listOf(
         "games" to ("Games and library" to "Game folders and network drives, ES-DE collections, texture packs, scanning, the Retro and PC tabs."),
         "playing" to ("Playing" to "The built-in player, saves and backups, emulator apps, dual screens, GPU drivers, RetroArch hotkeys."),

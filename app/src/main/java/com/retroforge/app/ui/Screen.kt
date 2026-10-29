@@ -19,6 +19,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.retroforge.core.ui.ThemeBackdrop
 
+/**
+ * The red ✕ in the corner normally leaves the page. A page with steps of its own (Settings' groups) takes it over
+ * while it's deeper than its first step, through [CloseStep].
+ */
+val LocalCloseOverride = androidx.compose.runtime.staticCompositionLocalOf<androidx.compose.runtime.MutableState<(() -> Unit)?>> {
+    androidx.compose.runtime.mutableStateOf(null)
+}
+
+/** While [enabled], Android's back and (when [takeOverClose]) the red ✕ run [onBack] instead of leaving the page. */
+@Composable
+fun CloseStep(enabled: Boolean, takeOverClose: Boolean = true, onBack: () -> Unit) {
+    val holder = LocalCloseOverride.current
+    val latest = androidx.compose.runtime.rememberUpdatedState(onBack)
+    androidx.activity.compose.BackHandler(enabled) { latest.value() }
+    androidx.compose.runtime.DisposableEffect(enabled, takeOverClose, holder) {
+        val action: () -> Unit = { latest.value() }
+        if (enabled && takeOverClose) holder.value = action
+        onDispose { if (holder.value === action) holder.value = null }
+    }
+}
+
 /** Common scrolling page frame so every section has the same title treatment and spacing. */
 @Composable
 fun ScreenFrame(title: String?, subtitle: String? = null, content: @Composable ColumnScope.() -> Unit) {

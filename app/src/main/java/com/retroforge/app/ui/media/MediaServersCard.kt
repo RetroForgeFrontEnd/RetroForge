@@ -72,6 +72,14 @@ fun MediaServersCard(prefs: SharedPreferences) {
         }
     }
 
+    fun back() {
+        path.removeAt(path.lastIndex)
+        if (path.isEmpty()) { server = null; entries = null; status = null }
+        else path.last().let { (id, title) -> open(server ?: return, id, title, back = true) }
+    }
+    // Android's back steps up a folder; the red ✕ still leaves the Media tab (this card is far down the page).
+    com.retroforge.app.ui.CloseStep(enabled = server != null, takeOverClose = false) { back() }
+
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("Plex and other media servers")
         val current = server
@@ -101,11 +109,7 @@ fun MediaServersCard(prefs: SharedPreferences) {
         } else {
             CardBody(path.joinToString(" › ") { it.second })
             ChipRow {
-                FocusChip("‹ Back", onClick = {
-                    path.removeAt(path.lastIndex)
-                    if (path.isEmpty()) { server = null; entries = null; status = null }
-                    else path.last().let { (id, title) -> open(current, id, title, back = true) }
-                })
+                FocusChip("‹ Back", onClick = { back() })
                 if (path.size > 1) FocusChip("Servers", onClick = { path.clear(); server = null; entries = null; status = null })
             }
             entries?.let { list ->
