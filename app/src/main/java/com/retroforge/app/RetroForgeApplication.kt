@@ -96,7 +96,7 @@ class AppContainer(application: Application) {
             library.systemCounts
                 .map { counts -> counts.map { it.system }.toSortedSet() }
                 .distinctUntilChanged()
-                .collect { canvasArt.ensure(it, withGameArt = viewPrefs.getString("tile_style", null) == "GAME_ART") }
+                .collect { canvasArt.ensure(it, withGameArt = viewPrefs.getString("tile_style", null) in setOf("GAME_ART", "ART_AND_CONSOLE")) }
         }
     }
     val covers = CoverRepository(

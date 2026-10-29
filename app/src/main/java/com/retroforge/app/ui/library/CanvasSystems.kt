@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -177,6 +178,14 @@ private fun Tiles(
                 AsyncImage(
                     model = trimmed(console), contentDescription = system.name, contentScale = ContentScale.Fit,
                     modifier = Modifier.fillMaxSize().padding(tile * 0.14f),
+                )
+            } else if (style == TileStyle.ART_AND_CONSOLE && artwork?.tile != null && console != null) {
+                // The game art, darkened towards the bottom, with the console standing in front of it.
+                AsyncImage(model = artwork.tile, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+                Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Transparent, Color.Black.copy(alpha = 0.55f)))))
+                AsyncImage(
+                    model = trimmed(console), contentDescription = system.name, contentScale = ContentScale.Fit,
+                    modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(0.62f).fillMaxHeight(0.5f).padding(bottom = tile * 0.06f),
                 )
             } else if (artwork?.tile != null) {
                 AsyncImage(model = artwork.tile, contentDescription = system.name, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())

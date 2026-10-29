@@ -79,14 +79,14 @@ class LibraryViewModel(
             .stateIn(viewModelScope, SharingStarted.Eagerly, _systemArt.value ?: canvasArt.index.value)
     val indexingArt = MutableStateFlow(false)
 
-    /** Retro tab tiles: console pictures, game art or plain name plates. */
+    /** Retro tab tiles: console pictures, game art, game art with the console on it, or plain name plates. */
     val tileStyle = MutableStateFlow(TileStyle.of(viewPrefs.getString("tile_style", null)))
     fun nextTileStyle() {
         val next = tileStyle.value.next()
         tileStyle.value = next
         viewPrefs.edit().putString("tile_style", next.name).apply()
         // Game art is larger, so it's only downloaded once someone chooses it.
-        if (next == TileStyle.GAME_ART && _systemArt.value == null) {
+        if (next.usesGameArt && _systemArt.value == null) {
             viewModelScope.launch { canvasArt.ensure(repository.systemCounts.first().map { it.system }, withGameArt = true) }
         }
     }
@@ -298,7 +298,9 @@ class LibraryViewModel(
 
 /** How the Retro tab's system tiles look. */
 enum class TileStyle(val label: String) {
-    CONSOLES("consoles"), GAME_ART("game art"), PLAIN("plain");
+    CONSOLES("consoles"), GAME_ART("game art"), ART_AND_CONSOLE("game art + console"), PLAIN("plain");
+
+    val usesGameArt get() = this == GAME_ART || this == ART_AND_CONSOLE
 
     fun next() = entries[(ordinal + 1) % entries.size]
 

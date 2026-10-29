@@ -341,8 +341,15 @@ object PlayerCores {
         "mednafen_saturn", "yabause", "flycast", "opera", "neocd",
     )
 
-    /** OpenGL unless the user picked Vulkan, which is still experimental in the built-in player. */
-    fun usesVulkan(coreId: String, choice: String?): Boolean = coreId in vulkanCores && choice == "vulkan"
+    /**
+     * Cores on Vulkan unless the user picks OpenGL: Dolphin's OpenGL crashes or draws garbage on Samsung's ANGLE-based
+     * driver (Exynos), while its Vulkan draws properly there.
+     */
+    private val vulkanByDefault = setOf("dolphin")
+
+    /** The user's pick, else Vulkan for [vulkanByDefault] and OpenGL for the rest (Vulkan is still experimental). */
+    fun usesVulkan(coreId: String, choice: String?): Boolean =
+        coreId in vulkanCores && (choice == "vulkan" || (choice == null && coreId in vulkanByDefault))
 
     /** What tells each core its renderer, for the user's choice (retroforge_graphics is read by the player itself). */
     fun graphicsOptions(coreId: String, vulkan: Boolean): Map<String, String> {

@@ -67,6 +67,7 @@
         <!-- RetroForge's network drives (SMB), listed in Android's folder picker. Only the system's picker may use it. -->
         <provider
             android:name=".network.NetworkDrivesProvider"
+            android:process=":drives"
             android:authorities="${applicationId}.network"
             android:exported="true"
             android:grantUriPermissions="true"

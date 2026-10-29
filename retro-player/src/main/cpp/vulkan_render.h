@@ -20,8 +20,8 @@ bool init(std::string &error);
 const retro_hw_render_interface *interface();
 
 /**
- * Copies the core's last image (set_image) into [rgba] (width * height * 4 bytes, top row first). False when there's
- * no image yet.
+ * Copies the core's last image (set_image) into [rgba] (width * height * 4 bytes, bottom row first like an OpenGL
+ * framebuffer). False when there's no image yet.
  */
 bool readFrame(unsigned width, unsigned height, uint8_t *rgba);
 

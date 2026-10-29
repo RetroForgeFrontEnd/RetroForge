@@ -55,8 +55,15 @@ object NetworkDrives {
     fun folderUri(context: Context, share: NetworkShare): android.net.Uri =
         DocumentsContract.buildTreeDocumentUri(authority(context), "${share.id}/")
 
+    // The list is a file rather than SharedPreferences: NetworkDrivesProvider runs in a process of its own, and each
+    // process keeps its own cached copy of SharedPreferences, so a drive added in the app would stay unknown to it.
+    private fun listFile(context: Context) = java.io.File(context.filesDir, "network_drives.json")
+
     fun all(context: Context): List<NetworkShare> {
-        val text = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, null) ?: return emptyList()
+        val file = listFile(context)
+        val text = runCatching { file.readText() }.getOrNull()
+            ?: context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, null) // saved before the file
+            ?: return emptyList()
         return runCatching {
             val array = JSONArray(text)
             (0 until array.length()).map { array.getJSONObject(it) }.map {
@@ -83,7 +90,12 @@ object NetworkDrives {
             array.put(JSONObject().put("id", it.id).put("name", it.name).put("host", it.host).put("share", it.share)
                 .put("user", it.user).put("password", it.password).put("domain", it.domain))
         }
-        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY, array.toString()).apply()
+        synchronized(this) {
+            val file = listFile(context)
+            val temp = java.io.File(file.path + ".new")
+            temp.writeText(array.toString())
+            temp.renameTo(file)
+        }
         // Tell Android's folder picker the list changed.
         context.contentResolver.notifyChange(DocumentsContract.buildRootsUri(authority(context)), null)
     }

@@ -8,6 +8,7 @@
 #include <dlfcn.h>
 #include <android/log.h>
 
+#include <algorithm>
 #include <cstring>
 #include <mutex>
 #include <vector>
@@ -81,6 +82,11 @@ std::mutex queueMutex;
 retro_hw_render_interface_vulkan iface{};
 bool ready = false;
 
+// Cores that build their swapchain on the frontend's surface (Dolphin) only draw when they're given one. They wrap the
+// swapchain and present themselves (frames come back through set_image), so a stand-in handle does: the few surface
+// queries their wrappers pass on are answered by surfaceProc. Their instance has no surface extensions to make a real one.
+const VkSurfaceKHR standInSurface = reinterpret_cast<VkSurfaceKHR>(uint64_t(0x52464F52));
+
 // What the core handed over for this frame.
 retro_vulkan_image image{};
 bool haveImage = false;
@@ -144,6 +150,57 @@ void unlockQueue(void *) { queueMutex.unlock(); }
 void setSignalSemaphore(void *, VkSemaphore semaphore) { signalSemaphore = semaphore; }
 
 // ---- Instance and device ----
+
+VKAPI_ATTR VkResult VKAPI_CALL surfaceSupport(VkPhysicalDevice, uint32_t, VkSurfaceKHR, VkBool32 *supported) {
+    *supported = VK_TRUE;
+    return VK_SUCCESS;
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL surfaceFormats(VkPhysicalDevice, VkSurfaceKHR, uint32_t *count, VkSurfaceFormatKHR *formats) {
+    const VkSurfaceFormatKHR offered[] = {{VK_FORMAT_R8G8B8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR},
+                                          {VK_FORMAT_B8G8R8A8_UNORM, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR}};
+    if (!formats) return *count = 2, VK_SUCCESS;
+    uint32_t n = std::min<uint32_t>(*count, 2);
+    for (uint32_t i = 0; i < n; i++) formats[i] = offered[i];
+    *count = n;
+    return n < 2 ? VK_INCOMPLETE : VK_SUCCESS;
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL surfacePresentModes(VkPhysicalDevice, VkSurfaceKHR, uint32_t *count, VkPresentModeKHR *modes) {
+    if (!modes) return *count = 1, VK_SUCCESS;
+    if (*count < 1) return VK_INCOMPLETE;
+    modes[0] = VK_PRESENT_MODE_FIFO_KHR;
+    *count = 1;
+    return VK_SUCCESS;
+}
+
+VKAPI_ATTR VkResult VKAPI_CALL surfaceCapabilities(VkPhysicalDevice, VkSurfaceKHR, VkSurfaceCapabilitiesKHR *caps) {
+    *caps = {};
+    caps->minImageCount = 2;
+    caps->maxImageCount = 4;
+    caps->currentExtent = {0xFFFFFFFFu, 0xFFFFFFFFu};
+    caps->minImageExtent = {1, 1};
+    caps->maxImageExtent = {8192, 8192};
+    caps->maxImageArrayLayers = 1;
+    caps->supportedTransforms = caps->currentTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
+    caps->supportedCompositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    caps->supportedUsageFlags = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+    return VK_SUCCESS;
+}
+
+VKAPI_ATTR void VKAPI_CALL destroySurface(VkInstance, VkSurfaceKHR, const VkAllocationCallbacks *) {}
+
+// The instance-level lookup handed to negotiating cores: the driver's, plus answers for the stand-in surface. The
+// instance has no surface extensions, so the driver gives nothing for these; Dolphin only puts its own wrappers in
+// place of functions the frontend's lookup does give.
+VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL surfaceProc(VkInstance inst, const char *name) {
+    if (!strcmp(name, "vkGetPhysicalDeviceSurfaceSupportKHR")) return reinterpret_cast<PFN_vkVoidFunction>(surfaceSupport);
+    if (!strcmp(name, "vkGetPhysicalDeviceSurfaceFormatsKHR")) return reinterpret_cast<PFN_vkVoidFunction>(surfaceFormats);
+    if (!strcmp(name, "vkGetPhysicalDeviceSurfacePresentModesKHR")) return reinterpret_cast<PFN_vkVoidFunction>(surfacePresentModes);
+    if (!strcmp(name, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR")) return reinterpret_cast<PFN_vkVoidFunction>(surfaceCapabilities);
+    if (!strcmp(name, "vkDestroySurfaceKHR")) return reinterpret_cast<PFN_vkVoidFunction>(destroySurface);
+    return getInstanceProc(inst, name);
+}
 
 VkInstance createInstanceWrapper(void *, const VkInstanceCreateInfo *info) {
     VkInstance made = VK_NULL_HANDLE;
@@ -342,7 +399,7 @@ bool init(std::string &error) {
     if (!app) app = &ownApp;
 
     if (negotiation && negotiation->interface_version >= 2 && negotiation->create_instance)
-        instance = negotiation->create_instance(getInstanceProc, app, createInstanceWrapper, nullptr);
+        instance = negotiation->create_instance(surfaceProc, app, createInstanceWrapper, nullptr);
     else
         ownInstance(app);
     if (!instance) return error = "Couldn't start Vulkan (instance)", false;
@@ -365,9 +422,9 @@ bool init(std::string &error) {
     retro_vulkan_context context{};
     bool made = false;
     if (negotiation && negotiation->interface_version >= 2 && negotiation->create_device2)
-        made = negotiation->create_device2(&context, instance, gpu, VK_NULL_HANDLE, getInstanceProc, createDeviceWrapper, nullptr);
+        made = negotiation->create_device2(&context, instance, gpu, standInSurface, surfaceProc, createDeviceWrapper, nullptr);
     else if (negotiation && negotiation->create_device)
-        made = negotiation->create_device(&context, instance, gpu, VK_NULL_HANDLE, getInstanceProc, nullptr, 0, nullptr, 0, nullptr);
+        made = negotiation->create_device(&context, instance, gpu, standInSurface, surfaceProc, nullptr, 0, nullptr, 0, nullptr);
     if (made) {
         device = context.device;
         queue = context.queue;
@@ -500,7 +557,9 @@ bool readFrame(unsigned w, unsigned h, uint8_t *out) {
         range.size = VK_WHOLE_SIZE;
         vkInvalidateMappedMemoryRanges(device, 1, &range);
     }
-    std::memcpy(out, mapped, size_t(w) * h * 4);
+    // Bottom row first, as an OpenGL framebuffer is: the player draws hardware frames that way up.
+    const size_t row = size_t(w) * 4;
+    for (unsigned y = 0; y < h; y++) std::memcpy(out + y * row, static_cast<const uint8_t *>(mapped) + (h - 1 - y) * row, row);
     return true;
 }
 
