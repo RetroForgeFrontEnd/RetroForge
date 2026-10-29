@@ -50,7 +50,7 @@ val usefulLinks = listOf(
 fun LinksScreen() {
     val context = LocalContext.current
     var error by remember { mutableStateOf<String?>(null) }
-    ScreenFrame(title = "Links", subtitle = "Channels and sites worth following. Links open in YouTube or your browser.") {
+    ScreenFrame(title = "Retro games, handhelds and PC gaming", subtitle = "Channels and sites worth following. Links open in YouTube or your browser.") {
         usefulLinks.forEach { group ->
             Text(group.title, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
             // A to Z, ignoring a leading "The" (The Gaming Historian goes under G).

@@ -100,7 +100,7 @@ import kotlinx.coroutines.flow.Flow
 enum class Section(val route: String, val label: String, @DrawableRes val icon: Int) {
     HOME("home", "Home", R.drawable.ic_section_home),
     RETRO("retro", "Retro", R.drawable.ic_section_retro),
-    HACKS("hacks", "ROM hacks", R.drawable.ic_section_hacks),
+    HACKS("hacks", "Hacks", R.drawable.ic_section_hacks),
     PC("pc", "PC", R.drawable.ic_section_pc),
     MEDIA("media", "Media", R.drawable.ic_section_media),
     VR("vr", "VR", R.drawable.ic_section_vr),

@@ -113,7 +113,9 @@ class LibraryScanner(private val rules: SystemRules) {
         onProgress(ScanProgress(systemDirs.size, systemDirs.size, null, filesSeen))
         val finalLayout = if (layout == RootLayout.UNRECOGNISED && loose.isNotEmpty()) RootLayout.COLLECTION else layout
         if (finalLayout != layout) problems.removeAll { it.message.startsWith("No system folders found") }
-        return ScanResult(finalLayout, markDuplicates(games), problems, unrecognised.filter { it !in looseFolders })
+        // Folders that never hold games (a frontend's BIOS or saves) aren't worth mentioning.
+        val reported = unrecognised.filter { it !in looseFolders && it.substringAfterLast('/').lowercase() !in NON_GAME_FOLDERS }
+        return ScanResult(finalLayout, markDuplicates(games), problems, reported)
     }
 
     private data class SystemDir(val prefix: String, val dir: ScanNode, val rule: SystemRule)
@@ -366,3 +368,6 @@ private val LOOSE_EXTENSIONS = mapOf(
 
 /** Archives and disc images: could be for many systems. */
 private val UNSURE_EXTENSIONS = setOf("zip", "7z", "rar", "iso", "chd", "cue", "bin", "img", "pbp", "rvz", "m3u", "gdi", "cdi")
+
+/** Folders beside the system folders that hold no games: BIOS, saves and the like. */
+private val NON_GAME_FOLDERS = setOf("bios", "system", "saves", "states", "screenshots", "media", "images", "videos", "manuals", "cheats", "shaders", "overlays", "themes")

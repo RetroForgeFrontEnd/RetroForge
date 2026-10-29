@@ -236,7 +236,7 @@ class LibraryViewModel(
     fun coreState(id: String) = cores.state(id)
 
     /** Downloads the core if it isn't here yet (normally it already is), then returns the player's intent. */
-    suspend fun builtInIntent(context: Context, game: GameEntity, root: RootEntity, core: PlayerCores.PlayerCore): Intent? {
+    suspend fun builtInIntent(context: Context, game: GameEntity, root: RootEntity, core: PlayerCores.PlayerCore, netplay: String? = null): Intent? {
         if (!cores.ensure(core.id)) return null
         val s = appSettings.value
         repository.recordPlay(game, "retroforge:${core.id}")
@@ -252,11 +252,14 @@ class LibraryViewModel(
             menuCombo = HotkeyCombo.of(s?.menuCombo ?: HotkeyCombo.DOWN_SELECT.value),
             quitCombo = HotkeyCombo.of(s?.quitCombo ?: HotkeyCombo.START_SELECT.value),
             copyFirst = viewPrefs.getBoolean(PlayerActivity.COPY_FIRST_PREF, false),
+            netplay = netplay,
         )
     }
 
     fun games(system: String): Flow<List<GameEntity>> = repository.gamesFor(system)
     suspend fun randomGameId(): Long? = repository.randomGameId()
+    /** The library's copy of a game another device is hosting for netplay (Netplay.gameId: system|file|size). */
+    suspend fun gameIdForNetplay(gameId: String): Long? = gameId.split('|').takeIf { it.size >= 2 }?.let { repository.gameIdFor(it[0], it[1]) }
     fun game(id: Long): Flow<GameEntity?> = repository.game(id)
     fun problems(rootId: Long): Flow<List<ProblemEntity>> = repository.problems(rootId)
     suspend fun duplicatesOf(game: GameEntity) = repository.duplicatesOf(game)

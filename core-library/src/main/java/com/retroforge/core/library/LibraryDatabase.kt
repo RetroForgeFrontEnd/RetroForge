@@ -213,6 +213,9 @@ interface LibraryDao {
     @Query("SELECT id FROM games WHERE isHack = 0 ORDER BY RANDOM() LIMIT 1")
     suspend fun randomGameId(): Long?
 
+    @Query("SELECT id FROM games WHERE system = :system AND fileName = :fileName LIMIT 1")
+    suspend fun gameIdFor(system: String, fileName: String): Long?
+
     @Query("SELECT * FROM games WHERE duplicateKey = :key AND id != :excludeId")
     suspend fun duplicatesOf(key: String, excludeId: Long): List<GameEntity>
 

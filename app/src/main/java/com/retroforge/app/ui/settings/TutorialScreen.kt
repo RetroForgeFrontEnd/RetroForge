@@ -20,6 +20,15 @@ import com.retroforge.core.ui.FocusChip
 private class Topic(val title: String, val steps: List<String>)
 
 private val topics = listOf(
+    Topic("Play together (netplay)", listOf(
+        "Two players on two devices play the same game, each with RetroForge and the same game file (same name and size). The host is player 1, the one who joins is player 2.",
+        "To host: open the game and choose Play together → Host (or Netplay → Host this game in the game's menu). Your friend then joins.",
+        "Same Wi-Fi: your friend opens the same game and chooses Play together → Join, then picks you from the list. Or Retro tab → Play together → Find games on this Wi-Fi.",
+        "Over the internet: when you host, RetroForge asks your router to let your friend in and shows your internet address in Netplay. Your friend types it under Join by address. If your router doesn't allow it, forward port 55450 (TCP) to your device in the router's settings. Mobile data can't host.",
+        "Input delay (Settings → Playing → Play together): buttons work a few frames late on both devices so they arrive in time. 2 or 3 on Wi-Fi, 4 to 6 over the internet.",
+        "During netplay both devices run at the same speed: fast-forward is off, and only player 1 can load a state or restart. If the game gets out of step, player 1's game is sent again by itself.",
+        "Works with every system the built-in player runs. Systems where the game must be identical in memory (most consoles) work best; computers that load from disks may need a restart after joining.",
+    )),
     Topic("Getting started", listOf(
         "Settings → Set up RetroForge walks you through it: pick your games folder, check your BIOS files and choose emulators. The built-in player's emulators download by themselves.",
         "Your games folder can be a \"roms\" folder from another frontend (RetroBat, ES-DE: snes, nes, psx … inside), a single system folder, or just a folder of games: RetroForge recognises loose games by their file type (.gba, .nds, .sfc, .z64 …).",

@@ -43,6 +43,15 @@ The same guide as Settings → How to use RetroForge in the app.
 - Settings → Playing → Graphics and resolution sets OpenGL or Vulkan and the resolution per system; the pause menu has the same.
 - Some systems need BIOS files. Settings → Set up RetroForge finds yours and copies them where the emulators look.
 
+## Play together (netplay)
+
+- Two players on two devices play the same game, each with RetroForge and the same game file. The host is player 1, the one who joins is player 2.
+- Host: open the game → **Play together → Host** (or Netplay in the game's menu).
+- Join on the same Wi-Fi: open the same game → **Play together → Join** and pick the host, or Retro tab → **Play together → Find games on this Wi-Fi**.
+- Join over the internet: the host's Netplay page shows their internet address (RetroForge asks the router to let you in); type it under **Join by address**. If the host's router doesn't allow that, they forward port 55450 (TCP) to their device. Mobile data can't host.
+- Input delay (Settings → Playing → Play together): 2 or 3 frames on Wi-Fi, 4 to 6 over the internet.
+- During netplay fast-forward is off, and only player 1 can load a state or restart. If the two games drift apart, player 1's game is sent again automatically.
+
 ## The in-game menu
 
 - Swipe in from the left or right edge (or press ☰, Back, or Home/Guide on a controller) to pause and open the menu.

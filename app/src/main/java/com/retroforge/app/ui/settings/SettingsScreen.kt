@@ -144,6 +144,8 @@ fun SettingsScreen(
                     CardBody("Shows which graphics chip this device has. On Snapdragon phones, it also downloads Turnip drivers, which can make emulator apps like Dolphin, Eden and NetherSX2 run better.")
                 }
 
+                NetplayCard()
+
                 HotkeysCard(settings.retroArchHotkeys, HotkeyCombo.of(settings.menuCombo), HotkeyCombo.of(settings.quitCombo), viewModel::setRetroArchHotkeys, onOpenHotkeys)
                 if (settings.retroArchHotkeys) {
                     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.setFastForwardOnR2(!settings.fastForwardOnR2) }) {
@@ -414,3 +416,30 @@ private fun DualScreenCard(prefs: android.content.SharedPreferences) {
     }
 }
 
+/** Netplay: the name other players see, and how many frames late buttons are applied (more for slow connections). */
+@Composable
+private fun NetplayCard() {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    var name by remember { mutableStateOf(com.retroforge.app.player.Netplay.name(context)) }
+    var delay by remember { mutableStateOf(com.retroforge.app.player.Netplay.delay(context)) }
+    FocusCard(modifier = Modifier.fillMaxWidth()) {
+        CardTitle("Play together (netplay)")
+        CardBody(
+            "Play a game with a friend on another device: open a game and choose Play together, or use Netplay in the game's " +
+                "menu. Same Wi-Fi, or over the internet (RetroForge asks your router to let your friend in).",
+        )
+        ControllerTextField(
+            value = name,
+            onValueChange = { name = it.take(24); com.retroforge.app.player.Netplay.setName(context, name) },
+            singleLine = true,
+            label = { Text("Your name for other players") },
+            modifier = Modifier.fillMaxWidth(),
+        )
+        FocusChip("Input delay: $delay frames", onClick = {
+            val all = com.retroforge.app.player.Netplay.delays
+            delay = all[(all.indexOf(delay) + 1) % all.size]
+            com.retroforge.app.player.Netplay.setDelay(context, delay)
+        })
+        CardBody("Buttons work this many frames late on both devices, so they arrive in time. 2 or 3 on the same Wi-Fi; 4 to 6 over the internet. The host's setting is used.")
+    }
+}

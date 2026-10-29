@@ -101,6 +101,19 @@ object NativePlayer {
     external fun restoreSaveRam(data: ByteArray)
     external fun saveState(): ByteArray?
     external fun loadState(state: ByteArray): Boolean
+
+    // Netplay (netplay.h): two devices play this game together, the host as player 1. [gameId] must match on both.
+    /** Starts listening on [port]; null when it did, else why not. */
+    external fun netplayHost(port: Int, gameId: String, delayFrames: Int): String?
+    /** Connects to a host in the background; [netplayState] and [netplayStatus] say how it's going. */
+    external fun netplayJoin(address: String, port: Int, gameId: String, delayFrames: Int): String?
+    external fun netplayLeave()
+    /** 0 off, 1 hosting (waiting for player 2), 2 joining, 3 starting, 4 playing, 5 failed. */
+    external fun netplayState(): Int
+    external fun netplayStatus(): String
+    /** 0 when this device is player 1 (the host), 1 when it's player 2. */
+    external fun netplayPlayer(): Int
+
     external fun stop()
     external fun close()
 }

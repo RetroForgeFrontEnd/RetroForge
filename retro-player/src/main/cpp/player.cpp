@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "libretro.h"
+#include "netplay.h"
 #include "vfs.h"
 #include "vulkan_render.h"
 
@@ -208,6 +209,9 @@ struct Player {
     // Touchscreen (DS bottom screen and similar), in libretro's -0x7fff..0x7fff over the drawn game.
     std::atomic<int16_t> pointerX{0}, pointerY{0};
     std::atomic<bool> pointerDown{false};
+    // Netplay: this frame's buttons for players 1 and 2 come from both devices (netplay.h), not from this one alone.
+    bool netInput = false;
+    netplay::FrameInput netFrame;
 };
 
 Player *P = nullptr;
@@ -986,13 +990,15 @@ int16_t inputState(unsigned port, unsigned device, unsigned index, unsigned id) 
     if (port >= 4) return 0;
     switch (device & RETRO_DEVICE_MASK) {
         case RETRO_DEVICE_JOYPAD: {
-            uint32_t mask = P->buttons[port];
+            if (P->netInput && port >= 2) return 0;
+            uint32_t mask = P->netInput ? P->netFrame.buttons[port] : P->buttons[port].load();
             if (id == RETRO_DEVICE_ID_JOYPAD_MASK) return static_cast<int16_t>(mask);
             return id < 16 ? static_cast<int16_t>((mask >> id) & 1u) : 0;
         }
         case RETRO_DEVICE_ANALOG:
-            if (index < 2 && id < 2) return P->analog[port][index][id];
-            return 0;
+            if (index >= 2 || id >= 2) return 0;
+            if (P->netInput) return port < 2 ? P->netFrame.analog[port][index * 2 + id] : 0;
+            return P->analog[port][index][id];
         case RETRO_DEVICE_KEYBOARD:
             return id < RETROK_LAST && P->keys[id].load() ? 1 : 0;
         case RETRO_DEVICE_MOUSE:
@@ -1057,13 +1063,28 @@ void runLoop() {
             if (p.keyboardCallback) {
                 for (auto &e : events) p.keyboardCallback(e.down, e.keycode, e.character, e.modifiers);
             }
+            // Netplay: both players' buttons for this frame, or wait for the other player's (no frame this time).
+            netplay::Hooks hooks{
+                [&p] {
+                    std::vector<uint8_t> state(p.core.serialize_size());
+                    if (state.empty() || !p.core.serialize(state.data(), state.size())) state.clear();
+                    return state;
+                },
+                [&p](const std::vector<uint8_t> &state) { return p.core.unserialize(state.data(), state.size()); },
+            };
+            p.netInput = netplay::active();
+            if (p.netInput) {
+                int16_t sticks[4] = {p.analog[0][0][0], p.analog[0][0][1], p.analog[0][1][0], p.analog[0][1][1]};
+                if (!netplay::beginFrame(p.buttons[0], sticks, p.netFrame, hooks)) continue;
+            }
             p.core.run();
+            if (p.netInput) netplay::endFrame(hooks);
         }
         present();
 
         double fps = p.av.timing.fps > 0 ? p.av.timing.fps : 60.0;
         auto frame = std::chrono::duration_cast<clock::duration>(std::chrono::duration<double>(1.0 / fps));
-        if (p.fastForward || p.coreFastForward) {
+        if ((p.fastForward || p.coreFastForward) && !p.netInput) {
             next = clock::now(); // as fast as the device goes (vsync still limits drawing)
         } else if (p.stream) {
             // Audio is the clock: wait while more than ~64 ms of sound is queued. Keeps sound and speed exact.
@@ -1507,8 +1528,31 @@ JNIEXPORT jboolean JNI(loadState)(JNIEnv *env, jobject, jbyteArray state) {
     std::vector<uint8_t> data(static_cast<size_t>(env->GetArrayLength(state)));
     env->GetByteArrayRegion(state, 0, static_cast<jsize>(data.size()), reinterpret_cast<jbyte *>(data.data()));
     std::lock_guard<std::mutex> lock(P->coreMutex);
-    return P->core.unserialize(data.data(), data.size()) ? JNI_TRUE : JNI_FALSE;
+    bool loaded = P->core.unserialize(data.data(), data.size());
+    if (loaded) netplay::stateChanged();  // the host loaded a state: player 2 gets it too
+    return loaded ? JNI_TRUE : JNI_FALSE;
 }
+
+// ---------- netplay ----------
+
+JNIEXPORT jstring JNI(netplayHost)(JNIEnv *env, jobject, jint port, jstring gameId, jint delay) {
+    std::string error;
+    return netplay::host(port, str(env, gameId), delay, error) ? nullptr : env->NewStringUTF(error.c_str());
+}
+
+JNIEXPORT jstring JNI(netplayJoin)(JNIEnv *env, jobject, jstring address, jint port, jstring gameId, jint delay) {
+    std::string error;
+    return netplay::join(str(env, address), port, str(env, gameId), delay, error) ? nullptr : env->NewStringUTF(error.c_str());
+}
+
+JNIEXPORT void JNI(netplayLeave)(JNIEnv *, jobject) { netplay::leave(); }
+
+/** 0 off, 1 hosting (waiting), 2 joining, 3 starting, 4 playing, 5 failed. */
+JNIEXPORT jint JNI(netplayState)(JNIEnv *, jobject) { return static_cast<jint>(netplay::state()); }
+
+JNIEXPORT jstring JNI(netplayStatus)(JNIEnv *env, jobject) { return env->NewStringUTF(netplay::status().c_str()); }
+
+JNIEXPORT jint JNI(netplayPlayer)(JNIEnv *, jobject) { return netplay::localPlayer(); }
 
 // Stops the loop and sound. The game stays loaded so saves can still be read.
 JNIEXPORT void JNI(stop)(JNIEnv *, jobject) {
@@ -1521,6 +1565,7 @@ JNIEXPORT void JNI(stop)(JNIEnv *, jobject) {
 // Unloads the game and the core. The library itself stays mapped: the player process ends with the game.
 JNIEXPORT void JNI(close)(JNIEnv *, jobject) {
     if (!P) return;
+    netplay::leave();
     P->running = false;
     if (P->loop.joinable()) P->loop.join();
     audioClose();

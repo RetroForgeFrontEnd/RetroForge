@@ -49,6 +49,7 @@ import com.retroforge.core.ui.FocusChip
 import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
 import java.text.DateFormat
+import kotlinx.coroutines.launch
 import java.util.Date
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -120,6 +121,8 @@ fun RetroScreen(
                 }
             }
         }
+
+        if (systems.isNotEmpty()) PlayTogetherCard(viewModel, onOpenGame)
 
         if (systems.isNotEmpty()) {
             ControllerTextField(
@@ -205,7 +208,7 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
                 if (root.layout == "UNRECOGNISED") CardBody("No system folders were found here. Choose the folder that contains snes, nes, psx …, or a single system folder.")
                 val unrecognised = root.unrecognisedFolders.lines().filter { it.isNotBlank() }
                 if (unrecognised.isNotEmpty()) {
-                    CardBody("${plural(unrecognised.size, "folder")} not recognised as a system and skipped: ${unrecognised.take(12).joinToString()}${if (unrecognised.size > 12) " …" else ""}")
+                    CardBody("${plural(unrecognised.size, "folder")} with no games RetroForge recognises (not named after a system, nothing playable inside): ${unrecognised.take(12).joinToString()}${if (unrecognised.size > 12) " …" else ""}")
                 }
                 if (problems.isNotEmpty()) {
                     CardBody("${problems.size} problem${if (problems.size == 1) "" else "s"}:")
@@ -216,7 +219,7 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
             renaming?.let { draft ->
                 ControllerTextField(draft, { renaming = it.take(60) }, Modifier.fillMaxWidth(), label = { Text("Name shown in RetroForge") })
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            com.retroforge.app.ui.ChipRow {
                 if (renaming == null) {
                     FocusChip("Scan for new games", onClick = { viewModel.rescan(root) }, enabled = access && state !is ScanState.Running)
                     FocusChip("Rename", onClick = { renaming = root.name })
@@ -265,7 +268,7 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(viewModel.systemName(system), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
                 if (hackCount > 0) {
-                    androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    com.retroforge.app.ui.ChipRow {
                         FocusChip((if (!showHacks) "● " else "") + "Games (${games.orEmpty().size - hackCount})", onClick = { showHacks = false })
                         FocusChip((if (showHacks) "● " else "") + "ROM hacks ($hackCount)", onClick = { showHacks = true })
                     }
@@ -392,5 +395,48 @@ private fun SystemCoverBatch(viewModel: LibraryViewModel, system: String, games:
         null -> if (missing > 0 && viewModel.covers.hasLibretroSource(system)) {
             FocusChip("Download box art for ${plural(missing, "game")} without artwork", onClick = { viewModel.covers.downloadMissing(system, games) })
         }
+    }
+}
+
+/** Netplay from the Retro tab: games friends are hosting on this Wi-Fi, each opening your copy of that game. */
+@Composable
+private fun PlayTogetherCard(viewModel: LibraryViewModel, onOpenGame: (Long) -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var hosts by remember { mutableStateOf<List<com.retroforge.app.player.NetplayHost>?>(null) }
+    var looking by remember { mutableStateOf(false) }
+    var message by remember { mutableStateOf<String?>(null) }
+    FocusCard(modifier = Modifier.fillMaxWidth()) {
+        CardTitle("Play together (netplay)")
+        CardBody(
+            "Two players, two devices, the same game. To host: open a game and choose Play together → Host. To join a friend " +
+                "on this Wi-Fi, find their game below; over the internet, open the game and choose Play together → Join.",
+        )
+        FocusChip(if (looking) "Looking…" else "Find games on this Wi-Fi", enabled = !looking, onClick = {
+            looking = true
+            message = null
+            scope.launch {
+                hosts = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { com.retroforge.app.player.Netplay.find(context) }
+                looking = false
+            }
+        })
+        hosts?.let { found ->
+            if (found.isEmpty()) CardBody("Nobody's hosting on this Wi-Fi right now.")
+            found.forEach { host ->
+                FocusChip("${host.player}: ${host.title}", onClick = {
+                    scope.launch {
+                        val id = viewModel.gameIdForNetplay(host.gameId)
+                        if (id != null) {
+                            message = null
+                            onOpenGame(id)
+                        } else {
+                            message = "${host.title} isn't in your library. You need the same game file to join."
+                        }
+                    }
+                })
+            }
+            if (found.isNotEmpty()) CardBody("Pick one to open your copy, then choose Play together → Join.")
+        }
+        message?.let { CardBody(it) }
     }
 }

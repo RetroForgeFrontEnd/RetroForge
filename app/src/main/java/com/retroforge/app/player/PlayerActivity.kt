@@ -118,7 +118,7 @@ class PlayerActivity : ComponentActivity() {
     private var fps by mutableStateOf<Int?>(null)
     private var filter by mutableStateOf(com.retroforge.player.ScreenFilter.SHARP)
     private var pictureRect by mutableStateOf(Rect(0, 0, 0, 0))
-    private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS }
+    private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS, NETPLAY }
 
     // Controller remapping, per system: "keyCode:button,keyCode:button".
     private var remap by mutableStateOf<Map<Int, Int>>(emptyMap())
@@ -225,6 +225,81 @@ class PlayerActivity : ComponentActivity() {
     }
     private var menuPage by mutableStateOf(MenuPage.MAIN)
     private var fastForwardOn by mutableStateOf(false)
+
+    // Netplay (Netplay.kt, netplay.cpp): this game played together with a second device.
+    private var netGameId = ""
+    /** NativePlayer.netplayState: 0 off, 1 hosting, 2 joining, 3 starting, 4 playing, 5 failed. */
+    private var netState by mutableStateOf(0)
+    private var netStatus by mutableStateOf("")
+    private var netHosts by mutableStateOf<List<NetplayHost>?>(null)
+    private var netSearching by mutableStateOf(false)
+    private var netAddress by mutableStateOf("")
+    private var announcer: Netplay.Announcer? = null
+    /** The router's port opened for internet players while hosting, and what the netplay page says about it. */
+    @Volatile private var upnp: Upnp? = null
+    private var netInternet by mutableStateOf<String?>(null)
+    private val netPlaying get() = netState in 3..4
+    private val netGuest get() = netPlaying && NativePlayer.netplayPlayer() == 1
+
+    private fun hostNetplay() {
+        val error = NativePlayer.netplayHost(Netplay.GAME_PORT, netGameId, Netplay.delay(this))
+        if (error != null) { notice = error; return }
+        announcer?.stop()
+        announcer = Netplay.Announcer(this, intent.getStringExtra(EXTRA_TITLE).orEmpty(), netGameId, Netplay.name(this))
+        pollNetplay()
+        // Friends on the internet: ask the router to send the netplay port here.
+        netInternet = "Checking whether friends on the internet can join…"
+        Thread {
+            val local = Netplay.localAddresses().firstOrNull()
+            val router = Upnp.find()
+            val text = if (router != null && local != null && router.open(Netplay.GAME_PORT, local)) {
+                upnp = router
+                router.externalAddress()?.let { "Friends on the internet can join at $it (your router opened the port)." }
+                    ?: "Your router opened the port for friends on the internet."
+            } else {
+                "For friends on the internet, your router needs port ${Netplay.GAME_PORT} (TCP) sent to ${local ?: "this device"}: " +
+                    "it didn't allow RetroForge to do it. Players on the same Wi-Fi can join anyway."
+            }
+            runOnUiThread { if (netState != 0) netInternet = text }
+        }.start()
+    }
+
+    private fun closeRouterPort() {
+        val router = upnp ?: return
+        upnp = null
+        Thread { router.close(Netplay.GAME_PORT) }.start()
+    }
+
+    private fun joinNetplay(address: String, port: Int = Netplay.GAME_PORT) {
+        NativePlayer.netplayJoin(address, port, netGameId, Netplay.delay(this))?.let { notice = it; return }
+        pollNetplay()
+    }
+
+    private fun leaveNetplay() {
+        announcer?.stop()
+        announcer = null
+        closeRouterPort()
+        netInternet = null
+        NativePlayer.netplayLeave()
+        pollNetplay()
+    }
+
+    private fun findNetplayHosts() {
+        netSearching = true
+        worker.execute {
+            val found = Netplay.find(this)
+            runOnUiThread { netHosts = found; netSearching = false }
+        }
+    }
+
+    /** Netplay's state and status line, kept up to date while a session is on. */
+    private fun pollNetplay() {
+        netState = NativePlayer.netplayState()
+        netStatus = NativePlayer.netplayStatus()
+        // Once someone has joined, nobody else needs to find this game.
+        if (netState >= 3) { announcer?.stop(); announcer = null }
+        if (netState != 0 && !isFinishing) window.decorView.postDelayed({ pollNetplay() }, 500)
+    }
     private var coreOptions by mutableStateOf<List<CoreOption>>(emptyList())
     @Volatile private var switching = false
     private lateinit var coreChoices: CoreChoices
@@ -395,7 +470,20 @@ class PlayerActivity : ComponentActivity() {
         runOnUiThread { if (foreground && playingSince == 0L) playingSince = android.os.SystemClock.elapsedRealtime() }
         cheatStore.load().also { saved -> runOnUiThread { cheats = saved } }.let(::applyCheats)
         PlayerCores.portDevice(coreId)?.let { NativePlayer.setPortDevice(0, it) }
+        netGameId = Netplay.gameId(system, fileName, runCatching {
+            contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.SIZE), null, null, null)?.use { c ->
+                if (c.moveToFirst()) c.getLong(0) else -1L
+            }
+        }.getOrNull() ?: -1L)
         NativePlayer.start()
+        // Started from a game's page as "Play together": host, or join the address given.
+        intent.getStringExtra(EXTRA_NETPLAY)?.let { how ->
+            runOnUiThread {
+                if (how == NETPLAY_HOST) hostNetplay()
+                else if (how == NETPLAY_FIND) { openMenu(); menuPage = MenuPage.NETPLAY; findNetplayHosts() }
+                else how.removePrefix("join:").let { joinNetplay(it.substringBeforeLast(':'), it.substringAfterLast(':').toIntOrNull() ?: Netplay.GAME_PORT) }
+            }
+        }
         runOnUiThread {
             video = av
             coreOptions = NativePlayer.options()
@@ -848,6 +936,8 @@ class PlayerActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        announcer?.stop()
+        closeRouterPort()
         if (isFinishing) {
             worker.shutdown()
             // The player process exists for this one game. Ending it gives the next game a clean core. Not when switching
@@ -1080,6 +1170,15 @@ class PlayerActivity : ComponentActivity() {
         }
         // No background here: the game surface sits behind the window, and anything painted would cover it.
         Box(Modifier.fillMaxSize()) {
+            if (netState != 0 && netStatus.isNotBlank()) {
+                Text(
+                    netStatus,
+                    color = if (netState == 4) Color(0xFF9FE3B0) else if (netState == 5) Color(0xFFFF9A8B) else Color(0xFFFFC56B),
+                    fontSize = 13.sp,
+                    modifier = Modifier.align(Alignment.TopEnd).padding(top = 36.dp, end = 12.dp)
+                        .background(Color(0x99000000), RoundedCornerShape(6.dp)).padding(horizontal = 8.dp, vertical = 3.dp),
+                )
+            }
             fps?.let { shown ->
                 val target = video?.fps?.toInt() ?: 60
                 Text(
@@ -1219,6 +1318,7 @@ class PlayerActivity : ComponentActivity() {
                             }
                         }, modifier = wide) { Text("Save state") }
                         MenuButton(onClick = {
+                            if (netGuest) { notice = "During netplay only player 1 can load a state."; return@MenuButton }
                             worker.execute {
                                 val file = slotState()
                                 val done = file.isFile && NativePlayer.loadState(file.readBytes())
@@ -1226,6 +1326,7 @@ class PlayerActivity : ComponentActivity() {
                             }
                         }, modifier = wide) { Text("Load state") }
                         MenuButton(onClick = {
+                            if (netPlaying) { notice = "Fast-forward is off during netplay: both players run at the same speed."; return@MenuButton }
                             fastForwardOn = !fastForwardOn
                             NativePlayer.setFastForward(fastForwardOn)
                         }, modifier = wide) { Text("Fast-forward: ${if (fastForwardOn) "On" else "Off"}") }
@@ -1247,11 +1348,67 @@ class PlayerActivity : ComponentActivity() {
                         MenuButton(onClick = { menuPage = MenuPage.PICTURE }, modifier = wide) { Text("Picture ›") }
                         MenuButton(onClick = { menuPage = MenuPage.SOUND_CONTROLS }, modifier = wide) { Text("Sound and controls ›") }
                         MenuButton(onClick = { menuPage = MenuPage.EMULATOR }, modifier = wide) { Text("Emulator ›") }
+                        MenuButton(onClick = { menuPage = MenuPage.NETPLAY; if (netState == 0 && netHosts == null) findNetplayHosts() }, modifier = wide) {
+                            Text(if (netPlaying) "Netplay: player ${NativePlayer.netplayPlayer() + 1} ›" else "Netplay ›")
+                        }
                         MenuButton(onClick = {
+                            if (netGuest) { notice = "During netplay only player 1 can restart the game."; return@MenuButton }
                             NativePlayer.reset()
+                            // Player 2 gets the restarted game too (a state load sends it).
+                            if (netPlaying) NativePlayer.saveState()?.let { NativePlayer.loadState(it) }
                             closeMenu()
                         }, modifier = wide) { Text("Restart game") }
                         MenuButton(onClick = { quit() }, modifier = wide) { Text("Quit to RetroForge") }
+                    }
+                    MenuPage.NETPLAY -> {
+                        Text("Netplay", color = Color.White, fontWeight = FontWeight.Bold)
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        if (netStatus.isNotBlank() && netState != 0) {
+                            Text(netStatus, color = if (netState == 5) Color(0xFFFF9A8B) else Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center)
+                        }
+                        if (netState in 1..4) {
+                            if (netState == 1) {
+                                val addresses = Netplay.localAddresses()
+                                Text(
+                                    "On the same Wi-Fi, player 2 opens this game and picks Netplay → your device. " +
+                                        "Or they join by address: ${addresses.firstOrNull() ?: "this device's IP"} (port ${Netplay.GAME_PORT}).",
+                                    color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
+                                )
+                                netInternet?.let { Text(it, color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center) }
+                            }
+                            MenuButton(onClick = { leaveNetplay() }, modifier = wide) { Text("Leave netplay") }
+                        } else {
+                            Text(
+                                "Play this game with a friend on another device, each with RetroForge and the same game file. " +
+                                    "One hosts (player 1), the other joins (player 2).",
+                                color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
+                            )
+                            MenuButton(onClick = { hostNetplay() }, modifier = wide) { Text("Host this game") }
+                            when {
+                                netSearching -> Text("Looking for games on this Wi-Fi…", color = Color(0xFFAAAAB4), fontSize = 13.sp)
+                                netHosts?.isEmpty() == true -> Text("Nobody's hosting on this Wi-Fi yet.", color = Color(0xFFAAAAB4), fontSize = 13.sp)
+                            }
+                            netHosts.orEmpty().forEach { host ->
+                                val same = host.gameId == netGameId
+                                MenuButton(onClick = {
+                                    if (same) joinNetplay(host.address, host.port)
+                                    else notice = "${host.player} is playing ${host.title}. Open that game to join."
+                                }, modifier = wide) { Text(if (same) "Join ${host.player}" else "${host.player}: ${host.title}") }
+                            }
+                            MenuButton(onClick = { findNetplayHosts() }, modifier = wide) { Text("Look again") }
+                            androidx.compose.material3.OutlinedTextField(
+                                value = netAddress,
+                                onValueChange = { netAddress = it.trim() },
+                                singleLine = true,
+                                label = { Text("Join by address (internet)") },
+                                modifier = wide,
+                            )
+                            MenuButton(onClick = {
+                                if (netAddress.isBlank()) return@MenuButton
+                                val port = netAddress.substringAfterLast(':', "").toIntOrNull()
+                                joinNetplay(if (port != null) netAddress.substringBeforeLast(':') else netAddress, port ?: Netplay.GAME_PORT)
+                            }, modifier = wide) { Text("Join this address") }
+                        }
                     }
                     MenuPage.PICTURE -> {
                         Text("Picture", color = Color.White, fontWeight = FontWeight.Bold)
@@ -1430,6 +1587,11 @@ class PlayerActivity : ComponentActivity() {
         private const val EXTRA_MENU_COMBO = "menu_combo"
         private const val EXTRA_QUIT_COMBO = "quit_combo"
         private const val EXTRA_COPY_FIRST = "copy_first"
+        private const val EXTRA_NETPLAY = "netplay"
+        /** EXTRA_NETPLAY: host this game; "join:address:port" joins one. */
+        const val NETPLAY_HOST = "host"
+        /** EXTRA_NETPLAY: open the netplay page, looking for hosts on this Wi-Fi. */
+        const val NETPLAY_FIND = "find"
 
         /** In the "views" preferences: copy games that must be files to the phone before playing, instead of streaming. */
         const val COPY_FIRST_PREF = "copy_games_first"
@@ -1446,8 +1608,10 @@ class PlayerActivity : ComponentActivity() {
             menuCombo: HotkeyCombo,
             quitCombo: HotkeyCombo,
             copyFirst: Boolean = false,
+            netplay: String? = null,
         ): Intent = Intent(context, PlayerActivity::class.java)
             .putExtra(EXTRA_COPY_FIRST, copyFirst)
+            .apply { if (netplay != null) putExtra(EXTRA_NETPLAY, netplay) }
             .putExtra(EXTRA_CORE_PATH, corePath)
             .putExtra(EXTRA_URI, uri.toString())
             .putExtra(EXTRA_FILE_NAME, fileName)

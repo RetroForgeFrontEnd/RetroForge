@@ -191,7 +191,7 @@ fun ThemesScreen(viewModel: ThemesViewModel) {
             Text(shown.name, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
             if (shown.description.isNotEmpty()) CardBody(shown.description)
             CardBody(listOfNotNull(shown.author.ifEmpty { null }, shown.license, shown.importedFrom).joinToString(" · "))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            com.retroforge.app.ui.ChipRow {
                 if (shown.id == current?.themeId) StatusPill("In use", StatusTone.GOOD)
                 else FocusChip("Use this theme", onClick = { viewModel.use(shown) })
                 if (shown in user) FocusChip("Delete", onClick = { viewModel.delete(shown) })

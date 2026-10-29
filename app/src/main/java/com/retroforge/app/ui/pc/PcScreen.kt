@@ -71,7 +71,7 @@ private fun OtherPcAppsCard() {
                 "too, usually with lower compatibility than on Snapdragon. RetroForge doesn't start their games yet and hasn't tested them.",
         )
     }
-    androidx.compose.foundation.layout.Row(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)) {
+    com.retroforge.app.ui.ChipRow {
         com.retroforge.core.ui.FocusChip("GameNative releases", onClick = {
             runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, GAMENATIVE_RELEASES.toUri())) }
         })

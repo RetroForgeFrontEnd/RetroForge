@@ -175,6 +175,25 @@ private fun BuiltInCard(
         if (game.system == "saturn") CardBody("Saturn in the built-in player is experimental: some games stay on a black screen. RetroArch or Yaba Sanshiro 2 (below) play more of them.")
         if (played > 0) CardBody("Time played here: ${Playtime.format(played)}.")
     }
+    if (main) {
+        // Netplay: the same game on two devices, one hosting (player 1), the other joining (player 2).
+        fun start(how: String) {
+            onProblem(null)
+            scope.launch {
+                val intent = viewModel.builtInIntent(context, game, root, core, netplay = how)
+                if (intent != null) context.startActivity(intent)
+                else onProblem(LaunchProblem.StartFailed("Couldn't download the ${core.name} emulator. Check the internet connection and try again."))
+            }
+        }
+        FocusCard(modifier = Modifier.fillMaxWidth()) {
+            CardTitle("Play together")
+            CardBody("Two players on two devices, each with RetroForge and this game: one hosts, the other joins. Same Wi-Fi or over the internet.")
+            com.retroforge.app.ui.ChipRow {
+                com.retroforge.core.ui.FocusChip("Host", onClick = { start(com.retroforge.app.player.PlayerActivity.NETPLAY_HOST) })
+                com.retroforge.core.ui.FocusChip("Join", onClick = { start(com.retroforge.app.player.PlayerActivity.NETPLAY_FIND) })
+            }
+        }
+    }
 }
 
 private fun describe(problem: LaunchProblem, viewModel: LibraryViewModel): String = when (problem) {
