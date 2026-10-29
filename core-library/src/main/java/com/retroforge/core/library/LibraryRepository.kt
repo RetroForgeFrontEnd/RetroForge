@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -51,7 +52,17 @@ class LibraryRepository(
     fun gamesFor(system: String): Flow<List<GameEntity>> = dao.gamesFor(system)
     fun game(id: Long): Flow<GameEntity?> = dao.game(id)
     fun problems(rootId: Long): Flow<List<ProblemEntity>> = dao.problems(rootId)
-    fun search(query: String): Flow<List<GameEntity>> = dao.search(query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_"))
+    /**
+     * Games whose title has every word of [query], in any order ("dr mario miracle" finds "Dr. Mario - Miracle Cure").
+     * The database narrows by the longest word; the rest are checked here.
+     */
+    fun search(query: String): Flow<List<GameEntity>> {
+        val words = query.lowercase().split(Regex("""[\s\-:.,'!]+""")).filter { it.isNotBlank() }
+        val key = words.maxByOrNull { it.length } ?: query.trim()
+        return dao.search(key.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")).map { games ->
+            games.filter { g -> val title = g.title.lowercase(); words.all { it in title } }
+        }
+    }
     suspend fun duplicatesOf(game: GameEntity): List<GameEntity> = game.duplicateKey?.let { dao.duplicatesOf(it, game.id) }.orEmpty()
     suspend fun rootOf(game: GameEntity): RootEntity? = dao.root(game.rootId)
     val recentlyPlayed: Flow<List<GameEntity>> = dao.recentlyPlayed(12)
