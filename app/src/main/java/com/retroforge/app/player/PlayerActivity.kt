@@ -401,7 +401,7 @@ class PlayerActivity : ComponentActivity() {
         shape = ScreenShape.of(prefs.getString("shape.$system", null))
         touchEnabled = prefs.getBoolean("touch.$system", true)
         consoleLook = prefs.getBoolean("look.$system", true)
-        // Per system from the in-game menu, otherwise Settings → Playing → Bezels.
+        // Per system from the in-game menu, otherwise Settings → Covers and bezels → Bezels.
         bezelOn = prefs.getBoolean("bezel.$system", getSharedPreferences("views", MODE_PRIVATE).getBoolean(Bezels.PREF, true))
         // Per system, or every game when the VR tab says so.
         vr = prefs.getBoolean("vr.$system", false) || getSharedPreferences("views", MODE_PRIVATE).getBoolean("vr_by_default", false)

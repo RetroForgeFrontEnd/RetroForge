@@ -42,7 +42,7 @@ private val RETROARCH_SYSTEM_HINT: Uri =
     DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:RetroArch/system")
 
 @Composable
-fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, onDone: () -> Unit) {
+fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems: List<Pair<String, String>> = emptyList(), onDone: () -> Unit) {
     val summary by viewModel.summary.collectAsStateWithLifecycle()
     val install by viewModel.retroArchInstall.collectAsStateWithLifecycle()
     val bios by viewModel.bios.collectAsStateWithLifecycle()
@@ -232,6 +232,9 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, onDone: 
                 }
             }
         }
+
+        // 4. Bezels round the game in landscape, for every system the scan found.
+        com.retroforge.app.ui.settings.BezelsCard(systems, title = "4. Bezels (optional)")
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.finish(); onDone() }) {
             CardTitle("Done")

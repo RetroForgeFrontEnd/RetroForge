@@ -58,7 +58,7 @@ The same guide as Settings → How to use RetroForge in the app.
 
 - Swipe in from the left or right edge (or press ☰, Back, or Home/Guide on a controller) to pause and open the menu.
 - The first page: Resume, save and load states, fast-forward, change disc, Keyboard (computers), Take a screenshot (saved to Pictures/RetroForge), restart and quit.
-- Picture ›: screen shape, screen filter (sharp, smooth, CRT scanlines, curved CRT, LCD grid and ghosting, Scale2x), console look, bezel (The Bezel Project's artwork round the game in landscape; download a system's bezels here or in Settings → Playing → Bezels), widescreen, Resolution (draws 3D games sharper: 2× is like 720p, up to 10× for PSP), Graphics (OpenGL, or Vulkan for GameCube, PS2 and PSP, experimental), Cardboard VR and Show FPS (a frame counter for checking speed).
+- Picture ›: screen shape, screen filter (sharp, smooth, CRT scanlines, curved CRT, LCD grid and ghosting, Scale2x), console look, bezel (The Bezel Project's artwork round the game in landscape; download a system's bezels here or in Settings → Covers and bezels → Bezels), widescreen, Resolution (draws 3D games sharper: 2× is like 720p, up to 10× for PSP), Graphics (OpenGL, or Vulkan for GameCube, PS2 and PSP, experimental), Cardboard VR and Show FPS (a frame counter for checking speed).
 - Sound and controls ›: volume, touch controls on or off, Remap buttons. Emulator ›: each emulator's own settings, cheats and Switch emulator.
 - Widescreen (N64 and Dreamcast): switches the game to 16:9 and restarts it by itself.
 - Cheats: pick from libretro's cheat database for the game, or type your own codes.

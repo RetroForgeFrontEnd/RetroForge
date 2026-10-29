@@ -36,7 +36,7 @@ Retro tab artwork: canvas-es by Siddy212 (CC0-1.0, github.com/Siddy212/canvas-es
 
 Cheats: libretro-database's cht files (CC BY-SA 4.0, github.com/libretro/libretro-database) are **not bundled**; one game's file is downloaded when its Cheats page is opened, and credited in Settings → Licences.
 
-Bezels: The Bezel Project's overlay PNGs (github.com/thebezelproject/bezelproject-<System>) are **not bundled**. Their repositories carry no licence file; RetroForge downloads them only when the user asks (Settings → Playing → Bezels, or Picture in the game's menu), as The Bezel Project's own installer does, into private storage for the user's own use, and credits The Bezel Project in Settings → Licences, the About screen and the README. The artwork depicts trademarks and characters of their owners; RetroForge doesn't host it.
+Bezels: The Bezel Project's overlay PNGs (github.com/thebezelproject/bezelproject-<System>) are **not bundled**. Their repositories carry no licence file; RetroForge downloads them only when the user asks (Settings → Covers and bezels → Bezels, or Picture in the game's menu), as The Bezel Project's own installer does, into private storage for the user's own use, and credits The Bezel Project in Settings → Licences, the About screen and the README. The artwork depicts trademarks and characters of their owners; RetroForge doesn't host it.
 
 Bundled: AndroidX Media3 (ExoPlayer and its UI), Apache 2.0, for the Media tab's film player.
 

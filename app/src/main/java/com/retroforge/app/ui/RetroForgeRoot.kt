@@ -267,7 +267,8 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                             val setupViewModel: SetupViewModel = viewModel(
                                 factory = SetupViewModel.factory(container.library, container.retroArch, container.settings, container.contentResolver, container.playerSystemDir, container.cores),
                             )
-                            SetupScreen(setupViewModel, onOpenSort = { nav.navigate(MANAGER_SORT_ROUTE) }, onDone = {
+                            val setupCounts by container.library.systemCounts.collectAsStateWithLifecycle(initialValue = emptyList())
+                            SetupScreen(setupViewModel, onOpenSort = { nav.navigate(MANAGER_SORT_ROUTE) }, systems = setupCounts.map { it.system to container.library.systemName(it.system) }, onDone = {
                                 // Take setup off the stack first, or Home's saved stack would bring it back.
                                 nav.popBackStack(SETUP_ROUTE, inclusive = true)
                                 nav.goTo(Section.RETRO)

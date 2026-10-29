@@ -63,8 +63,8 @@ fun SettingsScreen(
     com.retroforge.app.ui.CloseStep(enabled = group != null) { group = null }
     val groups = listOf(
         "games" to ("Games and library" to "Game folders and network drives, ES-DE collections, texture packs, scanning, the Retro and PC tabs."),
-        "playing" to ("Playing" to "The built-in player, saves and backups, emulator apps, dual screens, GPU drivers, RetroArch hotkeys."),
-        "covers" to ("Covers" to "SteamGridDB and ScreenScraper accounts for box art."),
+        "playing" to ("Playing" to "The built-in player, saves and backups, emulator apps, dual screens, GPU drivers, netplay, RetroArch hotkeys."),
+        "covers" to ("Covers and bezels" to "SteamGridDB and ScreenScraper accounts for box art, and Bezel Project bezels round the game."),
         "looks" to ("Looks and sounds" to "Themes, interface sounds, Android apps and the home screen."),
         "help" to ("Help and about" to "How to use RetroForge, set up, check my setup, report a problem, about, licences."),
     )
@@ -135,8 +135,6 @@ fun SettingsScreen(
             "playing" -> {
                 coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames, library) }
 
-                BezelsCard(playerSystems)
-
                 EmulatorAppsCard()
 
                 viewPrefs?.let { DualScreenCard(it) }
@@ -161,6 +159,8 @@ fun SettingsScreen(
                 SteamGridDbKeyCard(settings.steamGridDbKey, viewModel::setSteamGridDbKey)
 
                 ScreenScraperCard(settings.screenScraperUser, viewModel::setScreenScraperLogin)
+
+                BezelsCard(playerSystems)
 
             }
             "looks" -> {

@@ -1,0 +1,30 @@
+name: Suggest a feature
+description: Ask for something new in RetroForge, a system, an emulator, or a change to how something works.
+title: "[Idea] "
+labels: ["suggestion"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping make RetroForge better. One idea per suggestion, please, so each can be tracked.
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      description: Describe the feature or change, in your own words.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why would it help?
+      description: What are you trying to do that RetroForge doesn't do yet?
+  - type: input
+    id: where
+    attributes:
+      label: Which system, emulator or part of the app?
+      placeholder: e.g. PS2, the Retro tab, netplay, bezels
+  - type: input
+    id: device
+    attributes:
+      label: Your device (optional)
+      placeholder: e.g. Retroid Pocket 5, AYN Odin 2, Galaxy S22

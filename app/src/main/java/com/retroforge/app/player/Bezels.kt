@@ -14,7 +14,7 @@ import java.net.URLEncoder
 /**
  * Bezels from The Bezel Project (github.com/thebezelproject): RetroArch overlay PNGs, a frame round the game for each
  * system and most games, shown in landscape. Nothing is included in RetroForge: a system's download (Settings →
- * Playing) saves its list of game bezels and its system bezel in [root]/<repo>, and a game's own bezel is fetched
+ * Covers and bezels) saves its list of game bezels and its system bezel in [root]/<repo>, and a game's own bezel is fetched
  * the first time that game starts (a whole system is hundreds of MB; one bezel is about 150 KB).
  */
 class Bezels(private val root: File, private val userAgent: String) {
@@ -27,16 +27,34 @@ class Bezels(private val root: File, private val userAgent: String) {
     /** Downloads [system]'s list of game bezels and its system bezel. */
     fun install(system: String) {
         val repo = repoFor(system) ?: throw IOException("The Bezel Project has no bezels for this system")
-        val tree = JSONObject(get("$API/bezelproject-$repo/git/trees/master?recursive=1").decodeToString()).optJSONArray("tree")
-            ?: throw IOException("couldn't read the bezel list")
-        val pngs = (0 until tree.length()).map { tree.getJSONObject(it).optString("path") }
-            .filter { it.startsWith(OVERLAY) && it.endsWith(".png", true) }
+        val pngs = overlayFiles(repo).filter { it.endsWith(".png", true) }
         // The system bezel sits in the overlay folder itself (Sega-Mega-Drive.png); games are in GameBezels/<system>.
         val system = pngs.filter { '/' !in it.removePrefix(OVERLAY) }.minByOrNull { it.length }
             ?: throw IOException("this pack has no system bezel")
         val dir = File(root, repo).apply { mkdirs() }
         File(dir, GAMES).writeText(pngs.filter { it.startsWith("${OVERLAY}GameBezels/") }.joinToString("\n"))
         save(system, repo, File(dir, SYSTEM))
+    }
+
+    /**
+     * Every file under the pack's overlay folder. One request lists a whole pack; GitHub cuts the biggest packs' lists
+     * short (PlayStation's has over 50,000 files), so those are listed one folder at a time down to the overlays.
+     */
+    private fun overlayFiles(repo: String): List<String> {
+        fun tree(sha: String, recursive: Boolean) = JSONObject(
+            get("$API/bezelproject-$repo/git/trees/$sha" + if (recursive) "?recursive=1" else "").decodeToString(),
+        )
+        fun entries(json: JSONObject) = json.optJSONArray("tree")?.let { t -> (0 until t.length()).map { t.getJSONObject(it) } }
+            ?: throw IOException("couldn't read the bezel list")
+        val whole = tree("master", recursive = true)
+        if (!whole.optBoolean("truncated")) return entries(whole).map { it.optString("path") }.filter { it.startsWith(OVERLAY) }
+        // Walk down retroarch/overlay, then list that folder whole (it's well within GitHub's limit).
+        var sha = "master"
+        for (name in OVERLAY.trimEnd('/').split('/')) {
+            sha = entries(tree(sha, recursive = false)).firstOrNull { it.optString("path") == name }?.optString("sha")
+                ?: throw IOException("this pack has no $name folder")
+        }
+        return entries(tree(sha, recursive = true)).map { OVERLAY + it.optString("path") }
     }
 
     fun remove(system: String) {

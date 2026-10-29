@@ -67,7 +67,7 @@ private val notices = listOf(
             "library. Console and game names, logos and characters shown in it belong to their owners.",
     ),
     Notice(
-        "The Bezel Project bezels (Settings → Playing → Bezels)", "The Bezel Project's own terms",
+        "The Bezel Project bezels (Settings → Covers and bezels → Bezels)", "The Bezel Project's own terms",
         "Bezel artwork by The Bezel Project, github.com/thebezelproject. Not part of RetroForge: a system's bezels are downloaded " +
             "from their GitHub repositories when you ask, for your own use. Console and game names, logos and art shown in them belong to their owners.",
     ),
