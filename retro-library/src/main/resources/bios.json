@@ -211,6 +211,54 @@
   },
   {
    "systems": [
+    "naomi"
+   ],
+   "core": "Flycast",
+   "need": "required",
+   "mode": "all",
+   "note": "The NAOMI board BIOS set, naomi.zip (as MAME names it). Goes in a \"dc\" sub-folder.",
+   "files": [
+    {
+     "name": "dc/naomi.zip",
+     "md5": [],
+     "size": 0
+    }
+   ]
+  },
+  {
+   "systems": [
+    "naomi2"
+   ],
+   "core": "Flycast",
+   "need": "required",
+   "mode": "all",
+   "note": "The NAOMI 2 board BIOS set, naomi2.zip (as MAME names it). Goes in a \"dc\" sub-folder.",
+   "files": [
+    {
+     "name": "dc/naomi2.zip",
+     "md5": [],
+     "size": 0
+    }
+   ]
+  },
+  {
+   "systems": [
+    "atomiswave"
+   ],
+   "core": "Flycast",
+   "need": "required",
+   "mode": "all",
+   "note": "The Atomiswave BIOS set, awbios.zip (as MAME names it). Goes in a \"dc\" sub-folder.",
+   "files": [
+    {
+     "name": "dc/awbios.zip",
+     "md5": [],
+     "size": 0
+    }
+   ]
+  },
+  {
+   "systems": [
     "gba"
    ],
    "core": "mGBA",
