@@ -6,6 +6,9 @@
         <!-- Native ports with a known package name (ports.json), so the PC tab can offer "Open" once installed. -->
         <package android:name="com.dishii.zelda3" />
         <package android:name="org.diasurgical.devilutionx" />
+        <!-- Windows-game apps the Windows ports run in. -->
+        <package android:name="app.gamenative" />
+        <package android:name="com.winlator" />
         <intent>
             <action android:name="com.droiddeck.launcher.LAUNCH_GAME" />
         </intent>

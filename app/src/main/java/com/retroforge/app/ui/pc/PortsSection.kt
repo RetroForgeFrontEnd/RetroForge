@@ -36,6 +36,10 @@ import kotlinx.coroutines.withContext
 
 private val OBTAINIUM = listOf("dev.imranr.obtainium", "dev.imranr.obtainium.fdroid")
 
+/** Apps that run Windows games, the first installed one is opened. */
+private val WINDOWS_RUNNERS = listOf("app.gamenative", "com.winlator")
+private const val GAMENATIVE_PAGE = "https://github.com/utkarshdalal/GameNative/releases/latest"
+
 /**
  * Native Android ports (decompilations, recompilations, PC source ports), with the ones for games in the user's
  * library first. Each needs the user's own copy of the game; "Get" opens Obtainium (installs and updates from the
@@ -56,25 +60,33 @@ fun PortsSection(library: LibraryRepository) {
         }
     }
     var showAll by remember { mutableStateOf(false) }
+    var windowsTab by remember { mutableStateOf(false) }
 
     Text("Ports", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        FocusChip((if (!windowsTab) "● " else "") + "Android ports", onClick = { windowsTab = false; showAll = false })
+        FocusChip((if (windowsTab) "● " else "") + "Windows ports", onClick = { windowsTab = true; showAll = false })
+    }
     CardBody(
-        "Games rebuilt to run natively on Android, from decompiled code or PC source ports. They run better than emulation " +
-            "and add widescreen and higher frame rates. Each needs your own copy of the game; RetroForge never supplies game files.",
+        if (!windowsTab) "Games rebuilt to run natively on Android, from decompiled code or PC source ports. They run better than emulation " +
+            "and add widescreen and higher frame rates. Each needs your own copy of the game; RetroForge never supplies game files."
+        else "Ports with only a Windows version. They run through GameNative or Winlator, so they need a strong Snapdragon phone " +
+            "and may not run well; all are experimental. Each needs your own copy of the game.",
     )
-    val mine = ports.filter { it.id in owned }
+    val tabPorts = ports.filter { it.isWindows == windowsTab }
+    val mine = tabPorts.filter { it.id in owned }
     if (mine.isEmpty()) {
         CardBody("None of your games has a port in this list yet.")
     } else {
         Text("For games you own", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
         mine.forEach { PortCard(it, owned[it.id], library) }
     }
-    val rest = ports.filter { it.id !in owned }
+    val rest = tabPorts.filter { it.id !in owned }
     if (showAll) {
         Text("All ports", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
         rest.forEach { PortCard(it, null, library) }
     } else {
-        FocusChip("Show all ${rest.size} other ports", onClick = { showAll = true })
+        if (rest.isNotEmpty()) FocusChip("Show all ${rest.size} other ports", onClick = { showAll = true })
     }
 }
 
@@ -93,9 +105,23 @@ private fun PortCard(port: GamePort, owned: GameEntity?, library: LibraryReposit
             if (owned != null) StatusPill("You have ${owned.title}", StatusTone.GOOD)
         }
         CardBody("Needs: ${port.needs}")
+        if (port.isWindows) {
+            CardBody(
+                "How: download the Windows version from its releases page and unzip it into Download/RetroForge/Ports. " +
+                    "Then in GameNative (or Winlator) add it as a custom game and pick its .exe.",
+            )
+        }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (launch != null) FocusChip("Open", onClick = { runCatching { context.startActivity(launch) } })
-            FocusChip(if (launch != null) "Update" else "Get", onClick = { get(context, port) })
+            if (port.isWindows) {
+                FocusChip("Windows download", onClick = { open(context, port.repo + "/releases/latest") })
+                val runner = WINDOWS_RUNNERS.firstNotNullOfOrNull { context.packageManager.getLaunchIntentForPackage(it) }
+                FocusChip(if (runner != null) "Open GameNative" else "Get GameNative", onClick = {
+                    if (runner != null) runCatching { context.startActivity(runner) } else open(context, GAMENATIVE_PAGE)
+                })
+            } else {
+                if (launch != null) FocusChip("Open", onClick = { runCatching { context.startActivity(launch) } })
+                FocusChip(if (launch != null) "Update" else "Get", onClick = { get(context, port) })
+            }
             if (owned != null) FocusChip("Prepare files", onClick = {
                 prepared = "Copying…"
                 scope.launch {

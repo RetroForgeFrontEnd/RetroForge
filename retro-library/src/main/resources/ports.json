@@ -12,7 +12,8 @@
    "titleMatch": "^banjo-kazooie\\b",
    "needs": "Your own Banjo-Kazooie N64 ROM (USA).",
    "status": "verified",
-   "package": "com.aure.banjorecomp"
+   "package": "com.aure.banjorecomp",
+   "platform": "android"
   },
   {
    "id": "cv-lod",
@@ -25,7 +26,8 @@
    "titleMatch": "castlevania.*legacy of darkness",
    "needs": "Your own Castlevania: Legacy of Darkness N64 ROM.",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "cv-sotn",
@@ -38,7 +40,8 @@
    "titleMatch": "castlevania.*symphony of the night",
    "needs": "Your own Symphony of the Night PlayStation disc image.",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "crash",
@@ -51,7 +54,8 @@
    "titleMatch": "^crash bandicoot$",
    "needs": "Your own Crash Bandicoot PlayStation disc image.",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "ctr",
@@ -64,7 +68,8 @@
    "titleMatch": "crash team racing|^ctr\\b",
    "needs": "Your own Crash Team Racing PlayStation disc image.",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "goemon64",
@@ -77,7 +82,8 @@
    "titleMatch": "mystical ninja|ganbare goemon",
    "needs": "Your own Mystical Ninja Starring Goemon N64 ROM.",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "harvest-moon-64",
@@ -90,7 +96,8 @@
    "titleMatch": "^harvest moon 64",
    "needs": "Your own Harvest Moon 64 ROM.",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "spaghettikart",
@@ -103,7 +110,8 @@
    "titleMatch": "^mario kart 64",
    "needs": "Your own Mario Kart 64 ROM (USA).",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "perfect-dark",
@@ -116,7 +124,8 @@
    "titleMatch": "^perfect dark",
    "needs": "Your own Perfect Dark N64 ROM (USA 1.1).",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "pokemon-gen1",
@@ -129,7 +138,8 @@
    "titleMatch": "^pok.mon - (red|blue)|^pok.mon (red|blue)",
    "needs": "Your own Pokémon Red or Blue Game Boy ROM.",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "pokemon-gen2",
@@ -142,7 +152,8 @@
    "titleMatch": "^pok.mon - (gold|silver)|^pok.mon (gold|silver)",
    "needs": "Your own Pokémon Gold or Silver ROM.",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "silent-hill",
@@ -155,7 +166,8 @@
    "titleMatch": "^silent hill$",
    "needs": "Your own Silent Hill PlayStation disc image.",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "starship",
@@ -168,7 +180,8 @@
    "titleMatch": "^star ?fox 64|^lylat wars",
    "needs": "Your own Star Fox 64 ROM (USA 1.1).",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "ghostship",
@@ -181,7 +194,8 @@
    "titleMatch": "^super mario 64$",
    "needs": "Your own Super Mario 64 ROM (USA).",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "super-metroid",
@@ -194,7 +208,8 @@
    "titleMatch": "^super metroid$",
    "needs": "Your own Super Metroid (Japan, USA) ROM. The author has moved on to a RetroArch-based version; this build still works.",
    "status": "experimental",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "battleship",
@@ -207,7 +222,8 @@
    "titleMatch": "^super smash bros",
    "needs": "Your own Super Smash Bros. N64 ROM (USA).",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "zelda3",
@@ -220,7 +236,8 @@
    "titleMatch": "link to the past",
    "needs": "Your own A Link to the Past SNES ROM (USA): pick it when the app asks. It builds its game data from the ROM once.",
    "status": "verified",
-   "package": "com.dishii.zelda3"
+   "package": "com.dishii.zelda3",
+   "platform": "android"
   },
   {
    "id": "2ship",
@@ -233,7 +250,8 @@
    "titleMatch": "majora",
    "needs": "Your own Majora's Mask N64 ROM (USA).",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "shipwright",
@@ -246,7 +264,8 @@
    "titleMatch": "ocarina of time",
    "needs": "Your own Ocarina of Time N64 ROM (a supported version, e.g. PAL GameCube or USA 1.0).",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "minish-cap",
@@ -259,7 +278,8 @@
    "titleMatch": "minish cap",
    "needs": "Your own Minish Cap GBA ROM (USA).",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "dusklight",
@@ -272,7 +292,8 @@
    "titleMatch": "twilight princess",
    "needs": "Your own Twilight Princess GameCube disc image.",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "mario-kart-wii",
@@ -285,7 +306,8 @@
    "titleMatch": "^mario kart wii",
    "needs": "Your own Mario Kart Wii disc image.",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "goldeneye-xbla",
@@ -296,7 +318,8 @@
    "titleMatch": null,
    "needs": "Your own GoldenEye 007 Xbox Live Arcade files.",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "unleashed",
@@ -307,7 +330,8 @@
    "titleMatch": null,
    "needs": "Your own Xbox 360 copy of Sonic Unleashed. Experimental; needs a very strong phone.",
    "status": "experimental",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "skate3",
@@ -318,7 +342,8 @@
    "titleMatch": null,
    "needs": "Your own Xbox 360 copy of Skate 3. Experimental.",
    "status": "experimental",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "devilutionx",
@@ -331,7 +356,8 @@
    "titleMatch": "diablo|diabdat",
    "needs": "DIABDAT.MPQ from your own copy of Diablo (GOG or CD). The free shareware version also works.",
    "status": "verified",
-   "package": "org.diasurgical.devilutionx"
+   "package": "org.diasurgical.devilutionx",
+   "platform": "android"
   },
   {
    "id": "openmw",
@@ -342,7 +368,8 @@
    "titleMatch": null,
    "needs": "The Data Files folder from your own copy of The Elder Scrolls III: Morrowind.",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
   },
   {
    "id": "hit-and-run",
@@ -353,7 +380,48 @@
    "titleMatch": null,
    "needs": "The game files from your own PC copy.",
    "status": "verified",
-   "package": null
+   "package": null,
+   "platform": "android"
+  },
+  {
+   "id": "zelda64recomp",
+   "name": "Zelda: Majora's Mask (Zelda64Recomp)",
+   "kind": "recomp",
+   "repo": "https://github.com/Zelda64Recomp/Zelda64Recomp",
+   "systems": [
+    "n64"
+   ],
+   "titleMatch": "majora",
+   "needs": "Your own Majora's Mask N64 ROM (USA); it asks for it on first start.",
+   "status": "experimental",
+   "package": null,
+   "platform": "windows"
+  },
+  {
+   "id": "opengoal",
+   "name": "Jak and Daxter (OpenGOAL)",
+   "kind": "decomp",
+   "repo": "https://github.com/open-goal/launcher",
+   "systems": [
+    "ps2"
+   ],
+   "titleMatch": "^jak (and daxter|ii|2|3)",
+   "needs": "Your own Jak and Daxter (or Jak II / Jak 3) PS2 disc image; the launcher builds the game from it.",
+   "status": "experimental",
+   "package": null,
+   "platform": "windows"
+  },
+  {
+   "id": "unleashed-windows",
+   "name": "Sonic Unleashed (UnleashedRecomp)",
+   "kind": "recomp",
+   "repo": "https://github.com/hedge-dev/UnleashedRecomp",
+   "systems": [],
+   "titleMatch": null,
+   "needs": "Your own Xbox 360 copy of Sonic Unleashed (and its updates).",
+   "status": "experimental",
+   "package": null,
+   "platform": "windows"
   }
  ]
 }

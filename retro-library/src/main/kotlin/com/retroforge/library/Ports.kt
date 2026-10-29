@@ -25,7 +25,11 @@ data class GamePort(
     val status: String,
     /** The app's package name, when known, to open it once installed. */
     val `package`: String? = null,
+    /** "android": a native Android app. "windows": a Windows build, run through GameNative or Winlator. */
+    val platform: String = "android",
 ) {
+    val isWindows: Boolean get() = platform == "windows"
+
     private val pattern by lazy { titleMatch?.let { Regex(it) } }
 
     /** True when the user's game ([system], [title]) is one this port is built from. */
