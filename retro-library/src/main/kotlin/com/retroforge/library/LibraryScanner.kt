@@ -125,6 +125,16 @@ class LibraryScanner(private val rules: SystemRules) {
         rules.forFolder(root.name)?.let { return Triple(RootLayout.SINGLE_SYSTEM, listOf(SystemDir("", root, it)), emptyList()) }
 
         val dirs = children.filter { it.isDirectory }
+        // A frontend's own folder (RetroBat, ES-DE): its "roms" folder wins, even when a folder beside it happens to be
+        // named like a system (RetroBat's "screenshots" is a gallery "system").
+        dirs.firstOrNull { it.name.equals("roms", ignoreCase = true) }?.let { roms ->
+            val inner = try { roms.children() } catch (e: IOException) { emptyList() }
+            val inRoms = inner.filter { it.isDirectory }.mapNotNull { dir -> rules.forFolder(dir.name)?.let { SystemDir("${roms.name}/${dir.name}/", dir, it) } }
+            if (inRoms.isNotEmpty()) {
+                val unrecognised = inner.filter { it.isDirectory && rules.forFolder(it.name) == null && it.name.lowercase() !in HOLDING_FOLDERS }.map { it.name }.sorted()
+                return Triple(RootLayout.COLLECTION, inRoms.sortedBy { it.dir.name.lowercase() }, unrecognised)
+            }
+        }
         val matched = dirs.mapNotNull { dir -> rules.forFolder(dir.name)?.let { SystemDir(dir.name + "/", dir, it) } }
         if (matched.isNotEmpty()) {
             val unrecognised = dirs.filter { rules.forFolder(it.name) == null && it.name.lowercase() !in HOLDING_FOLDERS }.map { it.name }.sorted()

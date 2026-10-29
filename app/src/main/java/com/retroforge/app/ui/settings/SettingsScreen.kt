@@ -83,8 +83,13 @@ fun SettingsScreen(
         when (group) {
             "games" -> {
                 com.retroforge.app.ui.NetworkDrivesCard("Games", onUse = library?.let { lib ->
-                    { uri ->
-                        val root = lib.addFolderAndWait(uri)
+                    { uri, progress ->
+                        // A short running report while it scans: which system, and how far.
+                        val root = lib.addFolderAndWait(uri) { p ->
+                            val system = p.currentSystem?.let { " ${lib.systemName(it)}" }.orEmpty()
+                            val of = if (p.systemsTotal > 0) " (${p.systemsDone} of ${p.systemsTotal} systems)" else ""
+                            progress("Looking in$system… ${p.filesSeen} files checked$of", if (p.systemsTotal > 0) p.systemsDone.toFloat() / p.systemsTotal else null)
+                        }
                         when {
                             root == null -> "Added. It's still scanning: see Retro → Game folders for progress."
                             root.gameCount == 0 -> "Added ${root.name}, but no games were found. Pick the folder holding your system folders (snes, psx …)."

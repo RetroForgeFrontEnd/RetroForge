@@ -132,7 +132,8 @@ class LibraryScannerTest {
         assertEquals(RootLayout.SINGLE_SYSTEM, snesOnly.layout)
         assertEquals("Star Fox (USA).zip", snesOnly.games.single().relativePath)
 
-        val retrobat = scanner.scan(dir("Retrobat", dir("emulators"), dir("roms", dir("nes", file("Super Mario Bros. (World).zip")))))
+        // RetroBat's own "screenshots" folder is named like a system; its roms folder must still win.
+        val retrobat = scanner.scan(dir("Retrobat", dir("emulators"), dir("screenshots", file("shot.png")), dir("roms", dir("nes", file("Super Mario Bros. (World).zip")))))
         assertEquals(RootLayout.COLLECTION, retrobat.layout)
         assertEquals("roms/nes/Super Mario Bros. (World).zip", retrobat.games.single().relativePath)
     }

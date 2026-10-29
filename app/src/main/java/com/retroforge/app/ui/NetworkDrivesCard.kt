@@ -34,7 +34,7 @@ import kotlinx.coroutines.withContext
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri) -> String)? = null) {
+fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, Float?) -> Unit) -> String)? = null) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var changes by remember { mutableIntStateOf(0) }
@@ -47,6 +47,9 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri) -> String)
     var password by remember { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
     var status by remember { mutableStateOf<String?>(null) }
+    // The pop-up while games are being added: what it's doing, how far (0..1) and roughly how long is left.
+    var popup by remember { mutableStateOf<Triple<String, Float?, String?>?>(null) }
+    var popupHidden by remember { mutableStateOf(false) }
     var found by remember { mutableStateOf<List<com.retroforge.app.network.FoundComputer>?>(null) }
     var searching by remember { mutableStateOf(false) }
     var folders by remember { mutableStateOf<List<String>?>(null) }
@@ -142,7 +145,19 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri) -> String)
                             status = if (onUse != null) "Connected to ${share.address}. Looking for your ${what.lowercase()}… (a big collection can take a few minutes)"
                             else "Connected: ${share.address} has $count items. Choose it in the folder picker now."
                             // The confirmation once it's scanned: how many games (or films) were found there.
-                            if (onUse != null) status = onUse(NetworkDrives.folderUri(context, share))
+                            if (onUse != null) {
+                                val started = System.currentTimeMillis()
+                                popupHidden = false
+                                popup = Triple("Connecting to ${share.address}…", null, null)
+                                status = onUse(NetworkDrives.folderUri(context, share)) { text, fraction ->
+                                    val left = fraction?.takeIf { it > 0.05f }?.let { f ->
+                                        val seconds = ((System.currentTimeMillis() - started) / 1000f * (1 - f) / f).toInt()
+                                        if (seconds < 60) "Less than a minute left" else "About ${(seconds + 30) / 60} minute${if (seconds >= 90) "s" else ""} left"
+                                    }
+                                    if (!popupHidden) popup = Triple(text, fraction, left)
+                                }
+                                popup = null
+                            }
                             adding = false; host = ""; folder = ""; user = ""; password = ""; name = ""
                             changes++
                         }.onFailure {
@@ -155,5 +170,21 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri) -> String)
             }
         }
         status?.let { CardBody(it) }
+    }
+    popup?.let { (text, fraction, left) ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = {},
+            title = { Text("Adding your ${what.lowercase()}") },
+            text = {
+                androidx.compose.foundation.layout.Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(text)
+                    if (fraction != null) androidx.compose.material3.LinearProgressIndicator(progress = { fraction }, modifier = Modifier.fillMaxWidth())
+                    else androidx.compose.material3.LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    Text(left ?: "Working out how long…", style = androidx.compose.material3.MaterialTheme.typography.bodySmall)
+                }
+            },
+            // It carries on in the background; the result shows on the card when it's done.
+            confirmButton = { androidx.compose.material3.TextButton(onClick = { popup = null; popupHidden = true }) { Text("Hide") } },
+        )
     }
 }

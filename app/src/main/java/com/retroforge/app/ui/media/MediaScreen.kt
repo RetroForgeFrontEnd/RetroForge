@@ -121,7 +121,8 @@ fun MediaScreen(prefs: SharedPreferences) {
             key = new
             refresh++
         }
-        com.retroforge.app.ui.NetworkDrivesCard("Films", onUse = { uri ->
+        com.retroforge.app.ui.NetworkDrivesCard("Films", onUse = { uri, progress ->
+            progress("Looking for films…", null)
             prefs.edit().putString(FOLDER, uri.toString()).apply()
             folder = uri.toString()
             val count = withContext(Dispatchers.IO) { runCatching { scan(context, uri).size }.getOrDefault(0) }

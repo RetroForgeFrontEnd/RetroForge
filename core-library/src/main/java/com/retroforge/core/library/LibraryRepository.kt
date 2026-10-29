@@ -169,13 +169,14 @@ class LibraryRepository(
      * Adds a folder and waits for its scan, for a confirmation like "Added: 283 games". Returns the folder as scanned,
      * or null if the scan didn't finish within [timeoutMs].
      */
-    suspend fun addFolderAndWait(treeUri: Uri, timeoutMs: Long = 15 * 60_000): RootEntity? {
+    suspend fun addFolderAndWait(treeUri: Uri, timeoutMs: Long = 15 * 60_000, onProgress: (ScanProgress) -> Unit = {}): RootEntity? {
         val started = clock()
         addFolder(treeUri)
         return kotlinx.coroutines.withTimeoutOrNull(timeoutMs) {
             while (true) {
                 val root = dao.rootByUri(treeUri.toString())
                 if (root?.lastScanAt != null && root.lastScanAt >= started && _scans.value[root.id] !is ScanState.Running) return@withTimeoutOrNull root
+                (root?.let { _scans.value[it.id] } as? ScanState.Running)?.let { onProgress(it.progress) }
                 kotlinx.coroutines.delay(500)
             }
             @Suppress("UNREACHABLE_CODE") null
