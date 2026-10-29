@@ -114,4 +114,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | How to fund updates when free | ❌ question (support links exist) |
 | Dual-screen option for games and the app | 🟡 DS games: top screen on the main display, touch screen on the second (automatic when a second display exists); picture split tested on a simulated display; touch on the second screen needs a real dual-screen device. App UI on two screens: not yet |
 | Compare with other frontends again and suggest more | ❌ after the above |
+| Remove touch controls when a controller connects | ✅ hides as soon as one connects (even mid-game), back when it disconnects; plug-in event not testable on the emulator |
+| VR: Cardboard 3D in the player; Quest; 3D films | 🟡 Cardboard VR mode (picture per eye) for every system; Virtual Boy in real 3D (Beetle VB side by side); tested on the emulator. Quest: runs as a flat Android app. 3D films: with the media section |
+| Dreamcast in the built-in player | ⛔ the laptop emulator crashed starting Ikaruga (its GPU translator); needs a phone test |
 

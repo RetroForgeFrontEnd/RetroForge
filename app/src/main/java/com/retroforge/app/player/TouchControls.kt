@@ -99,6 +99,8 @@ data class PadLayout(
                 listOf("3" to Pad.Y, "4" to Pad.X, "1" to Pad.B, "2" to Pad.A),
                 listOf("5" to Pad.L, "6" to Pad.R),
             )
+            // Virtual Boy: A/B and the shoulder buttons (the second d-pad isn't on screen).
+            "virtualboy" -> PadLayout(listOf("B" to Pad.B, "A" to Pad.A), listOf("L" to Pad.L, "R" to Pad.R))
             "mastersystem", "sg1000" -> PadLayout(listOf("1" to Pad.B, "2" to Pad.A), hasSelect = false)
             "gamegear" -> PadLayout(listOf("1" to Pad.B, "2" to Pad.A), hasSelect = false)
             "pcengine", "pcenginecd" -> PadLayout(listOf("II" to Pad.B, "I" to Pad.A))

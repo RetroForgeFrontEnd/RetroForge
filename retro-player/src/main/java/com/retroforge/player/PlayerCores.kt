@@ -52,6 +52,7 @@ object PlayerCores {
     private val mupen = PlayerCore("mupen64plus_next_gles3", "Mupen64Plus-Next")
     private val parallelN64 = PlayerCore("parallel_n64", "ParaLLEl N64")
     private val ppsspp = PlayerCore("ppsspp", "PPSSPP")
+    private val beetleVb = PlayerCore("mednafen_vb", "Beetle VB")
     private val flycast = PlayerCore("flycast", "Flycast")
     private val flycastArcade = PlayerCore("flycast", "Flycast", needsBios = true)
 
@@ -77,6 +78,7 @@ object PlayerCores {
         "saturn" to listOf(yabause, beetleSaturn),
         "n64" to listOf(mupen, parallelN64),
         "psp" to listOf(ppsspp),
+        "virtualboy" to listOf(beetleVb),
         "dreamcast" to listOf(flycast),
         "naomi" to listOf(flycastArcade), "naomi2" to listOf(flycastArcade), "atomiswave" to listOf(flycastArcade),
         "fbneo" to listOf(fbneo), "neogeo" to listOf(fbneo), "cps1" to listOf(fbneo), "cps2" to listOf(fbneo), "cps3" to listOf(fbneo),
@@ -120,6 +122,8 @@ object PlayerCores {
     /** Core options set by default: SwanStation's analog controller. */
     fun defaultOptions(coreId: String): Map<String, String> = when (coreId) {
         "swanstation" -> mapOf("swanstation_Controller1_Type" to "AnalogController")
+        // Both eyes side by side: real 3D in Cardboard VR, the left eye alone otherwise.
+        "mednafen_vb" -> mapOf("vb_3dmode" to "side-by-side", "vb_sidebyside_separation" to "0")
         else -> emptyMap()
     }
 
@@ -131,6 +135,9 @@ object PlayerCores {
      * Core options that follow the screen's orientation: the DS's two screens stacked in portrait and side by
      * side in landscape, so they always use the most of the screen.
      */
+    /** Cores that draw both eyes side by side (see the defaults above). */
+    fun sideBySide(coreId: String): Boolean = coreId == "mednafen_vb"
+
     fun orientationOptions(coreId: String, landscape: Boolean): Map<String, String> = when (coreId) {
         "desmume", "desmume2015" -> mapOf("desmume_screens_layout" to if (landscape) "left/right" else "top/bottom")
         else -> emptyMap()

@@ -132,6 +132,9 @@ struct Player {
     ANativeWindow *pendingWindow2 = nullptr;
     bool window2Pending = false;
     std::atomic<bool> split{false};
+    // Cardboard VR: the picture once per eye, side by side. With a side-by-side source (Virtual Boy in 3D) each eye
+    // gets its own half of the frame; outside VR only the left eye is shown, as a normal picture.
+    std::atomic<bool> vr{false}, sideBySideSource{false};
 
     // GL state, owned by the core thread.
     EGLDisplay display = EGL_NO_DISPLAY;
@@ -640,13 +643,13 @@ void videoRefresh(const void *data, unsigned width, unsigned height, size_t pitc
     p.hasFrame = true;
 }
 
-// Draws rows f0..f1 (fractions, top to bottom) of the current picture into a sw x sh surface, fitted and centred,
-// or into the rectangle Kotlin chose when [useChosen].
-void drawPicture(int sw, int sh, float f0, float f1, bool useChosen) {
+// Draws the part x0..x1, y0..y1 (fractions, left to right and top to bottom) of the current picture into the area
+// ax, ay, aw, ah of the current surface (GL coordinates), fitted and centred, or into the rectangle Kotlin chose when
+// [useChosen].
+void drawPicture(int ax, int ay, int aw, int ah, int sh, float x0, float x1, float y0, float y1, bool useChosen) {
     Player &p = *P;
     unsigned fw = p.hwFrame ? p.frameW : p.texW, fh = p.hwFrame ? p.frameH : p.texH;
-    if (fw == 0 || fh == 0) return;
-    float band = f1 - f0;
+    if (fw == 0 || fh == 0 || aw <= 0 || ah <= 0) return;
     int vx, vy, vw, vh;
     if (useChosen && p.viewW > 0 && p.viewH > 0) {
         // Chosen by Kotlin (screen shape setting); top-left origin there, bottom-left in GL.
@@ -655,35 +658,37 @@ void drawPicture(int sw, int sh, float f0, float f1, bool useChosen) {
         vh = p.viewH;
         vy = sh - (p.viewY + vh);
     } else {
-        float full = p.av.geometry.aspect_ratio > 0 ? p.av.geometry.aspect_ratio : float(fw) / float(fh);
-        float aspect = full / band;
-        vw = sw;
-        vh = int(sw / aspect);
-        if (vh > sh) {
-            vh = sh;
-            vw = int(sh * aspect);
+        // A side-by-side frame holds two pictures: its own shape, not the core's (one eye's), is the reference.
+        float full = p.av.geometry.aspect_ratio > 0 && !p.sideBySideSource ? p.av.geometry.aspect_ratio : float(fw) / float(fh);
+        float aspect = full * (x1 - x0) / (y1 - y0);
+        vw = aw;
+        vh = int(aw / aspect);
+        if (vh > ah) {
+            vh = ah;
+            vw = int(ah * aspect);
         }
-        vx = (sw - vw) / 2;
-        vy = (sh - vh) / 2;
+        vx = ax + (aw - vw) / 2;
+        vy = ay + (ah - vh) / 2;
     }
     glViewport(vx, vy, vw, vh);
     // Software frames are stored top row first; a GPU core's framebuffer is bottom row first (unless it says
     // otherwise) and only partly used, so the corners pick out that part.
-    GLfloat u = 1, top = f0, bottom = f1;
+    GLfloat left = x0, right = x1, top = y0, bottom = y1;
     if (p.hwFrame) {
-        u = float(p.frameW) / float(p.hwW);
-        float v = float(p.frameH) / float(p.hwH);
-        top = p.hw.bottom_left_origin ? (1 - f0) * v : f0 * v;
-        bottom = p.hw.bottom_left_origin ? (1 - f1) * v : f1 * v;
+        float u = float(p.frameW) / float(p.hwW), v = float(p.frameH) / float(p.hwH);
+        left = x0 * u;
+        right = x1 * u;
+        top = p.hw.bottom_left_origin ? (1 - y0) * v : y0 * v;
+        bottom = p.hw.bottom_left_origin ? (1 - y1) * v : y1 * v;
     }
-    const GLfloat quad[] = {-1, -1, 0, bottom, 1, -1, u, bottom, -1, 1, 0, top, 1, 1, u, top};
+    const GLfloat quad[] = {-1, -1, left, bottom, 1, -1, right, bottom, -1, 1, left, top, 1, 1, right, top};
     glUseProgram(p.program);
     if (p.hwFrame) {
         glUniform2f(p.uTexSize, float(p.hwW), float(p.hwH));
     } else {
         glUniform2f(p.uTexSize, float(p.texW), float(p.texH));
     }
-    glUniform2f(p.uSrcSize, float(fw), float(fh) * band);
+    glUniform2f(p.uSrcSize, float(fw) * (x1 - x0), float(fh) * (y1 - y0));
     glUniform2f(p.uOutSize, float(vw), float(vh));
     glUniform1i(p.uFilter, p.filter);
     glBindTexture(GL_TEXTURE_2D, p.hwFrame ? p.hwTexture : p.texture);
@@ -705,7 +710,19 @@ void present() {
     glViewport(0, 0, sw, sh);
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
-    if (p.hasFrame && sw > 0 && sh > 0) drawPicture(sw, sh, 0, split ? 0.5f : 1, true);
+    if (p.hasFrame && sw > 0 && sh > 0) {
+        bool sbs = p.sideBySideSource;
+        if (p.vr) {
+            // One picture per eye, inside each half with a margin so it sits comfortably in a viewer's lens.
+            int eyeW = sw / 2, margin = eyeW / 12;
+            for (int eye = 0; eye < 2; eye++) {
+                float x0 = sbs ? 0.5f * eye : 0, x1 = sbs ? x0 + 0.5f : 1;
+                drawPicture(eye * eyeW + margin, margin, eyeW - 2 * margin, sh - 2 * margin, sh, x0, x1, 0, 1, false);
+            }
+        } else {
+            drawPicture(0, 0, sw, sh, sh, 0, sbs ? 0.5f : 1, 0, split ? 0.5f : 1, true);
+        }
+    }
     eglSwapBuffers(p.display, p.surface);
     if (split && eglMakeCurrent(p.display, p.surface2, p.surface2, p.context)) {
         EGLint w2 = 0, h2 = 0;
@@ -713,7 +730,7 @@ void present() {
         eglQuerySurface(p.display, p.surface2, EGL_HEIGHT, &h2);
         glViewport(0, 0, w2, h2);
         glClear(GL_COLOR_BUFFER_BIT);
-        if (p.hasFrame && w2 > 0 && h2 > 0) drawPicture(w2, h2, 0.5f, 1, false);
+        if (p.hasFrame && w2 > 0 && h2 > 0) drawPicture(0, 0, w2, h2, h2, 0, 1, 0.5f, 1, false);
         eglSwapBuffers(p.display, p.surface2);
         eglMakeCurrent(p.display, p.surface, p.surface, p.context);
     }
@@ -1073,6 +1090,14 @@ JNIEXPORT void JNI(setSurface)(JNIEnv *env, jobject, jobject surface) {
     p.windowPending = true;
     if (!p.running) return; // picked up when the loop starts
     p.windowCv.wait_for(lock, std::chrono::seconds(2), [&] { return !p.windowPending; });
+}
+
+JNIEXPORT void JNI(setVr)(JNIEnv *, jobject, jboolean on) {
+    if (P) P->vr = on;
+}
+
+JNIEXPORT void JNI(setSideBySideSource)(JNIEnv *, jobject, jboolean on) {
+    if (P) P->sideBySideSource = on;
 }
 
 // The second display's surface (null when it goes away). Split mode is on while there is one.

@@ -42,6 +42,12 @@ object NativePlayer {
 
     /** A second display's surface (dual-screen devices): the picture's bottom half goes there. Null to stop. */
     external fun setSecondSurface(surface: Surface?)
+
+    /** Cardboard VR: the picture once per eye, side by side. */
+    external fun setVr(on: Boolean)
+
+    /** The core draws both eyes side by side (Virtual Boy in 3D): each eye gets its half; outside VR only the left. */
+    external fun setSideBySideSource(on: Boolean)
     external fun setButtons(port: Int, mask: Int)
     external fun setAnalog(port: Int, stick: Int, x: Int, y: Int)
 

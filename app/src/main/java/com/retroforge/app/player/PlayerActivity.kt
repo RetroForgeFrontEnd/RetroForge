@@ -171,6 +171,13 @@ class PlayerActivity : ComponentActivity() {
     private var foreground = false
     private var hasTouch = true
 
+    // Controllers coming and going mid-game: touch controls hide when one connects and come back when the last one goes.
+    private val controllerListener = object : android.hardware.input.InputManager.InputDeviceListener {
+        override fun onInputDeviceAdded(deviceId: Int) { if (controllerConnected()) showTouch = false }
+        override fun onInputDeviceRemoved(deviceId: Int) { if (!controllerConnected()) showTouch = hasTouch }
+        override fun onInputDeviceChanged(deviceId: Int) = onInputDeviceAdded(deviceId)
+    }
+
     private fun controllerConnected() = android.view.InputDevice.getDeviceIds().any { id ->
         val device = android.view.InputDevice.getDevice(id) ?: return@any false
         !device.isVirtual && (device.sources and android.view.InputDevice.SOURCE_GAMEPAD == android.view.InputDevice.SOURCE_GAMEPAD ||
@@ -215,6 +222,8 @@ class PlayerActivity : ComponentActivity() {
         shape = ScreenShape.of(prefs.getString("shape.$system", null))
         touchEnabled = prefs.getBoolean("touch.$system", true)
         consoleLook = prefs.getBoolean("look.$system", true)
+        vr = prefs.getBoolean("vr.$system", false)
+        if (vr) requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         volume = prefs.getFloat("volume.$system", 1f)
         filter = com.retroforge.player.ScreenFilter.of(prefs.getString("filter.$system", null))
         savesDir = File(base, "saves/$system").apply { mkdirs() }
@@ -276,6 +285,8 @@ class PlayerActivity : ComponentActivity() {
             surface?.let { NativePlayer.setSurface(it) }
         }
         NativePlayer.setFilter(filter.ordinal)
+        NativePlayer.setSideBySideSource(PlayerCores.sideBySide(coreId))
+        NativePlayer.setVr(vr)
         NativePlayer.setVolume(volume)
         runOnUiThread { if (foreground && playingSince == 0L) playingSince = android.os.SystemClock.elapsedRealtime() }
         cheatStore.load().also { saved -> runOnUiThread { cheats = saved } }.let(::applyCheats)
@@ -475,6 +486,18 @@ class PlayerActivity : ComponentActivity() {
 
     // Dual-screen devices (AYN Thor, AYANEO Pocket DS …): DS games show the touch screen on the second display.
     private var dualScreen by mutableStateOf(false)
+
+    // Cardboard VR: a picture per eye (real 3D for Virtual Boy), phone held sideways, no buttons or frame on screen.
+    private var vr by mutableStateOf(false)
+
+    private fun chooseVr(on: Boolean) {
+        vr = on
+        prefs.edit().putBoolean("vr.$system", on).apply()
+        NativePlayer.setVr(on)
+        requestedOrientation = if (on) android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        else android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        applyViewport()
+    }
     private var secondScreen: android.app.Presentation? = null
     private var secondSize = 0 to 0
 
@@ -540,6 +563,8 @@ class PlayerActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        getSystemService(android.hardware.input.InputManager::class.java).registerInputDeviceListener(controllerListener, null)
+        if (controllerConnected()) showTouch = false
         foreground = true
         if (loaded) playingSince = android.os.SystemClock.elapsedRealtime()
         if (loaded && !menuOpen) NativePlayer.setPaused(false)
@@ -548,6 +573,7 @@ class PlayerActivity : ComponentActivity() {
 
     override fun onPause() {
         super.onPause()
+        getSystemService(android.hardware.input.InputManager::class.java).unregisterInputDeviceListener(controllerListener)
         secondScreen?.dismiss()
         foreground = false
         countPlaytime()
@@ -640,9 +666,14 @@ class PlayerActivity : ComponentActivity() {
     private fun applyViewport() {
         val av = video ?: return
         // With the console look, the picture keeps a margin for the screen surround.
-        val inset = if (consoleLook) (bezelMargin(!isLandscape()).value * resources.displayMetrics.density).toInt() else 0
+        val inset = if (consoleLook && !vr) (bezelMargin(!isLandscape()).value * resources.displayMetrics.density).toInt() else 0
         // With a second display the main screen shows only the top half (the DS's upper screen).
-        val shown = if (dualScreen) av.copy(height = av.height / 2, aspect = av.aspect * 2) else av
+        val sbs = PlayerCores.sideBySide(coreId)
+        val shown = when {
+            dualScreen -> av.copy(height = av.height / 2, aspect = av.aspect * 2)
+            sbs -> av // the core reports one eye's size, which is what's shown
+            else -> av
+        }
         val fitted = Viewport.fit(shape, surfaceWidth - 2 * inset, surfaceHeight - 2 * inset, shown)
         picture = Rect(fitted.x + inset, fitted.y + inset, fitted.w, fitted.h)
         pictureRect = picture
@@ -708,7 +739,7 @@ class PlayerActivity : ComponentActivity() {
                 val aspect = video?.aspect ?: (4f / 3f)
                 val compact = portrait && maxHeight - maxWidth / aspect < touchControlsHeight(layout, compact = false)
                 val controls: @Composable (Modifier) -> Unit = { modifier ->
-                    if (touchEnabled && showTouch && phase == Phase.Playing && !menuOpen) {
+                    if (touchEnabled && showTouch && !vr && phase == Phase.Playing && !menuOpen) {
                         TouchControls(
                             layout, onMask = { input.setTouch(it) }, onMenu = { openMenu() }, modifier = modifier,
                             compact = compact, landscape = !portrait,
@@ -716,7 +747,7 @@ class PlayerActivity : ComponentActivity() {
                         )
                     }
                 }
-                val skin = if (consoleLook) ConsoleSkin.forSystem(system) else null
+                val skin = if (consoleLook && !vr) ConsoleSkin.forSystem(system) else null
                 if (portrait) {
                     // The picture gets the space the controls leave free (all of it when they're off), fitted and centred
                     // by the screen shape, so a tall picture like the DS's two screens never runs under the buttons.
@@ -854,6 +885,9 @@ class PlayerActivity : ComponentActivity() {
                         MenuButton(onClick = { chooseVolume() }, modifier = wide) { Text("Volume: ${(volume * 100).toInt()}%") }
                         MenuButton(onClick = { chooseFilter(filter.next()) }, modifier = wide) { Text("Screen filter: ${filter.label}") }
                         MenuButton(onClick = { chooseLook(!consoleLook) }, modifier = wide) { Text("Console look: ${if (consoleLook) "On" else "Off"}") }
+                        MenuButton(onClick = { chooseVr(!vr) }, modifier = wide) {
+                            Text("Cardboard VR: ${if (vr) "On" else "Off"}" + if (PlayerCores.sideBySide(coreId)) " (3D)" else "")
+                        }
                         if (hasTouch) MenuButton(onClick = { chooseTouch(!touchEnabled) }, modifier = wide) {
                             Text("Touch controls: ${if (touchEnabled) "On" else "Off"}")
                         }

@@ -19,6 +19,8 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Saves and storage**: Settings → Built-in player → Back up saves writes one zip with in-game saves, save states and cheats; Restore puts them back (on this or another device), replacing same-named saves and keeping the rest. A Storage card shows the space emulators and copied CD/arcade games use, with Clear copied games. Each game's page shows its time played in the built-in player.
 
+**Cardboard VR**: in the pause menu, the picture once per eye for a phone in a Cardboard-style viewer. Virtual Boy (new, with Beetle VB) shows its real 3D there, and a normal picture otherwise. Touch controls now hide the moment a controller connects and return when it disconnects.
+
 **Dual screen** (AYN Thor, AYANEO Pocket DS and other two-screen devices): DS games put the touch screen on the second display and the top screen fills the main one. Automatic when a second display is there.
 
 **Android apps and launcher mode**: an Android apps screen (from Home or Settings) lists your other apps with a search box and shortcuts to Android's settings (Wi-Fi, Bluetooth for controllers, display, sound). For handhelds and TV boxes, RetroForge can become the home screen: the device starts in it and the home button comes back to it. Off unless you switch it on.
