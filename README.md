@@ -1,3 +1,5 @@
+![RetroForge: merging the past, building the future](docs/images/banner.jpg)
+
 # RetroForge
 
 A free Android frontend for retro games and PC games, all in one place.
