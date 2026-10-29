@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.ui.ChipRow
 import com.retroforge.core.ui.ThemeBackdrop
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Brush
@@ -182,7 +183,7 @@ fun ThemesScreen(viewModel: ThemesViewModel) {
         }
         val shown = all.getOrNull(pager.currentPage)
         if (shown != null) {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            ChipRow {
                 FocusChip("‹", enabled = pager.currentPage > 0, onClick = { scope.launch { pager.animateScrollToPage(pager.currentPage - 1) } })
                 Text("${pager.currentPage + 1} / ${all.size}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.padding(top = 10.dp))
                 FocusChip("›", enabled = pager.currentPage < all.lastIndex, onClick = { scope.launch { pager.animateScrollToPage(pager.currentPage + 1) } })
@@ -226,7 +227,7 @@ private fun PendingCard(p: PendingImport, dark: Boolean, viewModel: ThemesViewMo
         CardBody("Licence: " + (p.report.license ?: "not stated; ask the author before sharing it"))
     }
     p.theme?.let { ThemePreview(it, dark) }
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+    ChipRow {
         if (p.theme != null) FocusChip("Save and use", onClick = viewModel::savePending)
         FocusChip(if (p.theme != null) "Cancel" else "OK", onClick = viewModel::cancelPending)
     }

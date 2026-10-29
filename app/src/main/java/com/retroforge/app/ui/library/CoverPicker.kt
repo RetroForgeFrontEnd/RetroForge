@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.app.ui.ChipRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -210,7 +211,7 @@ fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbK
             "Use any picture saved on this device, for example a cover scan from The Cover Project (thecoverproject.net), " +
                 "which RetroForge can't download from directly.",
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        ChipRow {
             FocusChip("Choose an image", onClick = { pickImage.launch("image/*") })
             FocusChip("Open The Cover Project", onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, COVER_PROJECT.toUri())) } })
         }

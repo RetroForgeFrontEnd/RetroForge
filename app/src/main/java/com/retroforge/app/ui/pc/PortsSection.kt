@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.app.ui.ChipRow
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
@@ -63,7 +64,7 @@ fun PortsSection(library: LibraryRepository) {
     var windowsTab by remember { mutableStateOf(false) }
 
     Text("Ports", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+    ChipRow {
         FocusChip((if (!windowsTab) "● " else "") + "Android ports", onClick = { windowsTab = false; showAll = false })
         FocusChip((if (windowsTab) "● " else "") + "Windows ports", onClick = { windowsTab = true; showAll = false })
     }

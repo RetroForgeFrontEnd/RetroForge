@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.patcher
 
+import com.retroforge.app.ui.ChipRow
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -175,7 +176,7 @@ private fun PatchCard(index: Int, patch: PickedPatch, state: PatcherState, viewM
             CardBody("No readme found. Check the patch's download page for the ROM version and patch order it needs.")
         }
     }
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+    ChipRow {
         if (index > 0) FocusChip("Move up", onClick = { viewModel.movePatchUp(index) })
         FocusChip("Remove", onClick = { viewModel.removePatch(index) })
     }

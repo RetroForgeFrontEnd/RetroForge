@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.ui.ChipRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -133,7 +134,7 @@ fun SettingsScreen(
 
         library?.let { EsdeImportCard(it) }
 
-        TexturePacksCard(java.io.File(LocalContext.current.getExternalFilesDir(null) ?: LocalContext.current.filesDir, "system"))
+        TexturePacksCard(LocalContext.current.getExternalFilesDir(null) ?: LocalContext.current.filesDir)
 
         coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames) }
 
@@ -165,7 +166,7 @@ fun SettingsScreen(
 
         SupportCard()
         ReportProblemCard()
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        ChipRow {
             FocusChip("Licences", onClick = onOpenLicences)
             FocusChip("Privacy", onClick = onOpenPrivacy)
         }
@@ -183,8 +184,8 @@ private fun SteamGridDbKeyCard(saved: String?, onSave: (String?) -> Unit) {
         if (saved.isNullOrBlank()) {
             StatusPill("No API key", StatusTone.NEUTRAL)
             CardBody(
-                "SteamGridDB has thousands of community-made covers. Create a free account, copy your API key from " +
-                    "${SteamGridDb.KEY_PAGE} and paste it here. It stays on this device and is sent only to SteamGridDB.",
+                "SteamGridDB has thousands of community-made covers. Create a free account, then use \"Get a free key\" to " +
+                    "copy your API key and paste it here. It stays on this device and is sent only to SteamGridDB.",
             )
         } else {
             StatusPill("API key saved (…${saved.takeLast(4)})", StatusTone.GOOD)
@@ -198,12 +199,12 @@ private fun SteamGridDbKeyCard(saved: String?, onSave: (String?) -> Unit) {
             visualTransformation = if (showKey) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
-    }
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        FocusChip(if (showKey) "Hide key" else "Show key", onClick = { showKey = !showKey })
-        FocusChip("Save key", onClick = { onSave(draft); draft = "" }, enabled = draft.length >= 16)
-        FocusChip("Get a free key", onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, SteamGridDb.KEY_PAGE.toUri())) } })
-        if (!saved.isNullOrBlank()) FocusChip("Remove key", onClick = { onSave(null) })
+        ChipRow {
+            FocusChip(if (showKey) "Hide key" else "Show key", onClick = { showKey = !showKey })
+            FocusChip("Save key", onClick = { onSave(draft); draft = "" }, enabled = draft.length >= 16)
+            FocusChip("Get a free key", onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, SteamGridDb.KEY_PAGE.toUri())) } })
+            if (!saved.isNullOrBlank()) FocusChip("Remove key", onClick = { onSave(null) })
+        }
     }
 }
 
@@ -220,10 +221,10 @@ private fun EmulatorAppsCard() {
         CardBody(
             "To add a whole set at once: get the Obtainium Emulation Pack file, then in Obtainium open Import/Export → Obtainium Import and pick the file.",
         )
-    }
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        FocusChip("Get Obtainium", onClick = { open(StandaloneLauncher.OBTAINIUM_PAGE) })
-        FocusChip("Emulation Pack", onClick = { open(EMULATION_PACK_PAGE) })
+        ChipRow {
+            FocusChip("Get Obtainium", onClick = { open(StandaloneLauncher.OBTAINIUM_PAGE) })
+            FocusChip("Emulation Pack", onClick = { open(EMULATION_PACK_PAGE) })
+        }
     }
 }
 
@@ -245,24 +246,24 @@ private fun HotkeysCard(enabled: Boolean, menu: HotkeyCombo, quit: HotkeyCombo, 
             "RetroForge doesn't change RetroArch's own settings. It gives RetroArch a small file in Documents/RetroForge that sets these buttons " +
                 "and then loads your RetroArch settings. Standalone emulators use their own menus and hotkeys.",
         )
-    }
-    if (enabled) {
-        CardBody("Menu:")
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            HotkeyCombo.entries.filter { it != HotkeyCombo.NONE && it != quit }.forEach { c ->
-                FocusChip((if (c == menu) "● " else "") + c.label, onClick = { onChange(true, c, quit) })
+        if (enabled) {
+            CardBody("Menu:")
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                HotkeyCombo.entries.filter { it != HotkeyCombo.NONE && it != quit }.forEach { c ->
+                    FocusChip((if (c == menu) "● " else "") + c.label, onClick = { onChange(true, c, quit) })
+                }
+            }
+            CardBody("Quit to RetroForge:")
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                HotkeyCombo.entries.filter { it != HotkeyCombo.NONE && it != menu }.forEach { c ->
+                    FocusChip((if (c == quit) "● " else "") + c.label, onClick = { onChange(true, menu, c) })
+                }
             }
         }
-        CardBody("Quit to RetroForge:")
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            HotkeyCombo.entries.filter { it != HotkeyCombo.NONE && it != menu }.forEach { c ->
-                FocusChip((if (c == quit) "● " else "") + c.label, onClick = { onChange(true, menu, c) })
-            }
+        ChipRow {
+            FocusChip("Show all hotkeys", onClick = onShowAll)
+            FocusChip(if (enabled) "Turn hotkeys off" else "Turn hotkeys on", onClick = { onChange(!enabled, menu, quit) })
         }
-    }
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        FocusChip("Show all hotkeys", onClick = onShowAll)
-        FocusChip(if (enabled) "Turn hotkeys off" else "Turn hotkeys on", onClick = { onChange(!enabled, menu, quit) })
     }
 }
 
@@ -293,12 +294,12 @@ private fun ScreenScraperCard(savedUser: String?, onSave: (String?, String?) -> 
             visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
-    }
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        FocusChip(if (showPassword) "Hide password" else "Show password", onClick = { showPassword = !showPassword })
-        FocusChip("Save", onClick = { onSave(user, password); password = "" }, enabled = user.isNotBlank() && password.isNotEmpty())
-        FocusChip("Create a free account", onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, ScreenScraper.SIGN_UP.toUri())) } })
-        if (!savedUser.isNullOrBlank()) FocusChip("Sign out", onClick = { onSave(null, null) })
+        ChipRow {
+            FocusChip(if (showPassword) "Hide password" else "Show password", onClick = { showPassword = !showPassword })
+            FocusChip("Save", onClick = { onSave(user, password); password = "" }, enabled = user.isNotBlank() && password.isNotEmpty())
+            FocusChip("Create a free account", onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, ScreenScraper.SIGN_UP.toUri())) } })
+            if (!savedUser.isNullOrBlank()) FocusChip("Sign out", onClick = { onSave(null, null) })
+        }
     }
 }
 

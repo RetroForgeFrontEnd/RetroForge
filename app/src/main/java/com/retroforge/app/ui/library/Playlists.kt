@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.app.ui.ChipRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -42,7 +43,7 @@ fun FavouriteAndPlaylists(game: GameEntity, viewModel: LibraryViewModel) {
     var newName by remember(game.id) { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+    ChipRow {
         FocusChip(if (favourite) "★ Favourite" else "☆ Add to favourites", onClick = { viewModel.setFavourite(game, !favourite) })
         FocusChip(
             if (containing.isEmpty()) "Add to a playlist" else "In ${plural(containing.size, "playlist")}",
@@ -137,7 +138,7 @@ fun PlaylistScreen(viewModel: LibraryViewModel, playlistId: Long, onOpenGame: (L
         val name = renaming
         if (name != null) {
             ControllerTextField(value = name, onValueChange = { renaming = it.take(60) }, singleLine = true, label = { Text("Playlist name") }, modifier = Modifier.fillMaxWidth())
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            ChipRow {
                 FocusChip("Save name", enabled = name.isNotBlank(), onClick = { viewModel.renamePlaylist(playlistId, name); renaming = null })
                 FocusChip("Cancel", onClick = { renaming = null })
             }
@@ -146,12 +147,12 @@ fun PlaylistScreen(viewModel: LibraryViewModel, playlistId: Long, onOpenGame: (L
                 CardTitle("Delete \"${p.name}\"?")
                 CardBody("Only the playlist goes. The games stay in your library and on your storage.")
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            ChipRow {
                 FocusChip("Delete playlist", onClick = { viewModel.deletePlaylist(playlistId); onDeleted() })
                 FocusChip("Cancel", onClick = { confirmDelete = false })
             }
         } else {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            ChipRow {
                 FocusChip("Rename", onClick = { renaming = p.name })
                 FocusChip("Delete playlist", onClick = { confirmDelete = true })
             }

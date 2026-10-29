@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.setup
 
+import com.retroforge.app.ui.ChipRow
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
@@ -106,7 +107,7 @@ fun SetupScreen(viewModel: SetupViewModel, onDone: () -> Unit) {
                 }
             }
             if (install == null) {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                ChipRow {
                     FocusChip("Get it on Google Play", onClick = {
                         val market = Intent(Intent.ACTION_VIEW, "market://details?id=com.retroarch".toUri())
                         try {

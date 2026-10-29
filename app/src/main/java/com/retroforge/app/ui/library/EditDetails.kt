@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.app.ui.ChipRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,7 +55,7 @@ fun EditDetailsScreen(viewModel: LibraryViewModel, gameId: Long, onDone: () -> U
         ControllerTextField(publisher, { publisher = it.take(120) }, wide, label = { Text("Publisher") })
         ControllerTextField(genre, { genre = it.take(120) }, wide, label = { Text("Genre") })
         ControllerTextField(players, { players = it.take(20) }, wide, label = { Text("Players") })
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        ChipRow {
             FocusChip("Save", enabled = title.isNotBlank(), onClick = {
                 val details = GameDetails(
                     title = title.trim(),

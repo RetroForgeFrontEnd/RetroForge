@@ -29,15 +29,33 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
- * N64 high-resolution texture packs for the built-in player (Mupen64Plus-Next): each pack is a folder named after
- * the game's internal name ("SUPER MARIO 64"), kept in the player's system/Mupen64plus/hires_texture folder.
+ * High-resolution texture packs for the built-in player, one folder per game, where each emulator looks:
+ * N64 (Mupen64Plus-Next) in system/Mupen64plus/hires_texture, named after the game's internal name ("SUPER MARIO 64");
+ * PSP (PPSSPP) in the memory stick's TEXTURES folder (the PSP saves folder), named after the game's ID ("ULUS10041").
  */
+@Composable
+fun TexturePacksCard(playerDir: File) {
+    TexturePacks(
+        "Texture packs (N64)",
+        "High-resolution texture packs for N64 games in the built-in player. A pack is a folder named after the game's " +
+            "internal name, for example SUPER MARIO 64; pick that folder and RetroForge copies it where the emulator looks. " +
+            "They're switched on automatically when a pack is installed.",
+        File(playerDir, "system/Mupen64plus/hires_texture"),
+    )
+    TexturePacks(
+        "Texture packs (PSP)",
+        "High-resolution texture packs for PSP games in the built-in player. A pack is a folder named after the game's ID, " +
+            "for example ULUS10041 (the pack's page usually says which); pick that folder and RetroForge copies it where " +
+            "PPSSPP looks. They're switched on automatically when a pack is installed.",
+        File(playerDir, "saves/psp/TEXTURES"),
+    )
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun TexturePacksCard(systemDir: File) {
+private fun TexturePacks(title: String, body: String, packs: File) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val packs = remember { File(systemDir, "Mupen64plus/hires_texture") }
     var changes by remember { mutableIntStateOf(0) }
     var status by remember { mutableStateOf<String?>(null) }
     val installed = remember(changes) { packs.listFiles()?.filter { it.isDirectory }?.map { it.name }?.sorted().orEmpty() }
@@ -48,19 +66,15 @@ fun TexturePacksCard(systemDir: File) {
             status = withContext(Dispatchers.IO) {
                 runCatching {
                     val name = copyTree(context, tree, packs) { n -> status = "Copying the texture pack… $n files" }
-                    "Added $name. N64 games with this internal name use it next time they start."
+                    "Added $name. The game uses it next time it starts."
                 }.getOrElse { "Couldn't copy it: ${it.message}" }
             }
             changes++
         }
     }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Texture packs (N64)")
-        CardBody(
-            "High-resolution texture packs for N64 games in the built-in player. A pack is a folder named after the game's " +
-                "internal name, for example SUPER MARIO 64; pick that folder and RetroForge copies it where the emulator looks. " +
-                "They're switched on automatically when a pack is installed.",
-        )
+        CardTitle(title)
+        CardBody(body)
         CardBody(if (installed.isEmpty()) "No packs installed." else "Installed: ${installed.joinToString()}")
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             FocusChip("Add a texture pack folder", onClick = { pick.launch(null) })

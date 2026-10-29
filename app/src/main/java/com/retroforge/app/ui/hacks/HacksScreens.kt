@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.hacks
 
+import com.retroforge.app.ui.ChipRow
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -261,7 +262,7 @@ fun CatalogueSourcesScreen(viewModel: HacksViewModel) {
                 }
             }
             loaded.source?.let { source ->
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                ChipRow {
                     if (source.url != null) FocusChip("Update", onClick = { viewModel.refresh(source.id) }, enabled = !state.busy)
                     FocusChip("Remove", onClick = { viewModel.remove(source.id) }, enabled = !state.busy)
                 }
@@ -289,7 +290,7 @@ fun CatalogueSourcesScreen(viewModel: HacksViewModel) {
                 FocusChip("Download catalogue…", onClick = { confirming = true }, enabled = url.isNotBlank() && !state.busy)
             } else {
                 CardBody("Download the catalogue from ${url.trim()}? (up to 2 MB)")
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                ChipRow {
                     FocusChip("Yes, download", onClick = { viewModel.addFromUrl(url); confirming = false; url = "" })
                     FocusChip("Cancel", onClick = { confirming = false })
                 }

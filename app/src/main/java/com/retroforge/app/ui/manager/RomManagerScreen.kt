@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.manager
 
+import com.retroforge.app.ui.ChipRow
 import android.provider.DocumentsContract
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -195,7 +196,7 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
             if (refused) CardBody("That was a different folder. Please choose ${root.name} itself.")
         }
     }
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+    ChipRow {
         if (canWrite) FocusChip(if (pending is Pending.Purge) "Delete permanently" else "Yes, go ahead", onClick = viewModel::confirm)
         else FocusChip("Allow changes to ${root.name}", onClick = {
             val rootUri = root.treeUri.toUri()
@@ -228,7 +229,7 @@ private fun DuplicatesTab(viewModel: RomManagerViewModel) {
             if (report.sets.isEmpty()) CardBody("No duplicates to tidy.")
             else {
                 CardBody("${plural(report.sets.size, "set")} of duplicates. Ticked sets hold identical data. Select a file to keep it instead.")
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                ChipRow {
                     FocusChip((if (rule == KeepRule.MOST_COMPATIBLE) "● " else "") + "Keep most compatible", onClick = { viewModel.keepRule.value = KeepRule.MOST_COMPATIBLE })
                     FocusChip((if (rule == KeepRule.SMALLEST) "● " else "") + "Keep smallest", onClick = { viewModel.keepRule.value = KeepRule.SMALLEST })
                 }
@@ -310,7 +311,7 @@ private fun CompressTab(viewModel: RomManagerViewModel) {
                 }
             }
             val jobs = viewModel.selectedJobs()
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            ChipRow {
                 FocusChip("Compress ${plural(jobs.size, "game")}", onClick = viewModel::askCompress, enabled = jobs.isNotEmpty())
                 FocusChip("Check again", onClick = viewModel::findCompressible)
             }
@@ -342,7 +343,7 @@ private fun SortTab(viewModel: RomManagerViewModel) {
                     if (list.size > 5) CardBody("… and ${list.size - 5} more")
                 }
             }
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            ChipRow {
                 if (jobs.isNotEmpty()) FocusChip("Move ${plural(jobs.size, "game")}", onClick = viewModel::askSortLoose)
                 FocusChip("Check again", onClick = viewModel::findLoose)
             }
@@ -379,7 +380,7 @@ private fun MultiDiscTab(viewModel: RomManagerViewModel) {
                     report.skipped.take(10).forEach { CardBody("${it.title}: ${it.reason}") }
                 }
             }
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            ChipRow {
                 if (report.jobs.isNotEmpty()) FocusChip("Make ${plural(report.jobs.size, "playlist")}", onClick = viewModel::askMakePlaylists)
                 FocusChip("Check again", onClick = viewModel::findMultiDisc)
             }
