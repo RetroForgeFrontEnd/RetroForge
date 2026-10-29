@@ -6,6 +6,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -101,3 +109,57 @@ fun tagLine(game: GameEntity): String? = listOfNotNull(
     if (game.isHack) game.hackFolder ?: "Hack" else null,
     if (game.duplicateKey != null) "Also another copy" else null,
 ).joinToString(" · ").ifEmpty { null }
+
+/**
+ * One shelf of the bookshelf view (Retro tab → Games: bookshelf): game boxes standing side by side on a glass shelf,
+ * like a console dashboard's game library. The chosen box lifts a little; [columns] keeps a short last shelf in step.
+ */
+@Composable
+fun GameShelf(games: List<Pair<GameEntity, Any?>>, columns: Int, onOpen: (GameEntity) -> Unit) {
+    Column(Modifier.fillMaxWidth()) {
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.Bottom,
+        ) {
+            games.forEach { (game, image) -> ShelfBox(game, image, { onOpen(game) }, Modifier.weight(1f)) }
+            repeat(columns - games.size) { androidx.compose.foundation.layout.Spacer(Modifier.weight(1f)) }
+        }
+        val edge = MaterialTheme.colorScheme.primary
+        Box(
+            Modifier.fillMaxWidth().height(12.dp).clip(RoundedCornerShape(3.dp))
+                .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(edge.copy(alpha = 0.55f), MaterialTheme.colorScheme.surfaceVariant))),
+        )
+        Box(Modifier.fillMaxWidth().height(14.dp).background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(androidx.compose.ui.graphics.Color(0x88000000), androidx.compose.ui.graphics.Color.Transparent))))
+    }
+}
+
+@Composable
+private fun ShelfBox(game: GameEntity, image: Any?, onClick: () -> Unit, modifier: Modifier) {
+    val interaction = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+    val focused by interaction.collectIsFocusedAsState()
+    val pressed by interaction.collectIsPressedAsState()
+    val lift by androidx.compose.animation.core.animateFloatAsState(if (focused || pressed) 1f else 0f, label = "lift")
+    Column(
+        modifier
+            .graphicsLayer { scaleX = 1f + 0.08f * lift; scaleY = 1f + 0.08f * lift; translationY = -10.dp.toPx() * lift }
+            .clickable(interactionSource = interaction, indication = null, onClick = onClick),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(
+            Modifier.fillMaxWidth().aspectRatio(0.71f)
+                .shadow(if (focused) 14.dp else 6.dp, RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(4.dp))
+                .then(if (focused) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)) else Modifier),
+        ) { GameArt(game, image, Modifier.fillMaxSize()) }
+        Text(
+            game.title,
+            style = MaterialTheme.typography.labelSmall,
+            color = if (focused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 6.dp, bottom = 4.dp),
+        )
+    }
+}

@@ -79,6 +79,14 @@ class LibraryViewModel(
             .stateIn(viewModelScope, SharingStarted.Eagerly, _systemArt.value ?: canvasArt.index.value)
     val indexingArt = MutableStateFlow(false)
 
+    /** How a system's games are shown: as the theme has them, or always a list or a grid of covers. */
+    val gameLayout = MutableStateFlow(GameLayout.of(viewPrefs.getString("game_layout", null)))
+    fun nextGameLayout() = setGameLayout(gameLayout.value.next())
+    fun setGameLayout(layout: GameLayout) {
+        gameLayout.value = layout
+        viewPrefs.edit().putString("game_layout", layout.name).apply()
+    }
+
     /** Retro tab tiles: console pictures, game art, game art with the console on it, or plain name plates. */
     val tileStyle = MutableStateFlow(TileStyle.of(viewPrefs.getString("tile_style", null)))
     fun nextTileStyle() {
@@ -300,6 +308,16 @@ class LibraryViewModel(
 }
 
 /** How the Retro tab's system tiles look. */
+enum class GameLayout(val label: String) {
+    THEME("theme layout"), GRID("grid"), LIST("list"), SHELF("bookshelf");
+
+    fun next() = entries[(ordinal + 1) % entries.size]
+
+    companion object {
+        fun of(name: String?) = entries.firstOrNull { it.name == name } ?: THEME
+    }
+}
+
 enum class TileStyle(val label: String) {
     CONSOLES("consoles"), GAME_ART("game art"), ART_AND_CONSOLE("game art + console"), PLAIN("plain");
 

@@ -86,6 +86,8 @@ fun RetroScreen(
             CanvasSystemsView(systems.map { SystemSummary(it.id, it.name, it.games, it.hacks) }, systemArt, style, onOpenSystem)
             androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 FocusChip("Tiles: ${style.label}", onClick = viewModel::nextTileStyle)
+                val layout by viewModel.gameLayout.collectAsStateWithLifecycle()
+                FocusChip("Games: ${layout.label}", onClick = viewModel::nextGameLayout)
                 FocusChip(
                     if (ownArt == null) "Use my own theme folder" else "Artwork: ${ownArt!!.themeName.ifBlank { "your theme" }} · change",
                     onClick = { pickArt.launch(null) },
@@ -256,9 +258,17 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
             .filter { g -> !hideCopies || g.duplicateKey == null || seenCopies.add(g.duplicateKey!!) }
     }
 
+    // The player's choice (Retro tab → Games), else the theme's: one game per row (two on wide screens), or a grid of tiles.
+    val layout by viewModel.gameLayout.collectAsStateWithLifecycle()
+    val asList = when (layout) {
+        GameLayout.LIST -> true
+        GameLayout.GRID, GameLayout.SHELF -> false
+        GameLayout.THEME -> LocalThemeSpec.current.gameView == GameView.LIST
+    }
+    // Bookshelf: whole shelves, as many boxes as fit across (at least three).
+    val perShelf = maxOf(3, (androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp - 48) / 130)
     LazyVerticalGrid(
-        // List themes show one game per row (two on wide screens); grid themes as many tiles as fit.
-        columns = if (LocalThemeSpec.current.gameView == GameView.LIST) GridCells.Adaptive(360.dp) else GridCells.Adaptive(170.dp),
+        columns = if (asList) GridCells.Adaptive(360.dp) else GridCells.Adaptive(170.dp),
         modifier = Modifier.fillMaxSize(),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 24.dp, vertical = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -275,6 +285,9 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
                 }
                 if (games == null) LinearProgressIndicator(Modifier.fillMaxWidth())
                 else CardBody("${shown.size} of ${if (hackCount == 0) games!!.size else if (showHacks) hackCount else games!!.size - hackCount} ${if (showHacks) "hacks" else "games"}")
+                FocusChip("Show as: ${if (layout == GameLayout.SHELF) "bookshelf" else if (asList) "list" else "grid"}", onClick = {
+                    viewModel.setGameLayout(if (layout == GameLayout.SHELF) GameLayout.LIST else if (asList) GameLayout.GRID else GameLayout.SHELF)
+                })
                 ControllerTextField(value = filter, onValueChange = { filter = it }, singleLine = true, label = { Text("Filter") }, modifier = Modifier.fillMaxWidth())
                 SystemCoverBatch(viewModel, system, games.orEmpty(), chosen)
                 if (games.orEmpty().any { it.duplicateKey != null }) {
@@ -282,8 +295,12 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
                 }
             }
         }
-        items(shown, key = { it.id }) { game ->
-            if (LocalThemeSpec.current.gameView == GameView.LIST) GameRow(game, viewModel.art(rootsById, chosen, game), onClick = { onOpenGame(game.id) })
+        if (layout == GameLayout.SHELF) {
+            items(shown.chunked(perShelf), key = { "shelf-" + it.first().id }, span = { GridItemSpan(maxLineSpan) }) { shelf ->
+                GameShelf(shelf.map { it to viewModel.art(rootsById, chosen, it) }, perShelf) { onOpenGame(it.id) }
+            }
+        } else items(shown, key = { it.id }) { game ->
+            if (asList) GameRow(game, viewModel.art(rootsById, chosen, game), onClick = { onOpenGame(game.id) })
             else GameTile(game, viewModel.art(rootsById, chosen, game), onClick = { onOpenGame(game.id) })
         }
     }
