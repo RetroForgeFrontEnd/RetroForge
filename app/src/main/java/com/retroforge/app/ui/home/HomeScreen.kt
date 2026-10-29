@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.home
 
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -95,6 +96,13 @@ fun HomeScreen(
             Wordmark(fontSize = 32.sp)
         }
         StatusPill("Preview ${BuildConfig.VERSION_NAME}", StatusTone.CAUTION)
+        if (systems.isNotEmpty()) {
+            // A random game from the whole collection: a way back into games you forgot you had.
+            val scope = androidx.compose.runtime.rememberCoroutineScope()
+            com.retroforge.core.ui.FocusChip("🎲 Surprise me", onClick = {
+                scope.launch { library.randomGameId()?.let(onOpenGame) }
+            })
+        }
 
         val last = recent.firstOrNull()
         if (last != null) {

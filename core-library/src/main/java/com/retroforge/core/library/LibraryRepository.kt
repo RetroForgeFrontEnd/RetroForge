@@ -77,6 +77,9 @@ class LibraryRepository(
             else -> 3
         }
     }
+    /** Any game from the library (not a ROM hack), for "Surprise me". */
+    suspend fun randomGameId(): Long? = dao.randomGameId()
+
     suspend fun duplicatesOf(game: GameEntity): List<GameEntity> = game.duplicateKey?.let { dao.duplicatesOf(it, game.id) }.orEmpty()
     suspend fun rootOf(game: GameEntity): RootEntity? = dao.root(game.rootId)
     val recentlyPlayed: Flow<List<GameEntity>> = dao.recentlyPlayed(12)

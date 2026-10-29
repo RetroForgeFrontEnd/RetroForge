@@ -210,6 +210,9 @@ interface LibraryDao {
     @Query("SELECT * FROM games WHERE id = :id")
     fun game(id: Long): Flow<GameEntity?>
 
+    @Query("SELECT id FROM games WHERE isHack = 0 ORDER BY RANDOM() LIMIT 1")
+    suspend fun randomGameId(): Long?
+
     @Query("SELECT * FROM games WHERE duplicateKey = :key AND id != :excludeId")
     suspend fun duplicatesOf(key: String, excludeId: Long): List<GameEntity>
 

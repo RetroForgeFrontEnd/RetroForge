@@ -115,7 +115,7 @@ class PlayerActivity : ComponentActivity() {
     private var scale by mutableStateOf(1)
     private var filter by mutableStateOf(com.retroforge.player.ScreenFilter.SHARP)
     private var pictureRect by mutableStateOf(Rect(0, 0, 0, 0))
-    private enum class MenuPage { MAIN, OPTIONS, EMULATORS, CHEATS, CONTROLS }
+    private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS }
 
     // Controller remapping, per system: "keyCode:button,keyCode:button".
     private var remap by mutableStateOf<Map<Int, Int>>(emptyMap())
@@ -230,6 +230,7 @@ class PlayerActivity : ComponentActivity() {
     private var surfaceWidth = 0
     private var surfaceHeight = 0
     @Volatile private var picture = Rect(0, 0, 0, 0)
+    private var gameView: SurfaceView? = null
 
     private val worker = Executors.newSingleThreadExecutor()
     private val surfaceLock = Any()
@@ -602,6 +603,52 @@ class PlayerActivity : ComponentActivity() {
         menuPage = MenuPage.MAIN
         input.releaseAll()
         NativePlayer.setPaused(true)
+    }
+
+    /**
+     * Saves the game's picture as it's shown (filters and all) to Pictures/RetroForge: the menu closes first, then the
+     * screen is copied and cropped to the picture.
+     */
+    private fun takeScreenshot() {
+        val view = gameView ?: return
+        closeMenu()
+        val handler = android.os.Handler(android.os.Looper.getMainLooper())
+        handler.postDelayed({
+            if (view.width == 0 || view.height == 0) return@postDelayed
+            val screen = android.graphics.Bitmap.createBitmap(view.width, view.height, android.graphics.Bitmap.Config.ARGB_8888)
+            android.view.PixelCopy.request(view, screen, { result ->
+                if (result != android.view.PixelCopy.SUCCESS) {
+                    android.widget.Toast.makeText(this, "Couldn't take a screenshot", android.widget.Toast.LENGTH_SHORT).show()
+                    return@request
+                }
+                val r = picture
+                val x = r.x.coerceIn(0, screen.width - 1)
+                val y = r.y.coerceIn(0, screen.height - 1)
+                val shot = if (r.w > 0 && r.h > 0) android.graphics.Bitmap.createBitmap(screen, x, y, r.w.coerceAtMost(screen.width - x), r.h.coerceAtMost(screen.height - y)) else screen
+                worker.execute {
+                    val saved = runCatching { saveScreenshot(shot) }.isSuccess
+                    runOnUiThread {
+                        android.widget.Toast.makeText(this, if (saved) "Screenshot saved to Pictures/RetroForge" else "Couldn't save the screenshot", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }, handler)
+        }, 350)
+    }
+
+    private fun saveScreenshot(bitmap: android.graphics.Bitmap) {
+        val name = "${intent.getStringExtra(EXTRA_TITLE).orEmpty().ifBlank { "RetroForge" }.replace(Regex("""[\/:*?"<>|]"""), "")} ${java.time.LocalDateTime.now().toString().take(19).replace(':', '-')}.png"
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            val values = android.content.ContentValues().apply {
+                put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, name)
+                put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/png")
+                put(android.provider.MediaStore.Images.Media.RELATIVE_PATH, "Pictures/RetroForge")
+            }
+            val uri = contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values) ?: error("no media store")
+            contentResolver.openOutputStream(uri)?.use { bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) } ?: error("couldn't write")
+        } else {
+            val dir = File(getExternalFilesDir(android.os.Environment.DIRECTORY_PICTURES), "RetroForge").apply { mkdirs() }
+            File(dir, name).outputStream().use { bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
+        }
     }
 
     private fun closeMenu() {
@@ -1021,6 +1068,7 @@ class PlayerActivity : ComponentActivity() {
             SurfaceView(context).apply {
                 holder.addCallback(surfaceCallback)
                 pointerListener(this)
+                gameView = this
             }
         }, modifier = modifier)
     }
@@ -1097,7 +1145,6 @@ class PlayerActivity : ComponentActivity() {
                             fastForwardOn = !fastForwardOn
                             NativePlayer.setFastForward(fastForwardOn)
                         }, modifier = wide) { Text("Fast-forward: ${if (fastForwardOn) "On" else "Off"}") }
-                        MenuButton(onClick = { chooseShape(shape.next()) }, modifier = wide) { Text("Screen shape: ${shape.label}") }
                         // Multi-disc games (an .m3u): put in the next disc when the game asks for it.
                         val discs = remember(menuPage) { if (loaded) NativePlayer.discInfo() else null }
                         if (discs != null) {
@@ -1111,27 +1158,49 @@ class PlayerActivity : ComponentActivity() {
                         if (system in PlayerCores.keyboardSystems) {
                             MenuButton(onClick = { closeMenu(); keyboard.show() }, modifier = wide) { Text("Keyboard") }
                         }
-                        MenuButton(onClick = { chooseVolume() }, modifier = wide) { Text("Volume: ${(volume * 100).toInt()}%") }
+                        MenuButton(onClick = { takeScreenshot() }, modifier = wide) { Text("Take a screenshot") }
+                        // The rest in three groups, so the menu stays short.
+                        MenuButton(onClick = { menuPage = MenuPage.PICTURE }, modifier = wide) { Text("Picture ›") }
+                        MenuButton(onClick = { menuPage = MenuPage.SOUND_CONTROLS }, modifier = wide) { Text("Sound and controls ›") }
+                        MenuButton(onClick = { menuPage = MenuPage.EMULATOR }, modifier = wide) { Text("Emulator ›") }
+                        MenuButton(onClick = {
+                            NativePlayer.reset()
+                            closeMenu()
+                        }, modifier = wide) { Text("Restart game") }
+                        MenuButton(onClick = { quit() }, modifier = wide) { Text("Quit to RetroForge") }
+                    }
+                    MenuPage.PICTURE -> {
+                        Text("Picture", color = Color.White, fontWeight = FontWeight.Bold)
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        MenuButton(onClick = { chooseShape(shape.next()) }, modifier = wide) { Text("Screen shape: ${shape.label}") }
                         MenuButton(onClick = { chooseFilter(filter.next()) }, modifier = wide) { Text("Screen filter: ${filter.label}") }
                         MenuButton(onClick = { chooseLook(!consoleLook) }, modifier = wide) { Text("Console look: ${if (consoleLook) "On" else "Off"}") }
                         PlayerCores.widescreenOption(coreId)?.let { (key, wideValue, _) ->
                             val on = coreOptions.firstOrNull { it.key == key }?.value == wideValue
-                            MenuButton(onClick = { chooseWidescreen() }, modifier = wide) {
-                                Text("Widescreen: ${if (on) "On" else "Off"}")
-                            }
-                        }
-                        if (coreId in PlayerCores.vulkanCores) MenuButton(onClick = { chooseGraphics() }, modifier = wide) {
-                            Text("Graphics: ${if (vulkanOn) "Vulkan (experimental)" else "OpenGL"}")
+                            MenuButton(onClick = { chooseWidescreen() }, modifier = wide) { Text("Widescreen: ${if (on) "On" else "Off"}") }
                         }
                         if (PlayerCores.resolutionOption(coreId) != null) MenuButton(onClick = { chooseScale() }, modifier = wide) {
                             Text("Resolution: ${scale}×" + if (scale == 1) " (original)" else "")
                         }
+                        if (coreId in PlayerCores.vulkanCores) MenuButton(onClick = { chooseGraphics() }, modifier = wide) {
+                            Text("Graphics: ${if (vulkanOn) "Vulkan (experimental)" else "OpenGL"}")
+                        }
                         MenuButton(onClick = { chooseVr(!vr) }, modifier = wide) {
                             Text("Cardboard VR: ${if (vr) "On" else "Off"}" + if (PlayerCores.sideBySide(coreId)) " (3D)" else "")
                         }
+                    }
+                    MenuPage.SOUND_CONTROLS -> {
+                        Text("Sound and controls", color = Color.White, fontWeight = FontWeight.Bold)
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        MenuButton(onClick = { chooseVolume() }, modifier = wide) { Text("Volume: ${(volume * 100).toInt()}%") }
                         if (hasTouch) MenuButton(onClick = { chooseTouch(!touchEnabled) }, modifier = wide) {
                             Text("Touch controls: ${if (touchEnabled) "On" else "Off"}")
                         }
+                        MenuButton(onClick = { menuPage = MenuPage.CONTROLS }, modifier = wide) { Text("Remap buttons ›") }
+                    }
+                    MenuPage.EMULATOR -> {
+                        Text("Emulator · $coreName", color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
                         MenuButton(onClick = {
                             coreOptions = NativePlayer.options()
                             menuPage = MenuPage.OPTIONS
@@ -1139,15 +1208,9 @@ class PlayerActivity : ComponentActivity() {
                         MenuButton(onClick = { openCheats() }, modifier = wide) {
                             Text("Cheats ›" + cheats.count { it.enabled }.let { if (it > 0) "  ($it on)" else "" })
                         }
-                        MenuButton(onClick = { menuPage = MenuPage.CONTROLS }, modifier = wide) { Text("Remap buttons ›") }
                         if (PlayerCores.choices(system).size > 1) {
                             MenuButton(onClick = { menuPage = MenuPage.EMULATORS }, modifier = wide) { Text("Switch emulator ›") }
                         }
-                        MenuButton(onClick = {
-                            NativePlayer.reset()
-                            closeMenu()
-                        }, modifier = wide) { Text("Restart game") }
-                        MenuButton(onClick = { quit() }, modifier = wide) { Text("Quit to RetroForge") }
                     }
                     MenuPage.CHEATS -> {
                         Text("Cheats", color = Color.White, fontWeight = FontWeight.Bold)

@@ -256,6 +256,7 @@ class LibraryViewModel(
     }
 
     fun games(system: String): Flow<List<GameEntity>> = repository.gamesFor(system)
+    suspend fun randomGameId(): Long? = repository.randomGameId()
     fun game(id: Long): Flow<GameEntity?> = repository.game(id)
     fun problems(rootId: Long): Flow<List<ProblemEntity>> = repository.problems(rootId)
     suspend fun duplicatesOf(game: GameEntity) = repository.duplicatesOf(game)
