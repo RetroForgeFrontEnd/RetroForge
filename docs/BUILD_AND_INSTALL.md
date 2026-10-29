@@ -3,7 +3,7 @@
 ## Requirements (as verified on the development PC, 2026-10-27)
 
 - Android Studio (bundled JBR, OpenJDK 25.0.3) — used as `JAVA_HOME` for command-line builds
-- Android SDK at `C:\Users\darre\AppData\Local\Android\Sdk` with platform 37 and build-tools 36 (AGP downloads missing platforms automatically once licences are accepted)
+- Android SDK at `%LOCALAPPDATA%\Android\Sdk` with platform 37 and build-tools 36 (AGP downloads missing platforms automatically once licences are accepted)
 - Gradle is supplied by the wrapper (9.8.2); no global install needed
 
 Versions: AGP 9.4.1, Kotlin 2.4.21, Compose BOM 2026.09.00, compileSdk 37, targetSdk 37, minSdk 26.
@@ -11,7 +11,7 @@ Versions: AGP 9.4.1, Kotlin 2.4.21, Compose BOM 2026.09.00, compileSdk 37, targe
 `local.properties` (not committed) must contain the SDK path with forward slashes:
 
 ```
-sdk.dir=C\:/Users/darre/AppData/Local/Android/Sdk
+sdk.dir=C\:/Users/<you>/AppData/Local/Android/Sdk
 ```
 
 ## Build from a terminal (Git Bash)

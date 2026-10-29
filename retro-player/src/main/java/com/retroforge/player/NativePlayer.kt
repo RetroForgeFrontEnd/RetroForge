@@ -33,6 +33,8 @@ object NativePlayer {
     external fun addStream(path: String, fd: Int)
     /** Whether the open core asked for the player's VFS (so streamed paths reach it). Known right after openCore. */
     external fun vfsRequested(): Boolean
+    /** Frames drawn on screen so far: the difference over a second is the FPS counter. */
+    external fun framesShown(): Long
 
     /** fps, sample rate, base width, base height, aspect ratio. */
     private external fun avInfo(): FloatArray

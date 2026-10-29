@@ -182,6 +182,8 @@ struct Player {
     // Vulkan cores (Dolphin, Citra, PCSX2 …): their frames are copied into hwTexture (vulkan_render.cpp). preferVulkan
     // is the user's choice for this system ("retroforge_graphics" = "vulkan"), told to cores that ask what's preferred.
     bool vulkan = false, preferVulkan = false;
+    // Frames put on screen, for the FPS counter (read once a second by the app).
+    std::atomic<uint64_t> framesShown{0};
     GLuint hwFbo = 0, hwTexture = 0, hwDepth = 0;
     unsigned hwW = 0, hwH = 0;       // framebuffer size (the core's largest picture)
     unsigned frameW = 0, frameH = 0; // the part of it the last frame used
@@ -869,6 +871,7 @@ void present() {
         }
     }
     eglSwapBuffers(p.display, p.surface);
+    p.framesShown++;
     if (split && eglMakeCurrent(p.display, p.surface2, p.surface2, p.context)) {
         EGLint w2 = 0, h2 = 0;
         eglQuerySurface(p.display, p.surface2, EGL_WIDTH, &w2);
@@ -1345,6 +1348,8 @@ JNIEXPORT void JNI(setOption)(JNIEnv *env, jobject, jstring key, jstring value) 
     if (P->variables.count(k)) P->variables[k] = v;
     P->variablesChanged = true;
 }
+
+JNIEXPORT jlong JNI(framesShown)(JNIEnv *, jobject) { return P ? jlong(P->framesShown.load()) : 0; }
 
 JNIEXPORT void JNI(addStream)(JNIEnv *env, jobject, jstring path, jint fd) { vfs::addStream(str(env, path), fd); }
 
