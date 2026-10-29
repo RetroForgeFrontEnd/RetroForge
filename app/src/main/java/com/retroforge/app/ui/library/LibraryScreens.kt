@@ -295,8 +295,14 @@ fun GameDetailScreen(
         ScreenFrame(title = "Game") { CardBody("Loading…") }
         return
     }
+    // Dual-screen devices: the second screen shows this game while its page is open.
+    val art = viewModel.art(rootsById, chosen, g)
+    androidx.compose.runtime.DisposableEffect(g.id, art) {
+        com.retroforge.app.ui.SecondScreen.shown = com.retroforge.app.ui.SecondScreen.Shown(g.title, viewModel.systemName(g.system), g.description, art)
+        onDispose { com.retroforge.app.ui.SecondScreen.shown = null }
+    }
     ScreenFrame(title = null) {
-        GameHero(g, viewModel.art(rootsById, chosen, g), eyebrow = viewModel.systemName(g.system), subtitle = tagLine(g), actionLabel = null, onAction = null)
+        GameHero(g, art, eyebrow = viewModel.systemName(g.system), subtitle = tagLine(g), actionLabel = null, onAction = null)
         CoverControls(g, viewModel, onChangeCover = { onChangeCover(g.id) })
         FocusChip("Edit details", onClick = { onEditDetails(g.id) })
         FavouriteAndPlaylists(g, viewModel)

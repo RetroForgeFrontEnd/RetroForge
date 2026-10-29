@@ -333,6 +333,9 @@ private fun ReportProblemCard() {
 /** View preference: DS games put their touch screen on a second display. */
 const val DUAL_SCREEN_DS = "dual_screen_ds"
 
+/** View preference: the second display shows the open game while browsing. */
+const val DUAL_SCREEN_BROWSE = "dual_screen_browse"
+
 /** Two-screen devices (AYN Thor, AYANEO Pocket DS …): what the second screen is used for. */
 @Composable
 private fun DualScreenCard(prefs: android.content.SharedPreferences) {
@@ -342,6 +345,7 @@ private fun DualScreenCard(prefs: android.content.SharedPreferences) {
             .getDisplays(android.hardware.display.DisplayManager.DISPLAY_CATEGORY_PRESENTATION).firstOrNull()
     }
     var ds by remember { mutableStateOf(prefs.getBoolean(DUAL_SCREEN_DS, true)) }
+    var browse by remember { mutableStateOf(prefs.getBoolean(DUAL_SCREEN_BROWSE, false)) }
     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
         ds = !ds
         prefs.edit().putBoolean(DUAL_SCREEN_DS, ds).apply()
@@ -349,6 +353,11 @@ private fun DualScreenCard(prefs: android.content.SharedPreferences) {
         CardTitle("Dual screen")
         StatusPill(if (second != null) "Second screen found: ${second.name}" else "No second screen on this device", if (second != null) StatusTone.GOOD else StatusTone.NEUTRAL)
         StatusPill("DS games on both screens: ${if (ds) "On" else "Off"}", if (ds) StatusTone.GOOD else StatusTone.NEUTRAL)
+        StatusPill("Game box on the second screen while browsing (experimental): ${if (browse) "On" else "Off"}", if (browse) StatusTone.GOOD else StatusTone.NEUTRAL)
+        com.retroforge.core.ui.FocusChip("Switch the game box", onClick = {
+            browse = !browse
+            prefs.edit().putBoolean(DUAL_SCREEN_BROWSE, browse).apply()
+        })
         CardBody(
             "For two-screen devices like the AYN Thor and AYANEO Pocket DS. On: a DS game's top screen fills the main display and " +
                 "its touch screen goes to the second one. Off: both DS screens on the main display. Select to switch.",

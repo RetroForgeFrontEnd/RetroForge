@@ -27,6 +27,18 @@ class MainActivity : ComponentActivity() {
         setContent { RetroForgeRoot(container, sectionCommands) }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Dual-screen devices: the second display shows RetroForge's art, or the open game's box (Settings → Dual screen).
+        val prefs = (application as RetroForgeApplication).container.viewPrefs
+        com.retroforge.app.ui.SecondScreen.show(this, prefs.getBoolean(com.retroforge.app.ui.settings.DUAL_SCREEN_BROWSE, false))
+    }
+
+    override fun onPause() {
+        super.onPause()
+        com.retroforge.app.ui.SecondScreen.hide()
+    }
+
     // Gamepad buttons the UI did not consume are translated here rather than relying on each
     // device's key-character-map fallbacks, which differ between vendors.
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean = when (val command = ControllerKeys.commandFor(keyCode)) {
