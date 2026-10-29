@@ -326,6 +326,40 @@ object PlayerCores {
      * Core options that follow the screen's orientation: the DS's two screens stacked in portrait and side by
      * side in landscape, so they always use the most of the screen.
      */
+    /**
+     * Cores that draw with Vulkan or OpenGL ES, whichever the player prefers: the user picks per system. (Citra isn't
+     * one: it always asks for OpenGL ES.)
+     */
+    val vulkanCores = setOf("dolphin", "pcsx2", "ppsspp")
+
+    /** OpenGL unless the user picked Vulkan, which is still experimental in the built-in player. */
+    fun usesVulkan(coreId: String, choice: String?): Boolean = coreId in vulkanCores && choice == "vulkan"
+
+    /** What tells each core its renderer, for the user's choice (retroforge_graphics is read by the player itself). */
+    fun graphicsOptions(coreId: String, vulkan: Boolean): Map<String, String> {
+        if (coreId !in vulkanCores) return emptyMap()
+        val own = mapOf("retroforge_graphics" to if (vulkan) "vulkan" else "opengl")
+        return own + when (coreId) {
+            "pcsx2" -> mapOf("pcsx2_renderer" to if (vulkan) "Vulkan" else "Software")
+            "ppsspp" -> mapOf("ppsspp_backend" to if (vulkan) "vulkan" else "opengl")
+            else -> emptyMap()
+        }
+    }
+
+    /**
+     * The option that sets a core's internal resolution: its values run from native (1x) upwards, so "N times" is the
+     * Nth value, whatever the core calls it. With the most each core offers.
+     */
+    fun resolutionOption(coreId: String): Pair<String, Int>? = when (coreId) {
+        "dolphin" -> "dolphin_efb_scale" to 8
+        "citra" -> "citra_resolution_factor" to 9
+        "pcsx2" -> "pcsx2_upscale_multiplier" to 8
+        "ppsspp" -> "ppsspp_internal_resolution" to 10
+        "flycast" -> "reicast_internal_resolution" to 10
+        "mupen64plus_next_gles3" -> "mupen64plus-43screensize" to 4
+        else -> null
+    }
+
     /** A core's widescreen hack: (option, widescreen value, original value), for the pause menu's Widescreen switch. */
     fun widescreenOption(coreId: String): Triple<String, String, String>? = when (coreId) {
         "mupen64plus_next_gles3" -> Triple("mupen64plus-aspect", "16:9 adjusted", "4:3")

@@ -32,6 +32,7 @@
 
 #include "libretro.h"
 #include "vfs.h"
+#include "vulkan_render.h"
 
 #define TAG "RetroForgePlayer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
@@ -178,6 +179,9 @@ struct Player {
     // drawn to the screen like a software frame. The context is GLES 3 when such a core asked for it.
     retro_hw_render_callback hw{};
     bool hwRequested = false, hwReady = false, hwFrame = false;
+    // Vulkan cores (Dolphin, Citra, PCSX2 …): their frames are copied into hwTexture (vulkan_render.cpp). preferVulkan
+    // is the user's choice for this system ("retroforge_graphics" = "vulkan"), told to cores that ask what's preferred.
+    bool vulkan = false, preferVulkan = false;
     GLuint hwFbo = 0, hwTexture = 0, hwDepth = 0;
     unsigned hwW = 0, hwH = 0;       // framebuffer size (the core's largest picture)
     unsigned frameW = 0, frameH = 0; // the part of it the last frame used
@@ -357,8 +361,18 @@ bool environment(unsigned cmd, void *data) {
             return true;
         }
         case RETRO_ENVIRONMENT_SET_HW_RENDER: {
-            // OpenGL ES 2 or 3 only (desktop OpenGL doesn't exist on Android; Vulkan isn't offered yet).
+            // OpenGL ES 2 or 3, or Vulkan (desktop OpenGL doesn't exist on Android).
             auto *hw = static_cast<retro_hw_render_callback *>(data);
+            if (hw->context_type == RETRO_HW_CONTEXT_VULKAN) {
+                void *vk = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
+                LOGI("core asked for GPU rendering, Vulkan: %s", vk ? "offered" : "not offered (no driver)");
+                if (!vk) return false;
+                dlclose(vk);
+                P->hw = *hw;
+                P->hwRequested = true;
+                P->vulkan = true;
+                return true;
+            }
             bool gles = hw->context_type == RETRO_HW_CONTEXT_OPENGLES2 || hw->context_type == RETRO_HW_CONTEXT_OPENGLES3 ||
                         (hw->context_type == RETRO_HW_CONTEXT_OPENGLES_VERSION && hw->version_major <= 3);
             LOGI("core asked for GPU rendering, type %d %u.%u: %s", hw->context_type, hw->version_major, hw->version_minor,
@@ -376,8 +390,18 @@ bool environment(unsigned cmd, void *data) {
             return true;
         }
         case RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER:
-            *static_cast<unsigned *>(data) = RETRO_HW_CONTEXT_OPENGLES3;
+            *static_cast<unsigned *>(data) = P->preferVulkan ? RETRO_HW_CONTEXT_VULKAN : RETRO_HW_CONTEXT_OPENGLES3;
             return true;
+        case RETRO_ENVIRONMENT_SET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE:
+            return vkr::setNegotiation(static_cast<const retro_hw_render_context_negotiation_interface *>(data));
+        case RETRO_ENVIRONMENT_GET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE_SUPPORT:
+            return vkr::negotiationSupport(static_cast<retro_hw_render_context_negotiation_interface *>(data));
+        case RETRO_ENVIRONMENT_GET_HW_RENDER_INTERFACE: {
+            auto *iface = P->vulkan ? vkr::interface() : nullptr;
+            if (!iface) return false;
+            *static_cast<const retro_hw_render_interface **>(data) = iface;
+            return true;
+        }
         case RETRO_ENVIRONMENT_SET_HW_SHARED_CONTEXT:
             return true;
         case RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
@@ -548,6 +572,7 @@ void glSetup() {
 // (Re)sizes the GPU core's framebuffer to the core's largest picture.
 void hwResize() {
     Player &p = *P;
+    if (p.vulkan && p.hwW && p.hwH) return; // Vulkan frames size the texture themselves (vulkanFrame)
     unsigned w = std::max(1u, std::max(p.av.geometry.max_width, p.av.geometry.base_width));
     unsigned h = std::max(1u, std::max(p.av.geometry.max_height, p.av.geometry.base_height));
     if (w == p.hwW && h == p.hwH) return;
@@ -580,7 +605,12 @@ void hwSetup() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    if (p.hw.depth) glGenRenderbuffers(1, &p.hwDepth);
+    if (p.hw.depth && !p.vulkan) glGenRenderbuffers(1, &p.hwDepth);
+    if (p.vulkan) {
+        std::string error;
+        if (!vkr::init(error)) LOGE("Vulkan: %s", error.c_str());
+        p.hw.depth = false;
+    }
     hwResize();
     LOGI("GPU rendering ready: OpenGL ES %d, framebuffer %ux%u%s", p.glesVersion, p.hwW, p.hwH, p.hw.depth ? " with depth" : "");
     if (p.hw.context_reset) {
@@ -674,6 +704,24 @@ void videoRefresh(const void *data, unsigned width, unsigned height, size_t pitc
     if (framesLogged < 3) {
         framesLogged++;
         LOGI("frame %ux%u pitch %zu format %d%s", width, height, pitch, static_cast<int>(p.format), data ? "" : " (no data)");
+    }
+    if (data == RETRO_HW_FRAME_BUFFER_VALID && p.vulkan) {
+        // Drawn by the core with Vulkan: its picture is copied into hwTexture.
+        p.staging.resize(size_t(width) * height * 4);
+        if (!vkr::readFrame(width, height, p.staging.data())) return;
+        glBindTexture(GL_TEXTURE_2D, p.hwTexture);
+        if (width > p.hwW || height > p.hwH) {
+            p.hwW = std::max(width, p.hwW);
+            p.hwH = std::max(height, p.hwH);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p.hwW, p.hwH, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        }
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, p.staging.data());
+        p.frameW = width;
+        p.frameH = height;
+        p.hwFrame = true;
+        p.hasFrame = true;
+        return;
     }
     if (data == RETRO_HW_FRAME_BUFFER_VALID) {
         // Drawn by the core into hwFbo: only remember how much of it this frame used.
@@ -964,7 +1012,7 @@ void runLoop() {
             next = clock::now();
             continue;
         }
-        if (p.hwRequested) {
+        if (p.hwRequested && !p.vulkan) {
             hwResize(); // a no-op unless the core's picture grew
             glBindFramebuffer(GL_FRAMEBUFFER, p.hwFbo);
             glViewport(0, 0, p.hwW, p.hwH);
@@ -1012,7 +1060,7 @@ void runLoop() {
             std::this_thread::sleep_until(next);
         }
     }
-    if (p.hwReady && p.surface != EGL_NO_SURFACE && p.hw.context_destroy) {
+    if (p.hwReady && (p.vulkan || p.surface != EGL_NO_SURFACE) && p.hw.context_destroy) {
         std::lock_guard<std::mutex> lock(p.coreMutex);
         p.hw.context_destroy();
     }
@@ -1095,6 +1143,11 @@ JNIEXPORT jstring JNI(openCore)(JNIEnv *env, jobject, jstring corePath, jstring 
     for (jsize i = 0; optionKeys && i < env->GetArrayLength(optionKeys); i++) {
         p.overrides[str(env, static_cast<jstring>(env->GetObjectArrayElement(optionKeys, i)))] =
             str(env, static_cast<jstring>(env->GetObjectArrayElement(optionValues, i)));
+    }
+    // RetroForge's own setting, not a core option: Vulkan or OpenGL for cores that let the frontend choose.
+    if (auto it = p.overrides.find("retroforge_graphics"); it != p.overrides.end()) {
+        p.preferVulkan = it->second == "vulkan";
+        p.overrides.erase(it);
     }
     void *h = dlopen(p.corePath.c_str(), RTLD_NOW | RTLD_LOCAL);
     if (!h) {
@@ -1443,6 +1496,7 @@ JNIEXPORT void JNI(close)(JNIEnv *, jobject) {
         if (P->gameLoaded) P->core.unload_game();
         P->core.deinit();
     }
+    if (P->vulkan) vkr::destroy();
     delete P;
     P = nullptr;
     vfs::clearStreams();

@@ -109,6 +109,10 @@ class PlayerActivity : ComponentActivity() {
     private var touchEnabled by mutableStateOf(true)
     private var consoleLook by mutableStateOf(true)
     private var volume by mutableStateOf(1f)
+    // Per system, shared with Settings: graphics.<system> = vulkan/opengl, scale.<system> = internal resolution 1-10.
+    private lateinit var videoChoices: CoreChoices
+    private var vulkanOn by mutableStateOf(false)
+    private var scale by mutableStateOf(1)
     private var filter by mutableStateOf(com.retroforge.player.ScreenFilter.SHARP)
     private var pictureRect by mutableStateOf(Rect(0, 0, 0, 0))
     private enum class MenuPage { MAIN, OPTIONS, EMULATORS, CHEATS, CONTROLS }
@@ -284,6 +288,8 @@ class PlayerActivity : ComponentActivity() {
         // Per-system player choices. Only this process uses these preferences.
         prefs = getSharedPreferences("player", MODE_PRIVATE)
         coreChoices = CoreChoices(File(filesDir, "player/cores.properties"))
+        videoChoices = CoreChoices(File(filesDir, "player/video.properties"))
+        scale = videoChoices.get("scale.$system")?.toIntOrNull() ?: 1
         cores = CoreManager(File(filesDir, "cores"), "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}")
         shape = ScreenShape.of(prefs.getString("shape.$system", null))
         touchEnabled = prefs.getBoolean("touch.$system", true)
@@ -345,12 +351,15 @@ class PlayerActivity : ComponentActivity() {
             coreId == "ppsspp" && File(savesDir, "TEXTURES").list().orEmpty().isNotEmpty() -> mapOf("ppsspp_texture_replacement" to "enabled")
             else -> emptyMap()
         }
-        val options = PlayerCores.defaultOptions(coreId) + texturePacks + savedOptions() + PlayerCores.orientationOptions(coreId, isLandscape())
+        vulkanOn = PlayerCores.usesVulkan(coreId, videoChoices.get("graphics.$system"))
+        val options = PlayerCores.defaultOptions(coreId) + PlayerCores.graphicsOptions(coreId, vulkanOn) + texturePacks + savedOptions() +
+            PlayerCores.orientationOptions(coreId, isLandscape())
         // Play! keeps its memory cards and settings under $EXTERNAL_STORAGE ("/sdcard/Play Data Files"), which apps can't
         // write to any more, and stops when it can't. This process is the player's alone, so point it at our own folder.
         if (coreId == "play") runCatching { android.system.Os.setenv("EXTERNAL_STORAGE", File(systemDir, "play").apply { mkdirs() }.path, true) }
         val error = NativePlayer.openCore(corePath, systemDir.path, savesDir.path, options.keys.toTypedArray(), options.values.toTypedArray())
         if (error != null) return fail(error)
+        applyScale()
         val info = NativePlayer.coreInfo()
         val ok = try {
             loadContent(uri, fileName, info.needsFile, info.extensions, systemDir)
@@ -493,6 +502,38 @@ class PlayerActivity : ComponentActivity() {
         NativePlayer.setOption(option.key, next)
         coreOptions = NativePlayer.options()
         refreshVideo(10) // some settings change the picture (borders, layouts)
+    }
+
+    /** The internal resolution chosen for this system: the Nth value of the core's own resolution option. */
+    private fun applyScale() {
+        val (key, _) = PlayerCores.resolutionOption(coreId) ?: return
+        val choices = NativePlayer.options().firstOrNull { it.key == key }?.choices ?: return
+        if (choices.isEmpty()) return
+        NativePlayer.setOption(key, choices[(scale.coerceAtLeast(1) - 1).coerceAtMost(choices.size - 1)])
+    }
+
+    /** Vulkan or OpenGL for this system: the game restarts in the other one (its place is saved first). */
+    private fun chooseGraphics() {
+        val next = if (vulkanOn) "opengl" else "vulkan"
+        videoChoices.set("graphics.$system", next)
+        notice = "Restarting with ${if (next == "vulkan") "Vulkan" else "OpenGL"}…"
+        restartWith(Intent(intent))
+    }
+
+    /** The next internal resolution, 1x up to what the core offers, then back to 1x. */
+    private fun chooseScale() {
+        val (key, max) = PlayerCores.resolutionOption(coreId) ?: return
+        val available = (coreOptions.firstOrNull { it.key == key }?.choices?.size ?: max).coerceAtMost(max)
+        scale = if (scale >= available) 1 else scale + 1
+        videoChoices.set("scale.$system", if (scale == 1) null else scale.toString())
+        applyScale()
+        coreOptions = NativePlayer.options()
+        refreshVideo(10)
+        // PCSX2 only reads its resolution at start.
+        if (coreId == "pcsx2") {
+            notice = "Restarting at ${scale}×…"
+            restartWith(Intent(intent))
+        }
     }
 
     /** Restarts the game in another of the system's emulators; the in-game save carries over. */
@@ -1078,6 +1119,12 @@ class PlayerActivity : ComponentActivity() {
                             MenuButton(onClick = { chooseWidescreen() }, modifier = wide) {
                                 Text("Widescreen: ${if (on) "On" else "Off"}")
                             }
+                        }
+                        if (coreId in PlayerCores.vulkanCores) MenuButton(onClick = { chooseGraphics() }, modifier = wide) {
+                            Text("Graphics: ${if (vulkanOn) "Vulkan (experimental)" else "OpenGL"}")
+                        }
+                        if (PlayerCores.resolutionOption(coreId) != null) MenuButton(onClick = { chooseScale() }, modifier = wide) {
+                            Text("Resolution: ${scale}×" + if (scale == 1) " (original)" else "")
                         }
                         MenuButton(onClick = { chooseVr(!vr) }, modifier = wide) {
                             Text("Cardboard VR: ${if (vr) "On" else "Off"}" + if (PlayerCores.sideBySide(coreId)) " (3D)" else "")

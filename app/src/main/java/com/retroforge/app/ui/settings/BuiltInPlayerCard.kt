@@ -57,6 +57,7 @@ fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices,
     CopyFirstCard()
     SaveBackupCard(library)
     MemoryCardsCard()
+    VideoChoicesCard(systems, choices)
     val switchable = systems.filter { (id, _) -> PlayerCores.choices(id).size > 1 }
     if (switchable.isEmpty()) return
     CardBody("Emulator per system (select to switch):")
@@ -71,6 +72,54 @@ fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices,
                 choices.set(id, if (next == list.first()) null else next.id)
                 changes++
             })
+        }
+    }
+}
+
+/**
+ * Vulkan or OpenGL, and the internal resolution, for each system whose emulator has them (also in the pause menu).
+ * Kept in the player's own file, so both always show the same choice.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun VideoChoicesCard(systems: List<Pair<String, String>>, choices: CoreChoices) {
+    val context = LocalContext.current
+    val video = remember { CoreChoices(File(context.filesDir, "player/video.properties")) }
+    var changes by remember { mutableIntStateOf(0) }
+    val cores = remember { choices.all() }
+    // The emulator each system uses: the chosen one, else the first.
+    val rows = systems.mapNotNull { (id, name) ->
+        val list = PlayerCores.choices(id)
+        val core = list.firstOrNull { it.id == cores[id] } ?: list.firstOrNull() ?: return@mapNotNull null
+        if (core.id !in PlayerCores.vulkanCores && PlayerCores.resolutionOption(core.id) == null) null else Triple(id, name, core.id)
+    }
+    if (rows.isEmpty()) return
+    val saved = remember(changes) { video.all() }
+    FocusCard(modifier = Modifier.fillMaxWidth()) {
+        CardTitle("Graphics and resolution")
+        CardBody(
+            "OpenGL is the default. Vulkan (experimental) can be faster on some phones; switch back if a game shows a black " +
+                "screen. Resolution draws 3D games sharper than the original (2× is like a 720p console, 3× 1080p, up to 10× for " +
+                "PSP) but needs a faster phone. Both can also be changed from the pause menu while playing.",
+        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            rows.forEach { (id, name, coreId) ->
+                if (coreId in PlayerCores.vulkanCores) {
+                    val vulkan = PlayerCores.usesVulkan(coreId, saved["graphics.$id"])
+                    FocusChip("$name: ${if (vulkan) "Vulkan (experimental)" else "OpenGL"}", onClick = {
+                        video.set("graphics.$id", if (vulkan) "opengl" else "vulkan")
+                        changes++
+                    })
+                }
+                PlayerCores.resolutionOption(coreId)?.let { (_, max) ->
+                    val scale = saved["scale.$id"]?.toIntOrNull() ?: 1
+                    FocusChip("$name: ${scale}×", onClick = {
+                        val next = if (scale >= max) 1 else scale + 1
+                        video.set("scale.$id", if (next == 1) null else next.toString())
+                        changes++
+                    })
+                }
+            }
         }
     }
 }
