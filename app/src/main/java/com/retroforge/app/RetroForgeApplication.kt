@@ -42,7 +42,9 @@ class AppContainer(application: Application) {
         builtIn = { application.assets.open("catalogues/retroforge-starter.json").bufferedReader().use { it.readText() } },
     )
     val catalogueFetcher = CatalogueFetcher("RetroForge/${BuildConfig.VERSION_NAME}")
-    val library = LibraryRepository(LibraryDatabase.create(application), application.contentResolver)
+    val library = LibraryRepository(LibraryDatabase.create(application), application.contentResolver).apply {
+        ownAuthorities = setOf(com.retroforge.app.network.NetworkDrives.authority(application))
+    }
     val retroArch = RetroArchLauncher(application)
     val standalone = StandaloneLauncher(application)
     val retroArchHotkeys = RetroArchHotkeys(application)

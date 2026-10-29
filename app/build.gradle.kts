@@ -83,6 +83,7 @@ dependencies {
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
     implementation(libs.smbj)
+    implementation(libs.dcerpc) // lists a computer's shared folders (SRVSVC)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

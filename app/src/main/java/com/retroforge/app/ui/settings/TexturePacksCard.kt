@@ -33,8 +33,18 @@ import java.io.File
  * N64 (Mupen64Plus-Next) in system/Mupen64plus/hires_texture, named after the game's internal name ("SUPER MARIO 64");
  * PSP (PPSSPP) in the memory stick's TEXTURES folder (the PSP saves folder), named after the game's ID ("ULUS10041").
  */
+/** All texture packs on one page: N64 downloads first, then adding your own N64 and PSP packs. */
+@Composable
+fun TexturePacksScreen() {
+    val context = LocalContext.current
+    com.retroforge.app.ui.ScreenFrame(title = "Texture packs", subtitle = "High-resolution textures for games in the built-in player.") {
+        TexturePacksCard(context.getExternalFilesDir(null) ?: context.filesDir)
+    }
+}
+
 @Composable
 fun TexturePacksCard(playerDir: File) {
+    DownloadPacks(File(playerDir, "system/Mupen64plus/cache"))
     TexturePacks(
         "Texture packs (N64)",
         "High-resolution texture packs for N64 games in the built-in player. A pack is a folder named after the game's " +
@@ -42,7 +52,6 @@ fun TexturePacksCard(playerDir: File) {
             "They're switched on automatically when a pack is installed.",
         File(playerDir, "system/Mupen64plus/hires_texture"),
     )
-    DownloadPacks(File(playerDir, "system/Mupen64plus/cache"))
     TexturePacks(
         "Texture packs (PSP)",
         "High-resolution texture packs for PSP games in the built-in player. A pack is a folder named after the game's ID, " +

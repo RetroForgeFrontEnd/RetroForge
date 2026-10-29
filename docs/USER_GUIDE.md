@@ -11,6 +11,26 @@ The same guide as Settings → How to use RetroForge in the app.
 - Settings → Check my setup shows every system at once: its emulator, BIOS and games, and what's missing.
 - RetroForge comes with no games and no BIOS. Use your own.
 
+## Games and films on a network drive (PC or NAS)
+
+- What it does: plays games and films kept on a computer or NAS at home, over Wi-Fi, without copying them to the phone. Nothing extra to install on the phone. The phone and the computer must be on the same network.
+- STEP 1, on a Windows PC: share the folder. Right-click the folder (for example your roms folder) → Properties → Sharing tab → Advanced Sharing… → tick Share this folder. Note the share name (you can keep the folder's name). Click Permissions, make sure Everyone has Read ticked, then OK, OK.
+- STEP 2, on the PC: let the folder be read. Same Properties window → Security tab → Edit… → Add… → type Everyone → Check Names → OK. With Everyone selected, tick Read & execute under Allow → OK → OK. RetroForge only ever reads, so Read is all it needs.
+- STEP 3, choose how the phone signs in. Option A (simplest each time, safest): use the PC's own sign-in. If you sign in to Windows with a Microsoft account, that's its email address and its password (not your PIN: Windows won't accept a PIN over the network). Settings → Accounts → Your info on the PC shows which account you use.
+- Option B (no login at all): on the PC open Control Panel → Network and Sharing Center → Change advanced sharing settings → All networks → Turn off password protected sharing → Save. Then leave the username and password empty in RetroForge. Anyone on your home Wi-Fi can then read the folders you've shared, so only do this at home.
+- A NAS (Synology, QNAP and others) usually has shared folders already: use a NAS user's name and password, or leave them empty if the share allows guests.
+- STEP 4, in RetroForge: Settings → Games on a network drive (or Media → Films on a network drive) → Add a network drive.
+- Tap Find on my network. After a few seconds your computer appears as a button (its address, and its name when the network gives one): tap it and the address box fills itself. Nothing found? Check the computer is on and awake, on the same Wi-Fi as the phone, and that step 1 is done. You can also type the address yourself: on Windows it's under Settings → Network & internet → your connection → IPv4 address.
+- Shared folder: the share name from step 1, for example roms. A folder inside a share goes after a slash, for example E/Games. Then the username and password from step 3 (or leave them empty for option B), and a name to show if you like. Tap Test and save.
+- When it says Connected, it's saved. Now add it as a game folder: Retro → Game folders → Add a folder. In Android's folder picker tap the menu (☰, top left), scroll down past your Google Drive accounts to your network drive (shown with its address underneath), open it, go into the folder you want and tap Use this folder, then Allow.
+- RetroForge scans it like any other folder. Your roms folder can have system folders (snes, psx …) inside it, or one folder further down. Cartridge games play straight from the network; CD and arcade games are copied to the phone the first time you play them (you'll see a percentage), then start from the copy.
+- Films: Media → Choose another folder, then the same steps in the folder picker.
+- If it says "doesn't allow guests": Windows' Guest account is off. Use option A (your sign-in), or option B.
+- If it says ACCESS DENIED or "Create failed": the share or the folder doesn't let you read it. Do steps 1 and 2 again for that exact folder (Everyone: Read on both tabs).
+- If it says the username or password wasn't accepted: check them on the PC (a Microsoft account email and its password, not the PIN).
+- If Find on my network finds nothing but the address works: some routers keep Wi-Fi devices apart ("AP isolation" or "client isolation"): turn that off in the router, or type the address yourself.
+- Cloud storage (Google Drive, Dropbox, OneDrive) can't be opened as a folder by Android apps: use a sync app to keep a folder on the phone in step with it, and choose that folder.
+
 ## Finding and playing games
 
 - Retro shows your systems (only ones you have games for, or all of them in Settings), Recently played, Favourites, Playlists and a search box.

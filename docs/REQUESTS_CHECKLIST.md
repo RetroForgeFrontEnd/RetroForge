@@ -109,7 +109,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Scan for new games when the app starts | ✅ on by default, switch in Settings |
 | Use RetroForge as the Android home screen (launcher), with Android apps and Android settings | ✅ Android apps screen (Home and Settings), settings shortcuts, launcher-mode switch; tested on the emulator (Home button opens RetroForge) |
 | Media section (films, Plex-style, artwork, Plex servers, network drives) | ❌ idea |
-| Games from network drives, Google Drive, Dropbox | ❌ planned (Media tab says "Coming next") |
+| Games from network drives, Google Drive, Dropbox | ✅ network drives (see above); cloud: guide explains a sync app (Android apps can't open Drive/Dropbox as folders) |
 | PC / iOS / Linux / Raspberry Pi versions | ❌ question |
 | How to fund updates when free | ❌ question (support links exist) |
 | Dual-screen option for games and the app | 🟡 DS games: top screen on the main display, touch screen on the second (automatic when a second display exists); picture split tested on a simulated display; touch on the second screen needs a real dual-screen device. App UI on two screens: not yet |
@@ -159,4 +159,9 @@ Requests that were never fully done, or only answered:
 | Dreamcast memory cards | ✅ tested on the S22 (Ikaruga creates its save file) |
 | PS2 compression to CHD | ✅ tested on the S22 (Gran Turismo 3: 3.88 GB .iso → 3.57 GB CHD, read back and checked, original set aside) |
 | Netplay for all systems | ❌ to do: libretro netplay lives in the frontend (RetroArch), so RetroForge needs its own (rollback, same game file and emulator on both sides); RetroArch launches can use RetroArch's own netplay |
-| Network drives built into RetroForge (no second app) | 🟡 in progress: own documents provider using smbj |
+| Network drives built into RetroForge (no second app) | ✅ own documents provider (smbj, read-only, 1 MB read-ahead); Find on my network (every interface), shared folders listed automatically, one tap adds them to games or films with a "N games found" confirmation; tested on the S22 over the PC's share: Super Mario World and a PlayStation game played from the network. Emulator can't reach SMB from apps (its virtual Wi-Fi) |
+| Save syncing: pull and push saves from network drives and cloud drives automatically | ❌ to do (needs write access to shares; cloud through a provider the user picks) |
+
+| Settings condensed | ✅ five groups (Games and library, Playing, Covers, Looks and sounds, Help and about), each on its own page |
+| Ask before Back closes RetroForge | ✅ "Close RetroForge?" on Home (tested on the emulator) |
+| Texture packs all in one place | ✅ one Texture packs page (downloads, N64 and PSP folders) |

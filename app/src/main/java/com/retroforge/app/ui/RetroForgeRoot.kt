@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -115,6 +117,7 @@ private const val SETUP_ROUTE = "setup"
 private const val ABOUT_ROUTE = "settings/about"
 private const val HOTKEYS_ROUTE = "settings/hotkeys"
 private const val GPU_ROUTE = "settings/gpu"
+private const val TEXTURES_ROUTE = "settings/textures"
 private const val CHECK_ROUTE = "settings/check"
 private const val TUTORIAL_ROUTE = "settings/tutorial"
 private const val THEMES_ROUTE = "settings/themes"
@@ -156,6 +159,19 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
             return@RetroForgeTheme
         }
         val nav = rememberNavController()
+        // Back on Home asks before closing RetroForge, so a stray Back (or B on a controller) doesn't drop out of the app.
+        val atHome = nav.currentBackStackEntryAsState().value?.destination?.route == Section.HOME.route
+        var askClose by remember { mutableStateOf(false) }
+        androidx.activity.compose.BackHandler(enabled = atHome && nav.previousBackStackEntry == null) { askClose = true }
+        if (askClose) {
+            val activity = androidx.compose.ui.platform.LocalContext.current as? android.app.Activity
+            androidx.compose.material3.AlertDialog(
+                onDismissRequest = { askClose = false },
+                title = { androidx.compose.material3.Text("Close RetroForge?") },
+                confirmButton = { androidx.compose.material3.TextButton(onClick = { askClose = false; activity?.finish() }) { androidx.compose.material3.Text("Close") } },
+                dismissButton = { androidx.compose.material3.TextButton(onClick = { askClose = false }) { androidx.compose.material3.Text("Stay") } },
+            )
+        }
         // First run (after the notice): offer the setup wizard once; afterwards it's in Settings.
         val setupDone by settingsViewModel.setupDone.collectAsStateWithLifecycle()
         LaunchedEffect(setupDone) {
@@ -170,7 +186,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
         val current = sections.firstOrNull { it.route == route } ?: when {
             route == PATCHER_ROUTE || route?.startsWith("retro/") == true -> Section.RETRO
             route?.startsWith("hacks/") == true -> Section.HACKS
-            route == SETUP_ROUTE || route == ABOUT_ROUTE || route == HOTKEYS_ROUTE || route == GPU_ROUTE || route == CHECK_ROUTE || route == TUTORIAL_ROUTE || route == THEMES_ROUTE || route == LICENCES_ROUTE || route == PRIVACY_ROUTE -> Section.SETTINGS
+            route == SETUP_ROUTE || route == ABOUT_ROUTE || route == HOTKEYS_ROUTE || route == GPU_ROUTE || route == TEXTURES_ROUTE || route == CHECK_ROUTE || route == TUTORIAL_ROUTE || route == THEMES_ROUTE || route == LICENCES_ROUTE || route == PRIVACY_ROUTE -> Section.SETTINGS
             else -> Section.HOME
         }
         val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library, container.retroArch, container.covers, container.standalone, container.settings, container.retroArchHotkeys, container.cores, container.coreChoices, container.systemArt, container.contentResolver, container.viewPrefs, container.canvasArt))
@@ -315,13 +331,14 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         composable(Section.SETTINGS.route) {
                             val counts by container.library.systemCounts.collectAsStateWithLifecycle(initialValue = emptyList())
                             SettingsScreen(settingsViewModel,
-                                playerSystems = counts.map { it.system to container.library.systemName(it.system) }, coreChoices = container.coreChoices, viewPrefs = container.viewPrefs, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenGpu = { nav.navigate(GPU_ROUTE) }, onOpenCheck = { nav.navigate(CHECK_ROUTE) }, library = container.library, onOpenApps = { nav.goTo(Section.APPS) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
+                                playerSystems = counts.map { it.system to container.library.systemName(it.system) }, coreChoices = container.coreChoices, viewPrefs = container.viewPrefs, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenGpu = { nav.navigate(GPU_ROUTE) }, onOpenTexturePacks = { nav.navigate(TEXTURES_ROUTE) }, onOpenCheck = { nav.navigate(CHECK_ROUTE) }, library = container.library, onOpenApps = { nav.goTo(Section.APPS) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
                                 onOpenLicences = { nav.navigate(LICENCES_ROUTE) }, onOpenPrivacy = { nav.navigate(PRIVACY_ROUTE) },
                             )
                         }
                         composable(ABOUT_ROUTE) { AboutScreen() }
                         composable(HOTKEYS_ROUTE) { HotkeysScreen(settingsViewModel) }
                         composable(GPU_ROUTE) { GpuDriversScreen() }
+                        composable(TEXTURES_ROUTE) { com.retroforge.app.ui.settings.TexturePacksScreen() }
                         composable(CHECK_ROUTE) {
                             com.retroforge.app.ui.settings.SetupCheckScreen(container.library, container.cores, container.playerSystemDir, onOpenSetup = { nav.navigate(SETUP_ROUTE) })
                         }
@@ -390,6 +407,9 @@ private fun SectionNav(sections: List<Section>, current: Section, vertical: Bool
             sections.forEach { tab(it, Modifier) }
         }
     } else {
+        // Out of the way while typing: the keyboard would push the bar up over the text field.
+        @OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+        if (WindowInsets.isImeVisible) return
         BoxWithConstraints(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
             // Too many tabs for the width (8 on a phone): they keep a readable size and the bar scrolls sideways.
             val fits = maxWidth / sections.size >= 64.dp

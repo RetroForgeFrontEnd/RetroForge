@@ -147,13 +147,38 @@ class LibraryRepository(
 
     fun systemName(id: String): String = rules.byId(id)?.name ?: id
 
+    /**
+     * Document providers that belong to RetroForge itself (its network drives): their folders need no grant from the
+     * folder picker, because an app can always read its own provider.
+     */
+    var ownAuthorities: Set<String> = emptySet()
+
+    private fun isOwn(uri: String) = Uri.parse(uri).authority in ownAuthorities
+
     /** Called with the folder the user picked; keeps read access across restarts and scans it. */
     fun addFolder(treeUri: Uri) {
         scope.launch {
-            resolver.takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            if (!isOwn(treeUri.toString())) resolver.takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             val existing = dao.rootByUri(treeUri.toString())
             val rootId = existing?.id ?: dao.insertRoot(RootEntity(treeUri = treeUri.toString(), name = displayName(treeUri), addedAt = clock()))
             scan(rootId)
+        }
+    }
+
+    /**
+     * Adds a folder and waits for its scan, for a confirmation like "Added: 283 games". Returns the folder as scanned,
+     * or null if the scan didn't finish within [timeoutMs].
+     */
+    suspend fun addFolderAndWait(treeUri: Uri, timeoutMs: Long = 15 * 60_000): RootEntity? {
+        val started = clock()
+        addFolder(treeUri)
+        return kotlinx.coroutines.withTimeoutOrNull(timeoutMs) {
+            while (true) {
+                val root = dao.rootByUri(treeUri.toString())
+                if (root?.lastScanAt != null && root.lastScanAt >= started && _scans.value[root.id] !is ScanState.Running) return@withTimeoutOrNull root
+                kotlinx.coroutines.delay(500)
+            }
+            @Suppress("UNREACHABLE_CODE") null
         }
     }
 
@@ -176,7 +201,7 @@ class LibraryRepository(
     }
 
     fun hasAccess(root: RootEntity): Boolean =
-        resolver.persistedUriPermissions.any { it.uri.toString() == root.treeUri && it.isReadPermission }
+        isOwn(root.treeUri) || resolver.persistedUriPermissions.any { it.uri.toString() == root.treeUri && it.isReadPermission }
 
     fun scan(rootId: Long) {
         jobs[rootId]?.cancel()

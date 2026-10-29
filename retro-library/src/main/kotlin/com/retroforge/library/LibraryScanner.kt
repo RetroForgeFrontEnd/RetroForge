@@ -118,6 +118,9 @@ class LibraryScanner(private val rules: SystemRules) {
 
     private data class SystemDir(val prefix: String, val dir: ScanNode, val rule: SystemRule)
 
+    /** How many folders are opened looking for system folders one level down (each is a directory listing, slow over a network). */
+    private val MAX_NESTED_LOOKS = 12
+
     private fun detectLayout(root: ScanNode, children: List<ScanNode>, problems: MutableList<ScanProblem>): Triple<RootLayout, List<SystemDir>, List<String>> {
         rules.forFolder(root.name)?.let { return Triple(RootLayout.SINGLE_SYSTEM, listOf(SystemDir("", root, it)), emptyList()) }
 
@@ -127,18 +130,22 @@ class LibraryScanner(private val rules: SystemRules) {
             val unrecognised = dirs.filter { rules.forFolder(it.name) == null && it.name.lowercase() !in HOLDING_FOLDERS }.map { it.name }.sorted()
             return Triple(RootLayout.COLLECTION, matched.sortedBy { it.dir.name.lowercase() }, unrecognised)
         }
-        // The user may have picked the folder above "roms" (e.g. the RetroBat folder itself).
-        dirs.firstOrNull { it.name.equals("roms", ignoreCase = true) }?.let { roms ->
-            val inner = try { roms.children() } catch (e: IOException) {
-                problems += ScanProblem(roms.name, "Can't open: ${e.message}")
+        // The user may have picked the folder above "roms" (e.g. the RetroBat folder itself), or a folder holding a
+        // few collections ("Games" with "My roms" inside): system folders one level down count too, "roms" first.
+        val nested = mutableListOf<SystemDir>()
+        val unrecognised = mutableListOf<String>()
+        dirs.filter { it.name.lowercase() !in HOLDING_FOLDERS }.sortedBy { !it.name.equals("roms", ignoreCase = true) }.take(MAX_NESTED_LOOKS).forEach { outer ->
+            val inner = try { outer.children() } catch (e: IOException) {
+                problems += ScanProblem(outer.name, "Can't open: ${e.message}")
                 emptyList()
             }
-            val nested = inner.filter { it.isDirectory }.mapNotNull { dir -> rules.forFolder(dir.name)?.let { SystemDir("${roms.name}/${dir.name}/", dir, it) } }
-            if (nested.isNotEmpty()) {
-                val unrecognised = inner.filter { it.isDirectory && rules.forFolder(it.name) == null && it.name.lowercase() !in HOLDING_FOLDERS }.map { it.name }.sorted()
-                return Triple(RootLayout.COLLECTION, nested.sortedBy { it.dir.name.lowercase() }, unrecognised)
+            val found = inner.filter { it.isDirectory }.mapNotNull { dir -> rules.forFolder(dir.name)?.let { SystemDir("${outer.name}/${dir.name}/", dir, it) } }
+            nested += found
+            if (found.isNotEmpty()) {
+                unrecognised += inner.filter { it.isDirectory && rules.forFolder(it.name) == null && it.name.lowercase() !in HOLDING_FOLDERS }.map { "${outer.name}/${it.name}" }
             }
         }
+        if (nested.isNotEmpty()) return Triple(RootLayout.COLLECTION, nested.sortedBy { it.dir.name.lowercase() }, unrecognised.sorted())
         problems += ScanProblem(root.name, "No system folders found. Pick a \"roms\" folder (containing snes, nes, psx …) or a single system folder.")
         return Triple(RootLayout.UNRECOGNISED, emptyList(), emptyList())
     }
@@ -162,8 +169,9 @@ class LibraryScanner(private val rules: SystemRules) {
                 when {
                     lower.startsWith(".") -> Unit
                     child.isDirectory -> {
-                        // System folders are scanned on their own; media and holding folders aren't games.
-                        val skip = (depth == 0 && rules.forFolder(child.name) != null) || lower in mediaFolders || lower in HOLDING_FOLDERS
+                        // System folders (at the top, or one level down) are scanned on their own; media and holding
+                        // folders aren't games.
+                        val skip = (depth <= 1 && rules.forFolder(child.name) != null) || lower in mediaFolders || lower in HOLDING_FOLDERS
                         if (!skip && depth < maxDepth) walk(child, childPath, depth + 1)
                     }
                     else -> {

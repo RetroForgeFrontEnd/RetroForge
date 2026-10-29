@@ -90,14 +90,24 @@ class NetworkDrivesProvider : DocumentsProvider() {
         val file = runCatching { NetworkDrives.openRead(share, path) }.getOrElse { throw FileNotFoundException(it.message) }
         val storage = context!!.getSystemService(StorageManager::class.java)
         return storage.openProxyFileDescriptor(ParcelFileDescriptor.MODE_READ_ONLY, object : ProxyFileDescriptorCallback() {
+            // Android asks for small pieces (often 128 KB); each is a round trip to the PC. Reading ahead a whole
+            // window at once and answering from it makes copying and streaming many times faster.
+            private val window = ByteArray(READ_AHEAD)
+            private var windowStart = -1L
+            private var windowLength = 0
+
             override fun onGetSize() = size
 
             override fun onRead(offset: Long, length: Int, data: ByteArray): Int {
                 try {
                     var done = 0
-                    while (done < length) {
-                        val n = file.read(data, offset + done, done, length - done)
-                        if (n <= 0) break
+                    while (done < length && offset + done < size) {
+                        val at = offset + done
+                        if (windowStart < 0 || at < windowStart || at >= windowStart + windowLength) fill(at)
+                        if (windowLength <= 0) break
+                        val from = (at - windowStart).toInt()
+                        val n = minOf(length - done, windowLength - from)
+                        System.arraycopy(window, from, data, done, n)
                         done += n
                     }
                     return done
@@ -106,11 +116,23 @@ class NetworkDrivesProvider : DocumentsProvider() {
                 }
             }
 
+            private fun fill(at: Long) {
+                windowStart = at
+                windowLength = 0
+                while (windowLength < window.size) {
+                    val n = file.read(window, at + windowLength, windowLength, window.size - windowLength)
+                    if (n <= 0) break
+                    windowLength += n
+                }
+            }
+
             override fun onRelease() { runCatching { file.close() } }
         }, Handler(reader.looper))
     }
 
     private companion object {
+        const val READ_AHEAD = 1 shl 20
+
         val ROOT_COLUMNS = arrayOf(Root.COLUMN_ROOT_ID, Root.COLUMN_DOCUMENT_ID, Root.COLUMN_TITLE, Root.COLUMN_SUMMARY, Root.COLUMN_FLAGS, Root.COLUMN_ICON)
         val DOCUMENT_COLUMNS = arrayOf(Document.COLUMN_DOCUMENT_ID, Document.COLUMN_DISPLAY_NAME, Document.COLUMN_MIME_TYPE,
             Document.COLUMN_SIZE, Document.COLUMN_LAST_MODIFIED, Document.COLUMN_FLAGS)

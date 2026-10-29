@@ -45,6 +45,7 @@ fun SettingsScreen(
     onOpenAbout: () -> Unit,
     onOpenHotkeys: () -> Unit,
     onOpenGpu: () -> Unit,
+    onOpenTexturePacks: () -> Unit = {},
     onOpenCheck: () -> Unit = {},
     library: com.retroforge.core.library.LibraryRepository? = null,
     onOpenApps: () -> Unit = {},
@@ -57,122 +58,167 @@ fun SettingsScreen(
     viewPrefs: android.content.SharedPreferences? = null,
 ) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
+    // Settings in a few groups, each on its own page, so nothing is far down a long list. Back returns to the groups.
+    var group by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf<String?>(null) }
+    androidx.activity.compose.BackHandler(enabled = group != null) { group = null }
+    val groups = listOf(
+        "games" to ("Games and library" to "Game folders and network drives, ES-DE collections, texture packs, scanning, the Retro and PC tabs."),
+        "playing" to ("Playing" to "The built-in player, saves and backups, emulator apps, dual screens, GPU drivers, RetroArch hotkeys."),
+        "covers" to ("Covers" to "SteamGridDB and ScreenScraper accounts for box art."),
+        "looks" to ("Looks and sounds" to "Themes, interface sounds, Android apps and the home screen."),
+        "help" to ("Help and about" to "How to use RetroForge, set up, check my setup, report a problem, about, licences."),
+    )
 
-    ScreenFrame(title = "Settings") {
-        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenTutorial) {
-            CardTitle("How to use RetroForge")
-            CardBody("A short guide to every feature: playing, emulators, hotkeys, covers, playlists, the ROM Manager and more.")
-            CardBody("With a controller: D-pad to move, A to select, B to go back, L1/R1 to switch tabs.")
-        }
-
-        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenAbout) {
-            CardTitle("About RetroForge")
-            CardBody("Version ${BuildConfig.VERSION_NAME}, made by Darren Glancy.")
-            CardBody("Who made it, what RetroForge does, and what the name stands for (sort of).")
-        }
-
-        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenCheck) {
-            CardTitle("Check my setup")
-            CardBody("Every system you have games for, checked: emulator ready, BIOS in place, games found. Problems first.")
-        }
-
-        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSetup) {
-            CardTitle("Set up RetroForge")
-            CardBody("Your games folder, the emulators your systems need (downloaded for you) and your BIOS files.")
-        }
-
-        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenThemes) {
-            CardTitle("Themes")
-            CardBody("Colours, shapes, type and game-list layout, with previews. Brightness: ${settings.themeMode.name.lowercase()}. Import your own, or a theme's colours from another frontend.")
-        }
-
-        FocusCard(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = { viewModel.setShowPcSection(!settings.showPcSection) },
-        ) {
-            CardTitle("Show PC section")
-            StatusPill(if (settings.showPcSection) "On" else "Off", if (settings.showPcSection) StatusTone.GOOD else StatusTone.NEUTRAL)
-            CardBody("Hide the PC section if you only play retro games or this device cannot run PC games.")
-        }
-
-        SteamGridDbKeyCard(settings.steamGridDbKey, viewModel::setSteamGridDbKey)
-
-        ScreenScraperCard(settings.screenScraperUser, viewModel::setScreenScraperLogin)
-
-        viewPrefs?.let { prefs ->
-            var showAll by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SHOW_ALL_SYSTEMS, false)) }
-            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
-                showAll = !showAll
-                prefs.edit().putBoolean(com.retroforge.app.ui.library.LibraryViewModel.SHOW_ALL_SYSTEMS, showAll).apply()
-            }) {
-                CardTitle("Retro tab: show systems without games")
-                StatusPill(if (showAll) "On" else "Off", if (showAll) StatusTone.GOOD else StatusTone.NEUTRAL)
-                CardBody("Off: the Retro tab shows only the systems you have games for. On: every system RetroForge knows, for browsing.")
+    ScreenFrame(title = groups.firstOrNull { it.first == group }?.second?.first ?: "Settings") {
+        if (group == null) {
+            groups.forEach { (id, text) ->
+                FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { group = id }) {
+                    CardTitle(text.first)
+                    CardBody(text.second)
+                }
             }
-            var sounds by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.UI_SOUNDS, true)) }
-            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
-                sounds = !sounds
-                prefs.edit().putBoolean(com.retroforge.app.UI_SOUNDS, sounds).apply()
-                com.retroforge.core.ui.UiSounds.enabled = sounds
-            }) {
-                CardTitle("Interface sounds")
-                StatusPill(if (sounds) "On" else "Off", if (sounds) StatusTone.GOOD else StatusTone.NEUTRAL)
-                CardBody("A soft tick when moving with a controller or remote, and a chime when selecting or going back.")
+            return@ScreenFrame
+        }
+        FocusChip("‹ All settings", onClick = { group = null })
+        when (group) {
+            "games" -> {
+                com.retroforge.app.ui.NetworkDrivesCard("Games", onUse = library?.let { lib ->
+                    { uri ->
+                        val root = lib.addFolderAndWait(uri)
+                        when {
+                            root == null -> "Added. It's still scanning: see Retro → Game folders for progress."
+                            root.gameCount == 0 -> "Added ${root.name}, but no games were found. Pick the folder holding your system folders (snes, psx …)."
+                            else -> "Added ${root.name}: ${root.gameCount} game${if (root.gameCount == 1) "" else "s"} found. They're in the Retro tab now."
+                        }
+                    }
+                })
+
+                library?.let { EsdeImportCard(it) }
+
+                FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenTexturePacks) {
+                    CardTitle("Texture packs")
+                    CardBody("High-resolution textures for N64 and PSP games: download free N64 packs, or add your own. Select to open.")
+                }
+
+                viewPrefs?.let { prefs ->
+                    var scanOnStart by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, true)) }
+                    FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
+                        scanOnStart = !scanOnStart
+                        prefs.edit().putBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, scanOnStart).apply()
+                    }) {
+                        CardTitle("Look for new games when RetroForge starts")
+                        StatusPill(if (scanOnStart) "On" else "Off", if (scanOnStart) StatusTone.GOOD else StatusTone.NEUTRAL)
+                        CardBody("Rescans your game folders in the background each time the app opens, so games you add show up by themselves.")
+                    }
+                    var showAll by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SHOW_ALL_SYSTEMS, false)) }
+                    FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
+                        showAll = !showAll
+                        prefs.edit().putBoolean(com.retroforge.app.ui.library.LibraryViewModel.SHOW_ALL_SYSTEMS, showAll).apply()
+                    }) {
+                        CardTitle("Retro tab: show systems without games")
+                        StatusPill(if (showAll) "On" else "Off", if (showAll) StatusTone.GOOD else StatusTone.NEUTRAL)
+                        CardBody("Off: the Retro tab shows only the systems you have games for. On: every system RetroForge knows, for browsing.")
+                    }
+                }
+                FocusCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { viewModel.setShowPcSection(!settings.showPcSection) },
+                ) {
+                    CardTitle("Show PC section")
+                    StatusPill(if (settings.showPcSection) "On" else "Off", if (settings.showPcSection) StatusTone.GOOD else StatusTone.NEUTRAL)
+                    CardBody("Hide the PC section if you only play retro games or this device cannot run PC games.")
+                }
+
             }
-            var scanOnStart by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, true)) }
-            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
-                scanOnStart = !scanOnStart
-                prefs.edit().putBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, scanOnStart).apply()
-            }) {
-                CardTitle("Look for new games when RetroForge starts")
-                StatusPill(if (scanOnStart) "On" else "Off", if (scanOnStart) StatusTone.GOOD else StatusTone.NEUTRAL)
-                CardBody("Rescans your game folders in the background each time the app opens, so games you add show up by themselves.")
+            "playing" -> {
+                coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames, library) }
+
+                EmulatorAppsCard()
+
+                viewPrefs?.let { DualScreenCard(it) }
+
+                FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenGpu) {
+                    CardTitle("GPU and drivers")
+                    CardBody("See which graphics chip this device has, and download custom Turnip drivers for emulators like Eden, Dolphin and NetherSX2 (Snapdragon only).")
+                }
+
+                HotkeysCard(settings.retroArchHotkeys, HotkeyCombo.of(settings.menuCombo), HotkeyCombo.of(settings.quitCombo), viewModel::setRetroArchHotkeys, onOpenHotkeys)
+                if (settings.retroArchHotkeys) {
+                    FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.setFastForwardOnR2(!settings.fastForwardOnR2) }) {
+                        CardTitle("Hold R2 to fast-forward")
+                        StatusPill(if (settings.fastForwardOnR2) "On" else "Off", if (settings.fastForwardOnR2) StatusTone.GOOD else StatusTone.NEUTRAL)
+                        CardBody("For systems whose controllers had no R2 (Game Boy, GBA, NES, SNES, Mega Drive …): skip through slow dialogue. Select to switch.")
+                    }
+                }
+
+            }
+            "covers" -> {
+                SteamGridDbKeyCard(settings.steamGridDbKey, viewModel::setSteamGridDbKey)
+
+                ScreenScraperCard(settings.screenScraperUser, viewModel::setScreenScraperLogin)
+
+            }
+            "looks" -> {
+                FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenThemes) {
+                    CardTitle("Themes")
+                    CardBody("Colours, shapes, type and game-list layout, with previews. Brightness: ${settings.themeMode.name.lowercase()}. Import your own, or a theme's colours from another frontend.")
+                }
+
+                viewPrefs?.let { prefs ->
+                    var sounds by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.UI_SOUNDS, true)) }
+                    FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
+                        sounds = !sounds
+                        prefs.edit().putBoolean(com.retroforge.app.UI_SOUNDS, sounds).apply()
+                        com.retroforge.core.ui.UiSounds.enabled = sounds
+                    }) {
+                        CardTitle("Interface sounds")
+                        StatusPill(if (sounds) "On" else "Off", if (sounds) StatusTone.GOOD else StatusTone.NEUTRAL)
+                        CardBody("A soft tick when moving with a controller or remote, and a chime when selecting or going back.")
+                    }
+                }
+                FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenApps) {
+                    CardTitle("Android apps and home screen")
+                    CardBody("Open your other apps and Android's settings, and make RetroForge the device's home screen (for handhelds and TV boxes).")
+                }
+
+            }
+            else -> {
+                FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenTutorial) {
+                    CardTitle("How to use RetroForge")
+                    CardBody("A short guide to every feature: playing, emulators, hotkeys, covers, playlists, the ROM Manager and more.")
+                    CardBody("With a controller: D-pad to move, A to select, B to go back, L1/R1 to switch tabs.")
+                }
+
+                FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenAbout) {
+                    CardTitle("About RetroForge")
+                    CardBody("Version ${BuildConfig.VERSION_NAME}, made by Darren Glancy.")
+                    CardBody("Who made it, what RetroForge does, and what the name stands for (sort of).")
+                }
+
+                FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenCheck) {
+                    CardTitle("Check my setup")
+                    CardBody("Every system you have games for, checked: emulator ready, BIOS in place, games found. Problems first.")
+                }
+
+                FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSetup) {
+                    CardTitle("Set up RetroForge")
+                    CardBody("Your games folder, the emulators your systems need (downloaded for you) and your BIOS files.")
+                }
+
+                FocusCard(modifier = Modifier.fillMaxWidth()) {
+                    CardTitle("Games, BIOS and the law")
+                    legalNoticeParagraphs.forEach { CardBody(it) }
+                }
+
+                SupportCard()
+                ReportProblemCard()
+                ChipRow {
+                    FocusChip("Licences", onClick = onOpenLicences)
+                    FocusChip("Privacy", onClick = onOpenPrivacy)
+                }
+
             }
         }
-
-        viewPrefs?.let { DualScreenCard(it) }
-
-        library?.let { EsdeImportCard(it) }
-
-        com.retroforge.app.ui.NetworkDrivesCard("Games")
-
-        TexturePacksCard(LocalContext.current.getExternalFilesDir(null) ?: LocalContext.current.filesDir)
-
-        coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames, library) }
-
-        EmulatorAppsCard()
-
-        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenApps) {
-            CardTitle("Android apps and home screen")
-            CardBody("Open your other apps and Android's settings, and make RetroForge the device's home screen (for handhelds and TV boxes).")
-        }
-
-        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenGpu) {
-            CardTitle("GPU and drivers")
-            CardBody("See which graphics chip this device has, and download custom Turnip drivers for emulators like Eden, Dolphin and NetherSX2 (Snapdragon only).")
-        }
-
-        HotkeysCard(settings.retroArchHotkeys, HotkeyCombo.of(settings.menuCombo), HotkeyCombo.of(settings.quitCombo), viewModel::setRetroArchHotkeys, onOpenHotkeys)
-        if (settings.retroArchHotkeys) {
-            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.setFastForwardOnR2(!settings.fastForwardOnR2) }) {
-                CardTitle("Hold R2 to fast-forward")
-                StatusPill(if (settings.fastForwardOnR2) "On" else "Off", if (settings.fastForwardOnR2) StatusTone.GOOD else StatusTone.NEUTRAL)
-                CardBody("For systems whose controllers had no R2 (Game Boy, GBA, NES, SNES, Mega Drive …): skip through slow dialogue. Select to switch.")
-            }
-        }
-
-        FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Games, BIOS and the law")
-            legalNoticeParagraphs.forEach { CardBody(it) }
-        }
-
-        SupportCard()
-        ReportProblemCard()
-        ChipRow {
-            FocusChip("Licences", onClick = onOpenLicences)
-            FocusChip("Privacy", onClick = onOpenPrivacy)
-        }
-
     }
 }
 

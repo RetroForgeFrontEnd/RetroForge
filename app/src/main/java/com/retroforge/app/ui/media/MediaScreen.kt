@@ -121,7 +121,12 @@ fun MediaScreen(prefs: SharedPreferences) {
             key = new
             refresh++
         }
-        com.retroforge.app.ui.NetworkDrivesCard("Films")
+        com.retroforge.app.ui.NetworkDrivesCard("Films", onUse = { uri ->
+            prefs.edit().putString(FOLDER, uri.toString()).apply()
+            folder = uri.toString()
+            val count = withContext(Dispatchers.IO) { runCatching { scan(context, uri).size }.getOrDefault(0) }
+            if (count == 0) "Added, but no films were found there." else "Added: $count film${if (count == 1) "" else "s"} found. They're above."
+        })
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("Coming next")
             CardBody("Plex servers.")

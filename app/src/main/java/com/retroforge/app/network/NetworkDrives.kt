@@ -17,6 +17,8 @@ import org.json.JSONObject
 import java.util.EnumSet
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 
 /** A shared folder on a PC or NAS (SMB 2/3). The password stays in RetroForge's private storage on this device. */
 data class NetworkShare(
@@ -48,6 +50,10 @@ object NetworkDrives {
     private const val KEY = "shares"
 
     fun authority(context: Context) = "${context.packageName}.network"
+
+    /** A share as a folder RetroForge can add to its games or films without the folder picker (it's RetroForge's own). */
+    fun folderUri(context: Context, share: NetworkShare): android.net.Uri =
+        DocumentsContract.buildTreeDocumentUri(authority(context), "${share.id}/")
 
     fun all(context: Context): List<NetworkShare> {
         val text = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY, null) ?: return emptyList()
@@ -102,12 +108,53 @@ object NetworkDrives {
         val host = share.host.substringBefore(':')
         val port = share.host.substringAfter(':', "").toIntOrNull()
         val connection = if (port != null) client.connect(host, port) else client.connect(host)
-        val auth = if (share.user.isBlank()) AuthenticationContext.guest()
-        else AuthenticationContext(share.user, share.password.toCharArray(), share.domain.ifBlank { null })
-        val disk = connection.authenticate(auth).connectShare(share.shareName) as? DiskShare
+        // No username: a guest login, then an anonymous one (many NAS drives allow one or the other).
+        val logins = if (share.user.isBlank()) listOf(AuthenticationContext.guest(), AuthenticationContext.anonymous())
+        else listOf(AuthenticationContext(share.user, share.password.toCharArray(), share.domain.ifBlank { null }))
+        var failure: Exception? = null
+        val session = logins.firstNotNullOfOrNull { auth ->
+            runCatching { connection.authenticate(auth) }.onFailure { failure = it as? Exception }.getOrNull()
+        } ?: throw java.io.IOException(explain(failure, share), failure)
+        val disk = session.connectShare(share.shareName) as? DiskShare
             ?: throw java.io.IOException("${share.shareName} isn't a shared folder")
         open[share.id] = disk
         return disk
+    }
+
+    /** Windows' sign-in refusals in words people know, with what to do. */
+    private fun explain(e: Exception?, share: NetworkShare): String {
+        val m = e?.message.orEmpty()
+        return when {
+            "ACCOUNT_DISABLED" in m && share.user.isBlank() ->
+                "This computer doesn't allow guests (Windows switches its Guest account off). Enter the username and " +
+                    "password you sign in to that computer with."
+            "LOGON_FAILURE" in m || "WRONG_PASSWORD" in m -> "The username or password wasn't accepted by ${share.host}."
+            "ACCOUNT_RESTRICTION" in m -> "That account has no password, and Windows won't share with it over the network. " +
+                "Give the account a password, or use another one."
+            else -> m.ifBlank { "Couldn't sign in." }
+        }
+    }
+
+    /**
+     * The folders [host] shares (not Windows' hidden admin shares like C$), signing in with [user] and [password]
+     * (guest, then anonymous, when [user] is blank), so people pick a folder instead of typing its name.
+     */
+    fun sharedFolders(host: String, user: String, password: String): List<String> {
+        val probe = NetworkShare("probe", "", host, "IPC$", user, password)
+        val address = host.substringBefore(':')
+        val port = host.substringAfter(':', "").toIntOrNull()
+        val connection = if (port != null) client.connect(address, port) else client.connect(address)
+        connection.use {
+            val logins = if (user.isBlank()) listOf(AuthenticationContext.guest(), AuthenticationContext.anonymous())
+            else listOf(AuthenticationContext(user, password.toCharArray(), null))
+            var failure: Exception? = null
+            val session = logins.firstNotNullOfOrNull { auth ->
+                runCatching { connection.authenticate(auth) }.onFailure { failure = it as? Exception }.getOrNull()
+            } ?: throw java.io.IOException(explain(failure, probe), failure)
+            val transport = com.rapid7.client.dcerpc.transport.SMBTransportFactories.SRVSVC.getTransport(session)
+            return com.rapid7.client.dcerpc.mssrvs.ServerService(transport).shares0.map { it.netName }
+                .filter { !it.endsWith("$") }.sortedBy { it.lowercase() }
+        }
     }
 
     /** Checks the share can be opened and read; returns how many entries its top holds. */
@@ -133,4 +180,48 @@ object NetworkDrives {
     fun openRead(share: NetworkShare, path: String): File = connect(share).openFile(
         smbPath(share, path), EnumSet.of(AccessMask.GENERIC_READ), null, SMB2ShareAccess.ALL, SMB2CreateDisposition.FILE_OPEN, null,
     )
+}
+
+/** A computer on the local network that shares files (answers on SMB's port 445). */
+data class FoundComputer(val address: String, val name: String?)
+
+/** Finds computers sharing files on the same Wi-Fi network, so nobody has to know their PC's address. */
+object NetworkSearch {
+    /**
+     * Every address on the networks this device is on (Wi-Fi, Ethernet, USB tethering: each one's /24) that accepts SMB
+     * connections, with its name where known.
+     */
+    suspend fun find(context: Context): List<FoundComputer> = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+        val own = ownAddresses()
+        if (own.isEmpty()) return@withContext emptyList()
+        val gate = kotlinx.coroutines.sync.Semaphore(32)
+        kotlinx.coroutines.coroutineScope {
+            own.map { it.substringBeforeLast('.') }.distinct().flatMap { prefix -> (1..254).map { "$prefix.$it" } }.filter { it !in own }.map { address ->
+                async {
+                    gate.acquire()
+                    try {
+                        // The gateway (".1", or ".2" on the Android emulator, where it's the PC itself) gets longer to answer.
+                        val patient = address.endsWith(".1") || address.endsWith(".2")
+                        if (!answers(address, if (patient) 1500 else 700)) null
+                        else FoundComputer(address, runCatching { java.net.InetAddress.getByName(address).canonicalHostName }
+                            .getOrNull()?.takeIf { it != address }?.substringBefore('.'))
+                    } finally {
+                        gate.release()
+                    }
+                }
+            }.awaitAll().filterNotNull()
+        }
+    }
+
+    private fun answers(address: String, timeoutMs: Int): Boolean = runCatching {
+        java.net.Socket().use { it.connect(java.net.InetSocketAddress(address, 445), timeoutMs) }
+        true
+    }.getOrDefault(false)
+
+    /** This device's local IPv4 addresses on every network interface that's up (not loopback or link-local). */
+    private fun ownAddresses(): List<String> = runCatching {
+        java.net.NetworkInterface.getNetworkInterfaces().toList().filter { it.isUp && !it.isLoopback }
+            .flatMap { it.inetAddresses.toList() }.filterIsInstance<java.net.Inet4Address>()
+            .filter { !it.isLinkLocalAddress && it.isSiteLocalAddress }.mapNotNull { it.hostAddress }
+    }.getOrDefault(emptyList())
 }

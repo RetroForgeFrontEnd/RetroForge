@@ -138,6 +138,20 @@ class LibraryScannerTest {
     }
 
     @Test
+    fun systemFoldersOneLevelDownAreFound() {
+        // A PC's "Games" share holding a collection folder, as on a network drive.
+        val result = scanner.scan(
+            dir("Games", dir("Ps Vita"), dir("RetroForge test", dir("snes", file("Super Mario World (USA).zip")), dir("psx", file("Batman Forever (USA).chd")))),
+        )
+        assertEquals(RootLayout.COLLECTION, result.layout)
+        assertEquals(
+            listOf("RetroForge test/psx/Batman Forever (USA).chd", "RetroForge test/snes/Super Mario World (USA).zip"),
+            result.games.map { it.relativePath }.sorted(),
+        )
+        assertTrue(result.problems.isEmpty()) // the nested system folders' zip and chd aren't "loose" too
+    }
+
+    @Test
     fun foldersNamedLikeGamesAreOneGameAndNotEntered() {
         val result = scanner.scan(
             dir(
