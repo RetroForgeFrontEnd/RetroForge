@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
 import com.retroforge.library.BiosNeed
+import com.retroforge.library.BiosReport
 import com.retroforge.library.BiosStatus
 import com.retroforge.retro.RetroArchLauncher
 
@@ -157,6 +158,7 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, onDone: 
         bios.error?.let { CardBody(it) }
         bios.reports?.let { reports ->
             if (reports.isEmpty()) CardBody("None of the systems in your library need BIOS files.")
+            else BiosSummary(reports, viewModel::systemName)
             reports.forEach { report ->
                 FocusCard(modifier = Modifier.fillMaxWidth()) {
                     CardTitle(report.rule.systems.joinToString(" / ") { viewModel.systemName(it) })
@@ -227,6 +229,39 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, onDone: 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.finish(); onDone() }) {
             CardTitle("Done")
             CardBody("You can skip any step and come back later from Settings → Set up RetroForge.")
+        }
+    }
+}
+
+/** What the check found, at a glance: every BIOS your games need, or which systems still lack one and the file. */
+@Composable
+private fun BiosSummary(reports: List<BiosReport>, systemName: (String) -> String) {
+    val missing = reports.filter { it.rule.need == BiosNeed.REQUIRED && (it.status == BiosStatus.MISSING || it.status == BiosStatus.PARTIAL) }
+    val optional = reports.count { it.rule.need != BiosNeed.REQUIRED && it.status == BiosStatus.MISSING }
+    val names = { r: BiosReport -> r.rule.systems.joinToString(" / ") { systemName(it) } }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    // A short message when the check finishes, which can take minutes on a network drive.
+    androidx.compose.runtime.LaunchedEffect(reports) {
+        val text = if (missing.isEmpty()) "BIOS check done: you have every BIOS your games need."
+        else "BIOS check done: ${missing.size} system${if (missing.size == 1) "" else "s"} missing a BIOS."
+        android.widget.Toast.makeText(context, text, android.widget.Toast.LENGTH_LONG).show()
+    }
+    FocusCard(modifier = Modifier.fillMaxWidth()) {
+        if (missing.isEmpty()) {
+            CardTitle("You have every BIOS your games need") { StatusPill("All found", StatusTone.GOOD) }
+            CardBody(
+                if (optional == 0) "Every system in your library has what it needs."
+                else "$optional optional one${if (optional == 1) "" else "s"} would make some systems more accurate; see below.",
+            )
+        } else {
+            CardTitle("Missing BIOS for ${missing.size} system${if (missing.size == 1) "" else "s"}") { StatusPill("Missing", StatusTone.BAD) }
+            CardBody("Games for these won't start in the built-in player until the BIOS is in your BIOS folder:")
+            missing.forEach { r ->
+                val files = if (r.status == BiosStatus.PARTIAL) r.missing.map { it.baseName }
+                else if (r.rule.mode == "any" && r.rule.files.size > 4) listOf("one BIOS file, any version")
+                else r.rule.files.map { it.baseName }
+                CardBody("• ${names(r)}: ${files.joinToString(if (r.rule.mode == "any") " or " else ", ")}")
+            }
         }
     }
 }
