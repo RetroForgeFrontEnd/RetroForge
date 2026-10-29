@@ -26,7 +26,11 @@ class NetworkDrivesProvider : DocumentsProvider() {
 
     private val reader by lazy { HandlerThread("network-drives").apply { start() } }
 
-    override fun onCreate() = true
+    override fun onCreate(): Boolean {
+        // Lets NetworkDrives save a share's new address when its PC moves (see NetworkDrives.connect).
+        NetworkDrives.appContext = context?.applicationContext
+        return true
+    }
 
     private fun share(documentId: String) =
         NetworkDrives.byId(context!!, documentId.substringBefore('/')) ?: throw FileNotFoundException("That network drive was removed")

@@ -101,10 +101,54 @@ object NetworkDrives {
     }
     private val open = mutableMapOf<String, DiskShare>()
 
-    /** An open connection to [share], made (or made again) when needed. */
+    /** For saving a share's new address when its PC has moved; set by [NetworkDrivesProvider]. */
+    @Volatile var appContext: Context? = null
+
+    /**
+     * An open connection to [share], made (or made again) when needed. When its PC doesn't answer at the saved address
+     * (it got a new one from the router, or the phone moved from the PC's USB tethering to Wi-Fi), the PC is looked
+     * for again on the network and the new address is saved, so games and films keep working.
+     */
     @Synchronized
     fun connect(share: NetworkShare): DiskShare {
         open[share.id]?.let { if (it.isConnected) return it else runCatching { it.close() } }
+        return try {
+            openDisk(share)
+        } catch (e: Exception) {
+            if (!unreachable(e)) throw e
+            val moved = relocate(share) ?: throw java.io.IOException(
+                "Can't reach ${share.address}. Is the PC switched on and on the same network as this device?", e,
+            )
+            // relocate() opened it while checking.
+            open[share.id]?.takeIf { it.isConnected } ?: openDisk(moved)
+        }
+    }
+
+    private fun unreachable(e: Throwable): Boolean = generateSequence(e) { it.cause }.any {
+        it is java.net.ConnectException || it is java.net.SocketTimeoutException || it is java.net.NoRouteToHostException ||
+            it is java.net.UnknownHostException
+    }
+
+    /** The PC that now has [share]'s folder: computers on the network sharing files, tried for the same folder. */
+    private fun relocate(share: NetworkShare): NetworkShare? {
+        val context = appContext ?: return null
+        val port = share.host.substringAfter(':', "").takeIf { it.isNotEmpty() }?.let { ":$it" }.orEmpty()
+        val computers = kotlinx.coroutines.runBlocking { NetworkSearch.find(context) }
+            .filter { it.address != share.host.substringBefore(':') }
+        // The PC with the share's own name first (it's named after the computer when added from the search).
+        val ordered = computers.sortedByDescending { c -> c.name != null && share.name.contains(c.name, ignoreCase = true) }
+        for (computer in ordered) {
+            val moved = share.copy(host = computer.address + port)
+            val works = runCatching { openDisk(moved).list(smbPath(moved, "")) }.isSuccess
+            if (works) {
+                save(context, moved)
+                return moved
+            }
+        }
+        return null
+    }
+
+    private fun openDisk(share: NetworkShare): DiskShare {
         val host = share.host.substringBefore(':')
         val port = share.host.substringAfter(':', "").toIntOrNull()
         val connection = if (port != null) client.connect(host, port) else client.connect(host)

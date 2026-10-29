@@ -291,6 +291,10 @@ object PlayerCores {
         "flycast" -> mapOf("reicast_device_port1_slot1" to "VMU", "reicast_per_content_vmus" to "VMU A1")
         // Commodore disks load at warp speed (a C64 drive is very slow), then the game runs at normal speed.
         "vice_x64sc", "vice_x128", "vice_xplus4", "vice_xvic", "vice_xpet" -> mapOf("vice_autoloadwarp" to "enabled")
+        // Citra's hardware shaders need geometry shaders, which phones running OpenGL ES through ANGLE (Samsung's
+        // Xclipse GPUs) can't compile: "Geometry shader is not compiled", then Citra stops. Its software shaders work
+        // everywhere, a little slower. Vulkan rendering (planned) lets Citra use its own Vulkan renderer instead.
+        "citra" -> mapOf("citra_use_hw_shaders" to "disabled", "citra_use_acc_geo_shaders" to "disabled")
         else -> emptyMap()
     }
 
