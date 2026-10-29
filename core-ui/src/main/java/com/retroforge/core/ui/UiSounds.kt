@@ -19,7 +19,7 @@ object UiSounds {
     fun init(context: Context) {
         if (pool != null) return
         val attributes = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION)
+            .setUsage(AudioAttributes.USAGE_GAME) // media volume: phones often silence system sounds
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build()
         pool = SoundPool.Builder().setMaxStreams(3).setAudioAttributes(attributes).build().also {
