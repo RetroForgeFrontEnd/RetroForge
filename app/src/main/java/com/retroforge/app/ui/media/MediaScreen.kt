@@ -211,7 +211,8 @@ private fun play(context: Context, film: Film) {
         Intent(context, VideoActivity::class.java)
             .putExtra(VideoActivity.EXTRA_URI, film.uri)
             .putExtra(VideoActivity.EXTRA_TITLE, film.title)
-            .putExtra(VideoActivity.EXTRA_3D, film.is3d),
+            .putExtra(VideoActivity.EXTRA_3D, film.is3d)
+            .putExtra(VideoActivity.EXTRA_FILE_NAME, film.fileName),
     )
 }
 
