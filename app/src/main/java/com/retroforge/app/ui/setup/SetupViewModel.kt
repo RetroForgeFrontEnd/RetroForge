@@ -22,6 +22,7 @@ import com.retroforge.retro.RetroArchCores
 import com.retroforge.retro.RetroArchInstall
 import com.retroforge.retro.RetroArchLauncher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -88,6 +89,13 @@ class SetupViewModel(
 
     private val _bios = MutableStateFlow(BiosState())
     val bios: StateFlow<BiosState> = _bios.asStateFlow()
+
+    /** Games outside a folder for their system (loose in the roms folder): setup offers to sort them. */
+    suspend fun looseGames(): Int = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+        library.roots.first().filter { it.layout != "SINGLE_SYSTEM" }.sumOf { root ->
+            library.gamesIn(root.id).count { g -> g.relativePath.split('/').dropLast(1).none { library.rules.forFolder(it)?.id == g.system } }
+        }
+    }
 
     fun refresh() {
         _retroArch.value = retroArch.findInstall()

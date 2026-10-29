@@ -240,9 +240,13 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
     val chosen by viewModel.chosenCovers.collectAsStateWithLifecycle()
     var filter by remember { mutableStateOf("") }
     var hideCopies by remember { mutableStateOf(false) }
-    val shown = remember(games, filter, hideCopies) {
+    // Two tabs when the system has ROM hacks: the original games, and the hacks on their own.
+    var showHacks by remember(system) { mutableStateOf(false) }
+    val hackCount = games.orEmpty().count { it.isHack }
+    val shown = remember(games, filter, hideCopies, showHacks) {
         val seenCopies = mutableSetOf<String>()
         games.orEmpty()
+            .filter { hackCount == 0 || it.isHack == showHacks }
             .filter { filter.isBlank() || it.title.contains(filter.trim(), ignoreCase = true) }
             .filter { g -> !hideCopies || g.duplicateKey == null || seenCopies.add(g.duplicateKey!!) }
     }
@@ -258,8 +262,14 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
         item(span = { GridItemSpan(maxLineSpan) }) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(viewModel.systemName(system), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
+                if (hackCount > 0) {
+                    androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        FocusChip((if (!showHacks) "● " else "") + "Games (${games.orEmpty().size - hackCount})", onClick = { showHacks = false })
+                        FocusChip((if (showHacks) "● " else "") + "ROM hacks ($hackCount)", onClick = { showHacks = true })
+                    }
+                }
                 if (games == null) LinearProgressIndicator(Modifier.fillMaxWidth())
-                else CardBody("${shown.size} of ${games!!.size} games")
+                else CardBody("${shown.size} of ${if (hackCount == 0) games!!.size else if (showHacks) hackCount else games!!.size - hackCount} ${if (showHacks) "hacks" else "games"}")
                 ControllerTextField(value = filter, onValueChange = { filter = it }, singleLine = true, label = { Text("Filter") }, modifier = Modifier.fillMaxWidth())
                 SystemCoverBatch(viewModel, system, games.orEmpty(), chosen)
                 if (games.orEmpty().any { it.duplicateKey != null }) {

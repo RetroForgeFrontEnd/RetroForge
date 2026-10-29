@@ -125,6 +125,7 @@ private const val GAME_ROUTE = "retro/game/{id}"
 private const val COVER_ROUTE = "retro/game/{id}/cover"
 private const val EDIT_ROUTE = "retro/game/{id}/edit"
 private const val MANAGER_ROUTE = "retro/manager"
+private const val MANAGER_SORT_ROUTE = "retro/manager/sort"
 private const val PLAYLIST_ROUTE = "retro/playlist/{id}"
 private const val MANAGER_DELETE_ROUTE = "retro/manager/delete/{id}"
 
@@ -234,6 +235,11 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                             val managerViewModel: RomManagerViewModel = viewModel(factory = RomManagerViewModel.factory(container.library, container.romManager))
                             RomManagerScreen(managerViewModel)
                         }
+                        composable(MANAGER_SORT_ROUTE) {
+                            val managerViewModel: RomManagerViewModel = viewModel(factory = RomManagerViewModel.factory(container.library, container.romManager))
+                            LaunchedEffect(Unit) { managerViewModel.tab.value = com.retroforge.app.ui.manager.ManagerTab.SORT }
+                            RomManagerScreen(managerViewModel)
+                        }
                         composable(MANAGER_DELETE_ROUTE) { entry ->
                             val managerViewModel: RomManagerViewModel = viewModel(factory = RomManagerViewModel.factory(container.library, container.romManager))
                             RomManagerScreen(managerViewModel, deleteGameId = entry.arguments?.getString("id")?.toLongOrNull() ?: -1)
@@ -242,7 +248,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                             val setupViewModel: SetupViewModel = viewModel(
                                 factory = SetupViewModel.factory(container.library, container.retroArch, container.settings, container.contentResolver, container.playerSystemDir, container.cores),
                             )
-                            SetupScreen(setupViewModel, onDone = {
+                            SetupScreen(setupViewModel, onOpenSort = { nav.navigate(MANAGER_SORT_ROUTE) }, onDone = {
                                 // Take setup off the stack first, or Home's saved stack would bring it back.
                                 nav.popBackStack(SETUP_ROUTE, inclusive = true)
                                 nav.goTo(Section.RETRO)

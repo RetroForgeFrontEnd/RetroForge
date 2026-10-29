@@ -45,7 +45,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Key art on Home | ✅ |
 | In-game menu by swiping from the edges (cheats, shaders, controllers, GPU drivers) | ✅ edge swipe, cheats, filters, emulator settings, switch emulator; ✅ Remap buttons page (controller and on-screen, per system; tested); GPU drivers: Turnip downloads for other apps |
 | Feature parity with RetroBat, Batocera, ES-DE, Daijisho, NeoStation, Socket, Cocoon | ✅ [comparison](feature-parity-comparison.md); gaps: video previews, UI sounds, dual screen, RetroAchievements, playtime |
-| Setup clean-up: offer to reorganise a roms folder | ❌ |
+| Setup clean-up: offer to reorganise a roms folder | ✅ Set up RetroForge shows "Tidy your games folder?" when games sit outside their system folder, and opens ROM Manager → Sort (preview first, undo in History). Tested on the emulator |
 | Test the PC side (TCG Card Shop Simulator) | ✅ boots in GameNative on the S22 |
 | GameNative for non-Steam games, no user setup | 🟡 tested by hand; ❌ can't be fully automatic (Android needs the user to confirm installs) |
 | Test on the phone; install RetroArch | ✅ |
@@ -153,3 +153,5 @@ Requests that were never fully done, or only answered:
 | Final Burn should be FB Neo | ✅ |
 | System names: Master System not "Master System - Mark III", and the like | ✅ 34 names shortened (Master System, Mega Drive, NES, SNES, CPS1–3, PlayStation 2–4, Game & Watch …). Fixed: Ghostship had Starship's id (a slip in RetroBat's list); now its own |
 | Download texture packs directly | ✅ Settings → Download N64 texture packs: GhostlyDark's free packs (SM64, MK64, Smash Bros., Majora's Mask, Ocarina of Time) from GitHub, unpacked where the N64 emulator looks and switched on automatically. PSP packs: add a folder (no free direct source found) |
+
+| System list: a separate section for ROM hacks | ✅ each system has Games and ROM hacks tabs when it has hacks (NES: 41 games, 30 hacks; tested on the emulator) |

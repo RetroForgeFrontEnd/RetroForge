@@ -40,7 +40,7 @@ private val RETROARCH_SYSTEM_HINT: Uri =
     DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:RetroArch/system")
 
 @Composable
-fun SetupScreen(viewModel: SetupViewModel, onDone: () -> Unit) {
+fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, onDone: () -> Unit) {
     val summary by viewModel.summary.collectAsStateWithLifecycle()
     val install by viewModel.retroArchInstall.collectAsStateWithLifecycle()
     val bios by viewModel.bios.collectAsStateWithLifecycle()
@@ -64,6 +64,18 @@ fun SetupScreen(viewModel: SetupViewModel, onDone: () -> Unit) {
             } else {
                 StatusPill("${plural(s.games, "game")} in ${plural(s.cores.size + s.unsupported.size, "system")}", StatusTone.GOOD)
                 CardBody("Select to add another folder.")
+            }
+        }
+        // Tidy-up offer: games lying loose instead of in their system's folder.
+        val loose by androidx.compose.runtime.produceState(0, s?.games) { value = viewModel.looseGames() }
+        if (loose > 0) {
+            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSort) {
+                CardTitle("Tidy your games folder?")
+                StatusPill("${plural(loose, "game")} not in a system folder", StatusTone.CAUTION)
+                CardBody(
+                    "They play fine where they are. Other frontends (RetroArch, ES-DE, RetroBat) want each game in its system's " +
+                        "folder, though. Select to see them in the ROM Manager: it shows every move first, and History can undo it.",
+                )
             }
         }
 
