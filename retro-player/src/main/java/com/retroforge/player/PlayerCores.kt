@@ -308,8 +308,8 @@ object PlayerCores {
         // Citra's hardware shaders need geometry shaders, which phones running OpenGL ES through ANGLE (Samsung's
         // Xclipse GPUs) can't compile: "Geometry shader is not compiled", then Citra stops. Its software shaders work
         // everywhere, a little slower. Vulkan rendering (planned) lets Citra use its own Vulkan renderer instead.
-        // LRPS2's OpenGL renderer crashes compiling its shaders on ANGLE (Samsung Xclipse); paraLLEl-GS and Vulkan
-        // need Vulkan rendering in the player (planned). Its software renderer runs everywhere, using the phone's cores.
+        // LRPS2's OpenGL renderer crashes compiling its shaders on ANGLE (Samsung Xclipse), so it draws with Vulkan
+        // (graphicsOptions); its software renderer, for those who pick OpenGL, runs everywhere on the phone's cores.
         // Fastmem catches memory faults on purpose, which crashes inside an Android app process; off is a little slower.
         "pcsx2" -> mapOf("pcsx2_renderer" to "Software", "pcsx2_fastmem" to "disabled")
         // Dolphin's fastmem, like PCSX2's, catches memory faults on purpose and crashes inside an Android app process.
@@ -342,10 +342,10 @@ object PlayerCores {
     )
 
     /**
-     * Cores on Vulkan unless the user picks OpenGL: Dolphin's OpenGL crashes or draws garbage on Samsung's ANGLE-based
-     * driver (Exynos), while its Vulkan draws properly there.
+     * Cores on Vulkan unless the user picks OpenGL: on Samsung's ANGLE-based driver (Exynos) Dolphin's OpenGL crashes or
+     * draws garbage and LRPS2's crashes, while both draw properly with Vulkan.
      */
-    private val vulkanByDefault = setOf("dolphin")
+    private val vulkanByDefault = setOf("dolphin", "pcsx2")
 
     /** The user's pick, else Vulkan for [vulkanByDefault] and OpenGL for the rest (Vulkan is still experimental). */
     fun usesVulkan(coreId: String, choice: String?): Boolean =
