@@ -151,5 +151,5 @@ Requests that were never fully done, or only answered:
 | Direct ROM hack downloads | ✅ for hacks published on GitHub (A Link to the Past, Zelda 1, Zelda II Redux): Download and patch; romhacking.net refuses automated downloads |
 | Spelling across the app; ROM Manager capital M | ✅ every on-screen sentence spell-checked (no misspellings found); ROM Manager capitalised everywhere |
 | Final Burn should be FB Neo | ✅ |
-| System names: Master System not "Master System - Mark III", and the like | ✅ 34 names shortened (Master System, Mega Drive, NES, SNES, CPS1–3, PlayStation 2–4, Game & Watch …). Known: two systems share the id starship (Ghostship and Starship), to sort out |
+| System names: Master System not "Master System - Mark III", and the like | ✅ 34 names shortened (Master System, Mega Drive, NES, SNES, CPS1–3, PlayStation 2–4, Game & Watch …). Fixed: Ghostship had Starship's id (a slip in RetroBat's list); now its own |
 
