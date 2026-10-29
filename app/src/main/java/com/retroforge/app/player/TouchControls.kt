@@ -119,6 +119,14 @@ data class PadLayout(
                 listOf("L" to Pad.L, "R" to Pad.R),
             )
             "atari2600" -> PadLayout(listOf("Fire" to Pad.B))
+            // Vectrex (vecx): buttons 1-4 are libretro A, B, X, Y; laid out 1 left to 4 right, as on the real pad.
+            "vectrex" -> PadLayout(
+                listOf("1" to Pad.A, "2" to Pad.B, "3" to Pad.X, "4" to Pad.Y),
+                facePlaces = mapOf(Pad.A to Alignment.CenterStart, Pad.B to Alignment.BottomCenter, Pad.X to Alignment.TopCenter, Pad.Y to Alignment.CenterEnd),
+                hasSelect = false,
+            )
+            // Pokémon Mini (PokeMini): A, B, C (libretro R), Shake (libretro L); Power is Select.
+            "pokemini" -> PadLayout(listOf("C" to Pad.R, "B" to Pad.B, "A" to Pad.A), listOf("Shake" to Pad.L))
             // GameCube (Dolphin): B left, Y top, A bottom (the big one), X right; Z is R1; L/R are the analog triggers
             // (L2/R2); the C-stick is the right stick.
             "gamecube", "gc" -> PadLayout(
