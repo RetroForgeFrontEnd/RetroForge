@@ -132,7 +132,7 @@ Requests that were never fully done, or only answered:
 | Film info from IMDb | answered: scraping IMDb breaks its terms; TMDB (free) gives the same, plus an IMDb link later |
 | Android tab with every app | ✅ main tab (Android), with settings shortcuts and launcher mode |
 | Download ROM hacks directly in the app and apply them | ❌ (catalogue links to pages only) |
-| Texture packs for systems that support them | ❌ |
+| Texture packs for systems that support them | 🟡 N64 (Settings → Texture packs: copy a pack folder in, switched on automatically); not tested with a real pack; PSP not yet |
 | Setup: offer to reorganise a roms folder into RetroForge's structure | ✅ ROM Manager → Sort: loose games planned into their system folders (existing names kept), moved with permission, undo from History; tested move and undo |
 | Themes: Aurora (Xbox 360), ReLive, PS3/PS4/PS5 and current Xbox-style layouts | 🟡 8 layouts exist; not all of these looks |
 | Themes: fan-made console artwork from SteamGridDB | ❌ (canvas-es console art is used instead) |
@@ -140,7 +140,7 @@ Requests that were never fully done, or only answered:
 | Use RetroBat's per-system controller config files | ❌ (Remap buttons covers most of the need) |
 | A test function for every system and feature before release | ✅ Settings → Check my setup: every system's emulator, BIOS and games, problems first (tested); scripted boot test for development |
 | Dual screen for the app itself (not just DS games) | ❌ |
-| Migration from other frontends (ES-DE and others) | 🟡 reads their folders, gamelist.xml and theme colours; no settings/collections import |
+| Migration from other frontends (ES-DE and others) | ✅ folders, gamelist.xml, theme colours, and ES-DE custom collections → playlists (tested) |
 | Remove the name DroidDeck from the app but still use it | 🟡 RetroBat removed; DroidDeck is still named because users install it themselves |
 | Original Xbox / Xbox 360 | ❌ research: no libretro core; xemu Android is experimental |
 | Weekly bug reports on GitHub | 🟡 Report a problem built; needs the GitHub repository |

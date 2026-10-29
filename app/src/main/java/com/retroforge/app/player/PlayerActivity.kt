@@ -333,7 +333,10 @@ class PlayerActivity : ComponentActivity() {
             runOnUiThread { loadingDetail = null }
         }
         // The user's emulator settings for this core, then the ones that follow the screen's orientation.
-        val options = PlayerCores.defaultOptions(coreId) + savedOptions() + PlayerCores.orientationOptions(coreId, isLandscape())
+        // N64 texture packs (Settings → Texture packs) are used as soon as one is installed.
+        val texturePacks = if (coreId.startsWith("mupen64plus") && File(systemDir, "Mupen64plus/hires_texture").list().orEmpty().isNotEmpty())
+            mapOf("mupen64plus-txHiresEnable" to "True") else emptyMap()
+        val options = PlayerCores.defaultOptions(coreId) + texturePacks + savedOptions() + PlayerCores.orientationOptions(coreId, isLandscape())
         val error = NativePlayer.openCore(corePath, systemDir.path, savesDir.path, options.keys.toTypedArray(), options.values.toTypedArray())
         if (error != null) return fail(error)
         val info = NativePlayer.coreInfo()

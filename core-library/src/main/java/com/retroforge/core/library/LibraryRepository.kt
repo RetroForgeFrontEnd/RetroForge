@@ -59,6 +59,9 @@ class LibraryRepository(
     val favourites: Flow<List<GameEntity>> = dao.favouriteGames()
     val playlists: Flow<List<PlaylistSummary>> = dao.playlists()
     fun isFavourite(game: GameEntity): Flow<Boolean> = dao.isFavourite(game.rootId, game.relativePath)
+    /** Every game in one folder (for matching other frontends' lists). */
+    suspend fun gamesIn(rootId: Long): List<GameEntity> = dao.gamesIn(rootId)
+
     fun playlist(id: Long): Flow<PlaylistEntity?> = dao.playlist(id)
     fun playlistGames(id: Long): Flow<List<GameEntity>> = dao.playlistGames(id)
     fun playlistsContaining(game: GameEntity): Flow<List<Long>> = dao.playlistsContaining(game.rootId, game.relativePath)

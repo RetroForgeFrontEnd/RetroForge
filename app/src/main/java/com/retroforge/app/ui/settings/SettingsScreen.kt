@@ -45,6 +45,7 @@ fun SettingsScreen(
     onOpenHotkeys: () -> Unit,
     onOpenGpu: () -> Unit,
     onOpenCheck: () -> Unit = {},
+    library: com.retroforge.core.library.LibraryRepository? = null,
     onOpenApps: () -> Unit = {},
     onOpenTutorial: () -> Unit,
     onOpenThemes: () -> Unit,
@@ -129,6 +130,10 @@ fun SettingsScreen(
         }
 
         viewPrefs?.let { DualScreenCard(it) }
+
+        library?.let { EsdeImportCard(it) }
+
+        TexturePacksCard(java.io.File(LocalContext.current.getExternalFilesDir(null) ?: LocalContext.current.filesDir, "system"))
 
         coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames) }
 
