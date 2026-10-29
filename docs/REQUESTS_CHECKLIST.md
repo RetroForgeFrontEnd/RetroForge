@@ -112,6 +112,6 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Games from network drives, Google Drive, Dropbox | ❌ idea |
 | PC / iOS / Linux / Raspberry Pi versions | ❌ question |
 | How to fund updates when free | ❌ question (support links exist) |
-| Dual-screen option for games and the app | ❌ |
+| Dual-screen option for games and the app | 🟡 DS games: top screen on the main display, touch screen on the second (automatic when a second display exists); picture split tested on a simulated display; touch on the second screen needs a real dual-screen device. App UI on two screens: not yet |
 | Compare with other frontends again and suggest more | ❌ after the above |
 

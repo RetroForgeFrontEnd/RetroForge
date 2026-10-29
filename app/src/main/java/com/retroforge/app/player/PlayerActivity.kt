@@ -285,6 +285,7 @@ class PlayerActivity : ComponentActivity() {
             video = av
             applyViewport()
             phase = Phase.Playing
+            setUpSecondScreen()
             NativePlayer.setPaused(!foreground || menuOpen)
             surface?.let { setFrameRate(it, av) }
         }
@@ -451,7 +452,7 @@ class PlayerActivity : ComponentActivity() {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         if (!loaded) return
-        val options = PlayerCores.orientationOptions(coreId, newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        val options = PlayerCores.orientationOptions(coreId, newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE && !dualScreen)
         if (options.isEmpty()) return
         options.forEach { (key, value) -> NativePlayer.setOption(key, value) }
         refreshVideo(15)
@@ -471,6 +472,60 @@ class PlayerActivity : ComponentActivity() {
     }
 
     private val playtime by lazy { Playtime(File(filesDir, "player/playtime.properties")) }
+
+    // Dual-screen devices (AYN Thor, AYANEO Pocket DS …): DS games show the touch screen on the second display.
+    private var dualScreen by mutableStateOf(false)
+    private var secondScreen: android.app.Presentation? = null
+    private var secondSize = 0 to 0
+
+    private fun setUpSecondScreen() {
+        if (system != "nds" || secondScreen != null || !loaded) return
+        val displays = getSystemService(android.hardware.display.DisplayManager::class.java)
+            .getDisplays(android.hardware.display.DisplayManager.DISPLAY_CATEGORY_PRESENTATION)
+        val display = displays.firstOrNull() ?: return
+        val view = SurfaceView(this)
+        view.holder.addCallback(object : android.view.SurfaceHolder.Callback {
+            override fun surfaceCreated(holder: android.view.SurfaceHolder) = Unit
+            override fun surfaceChanged(holder: android.view.SurfaceHolder, format: Int, width: Int, height: Int) {
+                secondSize = width to height
+                // Both DS screens stacked, so the top one is the main screen's and the bottom one this display's.
+                PlayerCores.orientationOptions(coreId, landscape = false).forEach { (k, v) -> NativePlayer.setOption(k, v) }
+                NativePlayer.setSecondSurface(holder.surface)
+                dualScreen = true
+                refreshVideo(10)
+            }
+            override fun surfaceDestroyed(holder: android.view.SurfaceHolder) {
+                NativePlayer.setSecondSurface(null)
+                dualScreen = false
+                PlayerCores.orientationOptions(coreId, isLandscape()).forEach { (k, v) -> NativePlayer.setOption(k, v) }
+                refreshVideo(10)
+            }
+        })
+        view.setOnTouchListener { _, event -> secondScreenTouch(event); true }
+        secondScreen = android.app.Presentation(this, display).apply {
+            setContentView(view)
+            setOnDismissListener { secondScreen = null }
+            runCatching { show() }.onFailure { secondScreen = null }
+        }
+    }
+
+    /** A touch on the second display: the picture there is the bottom half of the core's (fitted, centred). */
+    private fun secondScreenTouch(event: MotionEvent) {
+        val av = video ?: return
+        val (w, h) = secondSize
+        if (w <= 0 || h <= 0) return
+        val aspect = av.aspect * 2
+        var rw = w.toFloat()
+        var rh = rw / aspect
+        if (rh > h) {
+            rh = h.toFloat()
+            rw = rh * aspect
+        }
+        val rx = (w - rw) / 2
+        val ry = (h - rh) / 2
+        val down = event.actionMasked != MotionEvent.ACTION_UP && event.actionMasked != MotionEvent.ACTION_CANCEL
+        NativePlayer.setPointer((event.x - rx) / rw, 0.5f + 0.5f * (event.y - ry) / rh, down)
+    }
     private var playingSince = 0L
 
     /** Adds the time since the game came to the front to its play time. */
@@ -488,10 +543,12 @@ class PlayerActivity : ComponentActivity() {
         foreground = true
         if (loaded) playingSince = android.os.SystemClock.elapsedRealtime()
         if (loaded && !menuOpen) NativePlayer.setPaused(false)
+        setUpSecondScreen()
     }
 
     override fun onPause() {
         super.onPause()
+        secondScreen?.dismiss()
         foreground = false
         countPlaytime()
         if (loaded && !quitting) {
@@ -584,7 +641,9 @@ class PlayerActivity : ComponentActivity() {
         val av = video ?: return
         // With the console look, the picture keeps a margin for the screen surround.
         val inset = if (consoleLook) (bezelMargin(!isLandscape()).value * resources.displayMetrics.density).toInt() else 0
-        val fitted = Viewport.fit(shape, surfaceWidth - 2 * inset, surfaceHeight - 2 * inset, av)
+        // With a second display the main screen shows only the top half (the DS's upper screen).
+        val shown = if (dualScreen) av.copy(height = av.height / 2, aspect = av.aspect * 2) else av
+        val fitted = Viewport.fit(shape, surfaceWidth - 2 * inset, surfaceHeight - 2 * inset, shown)
         picture = Rect(fitted.x + inset, fitted.y + inset, fitted.w, fitted.h)
         pictureRect = picture
         if (loaded) picture.let { NativePlayer.setViewport(it.x, it.y, it.w, it.h) }
@@ -633,7 +692,7 @@ class PlayerActivity : ComponentActivity() {
     @SuppressLint("ClickableViewAccessibility")
     private fun pointerListener(view: SurfaceView) = view.setOnTouchListener { v, event ->
         val rect = picture
-        if (!loaded || rect.w <= 0 || rect.h <= 0) return@setOnTouchListener false
+        if (!loaded || rect.w <= 0 || rect.h <= 0 || dualScreen) return@setOnTouchListener false
         val down = event.actionMasked != MotionEvent.ACTION_UP && event.actionMasked != MotionEvent.ACTION_CANCEL
         NativePlayer.setPointer((event.x - rect.x) / rect.w, (event.y - rect.y) / rect.h, down)
         true

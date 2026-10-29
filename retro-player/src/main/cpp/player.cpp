@@ -127,6 +127,11 @@ struct Player {
     std::condition_variable windowCv;
     ANativeWindow *pendingWindow = nullptr;
     bool windowPending = false;
+    // Second display (dual-screen handhelds): with split on, the top half of the picture goes to the main surface
+    // and the bottom half (the DS touch screen) to this one.
+    ANativeWindow *pendingWindow2 = nullptr;
+    bool window2Pending = false;
+    std::atomic<bool> split{false};
 
     // GL state, owned by the core thread.
     EGLDisplay display = EGL_NO_DISPLAY;
@@ -134,6 +139,8 @@ struct Player {
     EGLContext context = EGL_NO_CONTEXT;
     EGLSurface surface = EGL_NO_SURFACE;
     ANativeWindow *window = nullptr;
+    EGLSurface surface2 = EGL_NO_SURFACE;
+    ANativeWindow *window2 = nullptr;
     GLuint program = 0, texture = 0;
     GLint uTexSize = -1, uOutSize = -1, uSrcSize = -1, uFilter = -1;
     std::atomic<int> filter{0};
@@ -556,6 +563,20 @@ void applyWindowChange() {
         }
     }
     p.windowPending = false;
+    if (p.window2Pending && p.context != EGL_NO_CONTEXT) {
+        if (p.surface2 != EGL_NO_SURFACE) {
+            eglDestroySurface(p.display, p.surface2);
+            p.surface2 = EGL_NO_SURFACE;
+        }
+        if (p.window2) ANativeWindow_release(p.window2);
+        p.window2 = p.pendingWindow2;
+        p.pendingWindow2 = nullptr;
+        if (p.window2) {
+            p.surface2 = eglCreateWindowSurface(p.display, p.config, p.window2, nullptr);
+            if (p.surface2 == EGL_NO_SURFACE) LOGE("EGL second surface failed");
+        }
+        p.window2Pending = false;
+    }
     p.windowCv.notify_all();
 }
 
@@ -619,65 +640,83 @@ void videoRefresh(const void *data, unsigned width, unsigned height, size_t pitc
     p.hasFrame = true;
 }
 
+// Draws rows f0..f1 (fractions, top to bottom) of the current picture into a sw x sh surface, fitted and centred,
+// or into the rectangle Kotlin chose when [useChosen].
+void drawPicture(int sw, int sh, float f0, float f1, bool useChosen) {
+    Player &p = *P;
+    unsigned fw = p.hwFrame ? p.frameW : p.texW, fh = p.hwFrame ? p.frameH : p.texH;
+    if (fw == 0 || fh == 0) return;
+    float band = f1 - f0;
+    int vx, vy, vw, vh;
+    if (useChosen && p.viewW > 0 && p.viewH > 0) {
+        // Chosen by Kotlin (screen shape setting); top-left origin there, bottom-left in GL.
+        vx = p.viewX;
+        vw = p.viewW;
+        vh = p.viewH;
+        vy = sh - (p.viewY + vh);
+    } else {
+        float full = p.av.geometry.aspect_ratio > 0 ? p.av.geometry.aspect_ratio : float(fw) / float(fh);
+        float aspect = full / band;
+        vw = sw;
+        vh = int(sw / aspect);
+        if (vh > sh) {
+            vh = sh;
+            vw = int(sh * aspect);
+        }
+        vx = (sw - vw) / 2;
+        vy = (sh - vh) / 2;
+    }
+    glViewport(vx, vy, vw, vh);
+    // Software frames are stored top row first; a GPU core's framebuffer is bottom row first (unless it says
+    // otherwise) and only partly used, so the corners pick out that part.
+    GLfloat u = 1, top = f0, bottom = f1;
+    if (p.hwFrame) {
+        u = float(p.frameW) / float(p.hwW);
+        float v = float(p.frameH) / float(p.hwH);
+        top = p.hw.bottom_left_origin ? (1 - f0) * v : f0 * v;
+        bottom = p.hw.bottom_left_origin ? (1 - f1) * v : f1 * v;
+    }
+    const GLfloat quad[] = {-1, -1, 0, bottom, 1, -1, u, bottom, -1, 1, 0, top, 1, 1, u, top};
+    glUseProgram(p.program);
+    if (p.hwFrame) {
+        glUniform2f(p.uTexSize, float(p.hwW), float(p.hwH));
+    } else {
+        glUniform2f(p.uTexSize, float(p.texW), float(p.texH));
+    }
+    glUniform2f(p.uSrcSize, float(fw), float(fh) * band);
+    glUniform2f(p.uOutSize, float(vw), float(vh));
+    glUniform1i(p.uFilter, p.filter);
+    glBindTexture(GL_TEXTURE_2D, p.hwFrame ? p.hwTexture : p.texture);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), quad);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), quad + 2);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+
 void present() {
     Player &p = *P;
     if (p.surface == EGL_NO_SURFACE) return;
     if (p.hwRequested) restoreGlState();
+    bool split = p.split && p.surface2 != EGL_NO_SURFACE;
     EGLint sw = 0, sh = 0;
     eglQuerySurface(p.display, p.surface, EGL_WIDTH, &sw);
     eglQuerySurface(p.display, p.surface, EGL_HEIGHT, &sh);
     glViewport(0, 0, sw, sh);
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
-    if (p.hasFrame && sw > 0 && sh > 0) {
-        int vx, vy, vw, vh;
-        if (p.viewW > 0 && p.viewH > 0) {
-            // Chosen by Kotlin (screen shape setting); top-left origin there, bottom-left in GL.
-            vx = p.viewX;
-            vw = p.viewW;
-            vh = p.viewH;
-            vy = sh - (p.viewY + vh);
-        } else {
-            unsigned fw = p.hwFrame ? p.frameW : p.texW, fh = p.hwFrame ? p.frameH : p.texH;
-            float aspect = p.av.geometry.aspect_ratio > 0 ? p.av.geometry.aspect_ratio : float(fw) / float(fh);
-            vw = sw;
-            vh = int(sw / aspect);
-            if (vh > sh) {
-                vh = sh;
-                vw = int(sh * aspect);
-            }
-            vx = (sw - vw) / 2;
-            vy = (sh - vh) / 2;
-        }
-        glViewport(vx, vy, vw, vh);
-        // Software frames are stored top row first; a GPU core's framebuffer is bottom row first (unless it says
-        // otherwise) and only partly used, so the corners pick out that part.
-        GLfloat u = 1, top = 0, bottom = 1;
-        if (p.hwFrame) {
-            u = float(p.frameW) / float(p.hwW);
-            float v = float(p.frameH) / float(p.hwH);
-            top = p.hw.bottom_left_origin ? v : 0;
-            bottom = p.hw.bottom_left_origin ? 0 : v;
-        }
-        const GLfloat quad[] = {-1, -1, 0, bottom, 1, -1, u, bottom, -1, 1, 0, top, 1, 1, u, top};
-        glUseProgram(p.program);
-        if (p.hwFrame) {
-            glUniform2f(p.uTexSize, float(p.hwW), float(p.hwH));
-            glUniform2f(p.uSrcSize, float(p.frameW), float(p.frameH));
-        } else {
-            glUniform2f(p.uTexSize, float(p.texW), float(p.texH));
-            glUniform2f(p.uSrcSize, float(p.texW), float(p.texH));
-        }
-        glUniform2f(p.uOutSize, float(vw), float(vh));
-        glUniform1i(p.uFilter, p.filter);
-        glBindTexture(GL_TEXTURE_2D, p.hwFrame ? p.hwTexture : p.texture);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), quad);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), quad + 2);
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    }
+    if (p.hasFrame && sw > 0 && sh > 0) drawPicture(sw, sh, 0, split ? 0.5f : 1, true);
     eglSwapBuffers(p.display, p.surface);
+    if (split && eglMakeCurrent(p.display, p.surface2, p.surface2, p.context)) {
+        EGLint w2 = 0, h2 = 0;
+        eglQuerySurface(p.display, p.surface2, EGL_WIDTH, &w2);
+        eglQuerySurface(p.display, p.surface2, EGL_HEIGHT, &h2);
+        glViewport(0, 0, w2, h2);
+        glClear(GL_COLOR_BUFFER_BIT);
+        if (p.hasFrame && w2 > 0 && h2 > 0) drawPicture(w2, h2, 0.5f, 1, false);
+        eglSwapBuffers(p.display, p.surface2);
+        eglMakeCurrent(p.display, p.surface, p.surface, p.context);
+    }
 }
 
 // ---------- audio ----------
@@ -829,6 +868,14 @@ void runLoop() {
     if (p.hwReady && p.surface != EGL_NO_SURFACE && p.hw.context_destroy) {
         std::lock_guard<std::mutex> lock(p.coreMutex);
         p.hw.context_destroy();
+    }
+    if (p.surface2 != EGL_NO_SURFACE) {
+        eglDestroySurface(p.display, p.surface2);
+        p.surface2 = EGL_NO_SURFACE;
+    }
+    if (p.window2) {
+        ANativeWindow_release(p.window2);
+        p.window2 = nullptr;
     }
     releaseSurface();
     if (P->context != EGL_NO_CONTEXT) {
@@ -1026,6 +1073,19 @@ JNIEXPORT void JNI(setSurface)(JNIEnv *env, jobject, jobject surface) {
     p.windowPending = true;
     if (!p.running) return; // picked up when the loop starts
     p.windowCv.wait_for(lock, std::chrono::seconds(2), [&] { return !p.windowPending; });
+}
+
+// The second display's surface (null when it goes away). Split mode is on while there is one.
+JNIEXPORT void JNI(setSecondSurface)(JNIEnv *env, jobject, jobject surface) {
+    if (!P) return;
+    Player &p = *P;
+    std::unique_lock<std::mutex> lock(p.windowMutex);
+    if (p.pendingWindow2) ANativeWindow_release(p.pendingWindow2);
+    p.pendingWindow2 = surface ? ANativeWindow_fromSurface(env, surface) : nullptr;
+    p.window2Pending = true;
+    p.split = surface != nullptr;
+    if (!p.running) return;
+    p.windowCv.wait_for(lock, std::chrono::seconds(2), [&] { return !p.window2Pending; });
 }
 
 JNIEXPORT void JNI(setButtons)(JNIEnv *, jobject, jint port, jint mask) {

@@ -39,6 +39,9 @@ object NativePlayer {
     external fun setPaused(paused: Boolean)
     external fun setFastForward(on: Boolean)
     external fun setSurface(surface: Surface?)
+
+    /** A second display's surface (dual-screen devices): the picture's bottom half goes there. Null to stop. */
+    external fun setSecondSurface(surface: Surface?)
     external fun setButtons(port: Int, mask: Int)
     external fun setAnalog(port: Int, stick: Int, x: Int, y: Int)
 
