@@ -432,7 +432,7 @@ class PlayerActivity : ComponentActivity() {
                     val entries = generateSequence { zip.nextEntry }.filter { !it.isDirectory }
                     val entry = entries.firstOrNull { it.name.substringAfterLast('.').lowercase() in extensions }
                         ?: throw IOException("the zip has no file this emulator can open")
-                    File(cache, entry.name.substringAfterLast('/')).also { out -> out.outputStream().use { zip.copyTo(it) } }
+                    File(cache, contentName(entry.name.substringAfterLast('/'))).also { out -> out.outputStream().use { zip.copyTo(it) } }
                 }
             } ?: throw IOException("couldn't open it")
             return NativePlayer.loadGame(file.path, -1, !needsFile)
@@ -444,14 +444,14 @@ class PlayerActivity : ComponentActivity() {
             val file = SevenZFile.builder().setFile(archive).get().use { seven ->
                 val entry = seven.entries.firstOrNull { !it.isDirectory && it.name.substringAfterLast('.').lowercase() in extensions }
                     ?: throw IOException("the 7z has no file this emulator can open")
-                File(cache, entry.name.substringAfterLast('/')).also { out ->
+                File(cache, contentName(entry.name.substringAfterLast('/'))).also { out ->
                     seven.getInputStream(entry).use { input -> out.outputStream().use { input.copyTo(it) } }
                 }
             }
             archive.delete()
             return NativePlayer.loadGame(file.path, -1, !needsFile)
         }
-        val named = File(cache, fileName)
+        val named = File(cache, contentName(fileName))
         if (needsFile) {
             val root = File(externalCacheDir ?: cacheDir, "games")
             val dir = File(root, Integer.toHexString(uri.toString().hashCode()))
@@ -479,6 +479,14 @@ class PlayerActivity : ComponentActivity() {
         return contentResolver.openFileDescriptor(uri, "r")?.use { pfd -> NativePlayer.loadGame(named.path, pfd.fd, false) }
             ?: throw IOException("couldn't open it")
     }
+
+    /**
+     * The name the core sees for a game file. b2 (BBC Micro) runs the program named in square brackets in a disk's name,
+     * but catalogue names use brackets for tags ("Citadel (1985)(Superior)[h TSTH][bootfile].ssd" makes it type
+     * CHAIN"bootfile"), so for b2 the brackets go and it boots the disk the usual way.
+     */
+    private fun contentName(name: String) =
+        if (coreId == "b2") name.replace(Regex("""\s*\[[^\]]*\]"""), "").ifBlank { name } else name
 
     private fun fail(message: String) = runOnUiThread { phase = Phase.Failed(message) }
 
