@@ -56,10 +56,10 @@ object PlayerCores {
     private val flycast = PlayerCore("flycast", "Flycast")
     private val flycastArcade = PlayerCore("flycast", "Flycast", needsBios = true)
     // Newer systems on OpenGL ES (Vulkan later): they run, but the standalone apps are faster on most phones today.
-    private val dolphin = PlayerCore("dolphin", "Dolphin (experimental)")
+    private val dolphin = PlayerCore("dolphin", "Dolphin")
     private val citra = PlayerCore("citra", "Citra (experimental)")
     private val play = PlayerCore("play", "Play! (experimental)")
-    private val lrps2 = PlayerCore("pcsx2", "LRPS2 (experimental, needs the PS2 BIOS)", needsBios = true)
+    private val lrps2 = PlayerCore("pcsx2", "LRPS2 (needs the PS2 BIOS)", needsBios = true)
 
     // Computers, more consoles and game engines (one core each, from the libretro buildbot like the rest).
     private val opera = PlayerCore("opera", "Opera", needsBios = true)

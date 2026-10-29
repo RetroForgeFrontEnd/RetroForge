@@ -42,6 +42,7 @@ fun GameHero(
     actionLabel: String?,
     onAction: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    bigArt: Boolean = false,
 ) {
     val colors = MaterialTheme.colorScheme
     Box(modifier.fillMaxWidth().heightIn(min = 230.dp).clip(MaterialTheme.shapes.large)) {
@@ -64,14 +65,29 @@ fun GameHero(
             ),
         )
         BoxWithConstraints(Modifier.fillMaxWidth()) {
-            val artWidth = if (maxWidth < 480.dp) 120.dp else 170.dp
-            Row(Modifier.padding(20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp), verticalAlignment = Alignment.Bottom) {
-                GameArt(game, image, Modifier.width(artWidth).aspectRatio(LocalThemeSpec.current.tileAspect.ratio))
-                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    eyebrow?.let { Text(it.uppercase(), style = MaterialTheme.typography.labelMedium, color = colors.primary) }
-                    Text(game.title, style = MaterialTheme.typography.headlineSmall, color = colors.onBackground, maxLines = 3, overflow = TextOverflow.Ellipsis)
-                    subtitle?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, maxLines = 2) }
-                    if (actionLabel != null && onAction != null) Box(Modifier.padding(top = 6.dp)) { FocusChip(actionLabel, onClick = onAction) }
+            val narrow = maxWidth < 480.dp
+            val bigWidth = minOf(maxWidth * 0.62f, 300.dp)
+            val details: @Composable () -> Unit = {
+                eyebrow?.let { Text(it.uppercase(), style = MaterialTheme.typography.labelMedium, color = colors.primary) }
+                Text(game.title, style = MaterialTheme.typography.headlineSmall, color = colors.onBackground, maxLines = 3, overflow = TextOverflow.Ellipsis)
+                subtitle?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant, maxLines = 2) }
+                if (actionLabel != null && onAction != null) Box(Modifier.padding(top = 6.dp)) { FocusChip(actionLabel, onClick = onAction) }
+            }
+            if (bigArt && narrow) {
+                // A game's own page on a phone: the cover large and centred, the title under it.
+                Column(Modifier.fillMaxWidth().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    GameArt(game, image, Modifier.width(bigWidth).aspectRatio(LocalThemeSpec.current.tileAspect.ratio))
+                    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) { details() }
+                }
+            } else {
+                val artWidth = when {
+                    bigArt -> 260.dp
+                    narrow -> 120.dp
+                    else -> 170.dp
+                }
+                Row(Modifier.padding(20.dp), horizontalArrangement = Arrangement.spacedBy(20.dp), verticalAlignment = Alignment.Bottom) {
+                    GameArt(game, image, Modifier.width(artWidth).aspectRatio(LocalThemeSpec.current.tileAspect.ratio))
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) { details() }
                 }
             }
         }
