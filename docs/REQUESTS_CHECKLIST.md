@@ -14,7 +14,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Controllers and TV navigation | ✅ emulator (keys only); ⛔ real controller and TV box |
 | Save states, BIOS, firmware | ✅ check/copy, states per emulator, save backup/restore (zip); ❌ memory-card tools |
 | Graphics: shapes, filters, integer scaling | ✅ |
-| Themes, theme engine, import | ✅ (colours + system art); ❌ interface sounds |
+| Themes, theme engine, import | ✅ (colours + system art); ✅ interface sounds (own synthesised sounds, switch in Settings; not heard on a device yet) |
 | Clear compatibility information | 🟡 docs; per-game compatibility not shown in the app |
 | Portable library (other frontends keep working) | ✅ read-only scan, own index; ❌ export/import of RetroForge's setup |
 | PC subsystem via a real runtime | 🟡 GameNative boots a game on the S22; ⛔ DroidDeck (needs Snapdragon); ❌ PC games in RetroForge's library |

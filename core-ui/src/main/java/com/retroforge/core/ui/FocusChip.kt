@@ -19,9 +19,10 @@ import androidx.compose.ui.unit.dp
 fun FocusChip(label: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
+    FocusTick(focused)
     val colors = MaterialTheme.colorScheme
     Surface(
-        onClick = onClick,
+        onClick = { UiSounds.select(); onClick() },
         enabled = enabled,
         modifier = modifier,
         shape = RoundedCornerShape(50),

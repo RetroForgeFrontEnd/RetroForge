@@ -34,6 +34,7 @@ fun FocusCard(
 ) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
+    FocusTick(focused)
     val scale by animateFloatAsState(if (focused) 1.03f else 1f, label = "focusScale")
     val forge = LocalForgeColors.current
     val border = when {
@@ -53,7 +54,7 @@ fun FocusCard(
     val body: @Composable () -> Unit = { Column(Modifier.padding(20.dp), content = content) }
     if (onClick != null) {
         Surface(
-            onClick = onClick,
+            onClick = { UiSounds.select(); onClick() },
             modifier = surfaceModifier,
             shape = shape,
             border = border,
@@ -70,4 +71,11 @@ fun FocusCard(
             content = body,
         )
     }
+}
+
+/** A tick when this item gains focus by controller or remote (touch doesn't move focus around, so it stays quiet). */
+@Composable
+internal fun FocusTick(focused: Boolean) {
+    val keyboard = androidx.compose.ui.platform.LocalInputModeManager.current.inputMode == androidx.compose.ui.input.InputMode.Keyboard
+    androidx.compose.runtime.LaunchedEffect(focused) { if (focused && keyboard) UiSounds.move() }
 }

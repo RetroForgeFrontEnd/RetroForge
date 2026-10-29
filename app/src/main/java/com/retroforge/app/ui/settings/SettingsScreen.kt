@@ -101,6 +101,16 @@ fun SettingsScreen(
                 StatusPill(if (showAll) "On" else "Off", if (showAll) StatusTone.GOOD else StatusTone.NEUTRAL)
                 CardBody("Off: the Retro tab shows only the systems you have games for. On: every system RetroForge knows, for browsing.")
             }
+            var sounds by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.UI_SOUNDS, true)) }
+            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
+                sounds = !sounds
+                prefs.edit().putBoolean(com.retroforge.app.UI_SOUNDS, sounds).apply()
+                com.retroforge.core.ui.UiSounds.enabled = sounds
+            }) {
+                CardTitle("Interface sounds")
+                StatusPill(if (sounds) "On" else "Off", if (sounds) StatusTone.GOOD else StatusTone.NEUTRAL)
+                CardBody("A soft tick when moving with a controller or remote, and a chime when selecting or going back.")
+            }
             var scanOnStart by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, true)) }
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
                 scanOnStart = !scanOnStart

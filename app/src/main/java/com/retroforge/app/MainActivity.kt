@@ -22,6 +22,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val container = (application as RetroForgeApplication).container
+        com.retroforge.core.ui.UiSounds.init(this)
+        com.retroforge.core.ui.UiSounds.enabled = container.viewPrefs.getBoolean(UI_SOUNDS, true)
         setContent { RetroForgeRoot(container, sectionCommands) }
     }
 
@@ -43,7 +45,10 @@ class MainActivity : ComponentActivity() {
     override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean = when (ControllerKeys.commandFor(keyCode)) {
         NavCommand.CONFIRM -> window.superDispatchKeyEvent(event.asDpadCenter()) || super.onKeyUp(keyCode, event)
         NavCommand.BACK -> {
-            if (event.isTracking && !event.isCanceled) onBackPressedDispatcher.onBackPressed()
+            if (event.isTracking && !event.isCanceled) {
+                com.retroforge.core.ui.UiSounds.back()
+                onBackPressedDispatcher.onBackPressed()
+            }
             true
         }
         NavCommand.PREVIOUS_SECTION, NavCommand.NEXT_SECTION -> true
@@ -55,3 +60,6 @@ class MainActivity : ComponentActivity() {
         repeatCount, metaState, deviceId, scanCode, flags, source,
     )
 }
+
+/** View preference: interface sounds on or off. */
+const val UI_SOUNDS = "ui_sounds"

@@ -320,7 +320,10 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                             ThemesScreen(themesViewModel)
                         }
                     }
-                    if (inner) CloseButton(Modifier.align(Alignment.TopEnd).padding(top = 12.dp, end = 12.dp)) { nav.popBackStack() }
+                    if (inner) CloseButton(Modifier.align(Alignment.TopEnd).padding(top = 12.dp, end = 12.dp)) {
+                        com.retroforge.core.ui.UiSounds.back()
+                        nav.popBackStack()
+                    }
                   }
                 }
                 if (maxWidth >= 600.dp) {

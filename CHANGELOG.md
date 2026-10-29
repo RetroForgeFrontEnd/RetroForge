@@ -19,6 +19,8 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Saves and storage**: Settings → Built-in player → Back up saves writes one zip with in-game saves, save states and cheats; Restore puts them back (on this or another device), replacing same-named saves and keeping the rest. A Storage card shows the space emulators and copied CD/arcade games use, with Clear copied games. Each game's page shows its time played in the built-in player.
 
+**Interface sounds**: a soft tick when moving with a controller or remote, a chime on select and on back. RetroForge's own sounds; switch them off in Settings.
+
 **Remap buttons** (pause menu): choose which controller button presses each game button, and what each on-screen button presses. Kept per system, with a way back to normal.
 
 **Widescreen and CRT**: a Widescreen switch in the pause menu for N64 (the game restarts in 16:9 by itself) and Dreamcast, and a new curved CRT filter: bent glass edges, scanlines and darker corners.
