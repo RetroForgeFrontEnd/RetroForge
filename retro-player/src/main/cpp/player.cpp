@@ -145,7 +145,7 @@ struct Player {
     EGLSurface surface2 = EGL_NO_SURFACE;
     ANativeWindow *window2 = nullptr;
     GLuint program = 0, texture = 0;
-    GLint uTexSize = -1, uOutSize = -1, uSrcSize = -1, uFilter = -1;
+    GLint uTexSize = -1, uOutSize = -1, uSrcSize = -1, uFilter = -1, uRegion = -1;
     std::atomic<int> filter{0};
     unsigned texW = 0, texH = 0;
     bool hasFrame = false;
@@ -373,6 +373,7 @@ attribute vec2 aUv;
 varying vec2 vUv;
 void main() { vUv = aUv; gl_Position = vec4(aPos, 0.0, 1.0); })";
 
+// uFilter 4, curved CRT: CRT with the picture bent like a tube and darker corners.
 // uFilter 0, sharp: whole-pixel scaling with a one-pixel blend at the edges, so pixel art stays crisp at any size
 // without the uneven pixels of nearest-neighbour. 1, smooth: plain bilinear. 2, CRT: sharp plus darkened gaps between
 // the console's scan lines. 3, LCD: sharp plus a faint grid between pixels, like a handheld's screen.
@@ -383,13 +384,25 @@ uniform vec2 uTexSize;
 uniform vec2 uOutSize;
 uniform vec2 uSrcSize;
 uniform int uFilter;
+uniform vec4 uRegion; // the drawn part of the texture: left, top, right, bottom
 varying vec2 vUv;
 void main() {
+    vec2 uv = vUv;
+    if (uFilter == 4) {
+        // Curved CRT: bend the picture like a tube's glass, black beyond its edges.
+        vec2 local = (vUv - uRegion.xy) / (uRegion.zw - uRegion.xy) * 2.0 - 1.0;
+        local *= 1.0 + 0.06 * dot(local.yx, local.yx);
+        if (abs(local.x) > 1.0 || abs(local.y) > 1.0) {
+            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+            return;
+        }
+        uv = uRegion.xy + (local * 0.5 + 0.5) * (uRegion.zw - uRegion.xy);
+    }
     if (uFilter == 1) {
-        gl_FragColor = vec4(texture2D(uTex, vUv).rgb, 1.0);
+        gl_FragColor = vec4(texture2D(uTex, uv).rgb, 1.0);
         return;
     }
-    vec2 texel = vUv * uTexSize;
+    vec2 texel = uv * uTexSize;
     vec2 scale = max(floor(uOutSize / uSrcSize), vec2(1.0));
     vec2 region = 0.5 - 0.5 / scale;
     vec2 centre = fract(texel) - 0.5;
@@ -398,6 +411,10 @@ void main() {
     if (uFilter == 2) {
         float d = abs(fract(texel.y) - 0.5) * 2.0;
         colour *= (1.0 - 0.5 * d * d) * 1.15;
+    } else if (uFilter == 4) {
+        float d = abs(fract(texel.y) - 0.5) * 2.0;
+        vec2 local = (uv - uRegion.xy) / (uRegion.zw - uRegion.xy) * 2.0 - 1.0;
+        colour *= (1.0 - 0.45 * d * d) * 1.18 * (1.0 - 0.25 * dot(local, local) * 0.5);
     } else if (uFilter == 3) {
         vec2 d = abs(fract(texel) - 0.5) * 2.0;
         colour *= 1.0 - 0.35 * smoothstep(0.7, 1.0, max(d.x, d.y));
@@ -450,6 +467,7 @@ void glSetup() {
     p.uTexSize = glGetUniformLocation(p.program, "uTexSize");
     p.uOutSize = glGetUniformLocation(p.program, "uOutSize");
     p.uSrcSize = glGetUniformLocation(p.program, "uSrcSize");
+    p.uRegion = glGetUniformLocation(p.program, "uRegion");
     p.uFilter = glGetUniformLocation(p.program, "uFilter");
     glGenTextures(1, &p.texture);
     glBindTexture(GL_TEXTURE_2D, p.texture);
@@ -691,6 +709,7 @@ void drawPicture(int ax, int ay, int aw, int ah, int sh, float x0, float x1, flo
     glUniform2f(p.uSrcSize, float(fw) * (x1 - x0), float(fh) * (y1 - y0));
     glUniform2f(p.uOutSize, float(vw), float(vh));
     glUniform1i(p.uFilter, p.filter);
+    glUniform4f(p.uRegion, left, std::min(top, bottom), right, std::max(top, bottom));
     glBindTexture(GL_TEXTURE_2D, p.hwFrame ? p.hwTexture : p.texture);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), quad);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), quad + 2);

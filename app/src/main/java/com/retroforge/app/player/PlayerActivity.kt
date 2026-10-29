@@ -294,6 +294,7 @@ class PlayerActivity : ComponentActivity() {
         NativePlayer.start()
         runOnUiThread {
             video = av
+            coreOptions = NativePlayer.options()
             applyViewport()
             phase = Phase.Playing
             setUpSecondScreen()
@@ -360,6 +361,22 @@ class PlayerActivity : ComponentActivity() {
         .filterKeys { it.startsWith("opt.$coreId.") }
         .mapNotNull { (k, v) -> (v as? String)?.let { k.removePrefix("opt.$coreId.") to it } }
         .toMap()
+
+    /** Widescreen hack on or off (cores that have one), kept like any emulator setting. */
+    private fun chooseWidescreen() {
+        val (key, wide, original) = PlayerCores.widescreenOption(coreId) ?: return
+        val current = coreOptions.firstOrNull { it.key == key }?.value
+        val next = if (current == wide) original else wide
+        prefs.edit().putString("opt.$coreId.$key", next).apply()
+        NativePlayer.setOption(key, next)
+        coreOptions = NativePlayer.options()
+        refreshVideo(10)
+        // Mupen64Plus only reads its picture shape at start: restart the game (its place is saved first).
+        if (key.startsWith("mupen")) {
+            notice = "Restarting in ${if (next == wide) "widescreen" else "4:3"}…"
+            restartWith(Intent(intent))
+        }
+    }
 
     private fun chooseOption(option: CoreOption) {
         if (option.choices.isEmpty()) return
@@ -885,6 +902,12 @@ class PlayerActivity : ComponentActivity() {
                         MenuButton(onClick = { chooseVolume() }, modifier = wide) { Text("Volume: ${(volume * 100).toInt()}%") }
                         MenuButton(onClick = { chooseFilter(filter.next()) }, modifier = wide) { Text("Screen filter: ${filter.label}") }
                         MenuButton(onClick = { chooseLook(!consoleLook) }, modifier = wide) { Text("Console look: ${if (consoleLook) "On" else "Off"}") }
+                        PlayerCores.widescreenOption(coreId)?.let { (key, wideValue, _) ->
+                            val on = coreOptions.firstOrNull { it.key == key }?.value == wideValue
+                            MenuButton(onClick = { chooseWidescreen() }, modifier = wide) {
+                                Text("Widescreen: ${if (on) "On" else "Off"}")
+                            }
+                        }
                         MenuButton(onClick = { chooseVr(!vr) }, modifier = wide) {
                             Text("Cardboard VR: ${if (vr) "On" else "Off"}" + if (PlayerCores.sideBySide(coreId)) " (3D)" else "")
                         }

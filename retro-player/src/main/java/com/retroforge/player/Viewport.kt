@@ -27,6 +27,7 @@ enum class ScreenFilter(val label: String) {
     SMOOTH("Smooth"),
     CRT("CRT scanlines"),
     LCD("LCD grid"),
+    CRT_CURVED("CRT, curved screen"),
     ;
 
     fun next(): ScreenFilter = entries[(ordinal + 1) % entries.size]

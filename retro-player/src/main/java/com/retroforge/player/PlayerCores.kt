@@ -135,6 +135,13 @@ object PlayerCores {
      * Core options that follow the screen's orientation: the DS's two screens stacked in portrait and side by
      * side in landscape, so they always use the most of the screen.
      */
+    /** A core's widescreen hack: (option, widescreen value, original value), for the pause menu's Widescreen switch. */
+    fun widescreenOption(coreId: String): Triple<String, String, String>? = when (coreId) {
+        "mupen64plus_next_gles3" -> Triple("mupen64plus-aspect", "16:9 adjusted", "4:3")
+        "flycast" -> Triple("reicast_widescreen_hack", "enabled", "disabled")
+        else -> null
+    }
+
     /** Cores that draw both eyes side by side (see the defaults above). */
     fun sideBySide(coreId: String): Boolean = coreId == "mednafen_vb"
 
