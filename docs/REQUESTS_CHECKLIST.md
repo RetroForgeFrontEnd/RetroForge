@@ -63,14 +63,14 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Setup without RetroArch homework; Play Store + website buttons | ✅ |
 | Setup reappearing after Done | ✅ fixed (not re-tested on a fresh install) |
 | RF neon icon from the logo | ✅ |
-| PC ports section (like Quiver, retro decomps) | ❌ not started |
-| Own cores for N64, PSP, Dreamcast (GPU) | ❌ next big item |
+| PC ports section (like Quiver, retro decomps) | ✅ Ports in the PC tab (see below) |
+| Own cores for N64, PSP, Dreamcast (GPU) | ✅ N64 and PSP play on GPU rendering; 🟡 Dreamcast built, untested (emulator crashed) |
 | PS1 with sticks, L2/R2/L3/R3; nicer pad | ✅ |
 | Volume too low | ✅ volume keys + boost (needs your ears on the phone) |
 | Cheats | ✅ |
 | Widescreen hacks | ❌ (needs GPU cores mostly) |
 | More shaders (CRT curvature, LCD ghosting, upscaler) | ❌ |
-| Arcade: FBNeo, MAME, CPS; Naomi | ✅ FBNeo/MAME 2003-Plus; ❌ Naomi (Flycast, GPU) |
+| Arcade: FBNeo, MAME, CPS; Naomi | ✅ FBNeo/MAME 2003-Plus; 🟡 Naomi/Atomiswave on Flycast, untested |
 | Rename a game folder | ✅ |
 | Retro tab only shows systems with games; setting for all | ✅ |
 | 32X/Mega Drive buttons too close to the d-pad | ✅ d-pad and buttons shrink together on narrow screens |
@@ -83,7 +83,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Saturn in the built-in player | 🟡 experimental (Yabause: 1 of 2 test games boots); YabaSanshiro after GPU rendering; RetroArch and Yaba Sanshiro 2 offered |
 | Tester guide and email to Mr Sujano | ✅ docs/TESTER_GUIDE.md; email in Documents (Word) |
 | GPU rendering in the built-in player (N64, PSP, Dreamcast, GameCube, YabaSanshiro) | 🟡 OpenGL ES rendering works: ✅ N64 (Mupen64Plus-Next, Milo's Astro Lanes on the emulator); next PSP, Dreamcast, YabaSanshiro; Vulkan later |
-| Short demo video for Mr Sujano | ❌ next session (emulator screen recording) |
+| Short demo video for Mr Sujano | ✅ Documents, RetroForge demo.mp4 (raw, from the emulator) |
 | Bigger portrait picture for older systems | ⛔ waiting for your choice (zoom/crop vs bigger controls) |
 
 ## Requests of 29 October (phone test feedback and ideas)
