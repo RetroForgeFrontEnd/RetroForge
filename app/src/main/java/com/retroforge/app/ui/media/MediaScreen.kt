@@ -69,8 +69,8 @@ private const val TMDB_KEY = "tmdb_key"
 fun MediaScreen(prefs: SharedPreferences) {
     val context = LocalContext.current
     var folder by remember { mutableStateOf(prefs.getString(FOLDER, null)) }
-    // The user's own key wins; otherwise RetroForge's built-in one (when this build has it).
-    var key by remember { mutableStateOf(prefs.getString(TMDB_KEY, null) ?: BuildConfig.TMDB_KEY.ifBlank { null }) }
+    // Only ever the user's own TMDB key (TMDB's free API is for personal use; RetroForge doesn't ship one).
+    var key by remember { mutableStateOf(prefs.getString(TMDB_KEY, null)) }
     var refresh by remember { mutableIntStateOf(0) }
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
         uri ?: return@rememberLauncherForActivityResult
@@ -116,7 +116,7 @@ fun MediaScreen(prefs: SharedPreferences) {
                 }
             }
         }
-        if (BuildConfig.TMDB_KEY.isBlank()) TmdbCard(prefs.getString(TMDB_KEY, null)) { new ->
+        TmdbCard(prefs.getString(TMDB_KEY, null)) { new ->
             prefs.edit().putString(TMDB_KEY, new).apply()
             key = new
             refresh++
@@ -185,7 +185,7 @@ private fun FilmDetails(film: Film, art: File?, onPlay: () -> Unit, onClose: () 
                     if (film.is3d) StatusPill("3D side by side", StatusTone.GOOD)
                 }
             }
-            CardBody(info?.overview?.takeIf { it.isNotBlank() } ?: "No description. Add a TMDB key below the films for posters, stories and ratings.")
+            CardBody(info?.overview?.takeIf { it.isNotBlank() } ?: "No description. Save a .nfo file next to the film (Media Companion or tinyMediaManager make them) for its story and rating.")
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 FocusChip("Play", onClick = onPlay)
                 // A link to the film's IMDb page (from TMDB's record); nothing is read from IMDb itself.
@@ -206,11 +206,17 @@ private fun TmdbCard(saved: String?, onSave: (String?) -> Unit) {
     var show by remember { mutableStateOf(false) }
     val context = LocalContext.current
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Film posters (TMDB)")
+        CardTitle("Film posters and stories")
         StatusPill(if (saved.isNullOrBlank()) "Using frames from the films" else "TMDB key saved", if (saved.isNullOrBlank()) StatusTone.NEUTRAL else StatusTone.GOOD)
         CardBody(
-            "For proper posters, create a free account at themoviedb.org, copy your API key (v3) and paste it here. It stays on this " +
-                "device and is sent only to TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.",
+            "RetroForge uses the poster and .nfo file saved next to each film, as Kodi, Plex and Jellyfin do (Film-poster.jpg or " +
+                "Film.jpg, poster.jpg in a film's own folder, Film.nfo or movie.nfo). Media Companion or tinyMediaManager on a PC " +
+                "make them for a whole collection. Films without them show a frame from the film.",
+        )
+        CardBody(
+            "Optional, for your own use: a free TMDB key (create an account at themoviedb.org, copy your API key v3, paste it " +
+                "here) fills in films that have no poster of their own. It stays on this device and is sent only to TMDB. This " +
+                "product uses the TMDB API but is not endorsed or certified by TMDB.",
         )
         ControllerTextField(
             value = draft, onValueChange = { draft = it.trim() }, singleLine = true, label = { Text("TMDB API key") },
@@ -260,14 +266,21 @@ private fun scan(context: Context, tree: Uri): List<Film> {
                 DocumentsContract.Document.COLUMN_MIME_TYPE, DocumentsContract.Document.COLUMN_LAST_MODIFIED),
             null, null, null,
         )?.use { c ->
+            // The folder's files first, so each film can be matched with its poster and .nfo.
+            val files = mutableListOf<Triple<String, String, Long>>()
             while (c.moveToNext()) {
                 val id = c.getString(0)
                 val name = c.getString(1) ?: continue
-                if (c.getString(2) == DocumentsContract.Document.MIME_TYPE_DIR) {
-                    walk(id, depth + 1)
-                } else if (name.substringAfterLast('.', "").lowercase() in Films.VIDEO_EXTENSIONS) {
-                    films += Films.parse(DocumentsContract.buildDocumentUriUsingTree(tree, id).toString(), name, c.getLong(3))
-                }
+                if (c.getString(2) == DocumentsContract.Document.MIME_TYPE_DIR) walk(id, depth + 1)
+                else files += Triple(id, name, c.getLong(3))
+            }
+            val videos = files.filter { it.second.substringAfterLast('.', "").lowercase() in Films.VIDEO_EXTENSIONS }
+            val ids = files.associate { it.second to it.first }
+            fun uri(name: String?) = name?.let { ids[it] }?.let { DocumentsContract.buildDocumentUriUsingTree(tree, it).toString() }
+            videos.forEach { (id, name, modified) ->
+                val (poster, nfo) = Films.companions(name, ids.keys, videos.size)
+                films += Films.parse(DocumentsContract.buildDocumentUriUsingTree(tree, id).toString(), name, modified)
+                    .copy(posterUri = uri(poster), nfoUri = uri(nfo))
             }
         }
     }
@@ -275,11 +288,35 @@ private fun scan(context: Context, tree: Uri): List<Film> {
     return films.sortedByDescending { it.modified }
 }
 
-/** A poster from TMDB (with a key), else a frame from about a tenth of the way in. Cached. */
+/**
+ * The film's own poster and .nfo saved next to it (Kodi, Plex, Jellyfin, Media Companion, tinyMediaManager), else a
+ * poster from TMDB with the user's own key, else a frame from about a tenth of the way in. Cached.
+ */
 private fun artwork(context: Context, film: Film, tmdbKey: String?): File? {
     val name = film.uri.hashCode().toUInt().toString(16)
     val poster = File(context.cacheDir, "posters/$name.jpg")
     if (poster.isFile) return poster
+    film.nfoUri?.let { nfo ->
+        runCatching { context.contentResolver.openInputStream(nfo.toUri())?.use { it.readBytes().decodeToString() } }.getOrNull()
+            ?.let(Films::nfo)?.let { info ->
+                infoFile(context, film).apply { parentFile?.mkdirs() }.writeText(
+                    JSONObject()
+                        .put("overview", info.plot.orEmpty())
+                        .put("vote_average", info.rating ?: 0.0)
+                        .put("release_date", info.year.orEmpty())
+                        .put("runtime", info.runtime ?: 0)
+                        .put("imdb_id", info.imdb.orEmpty())
+                        .toString(),
+                )
+            }
+    }
+    film.posterUri?.let { own ->
+        runCatching { context.contentResolver.openInputStream(own.toUri())?.use { it.readBytes() } }.getOrNull()?.let { bytes ->
+            poster.parentFile?.mkdirs()
+            poster.writeBytes(bytes)
+            return poster
+        }
+    }
     if (!tmdbKey.isNullOrBlank()) {
         runCatching { tmdbPoster(film, tmdbKey, infoFile(context, film)) }.getOrNull()?.let { bytes ->
             poster.parentFile?.mkdirs()

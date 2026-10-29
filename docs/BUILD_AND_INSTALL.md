@@ -78,7 +78,6 @@ support.github=https://...
 4. In a terminal: `adb devices` should list the phone as `device` (not `unauthorized`).
 5. Install: `adb install -r app/build/outputs/apk/debug/app-debug.apk`
 
-## RetroForge's own TMDB key (optional)
+## Film artwork (no built-in TMDB key)
 
-With `tmdb.key=<your TMDB v3 API key>` in `local.properties`, film posters, stories and ratings work in the Media tab without users adding a key. Create the key at themoviedb.org (Settings → API) under RetroForge's account; TMDB is free for non-commercial apps and requires the line "This product uses the TMDB API but is not endorsed or certified by TMDB" (shown in the Media tab).
-
+RetroForge doesn't ship a TMDB key: TMDB's free API is for non-commercial use, and commercial use needs a licence from TMDB. The Media tab reads the poster and .nfo saved next to each film (Kodi/Plex/Jellyfin names, as Media Companion and tinyMediaManager write them) and the posters Plex and other DLNA servers send. Users may add their own TMDB key for personal use; the line "This product uses the TMDB API but is not endorsed or certified by TMDB" is shown next to it.
