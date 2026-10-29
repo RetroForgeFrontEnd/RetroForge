@@ -84,16 +84,20 @@ fun MediaScreen(prefs: SharedPreferences) {
 
     ScreenFrame(title = "Media", subtitle = "Your films, with artwork, played right here.") {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            FocusChip(if (folder == null) "Choose your films folder" else "Change folder", onClick = { pick.launch(null) })
+            FocusChip("Use RetroForge's film folders", onClick = { pick.launch(makeFilmFolders()) })
+            FocusChip(if (folder == null) "Choose another folder" else "Change folder", onClick = { pick.launch(null) })
             if (folder != null) FocusChip("Look again", onClick = { refresh++ })
         }
         if (folder == null) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
                 CardTitle("Watch your films in RetroForge")
                 CardBody(
-                    "Pick the folder with your films (on the phone, an SD card or a USB drive). RetroForge only reads it. " +
-                        "3D films (side-by-side) play full screen sideways, ready for a Cardboard viewer.",
+                    "\"Use RetroForge's film folders\" makes Movies/RetroForge on your phone, with a Films folder and a 3D Films " +
+                        "folder inside. Choose \"Use this folder\" when Android asks, then copy films into them (USB cable or a file " +
+                        "manager) and press Look again. Or choose any folder you already keep films in, on the phone, an SD card or a " +
+                        "USB drive. RetroForge only reads it.",
                 )
+                CardBody("3D films (side by side or top and bottom) get a 3D badge and play in Cardboard modes. How to watch: Settings → How to use RetroForge → Media.")
             }
         }
         val list = films
@@ -102,9 +106,13 @@ fun MediaScreen(prefs: SharedPreferences) {
             list == null -> CardBody("Looking for films…")
             list.isEmpty() -> CardBody("No films found in that folder (mp4, mkv, avi, mov and others).")
             else -> {
-                Text("${list.size} films", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    list.forEach { FilmCard(it, key) }
+                // 3D films first, in their own row, then the rest.
+                list.partition { it.is3d }.toList().zip(listOf("3D films", "Films")).forEach { (group, title) ->
+                    if (group.isEmpty()) return@forEach
+                    Text("$title (${group.size})", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        group.forEach { FilmCard(it, key) }
+                    }
                 }
             }
         }
@@ -227,6 +235,16 @@ private fun play(context: Context, film: Film) {
 }
 
 /** Every video under [tree] (a few folders deep), newest first. */
+/**
+ * Makes Movies/RetroForge with Films and 3D Films inside (apps may make folders in Movies themselves), and returns
+ * it as the folder Android's picker opens at, so one tap on "Use this folder" lets RetroForge read it.
+ */
+private fun makeFilmFolders(): Uri {
+    val root = java.io.File(android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_MOVIES), "RetroForge")
+    runCatching { java.io.File(root, "Films").mkdirs(); java.io.File(root, "3D Films").mkdirs() }
+    return DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:Movies/RetroForge")
+}
+
 private fun scan(context: Context, tree: Uri): List<Film> {
     val films = mutableListOf<Film>()
     fun walk(parentId: String, depth: Int) {

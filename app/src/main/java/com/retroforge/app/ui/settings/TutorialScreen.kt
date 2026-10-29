@@ -103,9 +103,13 @@ private val topics = listOf(
         "Use only games you own. RetroForge never shares your store logins or game files.",
     )),
     Topic("Media: films and 3D", listOf(
-        "Media → choose your films folder. Films show as a poster grid with tidy titles and years, and a 3D badge for 3D films.",
-        "Posters, stories, ratings and runtimes come from TMDB with your own free API key (Media → Film posters); without one, RetroForge uses a frame from the film.",
-        "The built-in player's View button switches between normal, Cardboard cinema (2D), 3D side by side and 3D top and bottom. If a film can't play, it offers another video app.",
+        "Media → Use RetroForge's film folders makes Movies/RetroForge on your phone, with Films and 3D Films inside. When Android shows that folder, tap Use this folder, then Allow.",
+        "Copy films in: plug the phone into a computer with a USB cable and drag them into Movies/RetroForge/Films or 3D Films, or move them with a file manager. Then press Look again.",
+        "Already keep films somewhere else (an SD card, a USB drive)? Choose another folder instead. RetroForge only reads it.",
+        "Films show as a poster grid with tidy titles and years, 3D films first. Posters, stories and ratings come from TMDB with your own free API key (Media → Film posters); without one, RetroForge uses a frame from the film.",
+        "3D films: their file name needs 3D, SBS, HSBS (side by side) or TAB, HOU (top and bottom), as most 3D films have. They get a 3D badge.",
+        "To watch in 3D: open the film, turn the phone sideways and put it in a Cardboard-style viewer. The View button switches between normal, Cardboard cinema (a 2D film on a big screen for each eye), 3D side by side and 3D top and bottom. RetroForge picks the right 3D mode from the file name.",
+        "If a film can't play here, RetroForge offers to open it in another video app.",
     )),
     Topic("VR", listOf(
         "VR tab: play in a Cardboard-style headset. The game is drawn once for each eye; Virtual Boy games are in real 3D.",
