@@ -383,7 +383,7 @@ void main() { vUv = aUv; gl_Position = vec4(aPos, 0.0, 1.0); })";
 // without the uneven pixels of nearest-neighbour. 1, smooth: plain bilinear. 2, CRT: sharp plus darkened gaps between
 // the console's scan lines. 3, LCD: sharp plus a faint grid between pixels, like a handheld's screen.
 // 5, LCD with ghosting: the LCD grid, with each frame blended into the one before, as on a Game Boy's slow screen
-// (games that flicker sprites for transparency look as intended).
+// (games that flicker sprites for transparency look as intended). 6, smooth pixel art: Scale2x, the classic upscaler.
 const char *kFragment = R"(
 precision mediump float;
 uniform sampler2D uTex;
@@ -411,6 +411,26 @@ void main() {
         return;
     }
     vec2 texel = uv * uTexSize;
+    if (uFilter == 6) {
+        // Scale2x: each pixel becomes four, rounding off staircase diagonals where neighbours agree.
+        vec2 base = floor(texel) + 0.5;
+        vec2 quarter = step(0.5, fract(texel)); // 0 or 1 across, 0 or 1 down
+        vec3 p = texture2D(uTex, base / uTexSize).rgb;
+        vec3 a = texture2D(uTex, (base + vec2(0.0, -1.0)) / uTexSize).rgb; // above
+        vec3 b = texture2D(uTex, (base + vec2(1.0, 0.0)) / uTexSize).rgb;  // right
+        vec3 c = texture2D(uTex, (base + vec2(-1.0, 0.0)) / uTexSize).rgb; // left
+        vec3 d = texture2D(uTex, (base + vec2(0.0, 1.0)) / uTexSize).rgb;  // below
+        // The two neighbours meeting at this quarter's corner, and the two away from it.
+        vec3 v = quarter.y < 0.5 ? a : d;
+        vec3 h = quarter.x < 0.5 ? c : b;
+        vec3 vFar = quarter.y < 0.5 ? d : a;
+        vec3 hFar = quarter.x < 0.5 ? b : c;
+        float same = step(distance(v, h), 0.02);
+        float notV = step(0.02, distance(h, vFar));
+        float notH = step(0.02, distance(v, hFar));
+        gl_FragColor = vec4(mix(p, v, same * notV * notH), 1.0);
+        return;
+    }
     vec2 scale = max(floor(uOutSize / uSrcSize), vec2(1.0));
     vec2 region = 0.5 - 0.5 / scale;
     vec2 centre = fract(texel) - 0.5;

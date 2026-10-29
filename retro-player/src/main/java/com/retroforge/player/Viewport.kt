@@ -29,6 +29,7 @@ enum class ScreenFilter(val label: String) {
     LCD("LCD grid"),
     CRT_CURVED("CRT, curved screen"),
     LCD_GHOSTING("LCD, with ghosting"),
+    SCALE2X("Smooth pixel art (Scale2x)"),
     ;
 
     fun next(): ScreenFilter = entries[(ordinal + 1) % entries.size]
