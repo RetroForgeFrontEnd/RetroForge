@@ -347,6 +347,13 @@ object PlayerCores {
      */
     private val vulkanByDefault = setOf("dolphin", "pcsx2")
 
+    /** Whether [coreId] draws with Vulkan unless the user picks OpenGL. */
+    fun vulkanIsDefault(coreId: String) = coreId in vulkanByDefault
+
+    /** How a core's graphics choice reads: Vulkan is only "experimental" where it isn't the default. */
+    fun graphicsLabel(coreId: String, vulkan: Boolean) =
+        if (!vulkan) "OpenGL" else if (vulkanIsDefault(coreId)) "Vulkan" else "Vulkan (experimental)"
+
     /** The user's pick, else Vulkan for [vulkanByDefault] and OpenGL for the rest (Vulkan is still experimental). */
     fun usesVulkan(coreId: String, choice: String?): Boolean =
         coreId in vulkanCores && (choice == "vulkan" || (choice == null && coreId in vulkanByDefault))

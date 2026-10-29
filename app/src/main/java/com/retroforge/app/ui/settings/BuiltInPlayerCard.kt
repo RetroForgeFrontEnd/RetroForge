@@ -98,15 +98,15 @@ private fun VideoChoicesCard(systems: List<Pair<String, String>>, choices: CoreC
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("Graphics and resolution")
         CardBody(
-            "OpenGL is the default. Vulkan (experimental) can be faster on some phones; switch back if a game shows a black " +
-                "screen. Resolution draws 3D games sharper than the original (2× is like a 720p console, 3× 1080p, up to 10× for " +
+            "GameCube, Wii and PS2 use Vulkan; other systems use OpenGL, and Vulkan (experimental) can be faster on some " +
+                "phones. Switch back if a game shows a black screen. Resolution draws 3D games sharper than the original (2× is like a 720p console, 3× 1080p, up to 10× for " +
                 "PSP) but needs a faster phone. Both can also be changed from the pause menu while playing.",
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             rows.forEach { (id, name, coreId) ->
                 if (coreId in PlayerCores.vulkanCores) {
                     val vulkan = PlayerCores.usesVulkan(coreId, saved["graphics.$id"])
-                    FocusChip("$name: ${if (vulkan) "Vulkan (experimental)" else "OpenGL"}", onClick = {
+                    FocusChip("$name: ${PlayerCores.graphicsLabel(coreId, vulkan)}", onClick = {
                         video.set("graphics.$id", if (vulkan) "opengl" else "vulkan")
                         changes++
                     })

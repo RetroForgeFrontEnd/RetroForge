@@ -1259,7 +1259,7 @@ class PlayerActivity : ComponentActivity() {
                             Text("Resolution: ${scale}×" + if (scale == 1) " (original)" else "")
                         }
                         if (coreId in PlayerCores.vulkanCores) MenuButton(onClick = { chooseGraphics() }, modifier = wide) {
-                            Text("Graphics: ${if (vulkanOn) "Vulkan (experimental)" else "OpenGL"}")
+                            Text("Graphics: ${PlayerCores.graphicsLabel(coreId, vulkanOn)}")
                         }
                         MenuButton(onClick = { chooseVr(!vr) }, modifier = wide) {
                             Text("Cardboard VR: ${if (vr) "On" else "Off"}" + if (PlayerCores.sideBySide(coreId)) " (3D)" else "")
