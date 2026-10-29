@@ -390,6 +390,16 @@ class PlayerActivity : ComponentActivity() {
      */
     private fun loadContent(uri: Uri, fileName: String, needsFile: Boolean, extensions: Set<String>): Boolean {
         val cache = File(cacheDir, "player").apply { deleteRecursively(); mkdirs() }
+        // A game that's a folder (RetroBat's DOS "Game.pc" folders): copied with everything in it, started from its program.
+        if (FolderGame.isFolder(contentResolver, uri)) {
+            val root = File(externalCacheDir ?: cacheDir, "games")
+            val dir = File(root, Integer.toHexString(uri.toString().hashCode()))
+            GameFiles.prune(root, keep = 2, current = dir)
+            val start = FolderGame.expose(contentResolver, uri, fileName, dir) { percent ->
+                runOnUiThread { loadingDetail = "Preparing the game for the first time… $percent%" }
+            }
+            return NativePlayer.loadGame(start.path, -1, false)
+        }
         val ext = fileName.substringAfterLast('.', "").lowercase()
         if (ext == "zip" && "zip" !in extensions) {
             val file = contentResolver.openInputStream(uri)?.use { stream ->
