@@ -71,10 +71,23 @@ fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices,
     }
 }
 
-/** The player's saves, states and cheats, as the player process keeps them. */
+/**
+ * The player's saves, states and cheats, plus RetroForge's settings: app settings, view and player choices (screen
+ * shape, filters, remapped buttons …) and which emulator each system uses. Game folders, favourites and playlists
+ * aren't included (folder access can't move to another device).
+ */
 private fun saveBackup(context: Context): SaveBackup {
     val base = context.getExternalFilesDir(null) ?: context.filesDir
-    return SaveBackup(mapOf("saves" to File(base, "saves"), "states" to File(base, "states"), "cheats" to File(context.filesDir, "cheats")))
+    return SaveBackup(
+        mapOf(
+            "saves" to File(base, "saves"),
+            "states" to File(base, "states"),
+            "cheats" to File(context.filesDir, "cheats"),
+            "settings" to File(context.filesDir, "datastore"),
+            "choices" to File(context.dataDir, "shared_prefs"),
+            "player" to File(context.filesDir, "player"),
+        ),
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -83,6 +96,7 @@ private fun SaveBackupCard() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var status by remember { mutableStateOf<String?>(null) }
+    var restartNeeded by remember { mutableStateOf(false) }
     fun run(work: () -> String) = scope.launch {
         status = "Working…"
         status = withContext(Dispatchers.IO) { runCatching(work).getOrElse { "That didn't work: ${it.message}" } }
@@ -98,20 +112,25 @@ private fun SaveBackupCard() {
         uri ?: return@rememberLauncherForActivityResult
         run {
             val count = context.contentResolver.openInputStream(uri)?.use { saveBackup(context).restore(it) } ?: error("couldn't open the file")
-            if (count == 0) "No RetroForge saves found in that file." else "Restored $count files."
+            if (count == 0) "No RetroForge saves found in that file." else {
+                restartNeeded = true
+                "Restored $count files. RetroForge restarts to load the settings."
+            }
         }
     }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Back up saves")
+        CardTitle("Back up saves and settings")
         CardBody(
-            "One zip with the built-in player's in-game saves, save states and cheats. Keep it somewhere safe, or restore it on " +
-                "another device. Restoring replaces saves with the same name and keeps the rest.",
+            "One zip with the built-in player's in-game saves, save states and cheats, and RetroForge's settings (screen shapes, " +
+                "filters, remapped buttons, emulator choices). Keep it somewhere safe, or restore it on a new phone. Restoring " +
+                "replaces files with the same name and keeps the rest. Game folders, favourites and playlists aren't included.",
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            FocusChip("Back up to a file", onClick = { export.launch("RetroForge-saves-${LocalDate.now()}.zip") })
+            FocusChip("Back up to a file", onClick = { export.launch("RetroForge-backup-${LocalDate.now()}.zip") })
             FocusChip("Restore from a backup", onClick = { import.launch(arrayOf("application/zip", "application/octet-stream")) })
         }
         status?.let { CardBody(it) }
+        if (restartNeeded) FocusChip("Restart RetroForge now", onClick = { restart(context) })
     }
     StorageCard()
 }
@@ -144,4 +163,11 @@ private fun StorageCard() {
             }
         })
     }
+}
+
+/** Starts RetroForge afresh, so restored settings are read from their files. */
+private fun restart(context: Context) {
+    val launch = context.packageManager.getLaunchIntentForPackage(context.packageName) ?: return
+    context.startActivity(android.content.Intent.makeRestartActivityTask(launch.component))
+    Runtime.getRuntime().exit(0)
 }

@@ -16,7 +16,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Graphics: shapes, filters, integer scaling | ✅ |
 | Themes, theme engine, import | ✅ (colours + system art); ✅ interface sounds (own synthesised sounds, switch in Settings; not heard on a device yet) |
 | Clear compatibility information | 🟡 docs; per-game compatibility not shown in the app |
-| Portable library (other frontends keep working) | ✅ read-only scan, own index; ❌ export/import of RetroForge's setup |
+| Portable library (other frontends keep working) | ✅ read-only scan, own index; ✅ settings in the backup zip (tested); ❌ favourites/playlists not in it yet |
 | PC subsystem via a real runtime | 🟡 GameNative boots a game on the S22; ⛔ DroidDeck (needs Snapdragon); ❌ PC games in RetroForge's library |
 | Documentation set | ✅ core docs and the 5 RetroBat audit docs ([architecture](retrobat-architecture-analysis.md), [workflows](retrobat-workflow-mapping.md), [ES-DE folders](retrobat-esde-folder-mapping.md), [Android parity](retrobat-android-parity-matrix.md), [recommendations](android-integration-recommendations.md)) |
 | Automated tests | ✅ unit tests; ❌ automated UI tests |

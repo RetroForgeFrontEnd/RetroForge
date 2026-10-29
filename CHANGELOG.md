@@ -17,7 +17,7 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Retro tab, canvas style**: systems first, as a big centred rounded tile with neighbours peeking in, the logo, year and game count underneath on the theme's wallpaper. Ready on first start: console pictures, logos and details from canvas-es (by Siddy212, CC0) download by themselves for the systems in your library, drawn in RetroForge's colours with the faded RetroForge logo behind. Tiles can show consoles, game art or plain name plates, and you can use your own theme folder instead (canvas-es and other ES-DE-style themes, Alekfull-NX). RetroForge ships none of this artwork.
 
-**Saves and storage**: Settings → Built-in player → Back up saves writes one zip with in-game saves, save states and cheats; Restore puts them back (on this or another device), replacing same-named saves and keeping the rest. A Storage card shows the space emulators and copied CD/arcade games use, with Clear copied games. Each game's page shows its time played in the built-in player.
+**Saves and storage**: Settings → Built-in player → Back up saves and settings writes one zip with in-game saves, save states, cheats and RetroForge's settings (screen shapes, filters, remapped buttons, emulator choices); Restore puts them back (on this or another device), replacing same-named saves and keeping the rest. A Storage card shows the space emulators and copied CD/arcade games use, with Clear copied games. Each game's page shows its time played in the built-in player.
 
 **Interface sounds**: a soft tick when moving with a controller or remote, a chime on select and on back. RetroForge's own sounds; switch them off in Settings.
 
