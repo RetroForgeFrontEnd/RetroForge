@@ -68,9 +68,9 @@ object GpuDrivers {
                 .map { DriverFile(source.name, release.name ?: release.tag_name, it.name, it.browser_download_url, it.size, release.published_at.orEmpty().take(10)) }
         }
 
-    /** The latest Turnip builds from every source (a few releases each). */
+    /** Turnip builds from every source's latest 30 releases, newest first. */
     fun fetch(userAgent: String): List<DriverFile> = SOURCES.flatMap { source ->
-        runCatching { parse(source, get("https://api.github.com/repos/${source.repo}/releases?per_page=5", userAgent)) }.getOrDefault(emptyList())
+        runCatching { parse(source, get("https://api.github.com/repos/${source.repo}/releases?per_page=30", userAgent)) }.getOrDefault(emptyList())
     }.sortedByDescending { it.published }
 
     /** Downloads [file] into [target], replacing it only once the download is complete. */

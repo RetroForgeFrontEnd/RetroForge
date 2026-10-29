@@ -45,6 +45,7 @@ fun GpuDriversScreen() {
     var files by remember { mutableStateOf<List<DriverFile>?>(null) }
     var listStatus by remember { mutableStateOf<String?>(null) }
     var showAnyway by remember { mutableStateOf(false) }
+    var query by remember { mutableStateOf("") }
     val progress = remember { mutableStateMapOf<String, String>() }
     LaunchedEffect(Unit) { advice = withContext(Dispatchers.IO) { GpuDrivers.advice(GpuProbe.probe()) } }
 
@@ -92,10 +93,19 @@ fun GpuDriversScreen() {
                 )
                 listStatus?.let { CardBody(it) }
             }
+            if (files.orEmpty().isNotEmpty()) {
+                com.retroforge.core.ui.ControllerTextField(
+                    value = query, onValueChange = { query = it }, singleLine = true,
+                    label = { androidx.compose.material3.Text("Search drivers (e.g. 26.0, R8, a8xx, Gmem)") },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
             val preferA8xx = advice?.preferA8xx == true
+            val words = query.trim().split(' ').filter { it.isNotBlank() }
             files.orEmpty()
+                .filter { file -> words.all { w -> listOf(file.fileName, file.release, file.source).any { it.contains(w, ignoreCase = true) } } }
                 .sortedByDescending { preferA8xx && it.fileName.contains("8xx", ignoreCase = true) }
-                .take(12)
+                .take(if (words.isEmpty()) 12 else 60)
                 .forEach { file ->
                     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
                         if (progress[file.url]?.endsWith("%") == true) return@FocusCard

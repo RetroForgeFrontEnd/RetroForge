@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.core.net.toUri
 import com.retroforge.artwork.SteamGridDb
 import com.retroforge.artwork.ScreenScraper
@@ -146,6 +147,7 @@ fun SettingsScreen(
 private fun SteamGridDbKeyCard(saved: String?, onSave: (String?) -> Unit) {
     val context = LocalContext.current
     var draft by remember(saved) { mutableStateOf("") }
+    var showKey by remember { mutableStateOf(false) }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("Custom covers (SteamGridDB)")
         if (saved.isNullOrBlank()) {
@@ -163,11 +165,12 @@ private fun SteamGridDbKeyCard(saved: String?, onSave: (String?) -> Unit) {
             onValueChange = { draft = it.trim() },
             singleLine = true,
             label = { Text(if (saved.isNullOrBlank()) "Paste API key" else "Replace API key") },
-            visualTransformation = PasswordVisualTransformation(),
+            visualTransformation = if (showKey) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
     }
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        FocusChip(if (showKey) "Hide key" else "Show key", onClick = { showKey = !showKey })
         FocusChip("Save key", onClick = { onSave(draft); draft = "" }, enabled = draft.length >= 16)
         FocusChip("Get a free key", onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, SteamGridDb.KEY_PAGE.toUri())) } })
         if (!saved.isNullOrBlank()) FocusChip("Remove key", onClick = { onSave(null) })
@@ -238,6 +241,7 @@ private fun ScreenScraperCard(savedUser: String?, onSave: (String?, String?) -> 
     val context = LocalContext.current
     var user by remember(savedUser) { mutableStateOf(savedUser.orEmpty()) }
     var password by remember(savedUser) { mutableStateOf("") }
+    var showPassword by remember { mutableStateOf(false) }
     val available = BuildConfig.SCREENSCRAPER_DEV_ID.isNotBlank()
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("Covers from ScreenScraper")
@@ -256,10 +260,12 @@ private fun ScreenScraperCard(savedUser: String?, onSave: (String?, String?) -> 
         ControllerTextField(value = user, onValueChange = { user = it.trim() }, singleLine = true, label = { Text("ScreenScraper username") }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
         ControllerTextField(
             value = password, onValueChange = { password = it }, singleLine = true, label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+            visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
     }
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        FocusChip(if (showPassword) "Hide password" else "Show password", onClick = { showPassword = !showPassword })
         FocusChip("Save", onClick = { onSave(user, password); password = "" }, enabled = user.isNotBlank() && password.isNotEmpty())
         FocusChip("Create a free account", onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, ScreenScraper.SIGN_UP.toUri())) } })
         if (!savedUser.isNullOrBlank()) FocusChip("Sign out", onClick = { onSave(null, null) })
@@ -271,15 +277,25 @@ private fun ScreenScraperCard(savedUser: String?, onSave: (String?, String?) -> 
 private fun ReportProblemCard() {
     val context = LocalContext.current
     val url = BuildConfig.BUG_REPORT_URL
-    if (url.isBlank()) return
     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
         val body = "What happened:\n\nWhat you expected:\n\nSteps to repeat it:\n\n---\n" +
             "RetroForge ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
             "Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}, Android ${android.os.Build.VERSION.RELEASE} (API ${android.os.Build.VERSION.SDK_INT})"
-        val link = url.trimEnd('/') + "/new?labels=bug&body=" + java.net.URLEncoder.encode(body, "UTF-8")
-        runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, link.toUri())) }
+        val intent = if (url.isNotBlank()) {
+            Intent(Intent.ACTION_VIEW, (url.trimEnd('/') + "/new?labels=bug&body=" + java.net.URLEncoder.encode(body, "UTF-8")).toUri())
+        } else {
+            // No issue tracker in this build: share the report by email, message or anything else.
+            Intent.createChooser(
+                Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_SUBJECT, "RetroForge problem report").putExtra(Intent.EXTRA_TEXT, body),
+                "Send the report with…",
+            )
+        }
+        runCatching { context.startActivity(intent) }
     }) {
         CardTitle("Report a problem")
-        CardBody("Opens a bug report on GitHub with your RetroForge version and device model filled in. Nothing else is sent; you see everything before posting.")
+        CardBody(
+            if (url.isNotBlank()) "Opens a bug report on GitHub with your RetroForge version and device model filled in. Nothing else is sent; you see everything before posting."
+            else "Writes a short report with your RetroForge version and phone model, for you to send by email or message. Nothing is sent until you send it.",
+        )
     }
 }

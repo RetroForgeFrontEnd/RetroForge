@@ -170,7 +170,7 @@ fun TouchControls(
                             PadButton(label, RoundedCornerShape(10.dp), if (layout.triggers.isEmpty()) 60.dp * k else 52.dp * k, 28.dp * k, small = true, faint = true, role = ButtonRole.SHOULDER) { down -> set(10, if (down) Pad.bit(button) else 0) }
                         } ?: Spacer(Modifier.height(32.dp * k))
                     }
-                    DPad(if (layout.sticks) 104.dp * k else 116.dp * k, faint = true) { set(0, it) }
+                    DPad(if (layout.sticks) 104.dp * k else if (layout.face.size <= 3) 132.dp * k else 116.dp * k, faint = true) { set(0, it) }
                     if (layout.sticks) Stick(84.dp * k, faint = true, onMove = { x, y -> onAnalog(0, x, y) }) { set(14, if (it) Pad.bit(Pad.L3) else 0) }
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp * k), verticalAlignment = Alignment.CenterVertically) {
                         if (layout.hasSelect) PadButton("Select", RoundedCornerShape(50), 60.dp * k, 26.dp * k, small = true, faint = true, role = ButtonRole.PILL) { set(8, if (it) Pad.bit(Pad.SELECT) else 0) }
@@ -186,7 +186,17 @@ fun TouchControls(
                             PadButton(label, RoundedCornerShape(10.dp), 52.dp * k, 28.dp * k, small = true, faint = true, role = ButtonRole.SHOULDER) { down -> set(13, if (down) Pad.bit(button) else 0) }
                         }
                     }
-                    FaceButtons(layout.face, if (layout.sticks) 38.dp * k else 42.dp * k, faint = true) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
+                    FaceButtons(
+                        layout.face,
+                        // Fewer buttons get bigger ones (GBA's two are easy to miss at the four-button size).
+                        when {
+                            layout.sticks -> 38.dp * k
+                            layout.face.size <= 2 -> 58.dp * k
+                            layout.face.size == 3 -> 50.dp * k
+                            else -> 42.dp * k
+                        },
+                        faint = true,
+                    ) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
                     if (layout.sticks) Stick(84.dp * k, faint = true, onMove = { x, y -> onAnalog(1, x, y) }) { set(15, if (it) Pad.bit(Pad.R3) else 0) }
                     PadButton("Start", RoundedCornerShape(50), 60.dp * k, 26.dp * k, small = true, faint = true, role = ButtonRole.PILL) { set(9, if (it) Pad.bit(Pad.START) else 0) }
                 }

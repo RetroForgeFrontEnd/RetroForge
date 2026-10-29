@@ -113,6 +113,8 @@ class PlayerActivity : ComponentActivity() {
     private enum class MenuPage { MAIN, OPTIONS, EMULATORS, CHEATS }
     private var cheats by mutableStateOf<List<Cheat>>(emptyList())
     private var cheatStatus by mutableStateOf<String?>(null)
+    // While the first download runs, only the status shows (no half-built list or code boxes flashing past).
+    private var fetchingCheats by mutableStateOf(false)
     private var newCode by mutableStateOf("")
     private var newName by mutableStateOf("")
     private val cheatStore by lazy { CheatStore(File(filesDir, "cheats/$system/$saveBase.json")) }
@@ -136,11 +138,13 @@ class PlayerActivity : ComponentActivity() {
         cheats = cheatStore.load()
         if (cheatStore.downloaded) return
         cheatStatus = "Looking for cheats for this game…"
+        fetchingCheats = true
         worker.execute {
             val found = runCatching {
                 cheatStore.fetch(system, intent.getStringExtra(EXTRA_FILE_NAME).orEmpty(), "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}")
             }
             runOnUiThread {
+                fetchingCheats = false
                 found.onSuccess { list ->
                     if (list == null) cheatStatus = "libretro's cheat database has no cheats for this game. You can add your own code below."
                     else { cheats = list; cheatStatus = null }
@@ -818,7 +822,7 @@ class PlayerActivity : ComponentActivity() {
                         )
                         cheatStatus?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
                         MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
-                        cheats.forEachIndexed { i, cheat ->
+                        if (!fetchingCheats) cheats.forEachIndexed { i, cheat ->
                             MenuButton(onClick = {
                                 updateCheats(cheats.toMutableList().also { it[i] = cheat.copy(enabled = !cheat.enabled) })
                             }, modifier = wide) {
@@ -833,6 +837,7 @@ class PlayerActivity : ComponentActivity() {
                                 }
                             }
                         }
+                        if (!fetchingCheats) {
                         Text("Add your own code", color = Color.White, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
                         com.retroforge.core.ui.ControllerTextField(newCode, { newCode = it.take(400) }, wide, label = { Text("Code (Game Genie, Action Replay …)") })
                         com.retroforge.core.ui.ControllerTextField(newName, { newName = it.take(60) }, wide, label = { Text("Name (optional)") })
@@ -844,6 +849,7 @@ class PlayerActivity : ComponentActivity() {
                                 newName = ""
                             }
                         }, modifier = wide) { Text("Add and switch on") }
+                        }
                     }
                     MenuPage.OPTIONS -> {
                         Text("$coreName settings", color = Color.White, fontWeight = FontWeight.Bold)
