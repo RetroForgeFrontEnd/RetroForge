@@ -59,8 +59,22 @@ class LibraryRepository(
     fun search(query: String): Flow<List<GameEntity>> {
         val words = query.lowercase().split(Regex("""[\s\-:.,'!]+""")).filter { it.isNotBlank() }
         val key = words.maxByOrNull { it.length } ?: query.trim()
+        val phrase = words.joinToString(" ")
         return dao.search(key.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")).map { games ->
             games.filter { g -> val title = g.title.lowercase(); words.all { it in title } }
+                .sortedBy { g -> searchRank(g.title, phrase, words) }
+        }
+    }
+
+    /** 0 for the title itself, 1 when the title starts with the search, 2 when every word starts a word, else 3. */
+    private fun searchRank(title: String, phrase: String, words: List<String>): Int {
+        val titleWords = title.lowercase().split(Regex("""[\s\-:.,'!()\[\]]+""")).filter { it.isNotBlank() }
+        val joined = titleWords.joinToString(" ")
+        return when {
+            joined == phrase -> 0
+            joined.startsWith(phrase) -> 1
+            words.all { w -> titleWords.any { it.startsWith(w) } } -> 2
+            else -> 3
         }
     }
     suspend fun duplicatesOf(game: GameEntity): List<GameEntity> = game.duplicateKey?.let { dao.duplicatesOf(it, game.id) }.orEmpty()

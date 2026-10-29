@@ -213,7 +213,13 @@ interface LibraryDao {
     @Query("SELECT * FROM games WHERE duplicateKey = :key AND id != :excludeId")
     suspend fun duplicatesOf(key: String, excludeId: Long): List<GameEntity>
 
-    @Query("SELECT * FROM games WHERE title LIKE '%' || :query || '%' ESCAPE '\\' ORDER BY sortKey LIMIT 200")
+    // Whole-title, then title-start, then word-start matches first, so a short word ("rez") still finds its game among
+    // the hundreds of titles that merely contain it before the limit cuts the list.
+    @Query(
+        "SELECT * FROM games WHERE title LIKE '%' || :query || '%' ESCAPE '\\' ORDER BY " +
+            "CASE WHEN title LIKE :query ESCAPE '\\' THEN 0 WHEN title LIKE :query || '%' ESCAPE '\\' THEN 1 " +
+            "WHEN title LIKE '% ' || :query || '%' ESCAPE '\\' THEN 2 ELSE 3 END, sortKey LIMIT 300",
+    )
     fun search(query: String): Flow<List<GameEntity>>
 
     @Query("SELECT * FROM scan_problems WHERE rootId = :rootId")
