@@ -73,6 +73,9 @@ object PlayerCores {
     private val prosystem = PlayerCore("prosystem", "ProSystem")
     private val hatari = PlayerCore("hatari", "Hatari", needsBios = true)
     private val bk = PlayerCore("bk", "BK")
+    private val b2 = PlayerCore("b2", "b2 (BBC Micro)")
+    private val squirreljme = PlayerCore("squirreljme", "SquirrelJME")
+    private val mameArcade = PlayerCore("mamearcade", "MAME (current, arcade)")
     private val viceX64 = PlayerCore("vice_x64sc", "VICE x64sc")
     private val viceX128 = PlayerCore("vice_x128", "VICE x128")
     private val vicePlus4 = PlayerCore("vice_xplus4", "VICE xplus4")
@@ -149,7 +152,8 @@ object PlayerCores {
         "dreamcast" to listOf(flycast),
         "gamecube" to listOf(dolphin), "gc" to listOf(dolphin), "wii" to listOf(dolphin),
         "3ds" to listOf(citra), "n3ds" to listOf(citra),
-        "ps2" to listOf(play, lrps2),
+        // LRPS2 (PCSX2) first: Play! crashes on real games on phones.
+        "ps2" to listOf(lrps2, play),
         "naomi" to listOf(flycastArcade), "naomi2" to listOf(flycastArcade), "atomiswave" to listOf(flycastArcade),
         "fbneo" to listOf(fbneo), "neogeo" to listOf(fbneo), "cps1" to listOf(fbneo), "cps2" to listOf(fbneo), "cps3" to listOf(fbneo),
         "mame" to listOf(mame2003, fbneo),
@@ -230,13 +234,23 @@ object PlayerCores {
         "sgb" to listOf(mgba),
         "megadrive-msu" to listOf(gpgx),
         "fds" to listOf(fceumm),
+        "bbcmicro" to listOf(b2),
+        "j2me" to listOf(squirreljme),
+        // ST-V romsets need MAME's own (FinalBurn Neo and MAME 2003 don't have the board); stvbios.zip beside them.
+        "segastv" to listOf(mameArcade),
+        // Mupen64Plus-Next plays 64DD disks with the 64DD IPL BIOS (64DD_IPL.bin) in the BIOS folder.
+        "n64dd" to listOf(mupen),
     )
 
     /** Arcade systems: games are romset .zips that may need the board's BIOS set from the same folder. */
-    val arcadeSystems = setOf("fbneo", "neogeo", "cps1", "cps2", "cps3", "mame")
+    val arcadeSystems = setOf("fbneo", "neogeo", "cps1", "cps2", "cps3", "mame", "segastv")
 
     /** Files to bring along with a game when they're next to it (Neo Geo BIOS for arcade sets). */
-    fun companions(system: String): List<String> = if (system in arcadeSystems) listOf("neogeo.zip") else emptyList()
+    fun companions(system: String): List<String> = when {
+        system == "segastv" -> listOf("stvbios.zip")
+        system in arcadeSystems -> listOf("neogeo.zip")
+        else -> emptyList()
+    }
 
     /** Disc systems the built-in player runs; their disc images (cue/bin, chd, pbp …) are allowed. */
     private val discSystems = setOf("psx", "megacd", "segacd", "pcenginecd", "saturn", "psp", "dreamcast", "gamecube", "gc", "wii", "ps2", "3do", "amigacd32", "amigacdtv", "cdi", "neogeocd", "pcfx", "dos")
@@ -294,6 +308,10 @@ object PlayerCores {
         // Citra's hardware shaders need geometry shaders, which phones running OpenGL ES through ANGLE (Samsung's
         // Xclipse GPUs) can't compile: "Geometry shader is not compiled", then Citra stops. Its software shaders work
         // everywhere, a little slower. Vulkan rendering (planned) lets Citra use its own Vulkan renderer instead.
+        // LRPS2's OpenGL renderer crashes compiling its shaders on ANGLE (Samsung Xclipse); paraLLEl-GS and Vulkan
+        // need Vulkan rendering in the player (planned). Its software renderer runs everywhere, using the phone's cores.
+        // Fastmem catches memory faults on purpose, which crashes inside an Android app process; off is a little slower.
+        "pcsx2" -> mapOf("pcsx2_renderer" to "Software", "pcsx2_fastmem" to "disabled")
         "citra" -> mapOf("citra_use_hw_shaders" to "disabled", "citra_use_acc_geo_shaders" to "disabled")
         else -> emptyMap()
     }

@@ -3,6 +3,7 @@ package com.retroforge.app.ui.setup
 import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
+import android.provider.DocumentsContract
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -121,6 +122,38 @@ class SetupViewModel(
         }
     }
 
+    /**
+     * A BIOS folder found without asking: a "bios" folder inside one of the game folders, or beside it on one of
+     * RetroForge's own network drives (RetroBat and ES-DE keep bios next to roms). Used and checked when found;
+     * returns false when there's none, so the screen can ask for the folder instead.
+     */
+    suspend fun useFoundBiosFolder(): Boolean {
+        val found = withContext(Dispatchers.IO) { foundBiosFolders().firstOrNull() } ?: return false
+        settings.setBiosFolder(found.toString())
+        checkBios(found)
+        return true
+    }
+
+    /** BIOS folders beside the game folders that open and aren't empty. */
+    private suspend fun foundBiosFolders(): List<Uri> =
+        library.roots.first().asSequence().flatMap { root -> biosCandidates(Uri.parse(root.treeUri)) }.distinct()
+            .filter { candidate -> runCatching { SafScanNode.root(resolver, candidate, "bios").children().isNotEmpty() }.getOrDefault(false) }
+            .toList()
+
+    private fun biosCandidates(tree: Uri): Sequence<Uri> = sequence {
+        val authority = tree.authority ?: return@sequence
+        val docId = runCatching { DocumentsContract.getTreeDocumentId(tree) }.getOrNull() ?: return@sequence
+        val own = authority == "${com.retroforge.app.BuildConfig.APPLICATION_ID}.network"
+        // Only RetroForge's own drives can be opened at any folder without a new permission.
+        if (!own) return@sequence
+        runCatching { SafScanNode.root(resolver, tree, "").children() }.getOrDefault(emptyList())
+            .firstOrNull { it.isDirectory && it.name.equals("bios", ignoreCase = true) }
+            ?.let { yield(DocumentsContract.buildTreeDocumentUri(authority, it.id)) }
+        val share = docId.substringBefore('/')
+        val parent = docId.substringAfter('/', "").trimEnd('/').substringBeforeLast('/', "")
+        yield(DocumentsContract.buildTreeDocumentUri(authority, "$share/" + listOf(parent, "bios").filter { it.isNotEmpty() }.joinToString("/")))
+    }
+
     fun recheckBios() {
         appSettings.value?.biosFolderUri?.let { checkBios(it.toUri()) }
     }
@@ -132,12 +165,28 @@ class SetupViewModel(
             val result = withContext(Dispatchers.IO) {
                 runCatching { checker.check(SafScanNode.root(resolver, uri, "bios"), systems) }
             }
-            _bios.update {
-                it.copy(checking = false, reports = result.getOrNull(), error = result.exceptionOrNull()?.let { e -> "Couldn't read that folder: ${e.message}" })
+            // Other BIOS folders RetroForge can read (a RetroBat "bios" beside the games on a network drive) fill in
+            // what the chosen one lacks: each system takes the best result from any of them.
+            val others = withContext(Dispatchers.IO) {
+                foundBiosFolders().filter { it != uri }.mapNotNull { f -> runCatching { f to checker.check(SafScanNode.root(resolver, f, "bios"), systems) }.getOrNull() }
             }
-            // The built-in player needs no folder picking: its BIOS folder is RetroForge's own.
-            result.getOrNull()?.let { reports ->
-                val copy = withContext(Dispatchers.IO) { runCatching { installer.copyToFolder(uri, installer.toCopy(reports), playerSystemDir) } }
+            val sources = result.getOrNull()?.let { primary -> primary.map { report ->
+                (listOf(uri to report) + others.mapNotNull { (f, reports) -> reports.firstOrNull { it.rule == report.rule }?.let { f to it } })
+                    .minBy { it.second.status.ordinal }
+            } }
+            _bios.update {
+                it.copy(checking = false, reports = sources?.map { s -> s.second }, error = result.exceptionOrNull()?.let { e -> "Couldn't read that folder: ${e.message}" })
+            }
+            // The built-in player needs no folder picking: its BIOS folder is RetroForge's own. Each file is copied
+            // from the folder it was found in.
+            sources?.let { list ->
+                val copy = withContext(Dispatchers.IO) {
+                    runCatching {
+                        list.groupBy({ it.first }, { it.second }).map { (folder, reports) ->
+                            installer.copyToFolder(folder, installer.toCopy(reports), playerSystemDir)
+                        }.reduce { a, b -> CopyResult(a.copied + b.copied, a.alreadyThere + b.alreadyThere, a.failed + b.failed) }
+                    }
+                }
                 _bios.update { it.copy(playerCopy = copy.getOrNull()) }
             }
         }

@@ -15,7 +15,7 @@ import java.io.IOException
 class GameFiles(private val resolver: ContentResolver, private val dir: File) {
 
     /** Copies what's missing; returns the main file's path. [onProgress] gets 0..100 while copying. */
-    fun expose(game: Uri, fileName: String, optional: List<String> = emptyList(), onProgress: (Int) -> Unit = {}): String {
+    fun expose(game: Uri, fileName: String, optional: List<String> = emptyList(), fallback: File? = null, onProgress: (Int) -> Unit = {}): String {
         dir.mkdirs()
         val wanted = linkedSetOf(fileName)
         val queue = ArrayDeque(listOf(fileName))
@@ -34,10 +34,12 @@ class GameFiles(private val resolver: ContentResolver, private val dir: File) {
                 queue += it
             }
         }
-        // Optional companions (e.g. neogeo.zip) come along only when they exist next to the game.
+        // Optional companions (e.g. neogeo.zip) come along when they exist next to the game, else from [fallback]
+        // (the player's BIOS folder: RetroBat keeps stvbios.zip with its BIOS files).
         optional.filter { it != fileName && it !in wanted }.forEach { name ->
             val uri = sibling(game, fileName, name)
             if (size(uri) > 0) files += name to uri
+            else fallback?.let { File(it, name) }?.takeIf { it.isFile }?.let { files += name to Uri.fromFile(it) }
         }
         val sizes = files.map { (_, uri) -> size(uri) }
         val total = sizes.sum().coerceAtLeast(1)

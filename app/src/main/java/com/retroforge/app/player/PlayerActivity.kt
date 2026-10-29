@@ -346,11 +346,14 @@ class PlayerActivity : ComponentActivity() {
             else -> emptyMap()
         }
         val options = PlayerCores.defaultOptions(coreId) + texturePacks + savedOptions() + PlayerCores.orientationOptions(coreId, isLandscape())
+        // Play! keeps its memory cards and settings under $EXTERNAL_STORAGE ("/sdcard/Play Data Files"), which apps can't
+        // write to any more, and stops when it can't. This process is the player's alone, so point it at our own folder.
+        if (coreId == "play") runCatching { android.system.Os.setenv("EXTERNAL_STORAGE", File(systemDir, "play").apply { mkdirs() }.path, true) }
         val error = NativePlayer.openCore(corePath, systemDir.path, savesDir.path, options.keys.toTypedArray(), options.values.toTypedArray())
         if (error != null) return fail(error)
         val info = NativePlayer.coreInfo()
         val ok = try {
-            loadContent(uri, fileName, info.needsFile, info.extensions)
+            loadContent(uri, fileName, info.needsFile, info.extensions, systemDir)
         } catch (e: IOException) {
             return fail("Couldn't read the game: ${e.message}")
         } catch (e: SecurityException) {
@@ -388,7 +391,7 @@ class PlayerActivity : ComponentActivity() {
      * Gives the core the game the way it wants it: in memory straight from the folder when it can take that,
      * otherwise as a file copied into the cache. A .zip or .7z is unpacked first unless the core reads it itself.
      */
-    private fun loadContent(uri: Uri, fileName: String, needsFile: Boolean, extensions: Set<String>): Boolean {
+    private fun loadContent(uri: Uri, fileName: String, needsFile: Boolean, extensions: Set<String>, systemDir: File): Boolean {
         val cache = File(cacheDir, "player").apply { deleteRecursively(); mkdirs() }
         // A game that's a folder (RetroBat's DOS "Game.pc" folders): copied with everything in it, started from its program.
         if (FolderGame.isFolder(contentResolver, uri)) {
@@ -432,7 +435,7 @@ class PlayerActivity : ComponentActivity() {
             val root = File(externalCacheDir ?: cacheDir, "games")
             val dir = File(root, Integer.toHexString(uri.toString().hashCode()))
             GameFiles.prune(root, keep = 2, current = dir)
-            val path = GameFiles(contentResolver, dir).expose(uri, fileName, PlayerCores.companions(system)) { percent ->
+            val path = GameFiles(contentResolver, dir).expose(uri, fileName, PlayerCores.companions(system), fallback = systemDir) { percent ->
                 runOnUiThread { loadingDetail = "Preparing the game for the first time… $percent%" }
             }
             return NativePlayer.loadGame(path, -1, false)

@@ -29,6 +29,7 @@ import com.retroforge.app.ui.ScreenFrame
 import com.retroforge.app.ui.library.plural
 import com.retroforge.core.ui.FocusCard
 import com.retroforge.core.ui.FocusChip
+import kotlinx.coroutines.launch
 import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
 import com.retroforge.library.BiosNeed
@@ -50,6 +51,7 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, onDone: 
 
     val pickGames = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::addGameFolder) }
     val pickBios = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::onBiosFolderPicked) }
+    val biosScope = androidx.compose.runtime.rememberCoroutineScope()
     val pickRetroArchFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::onRetroArchFolderPicked) }
 
     ScreenFrame(title = "Set up RetroForge", subtitle = "Three steps from your game folder to playing; most of it happens by itself. You can come back here any time from Settings.") {
@@ -139,7 +141,11 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, onDone: 
         }
 
         // 4. BIOS
-        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { pickBios.launch(null) }) {
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
+            // Check the folder already chosen; else look for one beside the games; else ask.
+            if (settings?.biosFolderUri != null) viewModel.recheckBios()
+            else biosScope.launch { if (!viewModel.useFoundBiosFolder()) pickBios.launch(null) }
+        }) {
             CardTitle("3. BIOS files")
             CardBody(
                 "Some systems need BIOS files from the original console. RetroForge doesn't provide them. If you have your own, " +
@@ -147,6 +153,7 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, onDone: 
             )
             if (settings?.biosFolderUri != null && bios.reports == null && !bios.checking) CardBody("Select to check your BIOS folder again.")
         }
+        if (settings?.biosFolderUri != null) FocusChip("Choose another BIOS folder", onClick = { pickBios.launch(null) })
         if (bios.checking) LinearProgressIndicator(Modifier.fillMaxWidth())
         bios.error?.let { CardBody(it) }
         bios.reports?.let { reports ->
@@ -168,7 +175,11 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, onDone: 
                     report.found.forEach { f ->
                         CardBody("${f.foundAs}${if (f.foundAs != f.wanted.baseName) " → ${f.wanted.name}" else ""}${if (f.verified) "" else " (unrecognised version)"}")
                     }
-                    if (report.status == BiosStatus.MISSING) CardBody("Needs ${report.rule.files.joinToString(if (report.rule.mode == "any") " or " else " and ") { it.name }}.")
+                    // A rule that takes any one of many versions (73 PS2 BIOS dumps) says so instead of listing them all.
+                    if (report.status == BiosStatus.MISSING) CardBody(
+                        if (report.rule.mode == "any" && report.rule.files.size > 4) "Needs one BIOS file for this system, any version (${report.rule.files.size} are recognised)."
+                        else "Needs ${report.rule.files.joinToString(if (report.rule.mode == "any") " or " else " and ") { it.baseName }}.",
+                    )
                     else if (report.missing.isNotEmpty() && report.rule.mode == "all") CardBody("Missing: ${report.missing.joinToString { it.name }}")
                     if (report.rule.note.isNotBlank()) CardBody(report.rule.note)
                 }

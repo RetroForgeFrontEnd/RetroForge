@@ -232,7 +232,9 @@ class LibraryScanner(private val rules: SystemRules) {
             val children = try {
                 node.children()
             } catch (e: IOException) {
-                problems += ScanProblem((prefix + path).trimEnd('/'), "Can't open folder: ${e.message}")
+                // An artwork folder that won't open only costs some box art (the gamelist's own paths still work),
+                // so it isn't reported: RetroBat has images, videos and manuals in every system folder.
+                if (!inMedia) problems += ScanProblem((prefix + path).trimEnd('/'), "Can't open folder: ${e.message}")
                 return
             }
             for (child in children) {
