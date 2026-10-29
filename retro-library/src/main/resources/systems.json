@@ -780,7 +780,9 @@
     "uzdoom",
     "wad"
    ],
-   "aliases": []
+   "aliases": [
+    "prboom"
+   ]
   },
   {
    "id": "doom3",
@@ -2760,6 +2762,14 @@
    "aliases": [
     "spectrum"
    ]
+  },
+  {
+   "id": "mrboom",
+   "name": "Mr. Boom",
+   "extensions": [
+    "libretro"
+   ],
+   "aliases": []
   }
  ]
 }

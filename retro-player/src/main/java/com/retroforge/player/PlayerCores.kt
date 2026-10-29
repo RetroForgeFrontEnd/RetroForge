@@ -61,6 +61,68 @@ object PlayerCores {
     private val play = PlayerCore("play", "Play! (experimental)")
     private val lrps2 = PlayerCore("pcsx2", "LRPS2 (experimental, needs the PS2 BIOS)", needsBios = true)
 
+    // Computers, more consoles and game engines (one core each, from the libretro buildbot like the rest).
+    private val opera = PlayerCore("opera", "Opera", needsBios = true)
+    private val puae = PlayerCore("puae", "PUAE", needsBios = true)
+    private val cap32 = PlayerCore("cap32", "Caprice32")
+    private val crocods = PlayerCore("crocods", "CrocoDS")
+    private val applewin = PlayerCore("applewin", "AppleWin")
+    private val arduous = PlayerCore("arduous", "Arduous")
+    private val a5200 = PlayerCore("a5200", "a5200", needsBios = true)
+    private val atari800 = PlayerCore("atari800", "Atari800", needsBios = true)
+    private val prosystem = PlayerCore("prosystem", "ProSystem")
+    private val hatari = PlayerCore("hatari", "Hatari", needsBios = true)
+    private val bk = PlayerCore("bk", "BK")
+    private val viceX64 = PlayerCore("vice_x64sc", "VICE x64sc")
+    private val viceX128 = PlayerCore("vice_x128", "VICE x128")
+    private val vicePlus4 = PlayerCore("vice_xplus4", "VICE xplus4")
+    private val viceVic = PlayerCore("vice_xvic", "VICE xvic")
+    private val vicePet = PlayerCore("vice_xpet", "VICE xpet")
+    private val nxengine = PlayerCore("nxengine", "NXEngine")
+    private val sameCdi = PlayerCore("same_cdi", "SAME CDi", needsBios = true)
+    private val freechaf = PlayerCore("freechaf", "FreeChaF", needsBios = true)
+    private val gearcoleco = PlayerCore("gearcoleco", "Gearcoleco", needsBios = true)
+    private val dosboxPure = PlayerCore("dosbox_pure", "DOSBox Pure")
+    private val prboom = PlayerCore("prboom", "PrBoom")
+    private val easyrpg = PlayerCore("easyrpg", "EasyRPG")
+    private val ecwolf = PlayerCore("ecwolf", "ECWolf")
+    private val gw = PlayerCore("gw", "Game & Watch")
+    private val tgbdual = PlayerCore("tgbdual", "TGB Dual")
+    private val freeintv = PlayerCore("freeintv", "FreeIntv", needsBios = true)
+    private val virtualjaguar = PlayerCore("virtualjaguar", "Virtual Jaguar")
+    private val pocketcdg = PlayerCore("pocketcdg", "PocketCDG")
+    private val lowresnx = PlayerCore("lowresnx", "LowRes NX")
+    private val lutro = PlayerCore("lutro", "Lutro")
+    private val minivmac = PlayerCore("minivmac", "Mini vMac", needsBios = true)
+    private val sameduck = PlayerCore("sameduck", "SameDuck")
+    private val bluemsx = PlayerCore("bluemsx", "blueMSX", needsBios = true)
+    private val fmsx = PlayerCore("fmsx", "fMSX")
+    private val neocd = PlayerCore("neocd", "NeoCD", needsBios = true)
+    private val o2em = PlayerCore("o2em", "O2EM", needsBios = true)
+    private val openlara = PlayerCore("openlara", "OpenLara")
+    private val quasi88 = PlayerCore("quasi88", "QUASI88", needsBios = true)
+    private val np2kai = PlayerCore("np2kai", "Neko Project II Kai", needsBios = true)
+    private val pcfx = PlayerCore("mednafen_pcfx", "Beetle PC-FX", needsBios = true)
+    private val retro8 = PlayerCore("retro8", "Retro8")
+    private val pokemini = PlayerCore("pokemini", "PokeMini")
+    private val tyrquake = PlayerCore("tyrquake", "TyrQuake")
+    private val vitaquake2 = PlayerCore("vitaquake2", "vitaQuake 2")
+    private val scummvm = PlayerCore("scummvm", "ScummVM")
+    private val emuscv = PlayerCore("emuscv", "EmuSCV", needsBios = true)
+    private val potator = PlayerCore("potator", "Potator")
+    private val theodore = PlayerCore("theodore", "Theodore")
+    private val tic80 = PlayerCore("tic80", "TIC-80")
+    private val uzem = PlayerCore("uzem", "Uzem")
+    private val vecx = PlayerCore("vecx", "vecx")
+    private val vircon32 = PlayerCore("vircon32", "Vircon32", needsBios = true)
+    private val wasm4 = PlayerCore("wasm4", "WASM-4")
+    private val x1 = PlayerCore("x1", "X Millennium", needsBios = true)
+    private val px68k = PlayerCore("px68k", "PX68k", needsBios = true)
+    private val fuse = PlayerCore("fuse", "Fuse")
+    private val zx81 = PlayerCore("81", "EightyOne")
+    private val supergrafxCore = PlayerCore("mednafen_supergrafx", "Beetle SuperGrafx")
+    private val mrboom = PlayerCore("mrboom", "Mr.Boom")
+
     private val sega = listOf(gpgx, picodrive)
     private val gameBoy = listOf(gambatte, sameboy, gearboy, mgba)
 
@@ -91,6 +153,83 @@ object PlayerCores {
         "naomi" to listOf(flycastArcade), "naomi2" to listOf(flycastArcade), "atomiswave" to listOf(flycastArcade),
         "fbneo" to listOf(fbneo), "neogeo" to listOf(fbneo), "cps1" to listOf(fbneo), "cps2" to listOf(fbneo), "cps3" to listOf(fbneo),
         "mame" to listOf(mame2003, fbneo),
+        "3do" to listOf(opera),
+        "amiga500" to listOf(puae),
+        "amiga1200" to listOf(puae),
+        "amiga4000" to listOf(puae),
+        "amigacd32" to listOf(puae),
+        "amigacdtv" to listOf(puae),
+        "amstradcpc" to listOf(cap32, crocods),
+        "gx4000" to listOf(cap32),
+        "apple2" to listOf(applewin),
+        "arduboy" to listOf(arduous),
+        "atari5200" to listOf(a5200, atari800),
+        "atari7800" to listOf(prosystem),
+        "atari800" to listOf(atari800),
+        "xegs" to listOf(atari800),
+        "atarist" to listOf(hatari),
+        "bk" to listOf(bk),
+        "c64" to listOf(viceX64),
+        "c128" to listOf(viceX128),
+        "cplus4" to listOf(vicePlus4),
+        "c16" to listOf(vicePlus4),
+        "c20" to listOf(viceVic),
+        "pet" to listOf(vicePet),
+        "cavestory" to listOf(nxengine),
+        "cdi" to listOf(sameCdi),
+        "channelf" to listOf(freechaf),
+        "colecovision" to listOf(gearcoleco),
+        "adam" to listOf(gearcoleco),
+        "dos" to listOf(dosboxPure),
+        "doom" to listOf(prboom),
+        "easyrpg" to listOf(easyrpg),
+        "ecwolf" to listOf(ecwolf),
+        "gw" to listOf(gw),
+        "lcdgames" to listOf(gw),
+        "gb2players" to listOf(tgbdual),
+        "gbc2players" to listOf(tgbdual),
+        "intellivision" to listOf(freeintv),
+        "jaguar" to listOf(virtualjaguar),
+        "karaoke" to listOf(pocketcdg),
+        "lowresnx" to listOf(lowresnx),
+        "lutro" to listOf(lutro),
+        "megaduck" to listOf(sameduck),
+        "msx1" to listOf(bluemsx, fmsx),
+        "msx2" to listOf(bluemsx, fmsx),
+        "msx2+" to listOf(bluemsx),
+        "msxturbor" to listOf(bluemsx),
+        "spectravideo" to listOf(bluemsx),
+        "neogeocd" to listOf(neocd),
+        "odyssey2" to listOf(o2em),
+        "openlara" to listOf(openlara),
+        "pc88" to listOf(quasi88),
+        "pc98" to listOf(np2kai),
+        "pcfx" to listOf(pcfx),
+        "pico8" to listOf(retro8),
+        "pokemini" to listOf(pokemini),
+        "quake" to listOf(tyrquake),
+        "quake2" to listOf(vitaquake2),
+        "scummvm" to listOf(scummvm),
+        "scv" to listOf(emuscv),
+        "supergrafx" to listOf(supergrafxCore),
+        "supervision" to listOf(potator),
+        "thomson" to listOf(theodore),
+        "tic80" to listOf(tic80),
+        "uzebox" to listOf(uzem),
+        "vectrex" to listOf(vecx),
+        "vircon32" to listOf(vircon32),
+        "wasm4" to listOf(wasm4),
+        "x1" to listOf(x1),
+        "x68000" to listOf(px68k),
+        "zxspectrum" to listOf(fuse),
+        "zx81" to listOf(zx81),
+        "mrboom" to listOf(mrboom),
+        "satellaview" to listOf(snes9x),
+        "sufami" to listOf(snes9x),
+        "snes-msu1" to listOf(snes9x),
+        "sgb" to listOf(mgba),
+        "megadrive-msu" to listOf(gpgx),
+        "fds" to listOf(fceumm),
     )
 
     /** Arcade systems: games are romset .zips that may need the board's BIOS set from the same folder. */
@@ -100,7 +239,7 @@ object PlayerCores {
     fun companions(system: String): List<String> = if (system in arcadeSystems) listOf("neogeo.zip") else emptyList()
 
     /** Disc systems the built-in player runs; their disc images (cue/bin, chd, pbp …) are allowed. */
-    private val discSystems = setOf("psx", "megacd", "segacd", "pcenginecd", "saturn", "psp", "dreamcast", "gamecube", "gc", "wii", "ps2")
+    private val discSystems = setOf("psx", "megacd", "segacd", "pcenginecd", "saturn", "psp", "dreamcast", "gamecube", "gc", "wii", "ps2", "3do", "amigacd32", "amigacdtv", "cdi", "neogeocd", "pcfx", "dos")
 
     /**
      * Systems where the built-in player is experimental: a standalone emulator the user has installed (Dolphin,
