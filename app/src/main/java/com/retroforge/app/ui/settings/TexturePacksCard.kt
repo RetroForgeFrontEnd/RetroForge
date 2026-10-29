@@ -42,6 +42,7 @@ fun TexturePacksCard(playerDir: File) {
             "They're switched on automatically when a pack is installed.",
         File(playerDir, "system/Mupen64plus/hires_texture"),
     )
+    DownloadPacks(File(playerDir, "system/Mupen64plus/cache"))
     TexturePacks(
         "Texture packs (PSP)",
         "High-resolution texture packs for PSP games in the built-in player. A pack is a folder named after the game's ID, " +
@@ -81,6 +82,50 @@ private fun TexturePacks(title: String, body: String, packs: File) {
             installed.forEach { name ->
                 FocusChip("Remove $name", onClick = {
                     scope.launch { withContext(Dispatchers.IO) { File(packs, name).deleteRecursively() }; changes++ }
+                })
+            }
+        }
+        status?.let { CardBody(it) }
+    }
+}
+
+/** One-tap downloads of free N64 packs (GhostlyDark's "Reloaded" packs on GitHub). */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun DownloadPacks(cacheDir: File) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var changes by remember { mutableIntStateOf(0) }
+    var status by remember { mutableStateOf<String?>(null) }
+    var busy by remember { mutableStateOf(false) }
+    val installed = remember(changes) { cacheDir.listFiles()?.filter { it.name.endsWith(".hts", true) }?.sortedBy { it.name }.orEmpty() }
+    FocusCard(modifier = Modifier.fillMaxWidth()) {
+        CardTitle("Download N64 texture packs")
+        CardBody(
+            "Free HD packs by GhostlyDark, downloaded from their official GitHub releases (100 MB to over 1 GB each, so use Wi-Fi). " +
+                "Made for the USA versions of the games. They're switched on automatically.",
+        )
+        CardBody(if (installed.isEmpty()) "None downloaded yet." else "Downloaded: " + installed.joinToString { "${it.name.removeSuffix(".hts").removeSuffix("_HIRESTEXTURES")} (${it.length() / 1_000_000} MB)" })
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            TexturePackDownloads.packs.forEach { pack ->
+                FocusChip("Download ${pack.game}", enabled = !busy, onClick = {
+                    busy = true
+                    status = "Finding ${pack.game}'s latest release…"
+                    scope.launch {
+                        status = withContext(Dispatchers.IO) {
+                            runCatching {
+                                val names = TexturePackDownloads.install(context, pack, cacheDir) { status = it }
+                                "Added ${pack.game} (${names.joinToString()}). It's used next time the game starts in the built-in player."
+                            }.getOrElse { "Couldn't get ${pack.game}: ${it.message}" }
+                        }
+                        busy = false
+                        changes++
+                    }
+                })
+            }
+            installed.forEach { file ->
+                FocusChip("Remove ${file.name.removeSuffix(".hts").removeSuffix("_HIRESTEXTURES")}", enabled = !busy, onClick = {
+                    scope.launch { withContext(Dispatchers.IO) { file.delete() }; changes++ }
                 })
             }
         }

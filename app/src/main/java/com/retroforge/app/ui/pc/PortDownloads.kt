@@ -28,8 +28,11 @@ object PortDownloads {
     private val agent = "RetroForge/${BuildConfig.VERSION_NAME}"
 
     /** The latest release's files, from GitHub's API. */
-    fun latest(port: GamePort): List<ReleaseFile> {
-        val repo = port.repo.removePrefix("https://github.com/").trimEnd('/')
+    fun latest(port: GamePort): List<ReleaseFile> = latest(port.repo)
+
+    /** The latest release's files of a GitHub repository ("owner/name" or its address). */
+    fun latest(repository: String): List<ReleaseFile> {
+        val repo = repository.removePrefix("https://github.com/").trimEnd('/')
         val json = JSONObject(get("https://api.github.com/repos/$repo/releases/latest").decodeToString())
         val assets = json.optJSONArray("assets") ?: return emptyList()
         return (0 until assets.length()).map { assets.getJSONObject(it) }
@@ -92,7 +95,7 @@ object PortDownloads {
         return "Download/RetroForge/Ports/${folder.substringAfterLast('/')}"
     }
 
-    private fun download(file: ReleaseFile, target: File, onProgress: (Int) -> Unit) {
+    fun download(file: ReleaseFile, target: File, onProgress: (Int) -> Unit) {
         val connection = open(file.url)
         try {
             if (connection.responseCode != 200) throw IOException("the download answered ${connection.responseCode}")

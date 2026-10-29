@@ -335,6 +335,9 @@ class PlayerActivity : ComponentActivity() {
         // The user's emulator settings for this core, then the ones that follow the screen's orientation.
         // N64 and PSP texture packs (Settings → Texture packs) are used as soon as one is installed.
         val texturePacks = when {
+            coreId.startsWith("mupen64plus") && File(systemDir, "Mupen64plus/cache").list().orEmpty().any { it.endsWith(".hts", true) } ->
+                // Downloaded packs are single .hts files (GLideN64's enhanced storage), with full alpha as their authors ask.
+                mapOf("mupen64plus-txHiresEnable" to "True", "mupen64plus-EnableEnhancedHighResStorage" to "True", "mupen64plus-txHiresFullAlphaChannel" to "True")
             coreId.startsWith("mupen64plus") && File(systemDir, "Mupen64plus/hires_texture").list().orEmpty().isNotEmpty() ->
                 mapOf("mupen64plus-txHiresEnable" to "True")
             coreId == "ppsspp" && File(savesDir, "TEXTURES").list().orEmpty().isNotEmpty() -> mapOf("ppsspp_texture_replacement" to "enabled")
