@@ -55,7 +55,7 @@ object SecondScreen {
                 setContentView(ComposeView(context).apply {
                     setViewTreeLifecycleOwner(activity)
                     setViewTreeSavedStateRegistryOwner(activity)
-                    setContent { Content() }
+                    setContent { GameBox() }
                 })
             }
         }.also { p ->
@@ -73,7 +73,7 @@ object SecondScreen {
         context.getSystemService(DisplayManager::class.java).getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION).isNotEmpty()
 
     @Composable
-    private fun Content() {
+    private fun GameBox() {
         val game = shown
         Box(Modifier.fillMaxSize().background(Color(0xFF0B0B14))) {
             if (game == null) {
