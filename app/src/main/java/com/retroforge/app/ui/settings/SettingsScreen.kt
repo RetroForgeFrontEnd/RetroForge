@@ -69,7 +69,7 @@ fun SettingsScreen(
         "help" to ("Help and about" to "How to use RetroForge, set up, check my setup, report a problem, about, licences."),
     )
 
-    ScreenFrame(title = groups.firstOrNull { it.first == group }?.second?.first ?: "Settings") {
+    ScreenFrame(title = groups.firstOrNull { it.first == group }?.second?.first ?: "Settings", compact = true) {
         if (group == null) {
             groups.forEach { (id, text) ->
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { group = id }) {

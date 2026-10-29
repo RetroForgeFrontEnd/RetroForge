@@ -21,6 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 
+/** Pages full of settings (Settings) set this: cards get less padding, and their titles and texts go smaller and shorter. */
+val LocalCompactCards = androidx.compose.runtime.staticCompositionLocalOf { false }
+
 /**
  * A card that is reachable by D-pad/controller and shows an unmistakable focus ring.
  * Pass [onClick] = null for a focusable, read-only card (still navigable so TV users can read it).
@@ -51,7 +54,8 @@ fun FocusCard(
         .shadow(glow, shape, ambientColor = forge.focusRing, spotColor = forge.focusRing)
     // Over a gradient background, cards let a little of it through.
     val cardColor = MaterialTheme.colorScheme.surface.copy(alpha = if (theme.background.style == BackgroundStyle.SOLID) 1f else 0.86f)
-    val body: @Composable () -> Unit = { Column(Modifier.padding(20.dp), content = content) }
+    val padding = if (LocalCompactCards.current) 14.dp else 20.dp
+    val body: @Composable () -> Unit = { Column(Modifier.padding(padding), content = content) }
     if (onClick != null) {
         Surface(
             onClick = { UiSounds.select(); onClick() },
