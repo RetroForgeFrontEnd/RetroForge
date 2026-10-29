@@ -152,4 +152,4 @@ Requests that were never fully done, or only answered:
 | Spelling across the app; ROM Manager capital M | ✅ every on-screen sentence spell-checked (no misspellings found); ROM Manager capitalised everywhere |
 | Final Burn should be FB Neo | ✅ |
 | System names: Master System not "Master System - Mark III", and the like | ✅ 34 names shortened (Master System, Mega Drive, NES, SNES, CPS1–3, PlayStation 2–4, Game & Watch …). Fixed: Ghostship had Starship's id (a slip in RetroBat's list); now its own |
-
+| Download texture packs directly | ✅ Settings → Download N64 texture packs: GhostlyDark's free packs (SM64, MK64, Smash Bros., Majora's Mask, Ocarina of Time) from GitHub, unpacked where the N64 emulator looks and switched on automatically. PSP packs: add a folder (no free direct source found) |

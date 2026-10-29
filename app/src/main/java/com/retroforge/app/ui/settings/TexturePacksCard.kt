@@ -102,7 +102,8 @@ private fun DownloadPacks(cacheDir: File) {
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("Download N64 texture packs")
         CardBody(
-            "Free HD packs by GhostlyDark, downloaded from their official GitHub releases (100 MB to over 1 GB each, so use Wi-Fi). " +
+            "Free HD packs by GhostlyDark, downloaded from their official GitHub releases. Downloads are 150 MB to over 1 GB, so use " +
+                "Wi-Fi, and unpacked they take several times that space (Smash Bros. is about 1.2 GB). " +
                 "Made for the USA versions of the games. They're switched on automatically.",
         )
         CardBody(if (installed.isEmpty()) "None downloaded yet." else "Downloaded: " + installed.joinToString { "${it.name.removeSuffix(".hts").removeSuffix("_HIRESTEXTURES")} (${it.length() / 1_000_000} MB)" })
