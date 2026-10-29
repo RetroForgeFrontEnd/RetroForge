@@ -59,18 +59,18 @@ fun SettingsScreen(
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenTutorial) {
             CardTitle("How to use RetroForge")
             CardBody("A short guide to every feature: playing, emulators, hotkeys, covers, playlists, the ROM manager and more.")
+            CardBody("With a controller: D-pad to move, A to select, B to go back, L1/R1 to switch tabs.")
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenAbout) {
             CardTitle("About RetroForge")
             CardBody("Version ${BuildConfig.VERSION_NAME}, made by Darren Glancy.")
             CardBody("Who made it, what RetroForge does, and what the name stands for (sort of).")
-            CardBody("Controller: D-pad to move, A to select, B to go back, L1/R1 to switch sections.")
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSetup) {
             CardTitle("Set up RetroForge")
-            CardBody("Games folder, RetroArch, the cores your games need, and your BIOS files.")
+            CardBody("Your games folder, the emulators your systems need (downloaded for you) and your BIOS files.")
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenThemes) {
@@ -122,6 +122,8 @@ fun SettingsScreen(
             }
         }
 
+        viewPrefs?.let { DualScreenCard(it) }
+
         coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames) }
 
         EmulatorAppsCard()
@@ -138,14 +140,6 @@ fun SettingsScreen(
 
         HotkeysCard(settings.retroArchHotkeys, HotkeyCombo.of(settings.menuCombo), HotkeyCombo.of(settings.quitCombo), viewModel::setRetroArchHotkeys, onOpenHotkeys)
         if (settings.retroArchHotkeys) {
-            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.setResumeGames(!settings.resumeGames) }) {
-                CardTitle("Carry on where you left off")
-                StatusPill(if (settings.resumeGames) "On" else "Off", if (settings.resumeGames) StatusTone.GOOD else StatusTone.NEUTRAL)
-                CardBody(
-                    "When you quit a game, RetroArch saves a state; next time you start it, it carries on from there. " +
-                        "Uses RetroArch's auto save/load state. Select to switch.",
-                )
-            }
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.setFastForwardOnR2(!settings.fastForwardOnR2) }) {
                 CardTitle("Hold R2 to fast-forward")
                 StatusPill(if (settings.fastForwardOnR2) "On" else "Off", if (settings.fastForwardOnR2) StatusTone.GOOD else StatusTone.NEUTRAL)
@@ -324,3 +318,30 @@ private fun ReportProblemCard() {
         )
     }
 }
+
+/** View preference: DS games put their touch screen on a second display. */
+const val DUAL_SCREEN_DS = "dual_screen_ds"
+
+/** Two-screen devices (AYN Thor, AYANEO Pocket DS …): what the second screen is used for. */
+@Composable
+private fun DualScreenCard(prefs: android.content.SharedPreferences) {
+    val context = LocalContext.current
+    val second = remember {
+        context.getSystemService(android.hardware.display.DisplayManager::class.java)
+            .getDisplays(android.hardware.display.DisplayManager.DISPLAY_CATEGORY_PRESENTATION).firstOrNull()
+    }
+    var ds by remember { mutableStateOf(prefs.getBoolean(DUAL_SCREEN_DS, true)) }
+    FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
+        ds = !ds
+        prefs.edit().putBoolean(DUAL_SCREEN_DS, ds).apply()
+    }) {
+        CardTitle("Dual screen")
+        StatusPill(if (second != null) "Second screen found: ${second.name}" else "No second screen on this device", if (second != null) StatusTone.GOOD else StatusTone.NEUTRAL)
+        StatusPill("DS games on both screens: ${if (ds) "On" else "Off"}", if (ds) StatusTone.GOOD else StatusTone.NEUTRAL)
+        CardBody(
+            "For two-screen devices like the AYN Thor and AYANEO Pocket DS. On: a DS game's top screen fills the main display and " +
+                "its touch screen goes to the second one. Off: both DS screens on the main display. Select to switch.",
+        )
+    }
+}
+

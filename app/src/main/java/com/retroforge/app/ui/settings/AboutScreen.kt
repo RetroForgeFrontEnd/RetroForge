@@ -27,7 +27,8 @@ fun AboutScreen() {
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("RetroForge stands for…")
-            CardBody("…sorry, wrong YouTube channel. (A nod to Mr Sujano. Go and watch him.)")
+            CardBody("…don't forget to like and subscribe!")
+            CardBody("…sorry, wrong YouTube channel. (A nod to Mr Sujano. Go and subscribe to him.)")
             CardBody(
                 "RetroForge doesn't stand for anything. It's what it does: it forges all of retro gaming into one place, " +
                     "so you set it up once and then just play.",

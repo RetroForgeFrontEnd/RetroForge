@@ -144,4 +144,9 @@ Requests that were never fully done, or only answered:
 | Remove the name DroidDeck from the app but still use it | 🟡 RetroBat removed; DroidDeck is still named because users install it themselves |
 | Original Xbox / Xbox 360 | ❌ research: no libretro core; xemu Android is experimental |
 | Weekly bug reports on GitHub | 🟡 Report a problem built; needs the GitHub repository |
+| Mr Sujano nod: the subscribe part | ✅ "…don't forget to like and subscribe! …sorry, wrong YouTube channel." |
+| VR section | ✅ VR tab: how it works, start every game in Cardboard VR, Virtual Boy games, 3D films, Quest note |
+| Settings wording messed up | ✅ controller help moved to How to use; duplicate Carry on card removed; set-up and built-in player texts updated |
+| Dual screen options in main Settings | ✅ Dual screen card: second screen detected or not; DS games on both screens on/off |
+| Direct ROM hack downloads | ✅ for hacks published on GitHub (A Link to the Past, Zelda 1, Zelda II Redux): Download and patch; romhacking.net refuses automated downloads |
 

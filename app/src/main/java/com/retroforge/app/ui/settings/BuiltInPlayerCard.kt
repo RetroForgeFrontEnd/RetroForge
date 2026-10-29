@@ -43,8 +43,9 @@ fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices,
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("Built-in player")
         CardBody(
-            "RetroForge plays cartridge systems itself; their emulators download in the background. Pause a game for its menu: " +
-                "save states, screen shape, touch controls, emulator settings and switching emulator.",
+            "RetroForge plays most systems itself, from Game Boy to PlayStation, N64 and PSP; their emulators download in the " +
+                "background. Swipe in from an edge or pause for the game's menu: save states, screen shape, filters, remap buttons, " +
+                "cheats, widescreen, Cardboard VR and switching emulator.",
         )
     }
     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { onResume(!resume) }) {

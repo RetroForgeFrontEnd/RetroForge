@@ -286,7 +286,8 @@ class PlayerActivity : ComponentActivity() {
         shape = ScreenShape.of(prefs.getString("shape.$system", null))
         touchEnabled = prefs.getBoolean("touch.$system", true)
         consoleLook = prefs.getBoolean("look.$system", true)
-        vr = prefs.getBoolean("vr.$system", false)
+        // Per system, or every game when the VR tab says so.
+        vr = prefs.getBoolean("vr.$system", false) || getSharedPreferences("views", MODE_PRIVATE).getBoolean("vr_by_default", false)
         if (vr) requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         volume = prefs.getFloat("volume.$system", 1f)
         filter = com.retroforge.player.ScreenFilter.of(prefs.getString("filter.$system", null))
@@ -588,6 +589,8 @@ class PlayerActivity : ComponentActivity() {
 
     private fun setUpSecondScreen() {
         if (system != "nds" || secondScreen != null || !loaded) return
+        // Settings → Dual screen (the main app's view preferences; this process reads them fresh for each game).
+        if (!getSharedPreferences("views", MODE_PRIVATE).getBoolean("dual_screen_ds", true)) return
         val displays = getSystemService(android.hardware.display.DisplayManager::class.java)
             .getDisplays(android.hardware.display.DisplayManager.DISPLAY_CATEGORY_PRESENTATION)
         val display = displays.firstOrNull() ?: return

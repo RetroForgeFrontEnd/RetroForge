@@ -101,6 +101,7 @@ enum class Section(val route: String, val label: String, @DrawableRes val icon: 
     HACKS("hacks", "ROM hacks", R.drawable.ic_section_hacks),
     PC("pc", "PC", R.drawable.ic_section_pc),
     MEDIA("media", "Media", R.drawable.ic_section_media),
+    VR("vr", "VR", R.drawable.ic_section_vr),
     APPS("apps", "Android", R.drawable.ic_section_apps),
     LINKS("links", "Links", R.drawable.ic_section_links),
     SETTINGS("settings", "Settings", R.drawable.ic_section_settings),
@@ -315,6 +316,9 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         composable(HOTKEYS_ROUTE) { HotkeysScreen(settingsViewModel) }
                         composable(GPU_ROUTE) { GpuDriversScreen() }
                         composable(Section.APPS.route) { com.retroforge.app.ui.apps.AppsScreen() }
+                        composable(Section.VR.route) {
+                            com.retroforge.app.ui.vr.VrScreen(container.viewPrefs, container.library, onOpenGame = { nav.navigate("retro/game/$it") }, onOpenMedia = { nav.goTo(Section.MEDIA) })
+                        }
                         composable(Section.MEDIA.route) { com.retroforge.app.ui.media.MediaScreen(container.viewPrefs) }
                         composable(TUTORIAL_ROUTE) { TutorialScreen() }
                         composable(LICENCES_ROUTE) { LicencesScreen() }
