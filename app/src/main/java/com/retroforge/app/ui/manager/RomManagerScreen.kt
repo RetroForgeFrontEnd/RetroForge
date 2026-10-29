@@ -294,7 +294,7 @@ private fun CompressTab(viewModel: RomManagerViewModel) {
                 val on = system in selected
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.toggleSystem(system) }, selected = on) {
                     Text(
-                        (if (on) "☑ " else "☐ ") + "$system: ${plural(jobs.size, "game")} · ${formatBytes(jobs.sumOf { it.inputBytes })}",
+                        (if (on) "☑ " else "☐ ") + "${viewModel.systemName(system)}: ${plural(jobs.size, "game")} · ${formatBytes(jobs.sumOf { it.inputBytes })}",
                         style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface,
                     )
                     CardBody("To " + jobs.map { it.format }.distinct().joinToString { it.label } + ". " + jobs.take(4).joinToString { it.title } + if (jobs.size > 4) " and ${jobs.size - 4} more" else "")
@@ -306,7 +306,7 @@ private fun CompressTab(viewModel: RomManagerViewModel) {
                 FocusCard(modifier = Modifier.fillMaxWidth()) {
                     CardTitle("Left alone: ${plural(report.skipped.size, "game")}")
                     report.skipped.groupBy { it.system to it.reason }.forEach { (key, games) ->
-                        CardBody("${key.first}: ${games.size} × ${key.second}")
+                        CardBody("${viewModel.systemName(key.first)}: ${games.size} × ${key.second}")
                     }
                 }
             }
@@ -369,7 +369,7 @@ private fun MultiDiscTab(viewModel: RomManagerViewModel) {
             if (report.jobs.isEmpty()) CardBody("Every multi-disc game already has a playlist.")
             report.jobs.groupBy { it.system }.forEach { (system, jobs) ->
                 FocusCard(modifier = Modifier.fillMaxWidth()) {
-                    Text("$system: ${plural(jobs.size, "game")}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+                    Text("${viewModel.systemName(system)}: ${plural(jobs.size, "game")}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                     jobs.take(5).forEach { CardBody("${it.title}: ${plural(it.discs.size, "disc")}") }
                     if (jobs.size > 5) CardBody("… and ${jobs.size - 5} more")
                 }

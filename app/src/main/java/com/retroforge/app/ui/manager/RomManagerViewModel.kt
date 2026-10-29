@@ -47,6 +47,9 @@ sealed interface Pending {
 }
 
 class RomManagerViewModel(private val library: LibraryRepository, private val manager: RomManagerRepository) : ViewModel() {
+    /** The system's short name ("PS2", "N64") for an id like "ps2". */
+    fun systemName(id: String): String = library.systemName(id)
+
 
     val roots: StateFlow<List<RootEntity>?> = library.roots.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
     val run: StateFlow<ManagerRun?> = manager.run
