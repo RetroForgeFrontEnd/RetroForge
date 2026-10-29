@@ -62,7 +62,7 @@
   },
   {
    "id": "actionmax",
-   "name": "Actionmax",
+   "name": "ActionMax",
    "extensions": [
     "actionmax"
    ],
@@ -107,7 +107,7 @@
   },
   {
    "id": "amiga1200",
-   "name": "Amiga AGA",
+   "name": "Amiga 1200",
    "extensions": [
     "7z",
     "adf",
@@ -143,7 +143,7 @@
   },
   {
    "id": "amiga500",
-   "name": "Amiga OCS/ECS",
+   "name": "Amiga 500",
    "extensions": [
     "7z",
     "adf",
@@ -595,7 +595,7 @@
   },
   {
    "id": "cavestory",
-   "name": "Cavestory",
+   "name": "Cave Story",
    "extensions": [
     "libretro"
    ],
@@ -684,7 +684,7 @@
   },
   {
    "id": "cplus4",
-   "name": "Commodore Plus4",
+   "name": "Commodore Plus/4",
    "extensions": [
     "7z",
     "d64",
@@ -699,7 +699,7 @@
   },
   {
    "id": "cps1",
-   "name": "CPS-I",
+   "name": "CPS1",
    "extensions": [
     "7z",
     "fba",
@@ -709,7 +709,7 @@
   },
   {
    "id": "cps2",
-   "name": "CPS-II",
+   "name": "CPS2",
    "extensions": [
     "7z",
     "fba",
@@ -719,7 +719,7 @@
   },
   {
    "id": "cps3",
-   "name": "CPS-III",
+   "name": "CPS3",
    "extensions": [
     "7z",
     "decomp",
@@ -753,7 +753,7 @@
   },
   {
    "id": "devilutionx",
-   "name": "DevilutionX - Diablo Open-Source Implementation",
+   "name": "Diablo (DevilutionX)",
    "extensions": [
     "win"
    ],
@@ -845,7 +845,7 @@
   },
   {
    "id": "easyrpg",
-   "name": "EasyRPG - RPG Maker 2000/2003 player",
+   "name": "EasyRPG (RPG Maker 2000/2003)",
    "extensions": [
     "7z",
     "easyrpg",
@@ -913,7 +913,7 @@
   },
   {
    "id": "fds",
-   "name": "Nintendo Family Computer Disk System",
+   "name": "Famicom Disk System",
    "extensions": [
     "7z",
     "fds",
@@ -924,7 +924,7 @@
   },
   {
    "id": "flash",
-   "name": "flash",
+   "name": "Flash",
    "extensions": [
     "swf"
    ],
@@ -1116,7 +1116,7 @@
   },
   {
    "id": "gemrb",
-   "name": "GemRB - Infinity Engine Open-Source Implementation",
+   "name": "GemRB (Infinity Engine)",
    "extensions": [
     "auto",
     "bg1",
@@ -1149,7 +1149,7 @@
   },
   {
    "id": "gw",
-   "name": "Game and Watch",
+   "name": "Game & Watch",
    "extensions": [
     "7z",
     "mgw",
@@ -1212,7 +1212,7 @@
   },
   {
    "id": "j2me",
-   "name": "Java 2 MicroEdition",
+   "name": "Java ME (J2ME)",
    "extensions": [
     "jar"
    ],
@@ -1300,7 +1300,7 @@
   },
   {
    "id": "lutro",
-   "name": "Lutro Lua Framework",
+   "name": "Lutro",
    "extensions": [
     "7z",
     "love",
@@ -1337,7 +1337,7 @@
   },
   {
    "id": "mastersystem",
-   "name": "Master System - Mark III",
+   "name": "Master System",
    "extensions": [
     "7z",
     "bin",
@@ -1368,7 +1368,7 @@
   },
   {
    "id": "megadrive",
-   "name": "Megadrive - Genesis",
+   "name": "Mega Drive",
    "extensions": [
     "68k",
     "7z",
@@ -1388,7 +1388,7 @@
   },
   {
    "id": "megadrive-msu",
-   "name": "MD-MSU",
+   "name": "Mega Drive MSU",
    "extensions": [
     "68k",
     "7z",
@@ -1664,7 +1664,7 @@
   },
   {
    "id": "nes",
-   "name": "Nintendo Entertainment System - Famicom",
+   "name": "NES",
    "extensions": [
     "7z",
     "fds",
@@ -1713,7 +1713,7 @@
   },
   {
    "id": "odyssey2",
-   "name": "Odyssey² - Videopac",
+   "name": "Odyssey² / Videopac",
    "extensions": [
     "7z",
     "bin",
@@ -1725,7 +1725,7 @@
   },
   {
    "id": "openbor",
-   "name": "Openbor",
+   "name": "OpenBOR",
    "extensions": [
     "pak"
    ],
@@ -1941,7 +1941,7 @@
   },
   {
    "id": "pokemini",
-   "name": "Pokemon-Mini",
+   "name": "Pokémon Mini",
    "extensions": [
     "7z",
     "min",
@@ -1959,7 +1959,7 @@
   },
   {
    "id": "ps2",
-   "name": "Playstation 2",
+   "name": "PlayStation 2",
    "extensions": [
     "7z",
     "bin",
@@ -1979,7 +1979,7 @@
   },
   {
    "id": "ps3",
-   "name": "Playstation 3",
+   "name": "PlayStation 3",
    "extensions": [
     "7z",
     "decomp",
@@ -1994,7 +1994,7 @@
   },
   {
    "id": "ps4",
-   "name": "Playstation 4",
+   "name": "PlayStation 4",
    "extensions": [
     "m3u",
     "ps4",
@@ -2107,7 +2107,7 @@
   },
   {
    "id": "samcoupe",
-   "name": "Samcoupé",
+   "name": "SAM Coupé",
    "extensions": [
     "dsk",
     "mgt",
@@ -2243,7 +2243,7 @@
   },
   {
    "id": "sgb-msu1",
-   "name": "GameBoy MSU",
+   "name": "Game Boy MSU",
    "extensions": [
     "gb",
     "gbc",
@@ -2262,7 +2262,7 @@
   },
   {
    "id": "snes",
-   "name": "Super Nintendo Entertainment System",
+   "name": "SNES",
    "extensions": [
     "7z",
     "bsx",
@@ -2285,7 +2285,7 @@
   },
   {
    "id": "snes-msu1",
-   "name": "Super NES MSU-1",
+   "name": "SNES MSU-1",
    "extensions": [
     "m3u",
     "sfc",
@@ -2431,7 +2431,7 @@
   },
   {
    "id": "thomson",
-   "name": "Thomson - MO/TO",
+   "name": "Thomson MO/TO",
    "extensions": [
     "7z",
     "fd",
@@ -2729,7 +2729,7 @@
   },
   {
    "id": "zx81",
-   "name": "ZX 81",
+   "name": "ZX81",
    "extensions": [
     "7z",
     "p",
