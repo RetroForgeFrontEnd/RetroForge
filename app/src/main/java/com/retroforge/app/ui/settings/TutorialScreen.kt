@@ -68,6 +68,13 @@ private val topics = listOf(
         "In the app: D-pad to move, A to select, B to go back, L1/R1 to switch tabs. The red ✕ at the top of every inner page also goes back.",
         "Hold R2 to fast-forward on systems whose controllers had no R2 (Game Boy, GBA, NES, SNES, Mega Drive …).",
     )),
+    Topic("Computers: keyboard, mouse and BIOS", listOf(
+        "The built-in player also runs home computers and more: Commodore 64, Amiga, MSX, ZX Spectrum, Amstrad CPC, Atari ST and 800, PC-88 and PC-98, X68000, DOS, ScummVM adventures, and consoles like the 3DO, Jaguar, Neo Geo CD, Vectrex and Intellivision.",
+        "Keyboard: plug in or pair a keyboard (USB or Bluetooth) and type straight into the computer. On a touchscreen, open the in-game menu and choose Keyboard: Android's keyboard comes up and what you type goes to the game. On a C64, Esc is RUN/STOP.",
+        "Mouse (Amiga, Atari ST, DOS, ScummVM …): the picture works like a laptop's trackpad. Drag a finger to move the pointer, tap to click, tap with two fingers to right-click.",
+        "Commodore disks load by themselves at top speed, then the game runs at normal speed. Cartridge games start straight away.",
+        "BIOS: some of these need the real machine's ROMs (Kickstart for the Amiga, TOS for the Atari ST, the 3DO and Neo Geo CD BIOS …). Put the ones you own in your BIOS folder, then Settings → Help and about → Set up RetroForge → BIOS files: RetroForge recognises them by their contents, whatever they're called, and copies them where each emulator looks.",
+    )),
     Topic("Other emulators (RetroArch and standalone apps)", listOf(
         "A game's page also offers RetroArch, with the right core, for people who know their way around it, and free standalone emulators: NetherSX2 (PS2), Dolphin (GameCube, Wii), Azahar (3DS), Eden (Switch), DuckStation, PPSSPP, Flycast and more.",
         "\"Get\" opens Obtainium already set up for that app, so it installs from the official release and stays updated. Settings → Emulator apps also links the Obtainium Emulation Pack.",

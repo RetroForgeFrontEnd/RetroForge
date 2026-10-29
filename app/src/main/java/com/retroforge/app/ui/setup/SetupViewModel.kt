@@ -80,7 +80,11 @@ class SetupViewModel(
             games = counts.sumOf { it.games },
             systemIds = bySystem.keys.toList(),
             cores = cores,
-            unsupported = bySystem.keys.filter { RetroArchCores.coresFor(it).isEmpty() }.map(library::systemName).sorted(),
+            // Not playable: no built-in player, no RetroArch core and no standalone emulator for it.
+            unsupported = bySystem.keys.filter {
+                RetroArchCores.coresFor(it).isEmpty() && com.retroforge.player.PlayerCores.forSystem(it) == null &&
+                    standalone.optionsFor(it).isEmpty()
+            }.map(library::systemName).sorted(),
         )
     }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
@@ -89,6 +93,8 @@ class SetupViewModel(
 
     private val _bios = MutableStateFlow(BiosState())
     val bios: StateFlow<BiosState> = _bios.asStateFlow()
+
+    private val standalone by lazy { com.retroforge.library.StandaloneEmulators.bundled() }
 
     /** Games outside a folder for their system (loose in the roms folder): setup offers to sort them. */
     suspend fun looseGames(): Int = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {

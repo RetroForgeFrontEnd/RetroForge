@@ -839,14 +839,52 @@ class PlayerActivity : ComponentActivity() {
         }
     }
 
-    /** Touches on the picture itself go to the core as a touchscreen (the DS's lower screen, for example). */
+    // The touchscreen as a trackpad for computers with a mouse: where the last finger was, when it went down, whether
+    // it moved (a tap is a click), and two fingers (a right click).
+    private var padLastX = 0f
+    private var padLastY = 0f
+    private var padDownAt = 0L
+    private var padMoved = false
+    private var padTwoFingers = false
+
+    /**
+     * Touches on the picture itself go to the core as a touchscreen (the DS's lower screen, for example), and on
+     * computers also as a mouse: drag to move it, tap to click, tap with two fingers to right-click.
+     */
     @SuppressLint("ClickableViewAccessibility")
     private fun pointerListener(view: SurfaceView) = view.setOnTouchListener { v, event ->
         val rect = picture
         if (!loaded || rect.w <= 0 || rect.h <= 0 || dualScreen) return@setOnTouchListener false
         val down = event.actionMasked != MotionEvent.ACTION_UP && event.actionMasked != MotionEvent.ACTION_CANCEL
         NativePlayer.setPointer((event.x - rect.x) / rect.w, (event.y - rect.y) / rect.h, down)
+        if (system in PlayerCores.mouseSystems) trackpad(event, rect.w.toFloat())
         true
+    }
+
+    private fun trackpad(event: MotionEvent, pictureWidth: Float) {
+        // Game pixels per screen pixel, a little faster than 1:1 so the whole screen is reachable in one swipe.
+        val speed = 1.5f * (video?.width ?: 320) / pictureWidth
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                padLastX = event.x; padLastY = event.y; padDownAt = event.eventTime; padMoved = false; padTwoFingers = false
+            }
+            MotionEvent.ACTION_POINTER_DOWN -> padTwoFingers = true
+            MotionEvent.ACTION_MOVE -> {
+                val dx = event.x - padLastX
+                val dy = event.y - padLastY
+                if (padMoved || kotlin.math.abs(dx) + kotlin.math.abs(dy) > 12) {
+                    padMoved = true
+                    NativePlayer.setMouse((dx * speed).toInt(), (dy * speed).toInt(), 0)
+                    padLastX = event.x; padLastY = event.y
+                }
+            }
+            MotionEvent.ACTION_UP -> if (!padMoved && event.eventTime - padDownAt < 300) {
+                // A tap: press and release the button a few frames apart, so the game sees the click.
+                val button = if (padTwoFingers) 2 else 1
+                NativePlayer.setMouse(0, 0, button)
+                handler.postDelayed({ NativePlayer.setMouse(0, 0, 0) }, 90)
+            }
+        }
     }
 
     @Composable

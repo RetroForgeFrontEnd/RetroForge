@@ -258,6 +258,1128 @@
      "size": 262144
     }
    ]
+  },
+  {
+   "systems": [
+    "3do"
+   ],
+   "core": "Opera",
+   "need": "required",
+   "mode": "any",
+   "note": "One 3DO BIOS is enough; panafz10.bin (Panasonic FZ-10) is the usual one.",
+   "files": [
+    {
+     "name": "goldstar.bin",
+     "md5": [
+      "8639fd5e549bd6238cfee79e3e749114"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "panafz1-kanji.bin",
+     "md5": [
+      "b8dc97f778a6245c58e064b0312e8281"
+     ],
+     "size": 933636
+    },
+    {
+     "name": "panafz1.bin",
+     "md5": [
+      "f47264dd47fe30f73ab3c010015c155b"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "panafz10-norsa.bin",
+     "md5": [
+      "1477bda80dc33731a65468c1f5bcbee9"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "panafz10.bin",
+     "md5": [
+      "51f2f43ae2f3508a14d9f56597e2d3ce"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "panafz10e-anvil-norsa.bin",
+     "md5": [
+      "cf11bbb5a16d7af9875cca9de9a15e09"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "panafz10e-anvil.bin",
+     "md5": [
+      "a48e6746bd7edec0f40cff078f0bb19f"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "panafz10ja-anvil-kanji.bin",
+     "md5": [
+      "428577250f43edc902ea239c50d2240d"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "panafz1j-kanji.bin",
+     "md5": [
+      "c23fb5d5e6bb1c240d02cf968972be37"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "panafz1j-norsa.bin",
+     "md5": [
+      "f6c71de7470d16abe4f71b1444883dc8"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "panafz1j.bin",
+     "md5": [
+      "a496cfdded3da562759be3561317b605"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "sanyotry.bin",
+     "md5": [
+      "35fa1a1ebaaeea286dc5cd15487c13ea"
+     ],
+     "size": 1048576
+    }
+   ]
+  },
+  {
+   "systems": [
+    "amiga500",
+    "amiga1200",
+    "amiga4000",
+    "amigacd32",
+    "amigacdtv"
+   ],
+   "core": "PUAE",
+   "need": "required",
+   "mode": "any",
+   "note": "The Kickstart for your Amiga: kick34005.A500 (A500, Kickstart 1.3), kick40068.A1200 (A1200), kick40068.A4000, kick40060.CD32 for CD32 games.",
+   "files": [
+    {
+     "name": "kick33180.A500",
+     "md5": [
+      "85ad74194e87c08904327de1a9443b7a"
+     ],
+     "size": 262144
+    },
+    {
+     "name": "kick34005.CDTV",
+     "md5": [
+      "89da1838a24460e4b93f4f0c5d92d48d"
+     ],
+     "size": 262144
+    },
+    {
+     "name": "kick40060.CD32",
+     "md5": [
+      "5f8924d013dd57a89cf349f4cdedc6b1"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "kick34005.A500",
+     "md5": [
+      "82a21c1890cae844b3df741f2762d48d"
+     ],
+     "size": 262144
+    },
+    {
+     "name": "kick40063.A600",
+     "md5": [
+      "e40a5dfb3d017ba8779faba30cbd1c8e"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "kick40068.A1200",
+     "md5": [
+      "646773759326fbac3b2311fd8c8793ee"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "kick37175.A500",
+     "md5": [
+      "dc10d7bdd1b6f450773dfb558477c230"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "kick37350.A600",
+     "md5": [
+      "465646c9b6729f77eea5314d1f057951"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "kick39106.A1200",
+     "md5": [
+      "b7cc148386aa631136f510cd29e42fc3"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "kick39106.A4000",
+     "md5": [
+      "9b8bdd5a3fd32c2a5a6f5b1aefc799a5"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "kick40068.A4000",
+     "md5": [
+      "9bdedde6a4f33555b4a270c8ca53297d"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "kick40060.CD32.ext",
+     "md5": [
+      "bb72565701b1b6faece07d68ea5da639"
+     ],
+     "size": 524288
+    }
+   ]
+  },
+  {
+   "systems": [
+    "atari5200"
+   ],
+   "core": "a5200 / Atari800",
+   "need": "required",
+   "mode": "any",
+   "files": [
+    {
+     "name": "5200.rom",
+     "md5": [
+      "281f20ea4320404ec820fb7ec0693b38"
+     ],
+     "size": 2048
+    }
+   ]
+  },
+  {
+   "systems": [
+    "atari800",
+    "xegs"
+   ],
+   "core": "Atari800",
+   "need": "recommended",
+   "mode": "all",
+   "note": "Atari800 has a built-in replacement, but some games need the real OS and BASIC.",
+   "files": [
+    {
+     "name": "ATARIBAS.ROM",
+     "md5": [
+      "0bac0c6a50104045d902df4503a4c30b"
+     ],
+     "size": 8192
+    },
+    {
+     "name": "ATARIOSA.ROM",
+     "md5": [
+      "eb1f32f5d9f382db1bbfb8d7f9cb343a"
+     ],
+     "size": 10240
+    },
+    {
+     "name": "ATARIOSB.ROM",
+     "md5": [
+      "a3e8d617c95d08031fe1b20d541434b2"
+     ],
+     "size": 10240
+    },
+    {
+     "name": "ATARIXL.ROM",
+     "md5": [
+      "06daac977823773a3eea3422fd26a703"
+     ],
+     "size": 16384
+    },
+    {
+     "name": "BB01R4_OS.ROM",
+     "md5": [
+      "b7a2a04677d34f069eeb643d5238bf86"
+     ],
+     "size": 16384
+    },
+    {
+     "name": "XEGAME.ROM",
+     "md5": [
+      "d7eb37aec6960cba36bc500e0e5d00bc"
+     ],
+     "size": 8192
+    }
+   ]
+  },
+  {
+   "systems": [
+    "atarist"
+   ],
+   "core": "Hatari",
+   "need": "required",
+   "mode": "any",
+   "note": "An Atari ST TOS image, named tos.img.",
+   "files": [
+    {
+     "name": "tos.img",
+     "md5": [
+      "c1c57ce48e8ee4135885cee9e63a68a2"
+     ],
+     "size": 196608
+    }
+   ]
+  },
+  {
+   "systems": [
+    "channelf"
+   ],
+   "core": "FreeChaF",
+   "need": "required",
+   "mode": "all",
+   "files": [
+    {
+     "name": "sl31253.bin",
+     "md5": [
+      "ac9804d4c0e9d07e33472e3726ed15c3"
+     ],
+     "size": 1024
+    },
+    {
+     "name": "sl31254.bin",
+     "md5": [
+      "da98f4bb3242ab80d76629021bb27585"
+     ],
+     "size": 1024
+    },
+    {
+     "name": "sl90025.bin",
+     "md5": [
+      "95d339631d867c8f1d15a5f2ec26069d"
+     ],
+     "size": 1024
+    }
+   ]
+  },
+  {
+   "systems": [
+    "odyssey2"
+   ],
+   "core": "O2EM",
+   "need": "required",
+   "mode": "any",
+   "files": [
+    {
+     "name": "o2rom.bin",
+     "md5": [
+      "562d5ebf9e030a40d6fabfc2f33139fd"
+     ],
+     "size": 1024
+    },
+    {
+     "name": "c52.bin",
+     "md5": [
+      "f1071cdb0b6b10dde94d3bc8a6146387"
+     ],
+     "size": 1024
+    },
+    {
+     "name": "g7400.bin",
+     "md5": [
+      "c500ff71236068e0dc0d0603d265ae76"
+     ],
+     "size": 1024
+    },
+    {
+     "name": "jopac.bin",
+     "md5": [
+      "279008e4a0db2dc5f1c048853b033828"
+     ],
+     "size": 1024
+    }
+   ]
+  },
+  {
+   "systems": [
+    "intellivision"
+   ],
+   "core": "FreeIntv",
+   "need": "required",
+   "mode": "all",
+   "files": [
+    {
+     "name": "exec.bin",
+     "md5": [
+      "62e761035cb657903761800f4437b8af"
+     ],
+     "size": 8192
+    },
+    {
+     "name": "grom.bin",
+     "md5": [
+      "0cd5946c6473e42e8e4c2137785e427f"
+     ],
+     "size": 2048
+    }
+   ]
+  },
+  {
+   "systems": [
+    "pc98"
+   ],
+   "core": "Neko Project II Kai",
+   "need": "required",
+   "mode": "all",
+   "files": [
+    {
+     "name": "np2kai/2608_BD.WAV",
+     "md5": [
+      "d94546e70f17fd899be8df3544ab6cbb"
+     ],
+     "size": 19192
+    },
+    {
+     "name": "np2kai/2608_HH.WAV",
+     "md5": [
+      "08c54a0c1f774a5538a848a6665a34b4"
+     ],
+     "size": 36722
+    },
+    {
+     "name": "np2kai/2608_RIM.WAV",
+     "md5": [
+      "465ea0768b27da404aec45dfc501404b"
+     ],
+     "size": 5288
+    },
+    {
+     "name": "np2kai/2608_SD.WAV",
+     "md5": [
+      "d71004351c8bbfdad53b18222c061d49"
+     ],
+     "size": 15558
+    },
+    {
+     "name": "np2kai/2608_TOM.WAV",
+     "md5": [
+      "96a4ead13f364734f79b0c58af2f0e1f"
+     ],
+     "size": 23092
+    },
+    {
+     "name": "np2kai/2608_TOP.WAV",
+     "md5": [
+      "593cff6597ab9380d822b8f824fd2c28"
+     ],
+     "size": 57016
+    },
+    {
+     "name": "np2kai/FONT.ROM",
+     "md5": [
+      "38d32748ae49d1815b0614970849fd40"
+     ],
+     "size": 288768
+    },
+    {
+     "name": "np2kai/bios.rom",
+     "md5": [
+      "cd237e16e7e77c06bb58540e9e9fca68"
+     ],
+     "size": 98304
+    },
+    {
+     "name": "np2kai/font.bmp",
+     "md5": [
+      "7da1e5b7c482d4108d22a5b09631d967"
+     ],
+     "size": 524350
+    },
+    {
+     "name": "np2kai/itf.rom",
+     "md5": [
+      "72ea51443070f0e9212bfc9b793ee28e"
+     ],
+     "size": 32768
+    },
+    {
+     "name": "np2kai/sound.rom",
+     "md5": [
+      "524473c1a5a03b17e21d86a0408ff827"
+     ],
+     "size": 16384
+    }
+   ]
+  },
+  {
+   "systems": [
+    "pc88"
+   ],
+   "core": "QUASI88",
+   "need": "required",
+   "mode": "all",
+   "files": [
+    {
+     "name": "quasi88/n88_0.rom",
+     "md5": [
+      "e28fe3f520bea594350ea8fb00395370"
+     ],
+     "size": 8192
+    },
+    {
+     "name": "quasi88/n88_1.rom",
+     "md5": [
+      "a8e298da7ac947669bcb1ff25cee0a83"
+     ],
+     "size": 8192
+    },
+    {
+     "name": "quasi88/n88_2.rom",
+     "md5": [
+      "9d03154fd9abfc28c4e6d4dc705e6e23"
+     ],
+     "size": 8192
+    },
+    {
+     "name": "quasi88/n88_3.rom",
+     "md5": [
+      "e1791f8154f1cdf22b576a1a365b6e1f"
+     ],
+     "size": 8192
+    },
+    {
+     "name": "quasi88/n88jisho.rom",
+     "md5": [
+      "2e548679423370262f36cbde38a22789"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "quasi88/disk.rom",
+     "md5": [
+      "793f86784e5608352a5d7f03f03e0858"
+     ],
+     "size": 2048
+    },
+    {
+     "name": "quasi88/n88.rom",
+     "md5": [
+      "4f984e04a99d56c4cfe36115415d6eb8"
+     ],
+     "size": 32768
+    },
+    {
+     "name": "quasi88/n88n.rom",
+     "md5": [
+      "2ff07b8769367321128e03924af668a0"
+     ],
+     "size": 32768
+    },
+    {
+     "name": "quasi88/n88knj1.rom",
+     "md5": [
+      "d81c6d5d7ad1a4bbbd6ae22a01257603"
+     ],
+     "size": 131072
+    },
+    {
+     "name": "quasi88/n88knj2.rom",
+     "md5": [
+      "898a3b7b6c3326e8b2069765bca2b944"
+     ],
+     "size": 131072
+    }
+   ]
+  },
+  {
+   "systems": [
+    "pcfx"
+   ],
+   "core": "Beetle PC-FX",
+   "need": "required",
+   "mode": "any",
+   "files": [
+    {
+     "name": "fx-scsi.rom",
+     "md5": [
+      "430e9745f9235c515bc8e652d6ca3004"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "pcfx.rom",
+     "md5": [
+      "08e36edbea28a017f79f8d4f7ff9b6d7"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "pcfxbios.bin",
+     "md5": [
+      "08e36edbea28a017f79f8d4f7ff9b6d7"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "pcfxga.rom",
+     "md5": [
+      "5885bc9a64bf80d4530b9b9b978ff587"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "pcfxv101.bin",
+     "md5": [
+      "e2fb7c7220e3a7838c2dd7e401a7f3d8"
+     ],
+     "size": 1048576
+    }
+   ]
+  },
+  {
+   "systems": [
+    "cdi"
+   ],
+   "core": "SAME CDi",
+   "need": "required",
+   "mode": "any",
+   "files": [
+    {
+     "name": "cdi200.rom",
+     "md5": [
+      "2969341396aa61e0143dc2351aaa6ef6"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "cdi220b.rom",
+     "md5": [
+      "ac0d468be366779c9df633be98da250a"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "vmpega.rom",
+     "md5": [
+      "53ba3bf7443187a657baa272d01d3771"
+     ],
+     "size": 262144
+    },
+    {
+     "name": "cdimono1.zip",
+     "md5": [
+      "801c529739b83e1490b897f2d3ffbb3a"
+     ],
+     "size": 661670
+    },
+    {
+     "name": "same_cdi/bios/cdibios.zip",
+     "md5": [
+      "709acce6e9c4043b851ea7429b8e7eff"
+     ],
+     "size": 472798
+    },
+    {
+     "name": "same_cdi/bios/cdimono1.zip",
+     "md5": [
+      "c59f92647701428bc453976740eb75cf"
+     ],
+     "size": 660996
+    },
+    {
+     "name": "same_cdi/bios/cdimono2.zip",
+     "md5": [
+      "97aa5f47030cd9fdb679d4fafbb0e332"
+     ],
+     "size": 244291
+    }
+   ]
+  },
+  {
+   "systems": [
+    "x1"
+   ],
+   "core": "X Millennium",
+   "need": "required",
+   "mode": "all",
+   "files": [
+    {
+     "name": "xmil/IPLROM.X1",
+     "md5": [
+      "eeeea1cd29c6e0e8b094790ae969bfa7"
+     ],
+     "size": 4096
+    },
+    {
+     "name": "xmil/IPLROM.X1T",
+     "md5": [
+      "851e4a5936f17d13f8c39a980cf00d77"
+     ],
+     "size": 2048
+    }
+   ]
+  },
+  {
+   "systems": [
+    "x68000"
+   ],
+   "core": "PX68k",
+   "need": "required",
+   "mode": "all",
+   "files": [
+    {
+     "name": "iplromco.dat",
+     "md5": [
+      "cc78d4f4900f622bd6de1aed7f52592f"
+     ],
+     "size": 131072
+    },
+    {
+     "name": "iplromxv.dat",
+     "md5": [
+      "0617321daa182c3f3d6f41fd02fb3275"
+     ],
+     "size": 131072
+    },
+    {
+     "name": "keropi/cgrom.dat",
+     "md5": [
+      "cb0a5cfcf7247a7eab74bb2716260269"
+     ],
+     "size": 786432
+    },
+    {
+     "name": "keropi/iplrom.dat",
+     "md5": [
+      "7fd4caabac1d9169e289f0f7bbf71d8e"
+     ],
+     "size": 131072
+    },
+    {
+     "name": "keropi/iplrom30.dat",
+     "md5": [
+      "f373003710ab4322642f527f567e020a"
+     ],
+     "size": 131072
+    }
+   ]
+  },
+  {
+   "systems": [
+    "neogeocd"
+   ],
+   "core": "NeoCD",
+   "need": "required",
+   "mode": "any",
+   "note": "One Neo Geo CD BIOS (front loader, top loader or CDZ) is enough.",
+   "files": [
+    {
+     "name": "neocd/000-lo.lo",
+     "md5": [
+      "fc7599f3f871578fe9a0453662d1c966"
+     ],
+     "size": 131072
+    },
+    {
+     "name": "neocd/front-sp1.bin",
+     "md5": [
+      "5c2366f25ff92d71788468ca492ebeca"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "neocd/neocd.bin",
+     "md5": [
+      "f39572af7584cb5b3f70ae8cc848aba2"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "neocd/neocd_f.rom",
+     "md5": [
+      "8834880c33164ccbe6476b559f3e37de"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "neocd/neocd_sf.rom",
+     "md5": [
+      "043d76d5f0ef836500700c34faef774d"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "neocd/neocd_st.rom",
+     "md5": [
+      "f6325a33c6d63ea4b9162a3fa8c32727"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "neocd/neocd_sz.rom",
+     "md5": [
+      "971ee8a36fb72da57aed01758f0a37f5"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "neocd/neocd_t.rom",
+     "md5": [
+      "de3cf45d227ad44645b22aa83b49f450"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "neocd/neocd_z.rom",
+     "md5": [
+      "11526d58d4c524daef7d5d677dc6b004"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "neocd/top-sp1.bin",
+     "md5": [
+      "122aee210324c72e8a11116e6ef9c0d0"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "neocd/uni-bioscd.rom",
+     "md5": [
+      "08ca8b2dba6662e8024f9e789711c6fc"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "neocdz.zip",
+     "md5": [
+      "66bf2aeb1b870eac603925601e48af82"
+     ],
+     "size": 953078
+    },
+    {
+     "name": "neocd/ng-lo.rom",
+     "md5": [
+      "e255264d85d5765013b1b2fa8109dd53"
+     ],
+     "size": 65536
+    }
+   ]
+  },
+  {
+   "systems": [
+    "scv"
+   ],
+   "core": "EmuSCV",
+   "need": "required",
+   "mode": "any",
+   "files": [
+    {
+     "name": "upd7801g.s01",
+     "md5": [
+      "635a978fd40db9a18ee44eff449fc126"
+     ],
+     "size": 4096
+    }
+   ]
+  },
+  {
+   "systems": [
+    "satellaview"
+   ],
+   "core": "Snes9x",
+   "need": "required",
+   "mode": "any",
+   "files": [
+    {
+     "name": "BS-X.bin",
+     "md5": [
+      "fed4d8242cfbed61343d53d48432aced"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "BS-X (En).bin",
+     "md5": [
+      "33b62505da6ca4525e3839db4e1a7bca"
+     ],
+     "size": 1048576
+    },
+    {
+     "name": "BS-X (En) (DRM-Free).bin",
+     "md5": [
+      "4ed9648505ab33a4daec93707b16caba"
+     ],
+     "size": 1048576
+    }
+   ]
+  },
+  {
+   "systems": [
+    "sufami"
+   ],
+   "core": "Snes9x",
+   "need": "required",
+   "mode": "any",
+   "files": [
+    {
+     "name": "STBIOS.bin",
+     "md5": [
+      "d3a44ba7d42a74d3ac58cb9c14c6a5ca"
+     ],
+     "size": 262144
+    }
+   ]
+  },
+  {
+   "systems": [
+    "sgb"
+   ],
+   "core": "mGBA",
+   "need": "optional",
+   "mode": "any",
+   "note": "mGBA plays Super Game Boy games as Game Boy games without it.",
+   "files": [
+    {
+     "name": "SGB1.sfc",
+     "md5": [
+      "b15ddb15721c657d82c5bab6db982ee9"
+     ],
+     "size": 262144
+    },
+    {
+     "name": "SGB2.sfc",
+     "md5": [
+      "8ecd73eb4edf7ed7e81aef1be80031d5"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "sgb1.program.rom",
+     "md5": [
+      "b15ddb15721c657d82c5bab6db982ee9"
+     ],
+     "size": 262144
+    },
+    {
+     "name": "sgb2.program.rom",
+     "md5": [
+      "8ecd73eb4edf7ed7e81aef1be80031d5"
+     ],
+     "size": 524288
+    },
+    {
+     "name": "sgb2_bios.bin",
+     "md5": [
+      "e0430bca9925fb9882148fd2dc2418c1"
+     ],
+     "size": 256
+    },
+    {
+     "name": "sgb_bios.bin",
+     "md5": [
+      "d574d4f9c12f305074798f54c091a8b4"
+     ],
+     "size": 256
+    },
+    {
+     "name": "SGB1.sfc/sgb1.boot.rom",
+     "md5": [
+      "d574d4f9c12f305074798f54c091a8b4"
+     ],
+     "size": 256
+    },
+    {
+     "name": "SGB2.sfc/sgb2.boot.rom",
+     "md5": [
+      "e0430bca9925fb9882148fd2dc2418c1"
+     ],
+     "size": 256
+    },
+    {
+     "name": "sgb_boot.bin",
+     "md5": [
+      "d574d4f9c12f305074798f54c091a8b4"
+     ],
+     "size": 256
+    },
+    {
+     "name": "sgb.boot.rom",
+     "md5": [
+      "d574d4f9c12f305074798f54c091a8b4"
+     ],
+     "size": 256
+    },
+    {
+     "name": "sgb2_boot.bin",
+     "md5": [
+      "e0430bca9925fb9882148fd2dc2418c1"
+     ],
+     "size": 256
+    },
+    {
+     "name": "SGB1.sfc/program.rom",
+     "md5": [
+      "b15ddb15721c657d82c5bab6db982ee9"
+     ],
+     "size": 262144
+    },
+    {
+     "name": "SGB2.sfc/program.rom",
+     "md5": [
+      "8ecd73eb4edf7ed7e81aef1be80031d5"
+     ],
+     "size": 524288
+    }
+   ]
+  },
+  {
+   "systems": [
+    "pokemini"
+   ],
+   "core": "PokeMini",
+   "need": "optional",
+   "mode": "any",
+   "note": "PokeMini has a free replacement built in.",
+   "files": [
+    {
+     "name": "bios.min",
+     "md5": [
+      "1e4fb124a3a886865acb574f388c803d"
+     ],
+     "size": 4096
+    }
+   ]
+  },
+  {
+   "systems": [
+    "msx1",
+    "msx2",
+    "msx2+",
+    "msxturbor"
+   ],
+   "core": "fMSX",
+   "need": "recommended",
+   "mode": "any",
+   "note": "blueMSX brings its own; fMSX uses these.",
+   "files": [
+    {
+     "name": "CARTS.SHA",
+     "md5": [
+      "74b0f217fa0e2b8bb5a2f8e2ecc69da3"
+     ],
+     "size": 33152
+    },
+    {
+     "name": "CYRILLIC.FNT",
+     "md5": [
+      "85b38e4128bbc300e675f55b278683a8"
+     ],
+     "size": 2048
+    },
+    {
+     "name": "DISK.ROM",
+     "md5": [
+      "80dcd1ad1a4cf65d64b7ba10504e8190"
+     ],
+     "size": 16384
+    },
+    {
+     "name": "FMPAC.ROM",
+     "md5": [
+      "6f69cc8b5ed761b03afd78000dfb0e19"
+     ],
+     "size": 65536
+    },
+    {
+     "name": "FMPAC16.ROM",
+     "md5": [
+      "af8537262df8df267072f359399a7635"
+     ],
+     "size": 16384
+    },
+    {
+     "name": "ITALIC.FNT",
+     "md5": [
+      "c83e50e9f33b8dd893c414691822740d"
+     ],
+     "size": 2048
+    },
+    {
+     "name": "KANJI.ROM",
+     "md5": [
+      "febe8782b466d7c3b16de6d104826b34"
+     ],
+     "size": 131072
+    },
+    {
+     "name": "MSX.ROM",
+     "md5": [
+      "aa95aea2563cd5ec0a0919b44cc17d47"
+     ],
+     "size": 32768
+    },
+    {
+     "name": "MSX2.ROM",
+     "md5": [
+      "ec3a01c91f24fbddcbcab0ad301bc9ef"
+     ],
+     "size": 32768
+    },
+    {
+     "name": "MSX2EXT.ROM",
+     "md5": [
+      "2183c2aff17cf4297bdb496de78c2e8a"
+     ],
+     "size": 16384
+    },
+    {
+     "name": "MSX2P.ROM",
+     "md5": [
+      "6d8c0ca64e726c82a4b726e9b01cdf1e"
+     ],
+     "size": 32768
+    },
+    {
+     "name": "MSX2PEXT.ROM",
+     "md5": [
+      "7c8243c71d8f143b2531f01afa6a05dc"
+     ],
+     "size": 16384
+    },
+    {
+     "name": "MSXDOS2.ROM",
+     "md5": [
+      "6418d091cd6907bbcf940324339e43bb"
+     ],
+     "size": 65536
+    },
+    {
+     "name": "PAINTER.ROM",
+     "md5": [
+      "403cdea1cbd2bb24fae506941f8f655e"
+     ],
+     "size": 65536
+    },
+    {
+     "name": "RS232.ROM",
+     "md5": [
+      "279efd1eae0d358eecd4edc7d9adedf3"
+     ],
+     "size": 16640
+    }
+   ]
   }
  ]
 }

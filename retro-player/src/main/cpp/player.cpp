@@ -151,6 +151,9 @@ struct Player {
     // Keyboard (computers: C64, Amiga, DOS …): keys held, and press/release events for the core's callback, which is
     // called on the core thread just before it runs a frame.
     std::atomic<bool> keys[RETROK_LAST] = {};
+    // Mouse (the touchscreen as a trackpad): movement adds up between frames, and each frame reads what came since.
+    std::atomic<int> mouseDx{0}, mouseDy{0}, mouseButtons{0};
+    int frameMouseDx = 0, frameMouseDy = 0;
     retro_keyboard_event_t keyboardCallback = nullptr;
     struct KeyEvent { bool down; unsigned keycode; uint32_t character; uint16_t modifiers; };
     std::mutex keyMutex;
@@ -921,6 +924,16 @@ int16_t inputState(unsigned port, unsigned device, unsigned index, unsigned id) 
             return 0;
         case RETRO_DEVICE_KEYBOARD:
             return id < RETROK_LAST && P->keys[id].load() ? 1 : 0;
+        case RETRO_DEVICE_MOUSE:
+            if (port != 0) return 0;
+            switch (id) {
+                case RETRO_DEVICE_ID_MOUSE_X: return static_cast<int16_t>(P->frameMouseDx);
+                case RETRO_DEVICE_ID_MOUSE_Y: return static_cast<int16_t>(P->frameMouseDy);
+                case RETRO_DEVICE_ID_MOUSE_LEFT: return P->mouseButtons & 1 ? 1 : 0;
+                case RETRO_DEVICE_ID_MOUSE_RIGHT: return P->mouseButtons & 2 ? 1 : 0;
+                case RETRO_DEVICE_ID_MOUSE_MIDDLE: return P->mouseButtons & 4 ? 1 : 0;
+                default: return 0;
+            }
         case RETRO_DEVICE_POINTER:
             if (port != 0 || index != 0) return 0;
             if (id == RETRO_DEVICE_ID_POINTER_X) return P->pointerX;
@@ -966,6 +979,9 @@ void runLoop() {
                 }
                 events.swap(p.keyEvents);
             }
+            // This frame's mouse movement: everything since the last frame.
+            p.frameMouseDx = p.mouseDx.exchange(0);
+            p.frameMouseDy = p.mouseDy.exchange(0);
             std::lock_guard<std::mutex> lock(p.coreMutex);
             if (p.keyboardCallback) {
                 for (auto &e : events) p.keyboardCallback(e.down, e.keycode, e.character, e.modifiers);
@@ -1270,6 +1286,13 @@ JNIEXPORT void JNI(setOption)(JNIEnv *env, jobject, jstring key, jstring value) 
     P->overrides[k] = v;
     if (P->variables.count(k)) P->variables[k] = v;
     P->variablesChanged = true;
+}
+
+JNIEXPORT void JNI(setMouse)(JNIEnv *, jobject, jint dx, jint dy, jint buttons) {
+    if (!P) return;
+    P->mouseDx += dx;
+    P->mouseDy += dy;
+    P->mouseButtons = buttons;
 }
 
 JNIEXPORT void JNI(setKey)(JNIEnv *, jobject, jint keycode, jboolean down, jint character, jint modifiers) {

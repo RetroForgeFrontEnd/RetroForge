@@ -88,6 +88,8 @@ object NativePlayer {
     external fun setPointer(x: Float, y: Float, down: Boolean)
     /** A keyboard key ([RetroKeys] code) pressed or released, with the character it types and its modifiers. */
     external fun setKey(keycode: Int, down: Boolean, character: Int, modifiers: Int)
+    /** Mouse movement since the last call (in game pixels) and the buttons held: bit 0 left, 1 right, 2 middle. */
+    external fun setMouse(dx: Int, dy: Int, buttons: Int)
     external fun reset()
     external fun saveRam(): ByteArray?
     external fun restoreSaveRam(data: ByteArray)

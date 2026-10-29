@@ -172,3 +172,5 @@ Requests that were never fully done, or only answered:
 | DOS games kept as folders (RetroBat "Game.pc" folders) | ❌ to do: DOSBox Pure needs a zip or the game's .exe; pick the folder's main .exe or zip it on the fly |
 | Keyboards for computer systems (C64, Amiga, DOS, MSX, ZX Spectrum …) | ✅ physical keyboards type straight in; Keyboard in the in-game menu opens Android's keyboard; keys held long enough for the emulator to see them (tested: PRINT 42 in C64 BASIC; on-screen letters reach the C64) |
 | Cores that ask to fast-forward (VICE warp while loading) | ✅ supported |
+| Mouse for computers (Amiga, Atari ST, DOS, ScummVM …) | ✅ the picture is a trackpad: drag moves, tap clicks, two-finger tap right-clicks (tested: Amiga 1200 Workbench, pointer moved and Cancel clicked) |
+| BIOS rules for the new systems | ✅ 21 more rules from libretro's System.dat (Amiga Kickstarts, 3DO, Atari ST/5200/800, CD-i, Intellivision, Neo Geo CD, PC-88/98, PC-FX, X1, X68000 …); recognised by checksum whatever the file is called (tested: TOSEC-named Kickstarts found and copied) |

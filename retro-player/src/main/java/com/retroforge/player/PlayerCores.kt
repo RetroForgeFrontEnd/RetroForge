@@ -252,6 +252,9 @@ object PlayerCores {
         "apple2", "bk", "thomson", "x1", "macintosh", "scummvm",
     )
 
+    /** Computers driven with a mouse (point-and-click adventures, Workbench, GEM, Windows 3.1 …): the screen is a trackpad. */
+    val mouseSystems = setOf("amiga500", "amiga1200", "amiga4000", "dos", "scummvm", "atarist", "macintosh", "x68000", "pc98")
+
     val experimentalSystems = setOf("gamecube", "gc", "wii", "3ds", "n3ds", "ps2")
 
     /** Disc images and playlists: only for the [discSystems]. */

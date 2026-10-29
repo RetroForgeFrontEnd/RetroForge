@@ -156,7 +156,8 @@ class LibraryRepository(
         scope.launch { dao.recordPlay(game.rootId, game.relativePath, core, clock()) }
     }
 
-    fun systemName(id: String): String = rules.byId(id)?.name ?: id
+    /** A system's name for an id or one of its folder names ("segacd" is the Mega CD). */
+    fun systemName(id: String): String = (rules.byId(id) ?: rules.forFolder(id))?.name ?: id
 
     /**
      * Document providers that belong to RetroForge itself (its network drives): their folders need no grant from the

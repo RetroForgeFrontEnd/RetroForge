@@ -16,6 +16,7 @@ The same guide as Settings → How to use RetroForge in the app.
 - What it does: plays games and films kept on a computer or NAS at home, over Wi-Fi, without copying them to the phone. Nothing extra to install on the phone. The phone and the computer must be on the same network.
 - STEP 1, on a Windows PC: share the folder. Right-click the folder (for example your roms folder) → Properties → Sharing tab → Advanced Sharing… → tick Share this folder. Note the share name (you can keep the folder's name). Click Permissions, make sure Everyone has Read ticked, then OK, OK.
 - STEP 2, on the PC: let the folder be read. Same Properties window → Security tab → Edit… → Add… → type Everyone → Check Names → OK. With Everyone selected, tick Read & execute under Allow → OK → OK. RetroForge only ever reads, so Read is all it needs.
+- STEP 2b, if some games then say ACCESS DENIED: those files kept their own permissions. Same Security tab → Advanced → tick Replace all child object permission entries with inheritable permission entries from this object → OK → Yes. It can take a few minutes on a big collection.
 - STEP 3, choose how the phone signs in. Option A (simplest each time, safest): use the PC's own sign-in. If you sign in to Windows with a Microsoft account, that's its email address and its password (not your PIN: Windows won't accept a PIN over the network). Settings → Accounts → Your info on the PC shows which account you use.
 - Option B (no login at all): on the PC open Control Panel → Network and Sharing Center → Change advanced sharing settings → All networks → Turn off password protected sharing → Save. Then leave the username and password empty in RetroForge. Anyone on your home Wi-Fi can then read the folders you've shared, so only do this at home.
 - A NAS (Synology, QNAP and others) usually has shared folders already: use a NAS user's name and password, or leave them empty if the share allows guests.
@@ -53,6 +54,14 @@ The same guide as Settings → How to use RetroForge in the app.
 - Remap buttons (in-game menu): choose a button, then press the controller button you want for it, or drag on-screen buttons where you like. Saved per system.
 - In the app: D-pad to move, A to select, B to go back, L1/R1 to switch tabs. The red ✕ at the top of every inner page also goes back.
 - Hold R2 to fast-forward on systems whose controllers had no R2 (Game Boy, GBA, NES, SNES, Mega Drive …).
+
+## Computers: keyboard, mouse and BIOS
+
+- The built-in player also runs home computers and more: Commodore 64, Amiga, MSX, ZX Spectrum, Amstrad CPC, Atari ST and 800, PC-88 and PC-98, X68000, DOS, ScummVM adventures, and consoles like the 3DO, Jaguar, Neo Geo CD, Vectrex and Intellivision.
+- Keyboard: plug in or pair a keyboard (USB or Bluetooth) and type straight into the computer. On a touchscreen, open the in-game menu and choose Keyboard: Android's keyboard comes up and what you type goes to the game. On a C64, Esc is RUN/STOP.
+- Mouse (Amiga, Atari ST, DOS, ScummVM …): the picture works like a laptop's trackpad. Drag a finger to move the pointer, tap to click, tap with two fingers to right-click.
+- Commodore disks load by themselves at top speed, then the game runs at normal speed. Cartridge games start straight away.
+- BIOS: some of these need the real machine's ROMs (Kickstart for the Amiga, TOS for the Atari ST, the 3DO and Neo Geo CD BIOS …). Put the ones you own in your BIOS folder, then Settings → Help and about → Set up RetroForge → BIOS files: RetroForge recognises them by their contents, whatever they're called, and copies them where each emulator looks.
 
 ## Other emulators (RetroArch and standalone apps)
 
