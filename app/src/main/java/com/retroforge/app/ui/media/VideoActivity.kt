@@ -86,6 +86,8 @@ class VideoActivity : ComponentActivity() {
             addView(controls, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
             addView(modeButton, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP or Gravity.END))
         })
+        // The View button comes and goes with the playback controls, so nothing stays over the film.
+        controls.setControllerVisibilityListener(PlayerView.ControllerVisibilityListener { visibility -> modeButton.visibility = visibility })
         // 3D films start in their Cardboard mode; anything else as normal.
         val name = intent.getStringExtra(EXTRA_FILE_NAME).orEmpty().replace('.', ' ').replace('_', ' ')
         val start = when {
