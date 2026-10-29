@@ -119,19 +119,62 @@ fun MediaScreen(prefs: SharedPreferences) {
     }
 }
 
+/** What TMDB knows about a film (saved next to its poster). */
+private data class FilmInfo(val overview: String, val rating: Double, val released: String, val runtime: Int?)
+
+private fun infoFile(context: Context, film: Film) = File(context.cacheDir, "posters/${film.uri.hashCode().toUInt().toString(16)}.json")
+
+private fun loadInfo(context: Context, film: Film): FilmInfo? = runCatching {
+    val o = JSONObject(infoFile(context, film).readText())
+    FilmInfo(o.optString("overview"), o.optDouble("vote_average", 0.0), o.optString("release_date"), o.optInt("runtime").takeIf { it > 0 })
+}.getOrNull()
+
 @Composable
 private fun FilmCard(film: Film, tmdbKey: String?) {
     val context = LocalContext.current
     val art by produceState<File?>(null, film.uri, tmdbKey) {
         value = withContext(Dispatchers.IO) { artwork(context, film, tmdbKey) }
     }
-    FocusCard(modifier = Modifier.width(150.dp), onClick = { play(context, film) }) {
+    var open by remember { mutableStateOf(false) }
+    if (open) FilmDetails(film, art, onPlay = { open = false; play(context, film) }, onClose = { open = false })
+    FocusCard(modifier = Modifier.width(150.dp), onClick = { open = true }) {
         Box(Modifier.fillMaxWidth().aspectRatio(2f / 3f).clip(RoundedCornerShape(8.dp))) {
             art?.let { AsyncImage(model = it, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth().aspectRatio(2f / 3f)) }
             if (film.is3d) Box(Modifier.align(Alignment.TopEnd).padding(6.dp)) { StatusPill("3D", StatusTone.GOOD) }
         }
         Text(film.title, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis)
         film.year?.let { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+    }
+}
+
+/** Poster, story, rating and Play: a film's page, over the grid. */
+@Composable
+private fun FilmDetails(film: Film, art: File?, onPlay: () -> Unit, onClose: () -> Unit) {
+    val context = LocalContext.current
+    val info by produceState<FilmInfo?>(null, film.uri) { value = withContext(Dispatchers.IO) { loadInfo(context, film) } }
+    androidx.compose.ui.window.Dialog(onDismissRequest = onClose) {
+        FocusCard(modifier = Modifier.fillMaxWidth()) {
+            androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Box(Modifier.width(120.dp).aspectRatio(2f / 3f).clip(RoundedCornerShape(8.dp))) {
+                    art?.let { AsyncImage(model = it, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth().aspectRatio(2f / 3f)) }
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    CardTitle(film.title)
+                    val facts = listOfNotNull(
+                        (info?.released?.take(4)?.takeIf { it.isNotBlank() } ?: film.year?.toString()),
+                        info?.runtime?.let { "${it / 60} h ${it % 60} min" },
+                        info?.rating?.takeIf { it > 0 }?.let { "★ %.1f".format(it) },
+                    )
+                    if (facts.isNotEmpty()) Text(facts.joinToString(" · "), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (film.is3d) StatusPill("3D side by side", StatusTone.GOOD)
+                }
+            }
+            CardBody(info?.overview?.takeIf { it.isNotBlank() } ?: "No description. Add a TMDB key below the films for posters, stories and ratings.")
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                FocusChip("Play", onClick = onPlay)
+                FocusChip("Close", onClick = onClose)
+            }
+        }
     }
 }
 
@@ -205,7 +248,7 @@ private fun artwork(context: Context, film: Film, tmdbKey: String?): File? {
     val poster = File(context.cacheDir, "posters/$name.jpg")
     if (poster.isFile) return poster
     if (!tmdbKey.isNullOrBlank()) {
-        runCatching { tmdbPoster(film, tmdbKey) }.getOrNull()?.let { bytes ->
+        runCatching { tmdbPoster(film, tmdbKey, infoFile(context, film)) }.getOrNull()?.let { bytes ->
             poster.parentFile?.mkdirs()
             poster.writeBytes(bytes)
             return poster
@@ -225,11 +268,24 @@ private fun artwork(context: Context, film: Film, tmdbKey: String?): File? {
     }.getOrNull()
 }
 
-private fun tmdbPoster(film: Film, key: String): ByteArray? {
-    val query = "https://api.themoviedb.org/3/search/movie?api_key=${URLEncoder.encode(key, "UTF-8")}" +
+/** The poster for the best TMDB match; its details (story, rating, date, runtime) are saved to [info] on the way. */
+private fun tmdbPoster(film: Film, key: String, info: File): ByteArray? {
+    val k = URLEncoder.encode(key, "UTF-8")
+    val query = "https://api.themoviedb.org/3/search/movie?api_key=$k" +
         "&query=${URLEncoder.encode(film.title, "UTF-8")}" + (film.year?.let { "&year=$it" } ?: "")
-    val json = JSONObject(get(query) ?: return null)
-    val path = json.optJSONArray("results")?.optJSONObject(0)?.optString("poster_path")?.takeIf { it.isNotBlank() && it != "null" } ?: return null
+    val match = JSONObject(get(query) ?: return null).optJSONArray("results")?.optJSONObject(0) ?: return null
+    // The film's own record adds the runtime.
+    val details = match.optInt("id").takeIf { it > 0 }?.let { id -> get("https://api.themoviedb.org/3/movie/$id?api_key=$k")?.let(::JSONObject) }
+    info.parentFile?.mkdirs()
+    info.writeText(
+        JSONObject()
+            .put("overview", match.optString("overview"))
+            .put("vote_average", match.optDouble("vote_average", 0.0))
+            .put("release_date", match.optString("release_date"))
+            .put("runtime", details?.optInt("runtime") ?: 0)
+            .toString(),
+    )
+    val path = match.optString("poster_path").takeIf { it.isNotBlank() && it != "null" } ?: return null
     return getBytes("https://image.tmdb.org/t/p/w342$path")
 }
 
