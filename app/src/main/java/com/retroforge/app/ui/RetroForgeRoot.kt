@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -98,6 +100,8 @@ enum class Section(val route: String, val label: String, @DrawableRes val icon: 
     RETRO("retro", "Retro", R.drawable.ic_section_retro),
     HACKS("hacks", "ROM hacks", R.drawable.ic_section_hacks),
     PC("pc", "PC", R.drawable.ic_section_pc),
+    MEDIA("media", "Media", R.drawable.ic_section_media),
+    APPS("apps", "Android", R.drawable.ic_section_apps),
     LINKS("links", "Links", R.drawable.ic_section_links),
     SETTINGS("settings", "Settings", R.drawable.ic_section_settings),
 }
@@ -110,7 +114,6 @@ private const val SETUP_ROUTE = "setup"
 private const val ABOUT_ROUTE = "settings/about"
 private const val HOTKEYS_ROUTE = "settings/hotkeys"
 private const val GPU_ROUTE = "settings/gpu"
-private const val APPS_ROUTE = "apps"
 private const val TUTORIAL_ROUTE = "settings/tutorial"
 private const val THEMES_ROUTE = "settings/themes"
 private const val LICENCES_ROUTE = "settings/licences"
@@ -200,7 +203,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         composable(Section.HOME.route) {
                             HomeScreen(
                                 showPc = settings.showPcSection, library = libraryViewModel, onOpen = { nav.goTo(it) },
-                                onOpenApps = { nav.navigate(APPS_ROUTE) },
+                                onOpenApps = { nav.goTo(Section.APPS) },
                                 onOpenGame = { nav.navigate("retro/game/$it") }, onOpenSystem = { nav.navigate("retro/system/$it") },
                                 onOpenPlaylist = { nav.navigate("retro/playlist/$it") },
                             )
@@ -304,14 +307,15 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         composable(Section.SETTINGS.route) {
                             val counts by container.library.systemCounts.collectAsStateWithLifecycle(initialValue = emptyList())
                             SettingsScreen(settingsViewModel,
-                                playerSystems = counts.map { it.system to container.library.systemName(it.system) }, coreChoices = container.coreChoices, viewPrefs = container.viewPrefs, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenGpu = { nav.navigate(GPU_ROUTE) }, onOpenApps = { nav.navigate(APPS_ROUTE) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
+                                playerSystems = counts.map { it.system to container.library.systemName(it.system) }, coreChoices = container.coreChoices, viewPrefs = container.viewPrefs, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenGpu = { nav.navigate(GPU_ROUTE) }, onOpenApps = { nav.goTo(Section.APPS) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
                                 onOpenLicences = { nav.navigate(LICENCES_ROUTE) }, onOpenPrivacy = { nav.navigate(PRIVACY_ROUTE) },
                             )
                         }
                         composable(ABOUT_ROUTE) { AboutScreen() }
                         composable(HOTKEYS_ROUTE) { HotkeysScreen(settingsViewModel) }
                         composable(GPU_ROUTE) { GpuDriversScreen() }
-                        composable(APPS_ROUTE) { com.retroforge.app.ui.apps.AppsScreen() }
+                        composable(Section.APPS.route) { com.retroforge.app.ui.apps.AppsScreen() }
+                        composable(Section.MEDIA.route) { com.retroforge.app.ui.media.MediaScreen(container.viewPrefs) }
                         composable(TUTORIAL_ROUTE) { TutorialScreen() }
                         composable(LICENCES_ROUTE) { LicencesScreen() }
                         composable(PRIVACY_ROUTE) { PrivacyScreen() }
@@ -372,11 +376,16 @@ private fun SectionNav(sections: List<Section>, current: Section, vertical: Bool
             sections.forEach { tab(it, Modifier) }
         }
     } else {
-        Row(
-            modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(horizontal = 4.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-        ) {
-            sections.forEach { tab(it, Modifier.weight(1f)) }
+        BoxWithConstraints(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
+            // Too many tabs for the width (8 on a phone): they keep a readable size and the bar scrolls sideways.
+            val fits = maxWidth / sections.size >= 64.dp
+            Row(
+                modifier = Modifier.fillMaxWidth().then(if (fits) Modifier else Modifier.horizontalScroll(rememberScrollState()))
+                    .padding(horizontal = 4.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                sections.forEach { tab(it, if (fits) Modifier.weight(1f) else Modifier.width(76.dp)) }
+            }
         }
     }
 }

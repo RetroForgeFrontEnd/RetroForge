@@ -52,6 +52,13 @@
             </intent-filter>
         </activity-alias>
 
+        <!-- Films from the Media tab, full screen. -->
+        <activity
+            android:name=".ui.media.VideoActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+            android:exported="false" />
+
         <!-- The built-in player: its own process, so each game gets a clean emulator core. -->
         <activity
             android:name=".player.PlayerActivity"

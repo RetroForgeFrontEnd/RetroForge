@@ -1,0 +1,249 @@
+package com.retroforge.app.ui.media
+
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
+import android.net.Uri
+import android.provider.DocumentsContract
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
+import coil3.compose.AsyncImage
+import com.retroforge.app.BuildConfig
+import com.retroforge.app.ui.CardBody
+import com.retroforge.app.ui.CardTitle
+import com.retroforge.app.ui.ScreenFrame
+import com.retroforge.core.ui.ControllerTextField
+import com.retroforge.core.ui.FocusCard
+import com.retroforge.core.ui.FocusChip
+import com.retroforge.core.ui.StatusPill
+import com.retroforge.core.ui.StatusTone
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.io.File
+import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLEncoder
+
+private const val FOLDER = "media_folder"
+private const val TMDB_KEY = "tmdb_key"
+
+/**
+ * Films on the device, Plex-style: posters in a grid, newest first. Artwork comes from TMDB when the user adds their
+ * own free API key, otherwise a frame from the film. Plays in RetroForge's video player or another app.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun MediaScreen(prefs: SharedPreferences) {
+    val context = LocalContext.current
+    var folder by remember { mutableStateOf(prefs.getString(FOLDER, null)) }
+    var key by remember { mutableStateOf(prefs.getString(TMDB_KEY, null)) }
+    var refresh by remember { mutableIntStateOf(0) }
+    val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        uri ?: return@rememberLauncherForActivityResult
+        runCatching { context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+        prefs.edit().putString(FOLDER, uri.toString()).apply()
+        folder = uri.toString()
+    }
+    val films by produceState<List<Film>?>(null, folder, refresh) {
+        value = folder?.let { tree -> withContext(Dispatchers.IO) { runCatching { scan(context, tree.toUri()) }.getOrDefault(emptyList()) } }
+    }
+
+    ScreenFrame(title = "Media", subtitle = "Your films, with artwork, played right here.") {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            FocusChip(if (folder == null) "Choose your films folder" else "Change folder", onClick = { pick.launch(null) })
+            if (folder != null) FocusChip("Look again", onClick = { refresh++ })
+        }
+        if (folder == null) {
+            FocusCard(modifier = Modifier.fillMaxWidth()) {
+                CardTitle("Watch your films in RetroForge")
+                CardBody(
+                    "Pick the folder with your films (on the phone, an SD card or a USB drive). RetroForge only reads it. " +
+                        "3D films (side-by-side) play full screen sideways, ready for a Cardboard viewer.",
+                )
+            }
+        }
+        val list = films
+        when {
+            folder == null -> Unit
+            list == null -> CardBody("Looking for films…")
+            list.isEmpty() -> CardBody("No films found in that folder (mp4, mkv, avi, mov and others).")
+            else -> {
+                Text("${list.size} films", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    list.forEach { FilmCard(it, key) }
+                }
+            }
+        }
+        TmdbCard(key) { new ->
+            prefs.edit().putString(TMDB_KEY, new).apply()
+            key = new
+            refresh++
+        }
+        FocusCard(modifier = Modifier.fillMaxWidth()) {
+            CardTitle("Coming next")
+            CardBody("Plex servers, network drives (SMB) and cloud folders. For now, films on this device, an SD card or a USB drive.")
+        }
+    }
+}
+
+@Composable
+private fun FilmCard(film: Film, tmdbKey: String?) {
+    val context = LocalContext.current
+    val art by produceState<File?>(null, film.uri, tmdbKey) {
+        value = withContext(Dispatchers.IO) { artwork(context, film, tmdbKey) }
+    }
+    FocusCard(modifier = Modifier.width(150.dp), onClick = { play(context, film) }) {
+        Box(Modifier.fillMaxWidth().aspectRatio(2f / 3f).clip(RoundedCornerShape(8.dp))) {
+            art?.let { AsyncImage(model = it, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth().aspectRatio(2f / 3f)) }
+            if (film.is3d) Box(Modifier.align(Alignment.TopEnd).padding(6.dp)) { StatusPill("3D", StatusTone.GOOD) }
+        }
+        Text(film.title, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis)
+        film.year?.let { Text(it.toString(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+    }
+}
+
+@Composable
+private fun TmdbCard(saved: String?, onSave: (String?) -> Unit) {
+    var draft by remember { mutableStateOf("") }
+    var show by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    FocusCard(modifier = Modifier.fillMaxWidth()) {
+        CardTitle("Film posters (TMDB)")
+        StatusPill(if (saved.isNullOrBlank()) "Using frames from the films" else "TMDB key saved", if (saved.isNullOrBlank()) StatusTone.NEUTRAL else StatusTone.GOOD)
+        CardBody(
+            "For proper posters, create a free account at themoviedb.org, copy your API key (v3) and paste it here. It stays on this " +
+                "device and is sent only to TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.",
+        )
+        ControllerTextField(
+            value = draft, onValueChange = { draft = it.trim() }, singleLine = true, label = { Text("TMDB API key") },
+            visualTransformation = if (show) VisualTransformation.None else PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth(),
+        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            FocusChip(if (show) "Hide key" else "Show key", onClick = { show = !show })
+            FocusChip("Save key", onClick = { onSave(draft.ifBlank { null }); draft = "" }, enabled = draft.length >= 16)
+            FocusChip("Get a free key", onClick = {
+                runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, "https://www.themoviedb.org/settings/api".toUri()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+            })
+            if (!saved.isNullOrBlank()) FocusChip("Remove key", onClick = { onSave(null) })
+        }
+    }
+}
+
+private fun play(context: Context, film: Film) {
+    context.startActivity(
+        Intent(context, VideoActivity::class.java)
+            .putExtra(VideoActivity.EXTRA_URI, film.uri)
+            .putExtra(VideoActivity.EXTRA_TITLE, film.title)
+            .putExtra(VideoActivity.EXTRA_3D, film.is3d),
+    )
+}
+
+/** Every video under [tree] (a few folders deep), newest first. */
+private fun scan(context: Context, tree: Uri): List<Film> {
+    val films = mutableListOf<Film>()
+    fun walk(parentId: String, depth: Int) {
+        if (depth > 4) return
+        val children = DocumentsContract.buildChildDocumentsUriUsingTree(tree, parentId)
+        context.contentResolver.query(
+            children,
+            arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID, DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                DocumentsContract.Document.COLUMN_MIME_TYPE, DocumentsContract.Document.COLUMN_LAST_MODIFIED),
+            null, null, null,
+        )?.use { c ->
+            while (c.moveToNext()) {
+                val id = c.getString(0)
+                val name = c.getString(1) ?: continue
+                if (c.getString(2) == DocumentsContract.Document.MIME_TYPE_DIR) {
+                    walk(id, depth + 1)
+                } else if (name.substringAfterLast('.', "").lowercase() in Films.VIDEO_EXTENSIONS) {
+                    films += Films.parse(DocumentsContract.buildDocumentUriUsingTree(tree, id).toString(), name, c.getLong(3))
+                }
+            }
+        }
+    }
+    walk(DocumentsContract.getTreeDocumentId(tree), 0)
+    return films.sortedByDescending { it.modified }
+}
+
+/** A poster from TMDB (with a key), else a frame from about a tenth of the way in. Cached. */
+private fun artwork(context: Context, film: Film, tmdbKey: String?): File? {
+    val name = film.uri.hashCode().toUInt().toString(16)
+    val poster = File(context.cacheDir, "posters/$name.jpg")
+    if (poster.isFile) return poster
+    if (!tmdbKey.isNullOrBlank()) {
+        runCatching { tmdbPoster(film, tmdbKey) }.getOrNull()?.let { bytes ->
+            poster.parentFile?.mkdirs()
+            poster.writeBytes(bytes)
+            return poster
+        }
+    }
+    val frame = File(context.cacheDir, "frames/$name.jpg")
+    if (frame.isFile) return frame
+    return runCatching {
+        MediaMetadataRetriever().use { r ->
+            r.setDataSource(context, film.uri.toUri())
+            val length = r.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
+            val bitmap = r.getFrameAtTime(length * 100, MediaMetadataRetriever.OPTION_CLOSEST_SYNC) ?: return null
+            frame.parentFile?.mkdirs()
+            frame.outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 82, it) }
+            frame
+        }
+    }.getOrNull()
+}
+
+private fun tmdbPoster(film: Film, key: String): ByteArray? {
+    val query = "https://api.themoviedb.org/3/search/movie?api_key=${URLEncoder.encode(key, "UTF-8")}" +
+        "&query=${URLEncoder.encode(film.title, "UTF-8")}" + (film.year?.let { "&year=$it" } ?: "")
+    val json = JSONObject(get(query) ?: return null)
+    val path = json.optJSONArray("results")?.optJSONObject(0)?.optString("poster_path")?.takeIf { it.isNotBlank() && it != "null" } ?: return null
+    return getBytes("https://image.tmdb.org/t/p/w342$path")
+}
+
+private fun get(url: String): String? = getBytes(url)?.decodeToString()
+
+private fun getBytes(url: String): ByteArray? {
+    val connection = (URL(url).openConnection() as HttpURLConnection).apply {
+        connectTimeout = 15_000
+        readTimeout = 30_000
+        setRequestProperty("User-Agent", "RetroForge/${BuildConfig.VERSION_NAME}")
+    }
+    return try {
+        if (connection.responseCode == 200) connection.inputStream.use { it.readBytes() } else null
+    } finally {
+        connection.disconnect()
+    }
+}

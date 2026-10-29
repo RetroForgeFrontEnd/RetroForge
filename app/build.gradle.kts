@@ -78,6 +78,8 @@ dependencies {
     implementation(libs.xz)
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

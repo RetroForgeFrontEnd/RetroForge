@@ -1,0 +1,6 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <!-- Four rounded app tiles. -->
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M4,6 C4,4.9 4.9,4 6,4 L9,4 C10.1,4 11,4.9 11,6 L11,9 C11,10.1 10.1,11 9,11 L6,11 C4.9,11 4,10.1 4,9 Z M13,6 C13,4.9 13.9,4 15,4 L18,4 C19.1,4 20,4.9 20,6 L20,9 C20,10.1 19.1,11 18,11 L15,11 C13.9,11 13,10.1 13,9 Z M4,15 C4,13.9 4.9,13 6,13 L9,13 C10.1,13 11,13.9 11,15 L11,18 C11,19.1 10.1,20 9,20 L6,20 C4.9,20 4,19.1 4,18 Z M13,15 C13,13.9 13.9,13 15,13 L18,13 C19.1,13 20,13.9 20,15 L20,18 C20,19.1 19.1,20 18,20 L15,20 C13.9,20 13,19.1 13,18 Z" />
+</vector>

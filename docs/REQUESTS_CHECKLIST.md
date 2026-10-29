@@ -118,3 +118,27 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | VR: Cardboard 3D in the player; Quest; 3D films | 🟡 Cardboard VR mode (picture per eye) for every system; Virtual Boy in real 3D (Beetle VB side by side); tested on the emulator. Quest: runs as a flat Android app. 3D films: with the media section |
 | Dreamcast in the built-in player | ⛔ the laptop emulator crashed starting Ikaruga (its GPU translator); needs a phone test |
 | Remap buttons for touch and controller | ✅ pause menu → Remap buttons: controller keys and on-screen buttons per system; tested on the emulator |
+
+## Found in a full re-read of the conversation (29 October)
+
+Requests that were never fully done, or only answered:
+
+| Request | Status |
+|---|---|
+| Media section: films on the phone, Plex-style layout, artwork, Plex servers, network drives; 3D films for VR | 🟡 Media tab: films folder, poster grid (TMDB with your key, else a frame), tidy titles, 3D badge, built-in player (ExoPlayer); ❌ Plex servers, network drives |
+| Media player for 3D films | 🟡 side-by-side 3D plays full screen sideways (Cardboard-ready); ❌ top-and-bottom → side-by-side, 2D cinema mode in Cardboard |
+| Android tab with every app | ✅ main tab (Android), with settings shortcuts and launcher mode |
+| Download ROM hacks directly in the app and apply them | ❌ (catalogue links to pages only) |
+| Texture packs for systems that support them | ❌ |
+| Setup: offer to reorganise a roms folder into RetroForge's structure | ❌ |
+| Themes: Aurora (Xbox 360), ReLive, PS3/PS4/PS5 and current Xbox-style layouts | 🟡 8 layouts exist; not all of these looks |
+| Themes: fan-made console artwork from SteamGridDB | ❌ (canvas-es console art is used instead) |
+| Import a favourite theme so it looks identical | 🟡 colours and system art only |
+| Use RetroBat's per-system controller config files | ❌ (Remap buttons covers most of the need) |
+| A test function for every system and feature before release | 🟡 scripted boot test (outside the app) + release test plan; no in-app/automated run |
+| Dual screen for the app itself (not just DS games) | ❌ |
+| Migration from other frontends (ES-DE and others) | 🟡 reads their folders, gamelist.xml and theme colours; no settings/collections import |
+| Remove the name DroidDeck from the app but still use it | 🟡 RetroBat removed; DroidDeck is still named because users install it themselves |
+| Original Xbox / Xbox 360 | ❌ research: no libretro core; xemu Android is experimental |
+| Weekly bug reports on GitHub | 🟡 Report a problem built; needs the GitHub repository |
+
