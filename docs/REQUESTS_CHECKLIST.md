@@ -126,7 +126,7 @@ Requests that were never fully done, or only answered:
 | Request | Status |
 |---|---|
 | Media section: films on the phone, Plex-style layout, artwork, Plex servers, network drives; 3D films for VR | 🟡 Media tab: films folder, poster grid (TMDB with your key, else a frame), tidy titles, 3D badge, built-in player (ExoPlayer); ❌ Plex servers, network drives |
-| Media player for 3D films | 🟡 built: View button cycles Normal / Cardboard cinema (2D) / 3D side by side / 3D top and bottom (picked from the file name); can't-play message with Open in another app. Untested: the emulator's video decoder fails on every clip, needs the phone |
+| Media player for 3D films | ✅ tested on the S22: a 1080p half side-by-side film opens in Cardboard 3D side by side by itself (picked from the file name) and plays; View button cycles Normal / Cardboard cinema / 3D side by side / 3D top and bottom; RetroForge film folders (Movies/RetroForge/Films and 3D Films) |
 | Scan for loose ROMs, not only in system-named folders | ✅ loose files and other folders searched by file type (gba, nds, sfc, z64 …); zip/iso/chd outside system folders reported, not guessed; tested on the emulator |
 | Direct downloads for ports (Android APK and Windows versions), and test both | ✅ Download and install (APK from the official release, Android's installer confirms; tested: download + installer prompt, Super Metroid's old APK blocked by Play Protect) and Download Windows version (unzipped into Download/RetroForge/Ports; tested with Zelda64Recomp). Windows port in GameNative: needs your phone |
 | Film info from IMDb | answered: scraping IMDb breaks its terms; TMDB (free) gives the same, plus an IMDb link later |
