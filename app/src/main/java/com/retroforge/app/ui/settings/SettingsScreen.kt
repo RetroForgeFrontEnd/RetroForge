@@ -136,7 +136,7 @@ fun SettingsScreen(
 
         TexturePacksCard(LocalContext.current.getExternalFilesDir(null) ?: LocalContext.current.filesDir)
 
-        coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames) }
+        coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames, library) }
 
         EmulatorAppsCard()
 

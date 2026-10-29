@@ -16,7 +16,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Graphics: shapes, filters, integer scaling | ✅ |
 | Themes, theme engine, import | ✅ (colours + system art); ✅ interface sounds (own synthesised sounds, switch in Settings; not heard on a device yet) |
 | Clear compatibility information | 🟡 docs; per-game compatibility not shown in the app |
-| Portable library (other frontends keep working) | ✅ read-only scan, own index; ✅ settings in the backup zip (tested); ❌ favourites/playlists not in it yet |
+| Portable library (other frontends keep working) | ✅ read-only scan, own index; ✅ settings, favourites and playlists in the backup zip (tested: back up, restore, games matched by path) |
 | PC subsystem via a real runtime | 🟡 GameNative boots a game on the S22; ⛔ DroidDeck (needs Snapdragon); ❌ PC games in RetroForge's library |
 | Documentation set | ✅ core docs and the 5 RetroBat audit docs ([architecture](retrobat-architecture-analysis.md), [workflows](retrobat-workflow-mapping.md), [ES-DE folders](retrobat-esde-folder-mapping.md), [Android parity](retrobat-android-parity-matrix.md), [recommendations](android-integration-recommendations.md)) |
 | Automated tests | ✅ unit tests; ❌ automated UI tests |
@@ -109,7 +109,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Scan for new games when the app starts | ✅ on by default, switch in Settings |
 | Use RetroForge as the Android home screen (launcher), with Android apps and Android settings | ✅ Android apps screen (Home and Settings), settings shortcuts, launcher-mode switch; tested on the emulator (Home button opens RetroForge) |
 | Media section (films, Plex-style, artwork, Plex servers, network drives) | ❌ idea |
-| Games from network drives, Google Drive, Dropbox | ❌ idea |
+| Games from network drives, Google Drive, Dropbox | ❌ planned (Media tab says "Coming next") |
 | PC / iOS / Linux / Raspberry Pi versions | ❌ question |
 | How to fund updates when free | ❌ question (support links exist) |
 | Dual-screen option for games and the app | 🟡 DS games: top screen on the main display, touch screen on the second (automatic when a second display exists); picture split tested on a simulated display; touch on the second screen needs a real dual-screen device. App UI on two screens: not yet |
@@ -131,8 +131,8 @@ Requests that were never fully done, or only answered:
 | Direct downloads for ports (Android APK and Windows versions), and test both | ✅ Download and install (APK from the official release, Android's installer confirms; tested: download + installer prompt, Super Metroid's old APK blocked by Play Protect) and Download Windows version (unzipped into Download/RetroForge/Ports; tested with Zelda64Recomp). Windows port in GameNative: needs your phone |
 | Film info from IMDb | answered: scraping IMDb breaks its terms; TMDB (free) gives the same, plus an IMDb link later |
 | Android tab with every app | ✅ main tab (Android), with settings shortcuts and launcher mode |
-| Download ROM hacks directly in the app and apply them | ❌ (catalogue links to pages only) |
-| Texture packs for systems that support them | 🟡 N64 (Settings → Texture packs: copy a pack folder in, switched on automatically); not tested with a real pack; PSP not yet |
+| Download ROM hacks directly in the app and apply them | ✅ "Download and patch" for hacks hosted on GitHub (tested with ALttP Redux); romhacking.net blocks downloads, so those open the page |
+| Texture packs for systems that support them | ✅ N64: one-tap downloads (GhostlyDark packs) or add a folder; ✅ PSP: add a folder; switched on automatically. Not yet tried in a game with a real pack |
 | Setup: offer to reorganise a roms folder into RetroForge's structure | ✅ ROM Manager → Sort: loose games planned into their system folders (existing names kept), moved with permission, undo from History; tested move and undo |
 | Themes: Aurora (Xbox 360), ReLive, PS3/PS4/PS5 and current Xbox-style layouts | 🟡 8 layouts exist; not all of these looks |
 | Themes: fan-made console artwork from SteamGridDB | ❌ (canvas-es console art is used instead) |

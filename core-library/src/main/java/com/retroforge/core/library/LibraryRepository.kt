@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -57,6 +58,54 @@ class LibraryRepository(
     fun playFor(gameId: Long): Flow<PlayEntity?> = dao.playFor(gameId)
 
     val favourites: Flow<List<GameEntity>> = dao.favouriteGames()
+
+    /**
+     * Favourites and playlists as JSON for the backup. Games are named by their path in the user's folder, because
+     * folder ids differ between devices; [importLists] matches them back by that path (or its last two parts).
+     */
+    suspend fun exportLists(): String {
+        val json = org.json.JSONObject()
+        json.put("favourites", org.json.JSONArray(dao.favouriteGames().first().map { it.relativePath }))
+        val lists = org.json.JSONArray()
+        dao.playlists().first().forEach { p ->
+            lists.put(org.json.JSONObject().put("name", p.name).put("games", org.json.JSONArray(dao.playlistGames(p.id).first().map { it.relativePath })))
+        }
+        json.put("playlists", lists)
+        return json.toString(1)
+    }
+
+    /** Puts favourites and playlists from [exportLists] back; playlists with the same name are added to. Returns games matched and missed. */
+    suspend fun importLists(text: String): Pair<Int, Int> {
+        val json = org.json.JSONObject(text)
+        val games = dao.roots().first().flatMap { dao.gamesIn(it.id) }
+        fun key(path: String) = path.replace('\\', '/').lowercase().split('/').takeLast(2).joinToString("/")
+        val exact = games.associateBy { it.relativePath.lowercase() }
+        val loose = games.groupBy { key(it.relativePath) }
+        fun find(path: String) = exact[path.lowercase()] ?: loose[key(path)]?.firstOrNull()
+        var matched = 0
+        var missed = 0
+        val favourites = json.optJSONArray("favourites") ?: org.json.JSONArray()
+        for (i in 0 until favourites.length()) {
+            val game = find(favourites.getString(i))
+            if (game == null) { missed++; continue }
+            dao.addFavourite(FavouriteEntity(game.rootId, game.relativePath, clock()))
+            matched++
+        }
+        val existing = dao.playlists().first().associateBy({ it.name.lowercase() }, { it.id })
+        val lists = json.optJSONArray("playlists") ?: org.json.JSONArray()
+        for (i in 0 until lists.length()) {
+            val list = lists.getJSONObject(i)
+            val name = list.getString("name")
+            val entries = list.optJSONArray("games") ?: continue
+            val found = (0 until entries.length()).mapNotNull { find(entries.getString(it)) }
+            missed += entries.length() - found.size
+            if (found.isEmpty()) continue
+            val id = existing[name.lowercase()] ?: createPlaylist(name)
+            found.forEach { dao.addToPlaylist(id, it.rootId, it.relativePath, clock()) }
+            matched += found.size
+        }
+        return matched to missed
+    }
     val playlists: Flow<List<PlaylistSummary>> = dao.playlists()
     fun isFavourite(game: GameEntity): Flow<Boolean> = dao.isFavourite(game.rootId, game.relativePath)
     /** Every game in one folder (for matching other frontends' lists). */

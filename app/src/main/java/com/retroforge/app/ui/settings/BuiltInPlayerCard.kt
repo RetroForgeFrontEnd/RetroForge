@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.retroforge.app.player.SaveBackup
+import com.retroforge.core.library.LibraryRepository
 import com.retroforge.app.ui.CardBody
 import com.retroforge.app.ui.CardTitle
 import com.retroforge.core.ui.FocusCard
@@ -38,7 +39,7 @@ import java.time.LocalDate
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices, resume: Boolean, onResume: (Boolean) -> Unit) {
+fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices, resume: Boolean, onResume: (Boolean) -> Unit, library: LibraryRepository? = null) {
     var changes by remember { mutableIntStateOf(0) }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("Built-in player")
@@ -53,7 +54,7 @@ fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices,
         StatusPill(if (resume) "On" else "Off", if (resume) StatusTone.GOOD else StatusTone.NEUTRAL)
         CardBody("Games save their place when you quit and start from there next time, in the built-in player and in RetroArch.")
     }
-    SaveBackupCard()
+    SaveBackupCard(library)
     val switchable = systems.filter { (id, _) -> PlayerCores.choices(id).size > 1 }
     if (switchable.isEmpty()) return
     CardBody("Emulator per system (select to switch):")
@@ -74,8 +75,8 @@ fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices,
 
 /**
  * The player's saves, states and cheats, plus RetroForge's settings: app settings, view and player choices (screen
- * shape, filters, remapped buttons …) and which emulator each system uses. Game folders, favourites and playlists
- * aren't included (folder access can't move to another device).
+ * shape, filters, remapped buttons …) and which emulator each system uses, and favourites and playlists ("lists", written
+ * by LibraryRepository.exportLists just before). Game folders aren't included (folder access can't move to another device).
  */
 private fun saveBackup(context: Context): SaveBackup {
     val base = context.getExternalFilesDir(null) ?: context.filesDir
@@ -87,13 +88,17 @@ private fun saveBackup(context: Context): SaveBackup {
             "settings" to File(context.filesDir, "datastore"),
             "choices" to File(context.dataDir, "shared_prefs"),
             "player" to File(context.filesDir, "player"),
+            "lists" to listsDir(context),
         ),
     )
 }
 
+/** Where favourites and playlists are written for a backup, and read back from one. */
+private fun listsDir(context: Context) = File(context.cacheDir, "backup-lists")
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SaveBackupCard() {
+private fun SaveBackupCard(library: LibraryRepository?) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var status by remember { mutableStateOf<String?>(null) }
@@ -105,17 +110,27 @@ private fun SaveBackupCard() {
     val export = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
         uri ?: return@rememberLauncherForActivityResult
         run {
+            val lists = listsDir(context).apply { deleteRecursively(); mkdirs() }
+            library?.let { File(lists, "lists.json").writeText(kotlinx.coroutines.runBlocking { it.exportLists() }) }
             val count = context.contentResolver.openOutputStream(uri)?.use { saveBackup(context).export(it) } ?: error("couldn't open the file")
+            lists.deleteRecursively()
             "Backed up $count files."
         }
     }
     val import = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri ?: return@rememberLauncherForActivityResult
         run {
+            val lists = listsDir(context).apply { deleteRecursively() }
             val count = context.contentResolver.openInputStream(uri)?.use { saveBackup(context).restore(it) } ?: error("couldn't open the file")
+            val listsFile = File(lists, "lists.json")
+            val listsNote = if (library != null && listsFile.exists()) {
+                val (matched, missed) = kotlinx.coroutines.runBlocking { library.importLists(listsFile.readText()) }
+                " Favourites and playlists: $matched games found" + (if (missed > 0) ", $missed not in your library (add their folder, then restore again)." else ".")
+            } else ""
+            lists.deleteRecursively()
             if (count == 0) "No RetroForge saves found in that file." else {
                 restartNeeded = true
-                "Restored $count files. RetroForge restarts to load the settings."
+                "Restored $count files.$listsNote RetroForge restarts to load the settings."
             }
         }
     }
@@ -123,8 +138,9 @@ private fun SaveBackupCard() {
         CardTitle("Back up saves and settings")
         CardBody(
             "One zip with the built-in player's in-game saves, save states and cheats, and RetroForge's settings (screen shapes, " +
-                "filters, remapped buttons, emulator choices). Keep it somewhere safe, or restore it on a new phone. Restoring " +
-                "replaces files with the same name and keeps the rest. Game folders, favourites and playlists aren't included.",
+                "filters, remapped buttons, emulator choices), favourites and playlists. Keep it somewhere safe, or restore it on a " +
+                "new phone (add your game folders first, so favourites and playlists find their games). Restoring replaces files " +
+                "with the same name and keeps the rest.",
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             FocusChip("Back up to a file", onClick = { export.launch("RetroForge-backup-${LocalDate.now()}.zip") })
