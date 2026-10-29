@@ -57,8 +57,11 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
     var problem by remember(game.id) { mutableStateOf<LaunchProblem?>(null) }
     val choices by viewModel.emulatorChoices.collectAsStateWithLifecycle()
     val standalone = remember(game.system) { viewModel.standaloneOptions(game.system) }
-    val chosen = choices[game.system]?.let { id -> standalone.firstOrNull { it.second.id == id } }
-        ?.takeIf { remember(it, resumes) { viewModel.installedComponent(it.second) } != null }
+    val chosen = (choices[game.system]?.let { id -> standalone.firstOrNull { it.second.id == id } }
+        ?.takeIf { remember(it, resumes) { viewModel.installedComponent(it.second) } != null })
+        // Newer systems: an installed standalone app plays them better than the experimental built-in player.
+        ?: if (game.system in com.retroforge.player.PlayerCores.experimentalSystems && choices[game.system] == null)
+            standalone.firstOrNull { viewModel.installedComponent(it.second) != null } else null
 
     val builtIn = remember(game.id, game.fileName) { viewModel.builtInCore(game) }?.takeIf { root != null }
     val retroArchChosen = choices[game.system] == RETROARCH_CHOICE

@@ -55,6 +55,11 @@ object PlayerCores {
     private val beetleVb = PlayerCore("mednafen_vb", "Beetle VB")
     private val flycast = PlayerCore("flycast", "Flycast")
     private val flycastArcade = PlayerCore("flycast", "Flycast", needsBios = true)
+    // Newer systems on OpenGL ES (Vulkan later): they run, but the standalone apps are faster on most phones today.
+    private val dolphin = PlayerCore("dolphin", "Dolphin (experimental)")
+    private val citra = PlayerCore("citra", "Citra (experimental)")
+    private val play = PlayerCore("play", "Play! (experimental)")
+    private val lrps2 = PlayerCore("pcsx2", "LRPS2 (experimental, needs the PS2 BIOS)", needsBios = true)
 
     private val sega = listOf(gpgx, picodrive)
     private val gameBoy = listOf(gambatte, sameboy, gearboy, mgba)
@@ -80,6 +85,9 @@ object PlayerCores {
         "psp" to listOf(ppsspp),
         "virtualboy" to listOf(beetleVb),
         "dreamcast" to listOf(flycast),
+        "gamecube" to listOf(dolphin), "gc" to listOf(dolphin), "wii" to listOf(dolphin),
+        "3ds" to listOf(citra), "n3ds" to listOf(citra),
+        "ps2" to listOf(play, lrps2),
         "naomi" to listOf(flycastArcade), "naomi2" to listOf(flycastArcade), "atomiswave" to listOf(flycastArcade),
         "fbneo" to listOf(fbneo), "neogeo" to listOf(fbneo), "cps1" to listOf(fbneo), "cps2" to listOf(fbneo), "cps3" to listOf(fbneo),
         "mame" to listOf(mame2003, fbneo),
@@ -92,10 +100,16 @@ object PlayerCores {
     fun companions(system: String): List<String> = if (system in arcadeSystems) listOf("neogeo.zip") else emptyList()
 
     /** Disc systems the built-in player runs; their disc images (cue/bin, chd, pbp …) are allowed. */
-    private val discSystems = setOf("psx", "megacd", "segacd", "pcenginecd", "saturn", "psp", "dreamcast")
+    private val discSystems = setOf("psx", "megacd", "segacd", "pcenginecd", "saturn", "psp", "dreamcast", "gamecube", "gc", "wii", "ps2")
+
+    /**
+     * Systems where the built-in player is experimental: a standalone emulator the user has installed (Dolphin,
+     * Azahar, NetherSX2) is used for Play instead, and the built-in player is offered beside it.
+     */
+    val experimentalSystems = setOf("gamecube", "gc", "wii", "3ds", "n3ds", "ps2")
 
     /** Disc images and playlists: only for the [discSystems]. */
-    private val discExtensions = setOf("cue", "bin", "chd", "iso", "m3u", "ccd", "img", "gdi", "cdi", "pbp", "toc")
+    private val discExtensions = setOf("cue", "bin", "chd", "iso", "m3u", "ccd", "img", "gdi", "cdi", "pbp", "toc", "rvz", "gcz", "wbfs", "wia", "gcm", "cso")
 
     /** The built-in player's emulators for [system], the default first. */
     fun choices(system: String): List<PlayerCore> = bySystem[system].orEmpty()

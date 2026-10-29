@@ -165,3 +165,5 @@ Requests that were never fully done, or only answered:
 | Settings condensed | ✅ five groups (Games and library, Playing, Covers, Looks and sounds, Help and about), each on its own page |
 | Ask before Back closes RetroForge | ✅ "Close RetroForge?" on Home (tested on the emulator) |
 | Texture packs all in one place | ✅ one Texture packs page (downloads, N64 and PSP folders) |
+| Vulkan in the built-in player | ❌ planned milestone: libretro Vulkan rendering (faster Dolphin/Citra/PCSX2, and Turnip drivers in our own player); OpenGL ES works now |
+| Android tab as a phone-style home screen | ❌ to do: icon grid, a dock of the most-used apps (counted from launches in RetroForge, pinnable), search, like a normal phone home screen |
