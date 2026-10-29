@@ -27,6 +27,8 @@ android {
         buildConfigField("String", "SCREENSCRAPER_DEV_ID", quoted("screenscraper.devid"))
         buildConfigField("String", "SCREENSCRAPER_DEV_PASSWORD", quoted("screenscraper.devpassword"))
         buildConfigField("String", "BUG_REPORT_URL", quoted("bugreport.url"))
+        // RetroForge's own TMDB API key (local.properties: tmdb.key), so film posters work without a key of the user's.
+        buildConfigField("String", "TMDB_KEY", quoted("tmdb.key"))
         // Optional support links (local.properties): support.buymeacoffee, support.kofi, support.patreon, support.github
         buildConfigField("String", "SUPPORT_BUYMEACOFFEE", quoted("support.buymeacoffee"))
         buildConfigField("String", "SUPPORT_KOFI", quoted("support.kofi"))

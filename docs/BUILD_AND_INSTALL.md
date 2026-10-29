@@ -77,3 +77,8 @@ support.github=https://...
 3. Connect the phone by USB, unlock it, and tap **Allow** on "Allow USB debugging?" (tick "Always allow from this computer").
 4. In a terminal: `adb devices` should list the phone as `device` (not `unauthorized`).
 5. Install: `adb install -r app/build/outputs/apk/debug/app-debug.apk`
+
+## RetroForge's own TMDB key (optional)
+
+With `tmdb.key=<your TMDB v3 API key>` in `local.properties`, film posters, stories and ratings work in the Media tab without users adding a key. Create the key at themoviedb.org (Settings → API) under RetroForge's account; TMDB is free for non-commercial apps and requires the line "This product uses the TMDB API but is not endorsed or certified by TMDB" (shown in the Media tab).
+

@@ -69,7 +69,8 @@ private const val TMDB_KEY = "tmdb_key"
 fun MediaScreen(prefs: SharedPreferences) {
     val context = LocalContext.current
     var folder by remember { mutableStateOf(prefs.getString(FOLDER, null)) }
-    var key by remember { mutableStateOf(prefs.getString(TMDB_KEY, null)) }
+    // The user's own key wins; otherwise RetroForge's built-in one (when this build has it).
+    var key by remember { mutableStateOf(prefs.getString(TMDB_KEY, null) ?: BuildConfig.TMDB_KEY.ifBlank { null }) }
     var refresh by remember { mutableIntStateOf(0) }
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
         uri ?: return@rememberLauncherForActivityResult
@@ -107,7 +108,7 @@ fun MediaScreen(prefs: SharedPreferences) {
                 }
             }
         }
-        TmdbCard(key) { new ->
+        if (BuildConfig.TMDB_KEY.isBlank()) TmdbCard(prefs.getString(TMDB_KEY, null)) { new ->
             prefs.edit().putString(TMDB_KEY, new).apply()
             key = new
             refresh++
@@ -120,13 +121,16 @@ fun MediaScreen(prefs: SharedPreferences) {
 }
 
 /** What TMDB knows about a film (saved next to its poster). */
-private data class FilmInfo(val overview: String, val rating: Double, val released: String, val runtime: Int?)
+private data class FilmInfo(val overview: String, val rating: Double, val released: String, val runtime: Int?, val imdb: String?)
 
 private fun infoFile(context: Context, film: Film) = File(context.cacheDir, "posters/${film.uri.hashCode().toUInt().toString(16)}.json")
 
 private fun loadInfo(context: Context, film: Film): FilmInfo? = runCatching {
     val o = JSONObject(infoFile(context, film).readText())
-    FilmInfo(o.optString("overview"), o.optDouble("vote_average", 0.0), o.optString("release_date"), o.optInt("runtime").takeIf { it > 0 })
+    FilmInfo(
+        o.optString("overview"), o.optDouble("vote_average", 0.0), o.optString("release_date"), o.optInt("runtime").takeIf { it > 0 },
+        o.optString("imdb_id").takeIf { it.startsWith("tt") },
+    )
 }.getOrNull()
 
 @Composable
@@ -172,6 +176,12 @@ private fun FilmDetails(film: Film, art: File?, onPlay: () -> Unit, onClose: () 
             CardBody(info?.overview?.takeIf { it.isNotBlank() } ?: "No description. Add a TMDB key below the films for posters, stories and ratings.")
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 FocusChip("Play", onClick = onPlay)
+                // A link to the film's IMDb page (from TMDB's record); nothing is read from IMDb itself.
+                info?.imdb?.let { id ->
+                    FocusChip("Open on IMDb", onClick = {
+                        runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, "https://www.imdb.com/title/$id/".toUri()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
+                    })
+                }
                 FocusChip("Close", onClick = onClose)
             }
         }
@@ -284,6 +294,7 @@ private fun tmdbPoster(film: Film, key: String, info: File): ByteArray? {
             .put("vote_average", match.optDouble("vote_average", 0.0))
             .put("release_date", match.optString("release_date"))
             .put("runtime", details?.optInt("runtime") ?: 0)
+            .put("imdb_id", details?.optString("imdb_id").orEmpty())
             .toString(),
     )
     val path = match.optString("poster_path").takeIf { it.isNotBlank() && it != "null" } ?: return null
