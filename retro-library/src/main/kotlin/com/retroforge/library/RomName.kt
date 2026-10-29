@@ -13,6 +13,8 @@ data class RomName(
     val flags: Set<RomFlag>,
     /** Every bracketed tag, in order, for display. */
     val tags: List<String>,
+    /** A patch's name in square brackets ("Game (USA) [Hard Mode].nes", as RetroForge's patcher names them): a hack. */
+    val hackName: String? = null,
 )
 
 enum class RomFlag { VERIFIED, BETA, PROTO, DEMO, SAMPLE, HACK, TRANSLATION, UNLICENSED, PIRATE, BAD_DUMP, ALTERNATE, OVERDUMP, FIXED, TRAINED }
@@ -59,8 +61,13 @@ object RomNames {
                 Regex("""t\d*""").matches(lower) -> flags += RomFlag.TRAINED
             }
         }
+        // Square-bracket text that isn't a known dump flag ([!], [b1], [h2], [T+Eng] …) names a patch: a hack.
+        val known = setOf("!")
+        val hackName = Regex("""\[([^\]]*)\]""").findAll(base.substring(firstTag)).map { it.groupValues[1].trim() }
+            .firstOrNull { tag -> tag.length >= 4 && tag !in known && !Regex("""([abfhopt]\d*[a-z]?|t[+-].*|hack.*)""", RegexOption.IGNORE_CASE).matches(tag) }
+        if (hackName != null) flags += RomFlag.HACK
         val title = articleSuffix.matchEntire(rawTitle)?.let { "${it.groupValues[2]} ${it.groupValues[1].trim()}${it.groupValues[3]}" } ?: rawTitle
-        return RomName(title, sortKey(title), regions.distinct(), revision, flags, tags)
+        return RomName(title, sortKey(title), regions.distinct(), revision, flags, tags, hackName)
     }
 
     fun sortKey(title: String): String = title.lowercase()

@@ -271,7 +271,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                             )
                         }
                         composable(PATCHER_ROUTE) {
-                            val patcherViewModel: PatcherViewModel = viewModel(factory = PatcherViewModel.factory(container.contentResolver))
+                            val patcherViewModel: PatcherViewModel = viewModel(factory = PatcherViewModel.factory(container.contentResolver, onSaved = container::rescanAll))
                             PatcherScreen(patcherViewModel)
                         }
                         composable(Section.HACKS.route) {

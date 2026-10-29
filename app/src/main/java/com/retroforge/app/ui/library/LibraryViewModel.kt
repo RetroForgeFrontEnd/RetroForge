@@ -273,6 +273,7 @@ class LibraryViewModel(
     companion object {
         /** View preference: show systems without games in the Retro tab. */
         const val SHOW_ALL_SYSTEMS = "show_all_systems"
+        const val SCAN_ON_START = "scan_on_start"
 
         fun factory(
             repository: LibraryRepository,

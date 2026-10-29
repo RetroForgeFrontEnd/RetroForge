@@ -100,6 +100,15 @@ fun SettingsScreen(
                 StatusPill(if (showAll) "On" else "Off", if (showAll) StatusTone.GOOD else StatusTone.NEUTRAL)
                 CardBody("Off: the Retro tab shows only the systems you have games for. On: every system RetroForge knows, for browsing.")
             }
+            var scanOnStart by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, true)) }
+            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
+                scanOnStart = !scanOnStart
+                prefs.edit().putBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, scanOnStart).apply()
+            }) {
+                CardTitle("Look for new games when RetroForge starts")
+                StatusPill(if (scanOnStart) "On" else "Off", if (scanOnStart) StatusTone.GOOD else StatusTone.NEUTRAL)
+                CardBody("Rescans your game folders in the background each time the app opens, so games you add show up by themselves.")
+            }
         }
 
         coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames) }

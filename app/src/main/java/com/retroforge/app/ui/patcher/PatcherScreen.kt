@@ -39,7 +39,13 @@ fun PatcherScreen(viewModel: PatcherViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val pickRom = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { it?.let(viewModel::onRomPicked) }
     val pickPatch = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { it?.let(viewModel::onPatchPicked) }
-    val saveOutput = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) {
+    // Opens in the original ROM's folder, so the patched copy lands next to it (and in the library).
+    val romUri = state.rom?.uri
+    val saveOutput = rememberLauncherForActivityResult(object : ActivityResultContracts.CreateDocument("application/octet-stream") {
+        override fun createIntent(context: android.content.Context, input: String) = super.createIntent(context, input).apply {
+            romUri?.let { putExtra(android.provider.DocumentsContract.EXTRA_INITIAL_URI, it) }
+        }
+    }) {
         viewModel.onOutputChosen(it)
     }
     LaunchedEffect(state.pending) {

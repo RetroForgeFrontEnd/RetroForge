@@ -47,4 +47,14 @@ class RomNamesTest {
         assertEquals("100 Rooms of Enemies", RomNames.parse("100 Rooms of Enemies.zip").title)
         assertEquals("'the", RomNames.parse("'the.smc").title)
     }
+
+    @Test
+    fun patchNameInBracketsIsAHack() {
+        val hack = RomNames.parse("Super Mario Bros. (World) [Hard Mode].nes")
+        assertEquals("Hard Mode", hack.hackName)
+        assertTrue(RomFlag.HACK in hack.flags)
+        assertEquals(null, RomNames.parse("Super Mario Bros. (World) [!].nes").hackName)
+        assertEquals(null, RomNames.parse("Game (USA) [b1].nes").hackName)
+        assertEquals(null, RomNames.parse("Game (Japan) [T+Eng1.0].nes").hackName)
+    }
 }

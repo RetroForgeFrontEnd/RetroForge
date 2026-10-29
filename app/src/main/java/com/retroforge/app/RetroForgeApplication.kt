@@ -27,6 +27,7 @@ import com.retroforge.pc.PcStatusRepository
 import com.retroforge.player.CoreManager
 import com.retroforge.player.PlayerCores
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 /** Manual dependency wiring; small enough that a DI framework would add more than it saves. */
@@ -61,12 +62,21 @@ class AppContainer(application: Application) {
     @Volatile private var steamGridDbKey: String? = null
     @Volatile private var screenScraperUser: ScreenScraperUser? = null
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    /** Rescans every game folder in the background (new games, e.g. a patched copy just saved). */
+    fun rescanAll() {
+        appScope.launch { library.roots.first().forEach { library.scan(it.id) } }
+    }
     init {
         appScope.launch {
             settings.settings.collect {
                 steamGridDbKey = it.steamGridDbKey
                 screenScraperUser = it.screenScraperUser?.let { name -> it.screenScraperPassword?.let { p -> ScreenScraperUser(name, p) } }
             }
+        }
+        // New games: every folder is rescanned once when the app starts (Settings can switch this off).
+        if (viewPrefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, true)) {
+            rescanAll()
         }
         // The built-in player's cores, fetched in the background for whatever systems the library has: the user never
         // has to download one. Runs again when a newly added folder brings new systems.

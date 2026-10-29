@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-data class PickedRom(val pickedName: String, val file: NamedBytes, val crc32: Long)
+data class PickedRom(val pickedName: String, val file: NamedBytes, val crc32: Long, val uri: Uri? = null)
 
 data class PickedPatch(val pickedName: String, val file: NamedBytes, val info: PatchInfo, val readmes: List<TextFile>)
 
@@ -64,7 +64,8 @@ private fun PatcherState.withMatch(): PatcherState {
  * Reads the ROM and patches through the Storage Access Framework, applies the patches in memory and writes the
  * result only to a new document the user creates. The picked ROM is opened read-only and never written.
  */
-class PatcherViewModel(private val resolver: ContentResolver) : ViewModel() {
+/** [onSaved]: called after a patched copy is saved, so the library can pick it up (it rescans the game folders). */
+class PatcherViewModel(private val resolver: ContentResolver, private val onSaved: () -> Unit = {}) : ViewModel() {
 
     private val _state = MutableStateFlow(PatcherState())
     val state: StateFlow<PatcherState> = _state.asStateFlow()
@@ -72,7 +73,7 @@ class PatcherViewModel(private val resolver: ContentResolver) : ViewModel() {
     fun onRomPicked(uri: Uri) = load(uri) { name, bytes ->
         when (val result = ArchiveInput.readRom(name, bytes)) {
             is ArchiveResult.Ok -> _state.update {
-                it.copy(rom = PickedRom(name, result.file, RomPatcher.crc32Of(result.file.bytes)), message = null).withMatch()
+                it.copy(rom = PickedRom(name, result.file, RomPatcher.crc32Of(result.file.bytes), uri), message = null).withMatch()
             }
             else -> showError(describe(result, "ROM"))
         }
@@ -160,8 +161,9 @@ class PatcherViewModel(private val resolver: ContentResolver) : ViewModel() {
                     }
                     _state.update {
                         it.copy(busy = false, pending = null, messageIsError = false,
-                            message = (listOf("Saved ${displayName(uri) ?: pending.suggestedName}.") + extra).joinToString(" "))
+                            message = (listOf("Saved ${displayName(uri) ?: pending.suggestedName}. If it's in one of your game folders it appears in the library in a moment.") + extra).joinToString(" "))
                     }
+                    onSaved()
                 },
                 onFailure = { showError("Couldn't save the patched ROM: ${it.message}") },
             )
@@ -193,8 +195,8 @@ class PatcherViewModel(private val resolver: ContentResolver) : ViewModel() {
     private fun showError(text: String) = _state.update { it.copy(busy = false, message = text, messageIsError = true) }
 
     companion object {
-        fun factory(resolver: ContentResolver): ViewModelProvider.Factory = viewModelFactory {
-            initializer { PatcherViewModel(resolver) }
+        fun factory(resolver: ContentResolver, onSaved: () -> Unit = {}): ViewModelProvider.Factory = viewModelFactory {
+            initializer { PatcherViewModel(resolver, onSaved) }
         }
 
         fun describe(error: PatchError?): String = when (error) {

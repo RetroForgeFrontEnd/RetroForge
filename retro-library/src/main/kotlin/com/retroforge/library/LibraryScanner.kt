@@ -198,7 +198,7 @@ class LibraryScanner(private val rules: SystemRules) {
                 size = if (entry.node.isDirectory) 0 else entry.node.size,
                 lastModified = entry.node.lastModified,
                 name = name,
-                hackFolder = hackFolderOf(entry.path) ?: if (RomFlag.HACK in name.flags) "" else null,
+                hackFolder = hackFolderOf(entry.path) ?: name.hackName ?: if (RomFlag.HACK in name.flags) "" else null,
                 metadata = meta,
                 imageNodeId = image,
                 duplicateKey = null,
