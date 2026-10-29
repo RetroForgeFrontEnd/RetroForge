@@ -55,6 +55,7 @@ fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices,
         CardBody("Games save their place when you quit and start from there next time, in the built-in player and in RetroArch.")
     }
     SaveBackupCard(library)
+    MemoryCardsCard()
     val switchable = systems.filter { (id, _) -> PlayerCores.choices(id).size > 1 }
     if (switchable.isEmpty()) return
     CardBody("Emulator per system (select to switch):")

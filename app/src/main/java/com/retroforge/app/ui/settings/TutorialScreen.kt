@@ -72,6 +72,7 @@ private val topics = listOf(
         "The built-in player also runs home computers and more: Commodore 64, Amiga, MSX, ZX Spectrum, Amstrad CPC, Atari ST and 800, PC-88 and PC-98, X68000, DOS, ScummVM adventures, and consoles like the 3DO, Jaguar, Neo Geo CD, Vectrex and Intellivision.",
         "Keyboard: plug in or pair a keyboard (USB or Bluetooth) and type straight into the computer. On a touchscreen, open the in-game menu and choose Keyboard: Android's keyboard comes up and what you type goes to the game. On a C64, Esc is RUN/STOP.",
         "Mouse (Amiga, Atari ST, DOS, ScummVM …): the picture works like a laptop's trackpad. Drag a finger to move the pointer, tap to click, tap with two fingers to right-click.",
+        "DOS games kept as a folder (RetroBat's \"Game.pc\" folders) play as they are: the first time, RetroForge copies the folder (a progress bar shows) and starts its dosbox.bat, or the game's own program.",
         "Commodore disks load by themselves at top speed, then the game runs at normal speed. Cartridge games start straight away.",
         "BIOS: some of these need the real machine's ROMs (Kickstart for the Amiga, TOS for the Atari ST, the 3DO and Neo Geo CD BIOS …). Put the ones you own in your BIOS folder, then Settings → Help and about → Set up RetroForge → BIOS files: RetroForge recognises them by their contents, whatever they're called, and copies them where each emulator looks.",
     )),
@@ -102,6 +103,7 @@ private val topics = listOf(
         "On a game's page: \"Add to favourites\", or \"Add to a playlist\" to tick playlists or make a new one. Open a playlist to reorder, rename or delete it; the games themselves are never touched.",
         "Coming from ES-DE: Settings → Import collections from ES-DE turns its custom collections into playlists.",
         "Settings → Back up saves and settings: one zip with in-game saves, save states, cheats, settings, favourites and playlists. On a new phone, add your game folders first, then Restore from a backup.",
+        "PlayStation memory cards (Settings → Playing): pick a game's card to see its saves, copy a save to another game's card (sequels that read the first game's save) or delete one. Open a card file from another emulator (.mcr, .mcd, .mc, .gme) to bring its saves across, or save a game's card as a .mcr file. Quit the game first.",
     )),
     Topic("ROM hacks and patches", listOf(
         "ROM hacks shows hacks you already have (named after the hack, not as a duplicate) and hacks from catalogues for NES, SNES, N64, Game Boy Color and GBA.",

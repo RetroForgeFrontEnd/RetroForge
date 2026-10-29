@@ -12,7 +12,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Launch games; return to RetroForge; play history; clear errors | ✅ |
 | Emulator/core management | ✅ built-in player downloads its own cores; RetroArch and 21 standalone apps as options |
 | Controllers and TV navigation | ✅ emulator (keys only); ⛔ real controller and TV box |
-| Save states, BIOS, firmware | ✅ check/copy, states per emulator, save backup/restore (zip); ❌ memory-card tools |
+| Save states, BIOS, firmware | ✅ check/copy, states per emulator, save backup/restore (zip); ✅ PlayStation memory cards: list saves, copy to another game, delete, open .mcr/.mcd/.mc/.gme, save as .mcr (tested on the emulator) |
 | Graphics: shapes, filters, integer scaling | ✅ |
 | Themes, theme engine, import | ✅ (colours + system art); ✅ interface sounds (own synthesised sounds, switch in Settings; not heard on a device yet) |
 | Clear compatibility information | 🟡 docs; per-game compatibility not shown in the app |
