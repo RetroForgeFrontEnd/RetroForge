@@ -249,6 +249,8 @@ class PlayerActivity : ComponentActivity() {
     }
 
     private lateinit var system: String
+    /** Android's keyboard for computer systems (Keyboard in the in-game menu). */
+    private val keyboard by lazy { KeyboardCatcher(this).also { addContentView(it, android.view.ViewGroup.LayoutParams(1, 1)) } }
     private lateinit var input: PlayerInput
     private var resume = true
     private lateinit var savesDir: File
@@ -721,11 +723,26 @@ class PlayerActivity : ComponentActivity() {
             }
             return true
         }
+        // A real keyboard (Bluetooth or USB) types into computers; on other systems its keys stay controller keys.
+        if (phase == Phase.Playing && system in PlayerCores.keyboardSystems && isTypingKeyboard(event)) {
+            val key = com.retroforge.player.RetroKeys.fromAndroid(event.keyCode)
+            if (key != 0 && (event.action == KeyEvent.ACTION_DOWN || event.action == KeyEvent.ACTION_UP)) {
+                NativePlayer.setKey(key, event.action == KeyEvent.ACTION_DOWN, event.unicodeChar, com.retroforge.player.RetroKeys.modifiers(event.metaState))
+                return true
+            }
+        }
         if (phase == Phase.Playing && input.onKey(event)) {
             showTouch = false
             return true
         }
         return super.dispatchKeyEvent(event)
+    }
+
+    /** A key from a real typing keyboard (or Android's virtual one), never a gamepad or a TV remote's d-pad. */
+    private fun isTypingKeyboard(event: KeyEvent): Boolean {
+        if (event.isFromSource(android.view.InputDevice.SOURCE_GAMEPAD) || event.isFromSource(android.view.InputDevice.SOURCE_JOYSTICK)) return false
+        return event.deviceId == android.view.KeyCharacterMap.VIRTUAL_KEYBOARD ||
+            event.device?.keyboardType == android.view.InputDevice.KEYBOARD_TYPE_ALPHABETIC
     }
 
     override fun dispatchGenericMotionEvent(event: MotionEvent): Boolean {
@@ -984,6 +1001,9 @@ class PlayerActivity : ComponentActivity() {
                                 notice = if (NativePlayer.insertDisc(next)) "Disc ${next + 1} inserted" else "Couldn't change disc"
                                 closeMenu()
                             }, modifier = wide) { Text("Disc ${current + 1} of $count · change to disc ${(current + 1) % count + 1}") }
+                        }
+                        if (system in PlayerCores.keyboardSystems) {
+                            MenuButton(onClick = { closeMenu(); keyboard.show() }, modifier = wide) { Text("Keyboard") }
                         }
                         MenuButton(onClick = { chooseVolume() }, modifier = wide) { Text("Volume: ${(volume * 100).toInt()}%") }
                         MenuButton(onClick = { chooseFilter(filter.next()) }, modifier = wide) { Text("Screen filter: ${filter.label}") }

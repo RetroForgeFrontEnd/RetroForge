@@ -120,6 +120,8 @@ struct Player {
     std::mutex coreMutex; // every call into the core
     std::thread loop;
     std::atomic<bool> running{false}, paused{false}, fastForward{false};
+    // Fast-forward the core asked for itself (VICE while a disk loads), on top of the user's own.
+    std::atomic<bool> coreFastForward{false};
     std::atomic<float> volume{1.0f};
     retro_disk_control_ext_callback disks{}; // multi-disc games (the core's eject/insert); zeroed when not offered // boost for quiet systems; samples are clamped, not wrapped
     std::atomic<int> viewX{0}, viewY{0}, viewW{0}, viewH{0}; // picture rectangle in surface pixels; 0 = fit
@@ -146,6 +148,18 @@ struct Player {
     ANativeWindow *window = nullptr;
     EGLSurface surface2 = EGL_NO_SURFACE;
     ANativeWindow *window2 = nullptr;
+    // Keyboard (computers: C64, Amiga, DOS …): keys held, and press/release events for the core's callback, which is
+    // called on the core thread just before it runs a frame.
+    std::atomic<bool> keys[RETROK_LAST] = {};
+    retro_keyboard_event_t keyboardCallback = nullptr;
+    struct KeyEvent { bool down; unsigned keycode; uint32_t character; uint16_t modifiers; };
+    std::mutex keyMutex;
+    std::vector<KeyEvent> keyEvents;
+    // A key is held at least kMinKeyHold, so an emulator that reads the keyboard once a frame (a C64 every 20 ms)
+    // sees even a quick tap: releases that come sooner wait here until their time.
+    std::chrono::steady_clock::time_point keyDownAt[RETROK_LAST];
+    struct PendingUp { unsigned keycode; uint16_t modifiers; std::chrono::steady_clock::time_point at; };
+    std::vector<PendingUp> pendingUps;
     GLuint program = 0, texture = 0;
     // The frame before, for LCD ghosting (filter 5): the two textures swap places each frame.
     GLuint prevTexture = 0;
@@ -269,8 +283,13 @@ bool environment(unsigned cmd, void *data) {
         case RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE:
             if (data) *static_cast<int *>(data) = 3;
             return true;
+        case RETRO_ENVIRONMENT_SET_FASTFORWARDING_OVERRIDE: {
+            // The core turns fast-forward on and off itself (e.g. VICE's warp while a disk loads).
+            if (data) P->coreFastForward = static_cast<const retro_fastforwarding_override *>(data)->fastforward;
+            return true;
+        }
         case RETRO_ENVIRONMENT_GET_FASTFORWARDING:
-            if (data) *static_cast<bool *>(data) = P->fastForward;
+            if (data) *static_cast<bool *>(data) = P->fastForward || P->coreFastForward;
             return true;
         case RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
             // 0: cores fall back to the plain SET_VARIABLES list, which is all the player needs.
@@ -342,6 +361,11 @@ bool environment(unsigned cmd, void *data) {
             hw->get_proc_address = hwProcAddress;
             P->hw = *hw;
             P->hwRequested = true;
+            return true;
+        }
+        case RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK: {
+            auto *cb = static_cast<const retro_keyboard_callback *>(data);
+            P->keyboardCallback = cb ? cb->callback : nullptr;
             return true;
         }
         case RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER:
@@ -849,7 +873,7 @@ void audioOpen() {
 
 void pushAudio(const int16_t *data, size_t frames) {
     Player &p = *P;
-    if (!p.stream || p.fastForward) return; // fast-forward plays silently rather than chipmunk-fast
+    if (!p.stream || p.fastForward || p.coreFastForward) return; // fast-forward plays silently rather than chipmunk-fast
     p.resampled.clear();
     const float gain = p.volume;
     for (size_t i = 0; i < frames; i++) {
@@ -880,6 +904,8 @@ void audioSample(int16_t left, int16_t right) {
 
 // ---------- input ----------
 
+constexpr auto kMinKeyHold = std::chrono::milliseconds(80);
+
 void inputPoll() {}
 
 int16_t inputState(unsigned port, unsigned device, unsigned index, unsigned id) {
@@ -893,6 +919,8 @@ int16_t inputState(unsigned port, unsigned device, unsigned index, unsigned id) 
         case RETRO_DEVICE_ANALOG:
             if (index < 2 && id < 2) return P->analog[port][index][id];
             return 0;
+        case RETRO_DEVICE_KEYBOARD:
+            return id < RETROK_LAST && P->keys[id].load() ? 1 : 0;
         case RETRO_DEVICE_POINTER:
             if (port != 0 || index != 0) return 0;
             if (id == RETRO_DEVICE_ID_POINTER_X) return P->pointerX;
@@ -925,14 +953,30 @@ void runLoop() {
             glViewport(0, 0, p.hwW, p.hwH);
         }
         {
+            std::vector<Player::KeyEvent> events;
+            {
+                std::lock_guard<std::mutex> keyLock(p.keyMutex);
+                // Releases held back for kMinKeyHold whose time has come.
+                auto now = clock::now();
+                for (auto it = p.pendingUps.begin(); it != p.pendingUps.end();) {
+                    if (it->at > now) { ++it; continue; }
+                    p.keys[it->keycode] = false;
+                    p.keyEvents.push_back({false, it->keycode, 0, it->modifiers});
+                    it = p.pendingUps.erase(it);
+                }
+                events.swap(p.keyEvents);
+            }
             std::lock_guard<std::mutex> lock(p.coreMutex);
+            if (p.keyboardCallback) {
+                for (auto &e : events) p.keyboardCallback(e.down, e.keycode, e.character, e.modifiers);
+            }
             p.core.run();
         }
         present();
 
         double fps = p.av.timing.fps > 0 ? p.av.timing.fps : 60.0;
         auto frame = std::chrono::duration_cast<clock::duration>(std::chrono::duration<double>(1.0 / fps));
-        if (p.fastForward) {
+        if (p.fastForward || p.coreFastForward) {
             next = clock::now(); // as fast as the device goes (vsync still limits drawing)
         } else if (p.stream) {
             // Audio is the clock: wait while more than ~64 ms of sound is queued. Keeps sound and speed exact.
@@ -1226,6 +1270,25 @@ JNIEXPORT void JNI(setOption)(JNIEnv *env, jobject, jstring key, jstring value) 
     P->overrides[k] = v;
     if (P->variables.count(k)) P->variables[k] = v;
     P->variablesChanged = true;
+}
+
+JNIEXPORT void JNI(setKey)(JNIEnv *, jobject, jint keycode, jboolean down, jint character, jint modifiers) {
+    if (!P || keycode <= 0 || keycode >= RETROK_LAST) return;
+    auto now = std::chrono::steady_clock::now();
+    std::lock_guard<std::mutex> lock(P->keyMutex);
+    if (down) {
+        P->keyDownAt[keycode] = now;
+        P->keys[keycode] = true;
+        P->keyEvents.push_back({true, static_cast<unsigned>(keycode), static_cast<uint32_t>(character), static_cast<uint16_t>(modifiers)});
+        return;
+    }
+    auto releaseAt = P->keyDownAt[keycode] + kMinKeyHold;
+    if (now < releaseAt) {
+        P->pendingUps.push_back({static_cast<unsigned>(keycode), static_cast<uint16_t>(modifiers), releaseAt});
+        return;
+    }
+    P->keys[keycode] = false;
+    P->keyEvents.push_back({false, static_cast<unsigned>(keycode), 0, static_cast<uint16_t>(modifiers)});
 }
 
 JNIEXPORT void JNI(setFilter)(JNIEnv *, jobject, jint filter) {

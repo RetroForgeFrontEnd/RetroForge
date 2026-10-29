@@ -245,6 +245,13 @@ object PlayerCores {
      * Systems where the built-in player is experimental: a standalone emulator the user has installed (Dolphin,
      * Azahar, NetherSX2) is used for Play instead, and the built-in player is offered beside it.
      */
+    /** Computers: a keyboard (a real one, or Android's on-screen keyboard from the in-game menu) types into them. */
+    val keyboardSystems = setOf(
+        "c64", "c128", "c20", "cplus4", "c16", "pet", "amiga500", "amiga1200", "amiga4000", "dos", "msx1", "msx2", "msx2+",
+        "msxturbor", "spectravideo", "zxspectrum", "zx81", "amstradcpc", "atarist", "atari800", "x68000", "pc88", "pc98",
+        "apple2", "bk", "thomson", "x1", "macintosh", "scummvm",
+    )
+
     val experimentalSystems = setOf("gamecube", "gc", "wii", "3ds", "n3ds", "ps2")
 
     /** Disc images and playlists: only for the [discSystems]. */
@@ -279,6 +286,8 @@ object PlayerCores {
         "mednafen_vb" -> mapOf("vb_3dmode" to "side-by-side", "vb_sidebyside_separation" to "0")
         // A memory card (VMU) in the first controller, or games can't save; one card per game so they never fill up.
         "flycast" -> mapOf("reicast_device_port1_slot1" to "VMU", "reicast_per_content_vmus" to "VMU A1")
+        // Commodore disks load at warp speed (a C64 drive is very slow), then the game runs at normal speed.
+        "vice_x64sc", "vice_x128", "vice_xplus4", "vice_xvic", "vice_xpet" -> mapOf("vice_autoloadwarp" to "enabled")
         else -> emptyMap()
     }
 

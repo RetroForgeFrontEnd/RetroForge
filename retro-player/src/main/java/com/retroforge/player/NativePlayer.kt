@@ -86,6 +86,8 @@ object NativePlayer {
 
     /** Touchscreen: [x], [y] from 0 to 1 across the game picture. */
     external fun setPointer(x: Float, y: Float, down: Boolean)
+    /** A keyboard key ([RetroKeys] code) pressed or released, with the character it types and its modifiers. */
+    external fun setKey(keycode: Int, down: Boolean, character: Int, modifiers: Int)
     external fun reset()
     external fun saveRam(): ByteArray?
     external fun restoreSaveRam(data: ByteArray)
