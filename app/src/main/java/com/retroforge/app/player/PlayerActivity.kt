@@ -358,7 +358,8 @@ class PlayerActivity : ComponentActivity() {
         }
         vulkanOn = PlayerCores.usesVulkan(coreId, videoChoices.get("graphics.$system"))
         val options = PlayerCores.defaultOptions(coreId) + PlayerCores.graphicsOptions(coreId, vulkanOn) + texturePacks + savedOptions() +
-            PlayerCores.orientationOptions(coreId, isLandscape()) + wonderSwanRotation(uri, fileName)
+            PlayerCores.orientationOptions(coreId, isLandscape()) + wonderSwanRotation(uri, fileName) +
+            mapOf("retroforge_vfs" to if (coreId in PlayerCores.streamingCores) "on" else "off")
         // Play! keeps its memory cards and settings under $EXTERNAL_STORAGE ("/sdcard/Play Data Files"), which apps can't
         // write to any more, and stops when it can't. This process is the player's alone, so point it at our own folder.
         if (coreId == "play") runCatching { android.system.Os.setenv("EXTERNAL_STORAGE", File(systemDir, "play").apply { mkdirs() }.path, true) }
@@ -938,7 +939,12 @@ class PlayerActivity : ComponentActivity() {
         val sbs = PlayerCores.sideBySide(coreId)
         val shown = when {
             dualScreen -> av.copy(height = av.height / 2, aspect = av.aspect * 2)
-            sbs -> av // the core reports one eye's size, which is what's shown
+            // Both eyes side by side (Virtual Boy 3D): one eye is shown, so the picture takes one eye's shape, whatever
+            // the core reports (its aspect ratio covers both eyes).
+            sbs -> {
+                val eyeWidth = if (av.width.toFloat() / av.height > 2.5f) av.width / 2 else av.width
+                av.copy(width = eyeWidth, aspect = eyeWidth.toFloat() / av.height)
+            }
             else -> av
         }
         val fitted = Viewport.fit(shape, surfaceWidth - 2 * inset, surfaceHeight - 2 * inset, shown)

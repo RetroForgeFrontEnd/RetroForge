@@ -338,7 +338,7 @@ object PlayerCores {
      */
     val streamingCores = setOf(
         "pcsx_rearmed", "swanstation", "genesis_plus_gx", "picodrive", "mednafen_pce_fast", "mednafen_supergrafx",
-        "mednafen_saturn", "yabause", "ppsspp", "flycast", "opera", "neocd",
+        "mednafen_saturn", "yabause", "flycast", "opera", "neocd",
     )
 
     /** OpenGL unless the user picked Vulkan, which is still experimental in the built-in player. */

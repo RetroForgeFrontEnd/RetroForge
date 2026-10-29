@@ -182,6 +182,8 @@ struct Player {
     // Vulkan cores (Dolphin, Citra, PCSX2 …): their frames are copied into hwTexture (vulkan_render.cpp). preferVulkan
     // is the user's choice for this system ("retroforge_graphics" = "vulkan"), told to cores that ask what's preferred.
     bool vulkan = false, preferVulkan = false;
+    // Whether this core is offered the player's VFS (streaming): "retroforge_vfs" = "on" from the app.
+    bool offerVfs = false;
     // RETRO_ENVIRONMENT_SET_ROTATION: the picture turned this many quarter turns anticlockwise.
     std::atomic<unsigned> rotation{0};
     // Frames put on screen, for the FPS counter (read once a second by the app).
@@ -254,7 +256,8 @@ bool environment(unsigned cmd, void *data) {
     switch (cmd) {
         // Files through the player, so games RetroForge streams (network drives, Android folders) need no copy.
         case RETRO_ENVIRONMENT_GET_VFS_INTERFACE:
-            return vfs::provide(static_cast<retro_vfs_interface_info *>(data));
+            // Only for cores the app streams games to; the rest keep their own file access, as before streaming.
+            return P->offerVfs && vfs::provide(static_cast<retro_vfs_interface_info *>(data));
         case RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
             static_cast<retro_log_callback *>(data)->log = coreLog;
             return true;
@@ -1161,6 +1164,10 @@ JNIEXPORT jstring JNI(openCore)(JNIEnv *env, jobject, jstring corePath, jstring 
             str(env, static_cast<jstring>(env->GetObjectArrayElement(optionValues, i)));
     }
     // RetroForge's own setting, not a core option: Vulkan or OpenGL for cores that let the frontend choose.
+    if (auto it = p.overrides.find("retroforge_vfs"); it != p.overrides.end()) {
+        p.offerVfs = it->second == "on";
+        p.overrides.erase(it);
+    }
     if (auto it = p.overrides.find("retroforge_graphics"); it != p.overrides.end()) {
         p.preferVulkan = it->second == "vulkan";
         p.overrides.erase(it);
