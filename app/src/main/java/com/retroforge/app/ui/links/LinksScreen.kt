@@ -33,7 +33,8 @@ val usefulLinks = listOf(
         listOf(
             UsefulLink("Retro Game Corps", "https://www.youtube.com/@RetroGameCorps", "Russ's in-depth handheld reviews and emulation setup guides."),
             UsefulLink("ETA PRIME", "https://www.youtube.com/@ETAPRIME", "Emulation and gaming on Android, PCs, Raspberry Pi and single-board computers."),
-            UsefulLink("Ryan Retro", "https://www.youtube.com/@RyanRetro", "Easy-to-follow handheld gaming guides for beginners and experienced players."),
+            UsefulLink("TechDweeb", "https://www.youtube.com/@TechDweeb", "Retro handheld reviews and comparisons, from budget emulation devices to the latest Android handhelds."),
+            UsefulLink("Ryan Retro","https://www.youtube.com/@RyanRetro", "Easy-to-follow handheld gaming guides for beginners and experienced players."),
             UsefulLink("Mr. Sujano", "https://www.youtube.com/@MrSujano", "Gaming and tech news, with handhelds, controllers and consoles."),
             UsefulLink("Wicked Gamer & Collector", "https://www.youtube.com/@wickedgamercollector", "Retro hardware, games, emulation and arcade."),
             UsefulLink("Modern Vintage Gamer", "https://www.youtube.com/@ModernVintageGamer", "How classic games and consoles work, homebrew and emulation history."),
