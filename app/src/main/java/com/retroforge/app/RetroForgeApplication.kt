@@ -76,9 +76,11 @@ class AppContainer(application: Application) {
                 screenScraperUser = it.screenScraperUser?.let { name -> it.screenScraperPassword?.let { p -> ScreenScraperUser(name, p) } }
             }
         }
-        // New games: every folder is rescanned once when the app starts (Settings can switch this off).
-        if (viewPrefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, true)) {
-            rescanAll()
+        // New games: when switched on in Settings, folders on the device are rescanned as the app starts. Off by default,
+        // and network drives are never included: a big collection over Wi-Fi would slow every start.
+        if (viewPrefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, false)) {
+            val network = com.retroforge.app.network.NetworkDrives.authority(application)
+            appScope.launch { library.roots.first().filter { android.net.Uri.parse(it.treeUri).authority != network }.forEach { library.scan(it.id) } }
         }
         // The built-in player's cores, fetched in the background for whatever systems the library has: the user never
         // has to download one. Runs again when a newly added folder brings new systems.

@@ -168,3 +168,4 @@ Requests that were never fully done, or only answered:
 | Vulkan in the built-in player | ❌ planned milestone: libretro Vulkan rendering (faster Dolphin/Citra/PCSX2, and Turnip drivers in our own player); OpenGL ES works now |
 | Android tab as a phone-style home screen | ❌ to do: icon grid, a dock of the most-used apps (counted from launches in RetroForge, pinnable), search, like a normal phone home screen |
 | CTR-native (Crash Team Racing PC port) via GameNative | ❌ to try: decompilation (GPL-3.0), no releases yet, needs building and the user's own CTR disc data |
+| Players for every system (incl. 87 RetroBat systems not recognised: abuse, amazon, cannonball, cave3rd, commanderx16 …) | ❌ next: match each to a libretro core that runs on Android and add it to the built-in player |

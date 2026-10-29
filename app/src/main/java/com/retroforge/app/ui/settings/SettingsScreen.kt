@@ -106,14 +106,14 @@ fun SettingsScreen(
                 }
 
                 viewPrefs?.let { prefs ->
-                    var scanOnStart by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, true)) }
+                    var scanOnStart by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, false)) }
                     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
                         scanOnStart = !scanOnStart
                         prefs.edit().putBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, scanOnStart).apply()
                     }) {
                         CardTitle("Look for new games when RetroForge starts")
                         StatusPill(if (scanOnStart) "On" else "Off", if (scanOnStart) StatusTone.GOOD else StatusTone.NEUTRAL)
-                        CardBody("Rescans your game folders in the background each time the app opens, so games you add show up by themselves.")
+                        CardBody("Rescans the game folders on this device each time the app opens, so games you add show up by themselves. Network drives are left out (too slow over Wi-Fi): rescan those in Retro → Game folders.")
                     }
                     var showAll by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SHOW_ALL_SYSTEMS, false)) }
                     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
