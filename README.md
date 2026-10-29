@@ -57,6 +57,24 @@ See [BUILD_AND_INSTALL](docs/BUILD_AND_INSTALL.md). In short: Android Studio, JD
 - [Third-party licences](docs/THIRD_PARTY_LICENCES.md): the emulators RetroForge downloads are their
   own projects under their own licences.
 
+## Thanks
+
+RetroForge stands on the work of a lot of people:
+
+- **Windows games:** [GameNative](https://github.com/utkarshdalal/GameNative),
+  [Winlator](https://github.com/brunodev85/winlator) and [DroidDeck](https://github.com/Droid-Deck/DroidDeck).
+- **libretro and RetroArch:** the libretro API and every core author whose emulator the built-in player runs.
+- **Standalone emulators:** Dolphin, NetherSX2, ARMSX2, Azahar, Eden, M64Plus FZ, melonDS, MAME4droid, SkyEmu,
+  NooDS, EX Emulators, aPS3e, J2ME Loader and the rest.
+- **PC ports and recomps:** Ship of Harkinian, 2 Ship 2 Harkinian, Starship, SpaghettiKart, Ghostship,
+  Zelda64Recomp, Unleashed Recompiled, OpenGOAL, DevilutionX, OpenMW, OpenBOR and everyone who brought them to Android.
+- **Collections:** RetroBat and ES-DE; [Obtainium](https://github.com/ImranR98/Obtainium) and the
+  [Obtainium Emulation Pack](https://github.com/RJNY/Obtainium-Emulation-Pack);
+  [canvas-es](https://github.com/Siddy212/canvas-es) by Siddy212.
+- **Artwork and data:** SteamGridDB, ScreenScraper, libretro thumbnails, Romhacking.net and every hack author.
+- **GPU drivers:** the Mesa Turnip developers, K11MCH1 and MrPurple.
+- **The community:** the YouTube channels and sites in the app's Links tab.
+
 ## Support RetroForge
 
 RetroForge is free, with every feature included, and always will be. If you're enjoying it, a coffee

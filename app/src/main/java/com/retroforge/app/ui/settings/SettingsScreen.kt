@@ -215,7 +215,7 @@ fun SettingsScreen(
                 SupportCard()
                 ReportProblemCard()
                 ChipRow {
-                    FocusChip("Licences", onClick = onOpenLicences)
+                    FocusChip("Thanks and licences", onClick = onOpenLicences)
                     FocusChip("Privacy", onClick = onOpenPrivacy)
                 }
 

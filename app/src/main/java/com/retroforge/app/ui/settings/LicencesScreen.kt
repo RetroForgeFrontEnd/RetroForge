@@ -15,6 +15,28 @@ import com.retroforge.core.ui.FocusCard
 
 private class Notice(val name: String, val licence: String, val detail: String, val asset: String? = null)
 
+/** Shout-outs: the projects and people RetroForge uses, opens or features. Kept in step with the README's Thanks. */
+private val thanks = listOf(
+    "Windows games on Android" to "GameNative (utkarshdalal), Winlator (brunodev85) and DroidDeck: the apps that make PC games " +
+        "play on a phone. RetroForge opens them; all the hard work is theirs.",
+    "libretro and RetroArch" to "The libretro API and the team and core authors behind every emulator the built-in player runs: " +
+        "mGBA, Snes9x, Genesis Plus GX, FCEUmm, Mupen64Plus-Next, PCSX ReARMed, SwanStation, PPSSPP, Flycast, Dolphin, LRPS2, " +
+        "FinalBurn Neo, MAME and many more. Also the libretro thumbnails and cheat database.",
+    "Standalone emulators" to "Dolphin, NetherSX2, ARMSX2, Azahar, Eden, M64Plus FZ, melonDS, MAME4droid, SkyEmu, NooDS, " +
+        "EX Emulators, aPS3e, J2ME Loader and the rest of the list RetroForge offers.",
+    "PC ports and recompilations" to "Ship of Harkinian, 2 Ship 2 Harkinian, Starship, SpaghettiKart, Ghostship, Zelda64Recomp, " +
+        "Unleashed Recompiled, OpenGOAL, DevilutionX, OpenMW, OpenBOR, the Perfect Dark and zelda3 ports, and everyone who " +
+        "brought them to Android.",
+    "Collections and frontends" to "RetroBat and ES-DE, whose folder layouts RetroForge reads as they are; Obtainium (ImranR98) " +
+        "and the Obtainium Emulation Pack (RJNY) for keeping emulators up to date; canvas-es by Siddy212 for the system artwork.",
+    "Artwork and game data" to "SteamGridDB, ScreenScraper and libretro thumbnails for covers; Romhacking.net and every hack " +
+        "author for the ROM hack catalogue.",
+    "GPU drivers" to "The Mesa Turnip developers, K11MCH1 (AdrenoToolsDrivers) and MrPurple (Purple Turnip).",
+    "The community" to "The YouTube channels and sites in the Links tab, for the guides, reviews and handheld coverage that " +
+        "got so many people into retro handhelds.",
+    "Built with Claude" to "RetroForge was made by Darren Glancy with a lot of help from Anthropic's Claude.",
+)
+
 /** Kept in step with docs/THIRD_PARTY_LICENCES.md. */
 private val notices = listOf(
     Notice("Android Jetpack (Compose, Navigation, Lifecycle, Room, DataStore, Core)", "Apache License 2.0", "Copyright The Android Open Source Project."),
@@ -58,7 +80,15 @@ private val notices = listOf(
 fun LicencesScreen() {
     val context = LocalContext.current
     var open by remember { mutableStateOf<String?>(null) }
-    ScreenFrame(title = "Licences", subtitle = "RetroForge is built with these open-source parts. Select one to read its licence text where it ships with the app.") {
+    ScreenFrame(title = "Thanks and licences", subtitle = "RetroForge stands on the work of a lot of people. Thank you all.") {
+        thanks.forEach { (who, what) ->
+            FocusCard(modifier = Modifier.fillMaxWidth()) {
+                CardTitle(who)
+                CardBody(what)
+            }
+        }
+        CardTitle("Licences")
+        CardBody("RetroForge is built with these open-source parts. Select one to read its licence text where it ships with the app.")
         notices.forEach { n ->
             val expanded = open == n.name
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { open = if (expanded) null else n.name }) {
