@@ -244,6 +244,12 @@ class PlayerActivity : ComponentActivity() {
 
     private fun load(corePath: String, uri: Uri, fileName: String, systemDir: File) {
         coreId = File(corePath).name.substringBefore("_libretro")
+        if (com.retroforge.player.CoreAssets.needed(coreId, systemDir)) {
+            runOnUiThread { loadingDetail = "Getting the emulator's data files (first time only)…" }
+            runCatching { com.retroforge.player.CoreAssets.fetch(coreId, systemDir, "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}") }
+                .onFailure { android.util.Log.w("RetroForgePlayer", "data files: ${it.message}") } // the game still runs without them
+            runOnUiThread { loadingDetail = null }
+        }
         // The user's emulator settings for this core, then the ones that follow the screen's orientation.
         val options = PlayerCores.defaultOptions(coreId) + savedOptions() + PlayerCores.orientationOptions(coreId, isLandscape())
         val error = NativePlayer.openCore(corePath, systemDir.path, savesDir.path, options.keys.toTypedArray(), options.values.toTypedArray())

@@ -2,8 +2,9 @@ package com.retroforge.app.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -16,22 +17,35 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.InputMode
 import androidx.compose.ui.platform.LocalInputModeManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -46,39 +60,37 @@ import com.retroforge.app.ui.hacks.HackDetailScreen
 import com.retroforge.app.ui.hacks.HacksScreen
 import com.retroforge.app.ui.hacks.HacksViewModel
 import com.retroforge.app.ui.home.HomeScreen
-import com.retroforge.app.ui.links.LinksScreen
-import com.retroforge.app.ui.setup.SetupScreen
-import com.retroforge.app.ui.setup.SetupViewModel
-import com.retroforge.app.ui.pc.PcScreen
-import com.retroforge.app.ui.patcher.PatcherScreen
-import com.retroforge.app.ui.patcher.PatcherViewModel
-import com.retroforge.app.ui.pc.PcViewModel
 import com.retroforge.app.ui.library.CoverPickerScreen
 import com.retroforge.app.ui.library.GameDetailScreen
-import com.retroforge.app.ui.library.PlaylistScreen
-import com.retroforge.app.ui.manager.RomManagerScreen
-import com.retroforge.app.ui.manager.RomManagerViewModel
 import com.retroforge.app.ui.library.LibraryFoldersScreen
 import com.retroforge.app.ui.library.LibraryViewModel
+import com.retroforge.app.ui.library.PlaylistScreen
 import com.retroforge.app.ui.library.RetroScreen
 import com.retroforge.app.ui.library.SystemGamesScreen
+import com.retroforge.app.ui.links.LinksScreen
+import com.retroforge.app.ui.manager.RomManagerScreen
+import com.retroforge.app.ui.manager.RomManagerViewModel
+import com.retroforge.app.ui.patcher.PatcherScreen
+import com.retroforge.app.ui.patcher.PatcherViewModel
+import com.retroforge.app.ui.pc.PcScreen
+import com.retroforge.app.ui.pc.PcViewModel
 import com.retroforge.app.ui.settings.AboutScreen
 import com.retroforge.app.ui.settings.GpuDriversScreen
 import com.retroforge.app.ui.settings.HotkeysScreen
-import com.retroforge.app.ui.settings.TutorialScreen
 import com.retroforge.app.ui.settings.LicencesScreen
 import com.retroforge.app.ui.settings.PrivacyScreen
-import com.retroforge.app.ui.settings.ThemesScreen
-import com.retroforge.app.ui.settings.ThemesViewModel
 import com.retroforge.app.ui.settings.SettingsScreen
 import com.retroforge.app.ui.settings.SettingsViewModel
+import com.retroforge.app.ui.settings.ThemesScreen
+import com.retroforge.app.ui.settings.ThemesViewModel
+import com.retroforge.app.ui.settings.TutorialScreen
+import com.retroforge.app.ui.setup.SetupScreen
+import com.retroforge.app.ui.setup.SetupViewModel
 import com.retroforge.core.settings.ThemeMode
 import com.retroforge.core.ui.NavCommand
 import com.retroforge.core.ui.RetroForgeTheme
 import com.retroforge.core.ui.SectionTab
 import com.retroforge.core.ui.Wordmark
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.isSystemInDarkTheme
 import kotlinx.coroutines.flow.Flow
 
 enum class Section(val route: String, val label: String, @DrawableRes val icon: Int) {
@@ -178,8 +190,12 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
 
         Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
             BoxWithConstraints(Modifier.fillMaxSize().safeDrawingPadding()) {
+                // Inner pages (anything that isn't a main tab) get a close button, so touch users never need the
+                // phone's back gesture. A controller's B does the same.
+                val inner = route != null && sections.none { it.route == route }
                 val content: @Composable (Modifier) -> Unit = { modifier ->
-                    NavHost(nav, startDestination = Section.HOME.route, modifier = modifier) {
+                  Box(modifier) {
+                    NavHost(nav, startDestination = Section.HOME.route, modifier = Modifier.fillMaxSize()) {
                         composable(Section.HOME.route) {
                             HomeScreen(
                                 showPc = settings.showPcSection, library = libraryViewModel, onOpen = { nav.goTo(it) },
@@ -301,6 +317,8 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                             ThemesScreen(themesViewModel)
                         }
                     }
+                    if (inner) CloseButton(Modifier.align(Alignment.TopEnd).padding(top = 12.dp, end = 12.dp)) { nav.popBackStack() }
+                  }
                 }
                 if (maxWidth >= 600.dp) {
                     Row(Modifier.fillMaxSize()) {
@@ -364,3 +382,23 @@ private fun NavHostController.goTo(section: Section) {
         restoreState = true
     }
 }
+
+/** Red ✕ in the corner of inner pages: goes back one step. */
+@Composable
+private fun CloseButton(modifier: Modifier, onClick: () -> Unit) {
+    var focused by remember { mutableStateOf(false) }
+    Box(
+        modifier
+            .size(44.dp)
+            .clip(CircleShape)
+            .background(Color(0xFFD9363E))
+            .border(if (focused) 3.dp else 0.dp, Color.White, CircleShape)
+            .onFocusChanged { focused = it.isFocused }
+            .clickable(onClickLabel = "Back", onClick = onClick)
+            .semantics { contentDescription = "Back" },
+        contentAlignment = Alignment.Center,
+    ) {
+        Text("✕", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+    }
+}
+

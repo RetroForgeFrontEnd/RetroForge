@@ -85,3 +85,33 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | GPU rendering in the built-in player (N64, PSP, Dreamcast, GameCube, YabaSanshiro) | 🟡 OpenGL ES rendering works: ✅ N64 (Mupen64Plus-Next, Milo's Astro Lanes on the emulator); next PSP, Dreamcast, YabaSanshiro; Vulkan later |
 | Short demo video for Mr Sujano | ❌ next session (emulator screen recording) |
 | Bigger portrait picture for older systems | ⛔ waiting for your choice (zoom/crop vs bigger controls) |
+
+## Requests of 29 October (phone test feedback and ideas)
+
+| Request | Status |
+|---|---|
+| Way back from every inner screen: red ✕ for touch, B on a controller | 🟡 built (✕ on every inner page; B already went back) |
+| Test APK for Mr Sujano | 🟡 in progress |
+| Turnip drivers: search for a specific driver | ❌ |
+| Landscape: touch buttons too small on some systems (GBA) | ❌ |
+| Cheats: raw code flashes for a moment the first time | ❌ |
+| Settings: the About card's short text reads jumbled | ❌ |
+| Home: the writing on the logo can't be read | ❌ |
+| RetroArch games have no RetroForge swipe menu | ❌ answer: RetroArch is a separate app; its own menu (hotkey) is used there |
+| ScreenScraper: show/hide password | ❌ |
+| Report a problem | ❌ |
+| ROM hacks: patched ROM should appear in the library by itself | ❌ |
+| ROM hacks: patched ROM showed as a duplicate of the original after rescan | ❌ |
+| ROM hacks: more consoles (only 2) | ❌ |
+| Original Xbox and Xbox 360 emulation | ❌ look into (Android options are very limited) |
+| PC ports for ROMs the user owns (like Quiver), in the PC section | ❌ |
+| Links: Modern Vintage Gamer, Digital Foundry, My Life in Gaming, The Gaming Historian | ❌ |
+| Scan for new games when the app starts | ❌ |
+| Use RetroForge as the Android home screen (launcher), with Android apps and Android settings | ❌ |
+| Media section (films, Plex-style, artwork, Plex servers, network drives) | ❌ idea |
+| Games from network drives, Google Drive, Dropbox | ❌ idea |
+| PC / iOS / Linux / Raspberry Pi versions | ❌ question |
+| How to fund updates when free | ❌ question (support links exist) |
+| Dual-screen option for games and the app | ❌ |
+| Compare with other frontends again and suggest more | ❌ after the above |
+

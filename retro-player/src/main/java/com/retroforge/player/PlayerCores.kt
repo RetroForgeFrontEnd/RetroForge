@@ -51,6 +51,9 @@ object PlayerCores {
     // Draw with the GPU (OpenGL ES).
     private val mupen = PlayerCore("mupen64plus_next_gles3", "Mupen64Plus-Next")
     private val parallelN64 = PlayerCore("parallel_n64", "ParaLLEl N64")
+    private val ppsspp = PlayerCore("ppsspp", "PPSSPP")
+    private val flycast = PlayerCore("flycast", "Flycast")
+    private val flycastArcade = PlayerCore("flycast", "Flycast", needsBios = true)
 
     private val sega = listOf(gpgx, picodrive)
     private val gameBoy = listOf(gambatte, sameboy, gearboy, mgba)
@@ -73,6 +76,9 @@ object PlayerCores {
         "pcenginecd" to listOf(pceCd),
         "saturn" to listOf(yabause, beetleSaturn),
         "n64" to listOf(mupen, parallelN64),
+        "psp" to listOf(ppsspp),
+        "dreamcast" to listOf(flycast),
+        "naomi" to listOf(flycastArcade), "naomi2" to listOf(flycastArcade), "atomiswave" to listOf(flycastArcade),
         "fbneo" to listOf(fbneo), "neogeo" to listOf(fbneo), "cps1" to listOf(fbneo), "cps2" to listOf(fbneo), "cps3" to listOf(fbneo),
         "mame" to listOf(mame2003, fbneo),
     )
@@ -84,7 +90,7 @@ object PlayerCores {
     fun companions(system: String): List<String> = if (system in arcadeSystems) listOf("neogeo.zip") else emptyList()
 
     /** Disc systems the built-in player runs; their disc images (cue/bin, chd, pbp …) are allowed. */
-    private val discSystems = setOf("psx", "megacd", "segacd", "pcenginecd", "saturn")
+    private val discSystems = setOf("psx", "megacd", "segacd", "pcenginecd", "saturn", "psp", "dreamcast")
 
     /** Disc images and playlists: only for the [discSystems]. */
     private val discExtensions = setOf("cue", "bin", "chd", "iso", "m3u", "ccd", "img", "gdi", "cdi", "pbp", "toc")

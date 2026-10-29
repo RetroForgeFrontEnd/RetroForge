@@ -61,7 +61,8 @@ fun SettingsScreen(
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenAbout) {
             CardTitle("About RetroForge")
-            CardBody("Version ${BuildConfig.VERSION_NAME}. Made by Darren Glancy, built with AI. What RetroForge stands for (sort of), and what it's for.")
+            CardBody("Version ${BuildConfig.VERSION_NAME}, made by Darren Glancy.")
+            CardBody("Who made it, what RetroForge does, and what the name stands for (sort of).")
             CardBody("Controller: D-pad to move, A to select, B to go back, L1/R1 to switch sections.")
         }
 

@@ -82,6 +82,23 @@ data class PadLayout(
                 hasSelect = false,
                 sticks = true,
             )
+            // PSP (PPSSPP): PlayStation symbols, L/R and the analog stick.
+            "psp" -> PadLayout(
+                listOf("□" to Pad.Y, "△" to Pad.X, "✕" to Pad.B, "○" to Pad.A),
+                listOf("L" to Pad.L, "R" to Pad.R),
+                sticks = true,
+            )
+            // Dreamcast (Flycast): Y top, X left, B right, A bottom; the analog triggers are L2/R2.
+            "dreamcast" -> PadLayout(
+                listOf("X" to Pad.Y, "Y" to Pad.X, "A" to Pad.B, "B" to Pad.A),
+                triggers = listOf("L" to Pad.L2, "R" to Pad.R2),
+                hasSelect = false,
+                sticks = true,
+            )
+            "naomi", "naomi2", "atomiswave" -> PadLayout(
+                listOf("3" to Pad.Y, "4" to Pad.X, "1" to Pad.B, "2" to Pad.A),
+                listOf("5" to Pad.L, "6" to Pad.R),
+            )
             "mastersystem", "sg1000" -> PadLayout(listOf("1" to Pad.B, "2" to Pad.A), hasSelect = false)
             "gamegear" -> PadLayout(listOf("1" to Pad.B, "2" to Pad.A), hasSelect = false)
             "pcengine", "pcenginecd" -> PadLayout(listOf("II" to Pad.B, "I" to Pad.A))
@@ -107,7 +124,7 @@ data class PadLayout(
 fun touchControlsHeight(layout: PadLayout, compact: Boolean) = when {
     compact -> 200.dp
     layout.sticks -> 470.dp
-    layout.shoulders.isEmpty() -> 290.dp
+    layout.shoulders.isEmpty() && layout.triggers.isEmpty() -> 290.dp
     else -> 350.dp
 }
 
@@ -202,7 +219,7 @@ fun TouchControls(
     }
 
     Column(modifier.padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) Column@{
-        if (layout.shoulders.isNotEmpty()) {
+        if (layout.shoulders.isNotEmpty() || layout.triggers.isNotEmpty()) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     layout.triggers.getOrNull(0)?.let { (label, button) ->
