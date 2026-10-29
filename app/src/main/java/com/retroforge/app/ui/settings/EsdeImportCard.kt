@@ -40,8 +40,8 @@ fun EsdeImportCard(library: LibraryRepository) {
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("Import collections from ES-DE")
         CardBody(
-            "Pick ES-DE's folder (or its collections folder). Each custom collection becomes a RetroForge playlist with the " +
-                "games it finds in your library. ES-DE's files aren't changed.",
+            "Turns your ES-DE custom collections into RetroForge playlists, with the games found in your library. Pick ES-DE's " +
+                "folder (or its collections folder); ES-DE's files aren't changed.",
         )
         FocusChip("Choose the ES-DE folder", onClick = { pick.launch(null) })
         status?.let { CardBody(it) }

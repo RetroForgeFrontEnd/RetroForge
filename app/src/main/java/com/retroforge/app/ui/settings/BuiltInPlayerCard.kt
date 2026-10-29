@@ -44,14 +44,14 @@ fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices,
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("Built-in player")
         CardBody(
-            "RetroForge plays most systems itself, from Game Boy to PlayStation, N64 and PSP; their emulators download in the " +
-                "background. Swipe in from an edge or pause for the game's menu: save states, screen shape, filters, remap buttons, " +
+            "RetroForge has its own emulators for most systems, from Game Boy to PS2 and GameCube, downloaded in the background. " +
+                "In a game, swipe in from the left or right edge for the menu: save states, screen shape, filters, buttons, " +
                 "cheats, widescreen, Cardboard VR and switching emulator.",
         )
     }
     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { onResume(!resume) }) {
         CardTitle("Carry on where you left off") { StatusPill(if (resume) "On" else "Off", if (resume) StatusTone.GOOD else StatusTone.NEUTRAL) }
-        CardBody("Games save their place when you quit and start from there next time, in the built-in player and in RetroArch.")
+        CardBody("When you quit a game, your place is saved, and the game starts from there next time. In the built-in player and in RetroArch.")
     }
     CopyFirstCard()
     SaveBackupCard(library)
@@ -59,7 +59,7 @@ fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices,
     VideoChoicesCard(systems, choices)
     val switchable = systems.filter { (id, _) -> PlayerCores.choices(id).size > 1 }
     if (switchable.isEmpty()) return
-    CardBody("Emulator per system (select to switch):")
+    CardBody("The emulator each system uses (tap to change):")
     // Read again after each change, so the chips show the new choice.
     val chosen = remember(changes) { choices.all() }
     FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -97,9 +97,9 @@ private fun VideoChoicesCard(systems: List<Pair<String, String>>, choices: CoreC
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("Graphics and resolution")
         CardBody(
-            "GameCube, Wii and PS2 use Vulkan; other systems use OpenGL, and Vulkan (experimental) can be faster on some " +
-                "phones. Switch back if a game shows a black screen. Resolution draws 3D games sharper than the original (2× is like a 720p console, 3× 1080p, up to 10× for " +
-                "PSP) but needs a faster phone. Both can also be changed from the pause menu while playing.",
+            "Resolution makes 3D games sharper than the console did: 2× looks like 720p, 3× like 1080p, up to 10× for PSP, but " +
+                "higher needs a faster phone. Graphics: GameCube, Wii and PS2 use Vulkan; other systems use OpenGL, with Vulkan " +
+                "(experimental) as an option that can be faster (switch back if a game goes black). Both can be changed in a game's menu too.",
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             rows.forEach { (id, name, coreId) ->
@@ -133,11 +133,11 @@ private fun CopyFirstCard() {
         copyFirst = !copyFirst
         prefs.edit().putBoolean(com.retroforge.app.player.PlayerActivity.COPY_FIRST_PREF, copyFirst).apply()
     }) {
-        CardTitle("Big games: stream or copy") { StatusPill(if (copyFirst) "Copy to the phone first" else "Stream (starts at once)", if (copyFirst) StatusTone.NEUTRAL else StatusTone.GOOD) }
+        CardTitle("Disc games: play straight away or copy first") { StatusPill(if (copyFirst) "Copy first" else "Play straight away", if (copyFirst) StatusTone.NEUTRAL else StatusTone.GOOD) }
         CardBody(
-            "Disc games (GameCube, PlayStation, Dreamcast …) and arcade sets play straight from their folder or network drive, " +
-                "so they start at once. Select to copy them to the phone first instead: smoother on slow Wi-Fi, and the copy is " +
-                "kept for next time (the last two games). Emulators that can't stream copy anyway.",
+            "Big disc games (PlayStation, Dreamcast, Saturn …) and arcade games start straight away from your folder or network " +
+                "drive, without copying. If they stutter on slow Wi-Fi, choose Copy first: the game is copied to the phone before " +
+                "it starts, and the last two are kept so they start faster next time. Some emulators always copy.",
         )
     }
 }
@@ -206,10 +206,9 @@ private fun SaveBackupCard(library: LibraryRepository?) {
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("Back up saves and settings")
         CardBody(
-            "One zip with the built-in player's in-game saves, save states and cheats, and RetroForge's settings (screen shapes, " +
-                "filters, remapped buttons, emulator choices), favourites and playlists. Keep it somewhere safe, or restore it on a " +
-                "new phone (add your game folders first, so favourites and playlists find their games). Restoring replaces files " +
-                "with the same name and keeps the rest.",
+            "Puts your game saves, save states, cheats, settings, favourites and playlists into one zip file. Keep it somewhere " +
+                "safe, or restore it on a new phone (add your game folders first, so favourites and playlists find their games). " +
+                "Restoring replaces files with the same name and keeps the rest.",
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             FocusChip("Back up to a file", onClick = { export.launch("RetroForge-backup-${LocalDate.now()}.zip") })
@@ -239,7 +238,7 @@ private fun StorageCard() {
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("Storage")
         CardBody(
-            sizes?.let { (cores, games) -> "Emulators: ${cores.mb()}. Copied games: ${games.mb()} (CD and arcade games, the last two played)." }
+            sizes?.let { (cores, games) -> "Emulators: ${cores.mb()}. Copied games: ${games.mb()} (the last two disc or arcade games copied to the phone)." }
                 ?: "Working out sizes…",
         )
         FocusChip("Clear copied games", onClick = {

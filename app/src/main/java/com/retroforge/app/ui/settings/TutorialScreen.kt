@@ -54,7 +54,7 @@ private val topics = listOf(
         "Each game shows how long you've played it in the built-in player.",
         "Games from RetroBat folders show their gameplay video on the game page, and \"Read the manual\" opens the game's manual when RetroBat downloaded one.",
         "Home → 🎲 Surprise me opens a random game from your collection.",
-        "Big games (discs, arcade sets) play straight from their folder or network drive, so they start at once. Slow Wi-Fi? Settings → Playing → Big games: copy them to the phone first instead.",
+        "Big games (discs, arcade sets) play straight from their folder or network drive, so they start at once. Slow Wi-Fi? Settings → Playing → Disc games: choose Copy first, and they're copied to the phone before they start.",
         "Settings → Playing → Graphics and resolution sets OpenGL or Vulkan and the resolution per system; the pause menu has the same.",
         "Some systems need BIOS files. Settings → Set up RetroForge finds yours and copies them where the emulators look.",
     )),

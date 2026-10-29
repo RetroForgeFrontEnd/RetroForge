@@ -80,8 +80,8 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("$what on a network drive")
         CardBody(
-            "Play ${what.lowercase()} straight from a shared folder on a PC or NAS, over Wi-Fi. Add a network drive, tap Find " +
-                "on my network, pick your computer and one of its shared folders, then Add: RetroForge does the rest. " +
+            "Play ${what.lowercase()} kept in a shared folder on your PC or NAS, over Wi-Fi, without copying them to the phone. " +
+                "Tap Add a network drive, then Find on my network, pick your computer and one of its shared folders, then Add. " +
                 "How to share a folder on the PC: Settings → Help and about → How to use RetroForge.",
         )
         if (shares.isNotEmpty()) CardBody("Added: " + shares.joinToString { "${it.name} (${it.address})" })
