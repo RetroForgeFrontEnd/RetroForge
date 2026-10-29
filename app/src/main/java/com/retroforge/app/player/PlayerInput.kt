@@ -35,12 +35,25 @@ class PlayerInput(
     private var swallowed = 0
     private var holdStartedAt = 0L
 
+    /** The user's own buttons for this system: controller key code -> RetroPad button. Wins over [buttonFor]. */
+    var remap: Map<Int, Int> = emptyMap()
+
+    /** Set while the Controls page waits for "press the button you want": the next press goes here, not to the game. */
+    var capture: ((keyCode: Int) -> Unit)? = null
+
     /** True once a physical controller has been used; touch controls hide until the screen is touched again. */
     var usingController = false
         private set
 
     fun onKey(event: KeyEvent): Boolean {
-        val button = buttonFor(event.keyCode) ?: return false
+        capture?.let { take ->
+            if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0 && (remap[event.keyCode] ?: buttonFor(event.keyCode)) != null) {
+                capture = null
+                take(event.keyCode)
+            }
+            return true
+        }
+        val button = remap[event.keyCode] ?: buttonFor(event.keyCode) ?: return false
         if (event.repeatCount > 0) return true
         usingController = true
         keys = if (event.action == KeyEvent.ACTION_DOWN) keys or Pad.bit(button) else keys and Pad.bit(button).inv()

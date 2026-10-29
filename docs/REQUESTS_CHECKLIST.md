@@ -43,7 +43,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Import a theme from another frontend | ✅ colours; ✅ system artwork (canvas-es, Alekfull-NX) |
 | Themes scale on rotation | ✅ |
 | Key art on Home | ✅ |
-| In-game menu by swiping from the edges (cheats, shaders, controllers, GPU drivers) | ✅ edge swipe, cheats, filters, emulator settings, switch emulator; ❌ controller remapping; GPU drivers n/a (no GPU cores yet) |
+| In-game menu by swiping from the edges (cheats, shaders, controllers, GPU drivers) | ✅ edge swipe, cheats, filters, emulator settings, switch emulator; ✅ Remap buttons page (controller and on-screen, per system; tested); GPU drivers: Turnip downloads for other apps |
 | Feature parity with RetroBat, Batocera, ES-DE, Daijisho, NeoStation, Socket, Cocoon | ✅ [comparison](feature-parity-comparison.md); gaps: video previews, UI sounds, dual screen, RetroAchievements, playtime |
 | Setup clean-up: offer to reorganise a roms folder | ❌ |
 | Test the PC side (TCG Card Shop Simulator) | ✅ boots in GameNative on the S22 |
@@ -117,4 +117,4 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Remove touch controls when a controller connects | ✅ hides as soon as one connects (even mid-game), back when it disconnects; plug-in event not testable on the emulator |
 | VR: Cardboard 3D in the player; Quest; 3D films | 🟡 Cardboard VR mode (picture per eye) for every system; Virtual Boy in real 3D (Beetle VB side by side); tested on the emulator. Quest: runs as a flat Android app. 3D films: with the media section |
 | Dreamcast in the built-in player | ⛔ the laptop emulator crashed starting Ikaruga (its GPU translator); needs a phone test |
-
+| Remap buttons for touch and controller | ✅ pause menu → Remap buttons: controller keys and on-screen buttons per system; tested on the emulator |

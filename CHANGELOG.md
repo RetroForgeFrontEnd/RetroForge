@@ -19,6 +19,8 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Saves and storage**: Settings → Built-in player → Back up saves writes one zip with in-game saves, save states and cheats; Restore puts them back (on this or another device), replacing same-named saves and keeping the rest. A Storage card shows the space emulators and copied CD/arcade games use, with Clear copied games. Each game's page shows its time played in the built-in player.
 
+**Remap buttons** (pause menu): choose which controller button presses each game button, and what each on-screen button presses. Kept per system, with a way back to normal.
+
 **Widescreen and CRT**: a Widescreen switch in the pause menu for N64 (the game restarts in 16:9 by itself) and Dreamcast, and a new curved CRT filter: bent glass edges, scanlines and darker corners.
 
 **Cardboard VR**: in the pause menu, the picture once per eye for a phone in a Cardboard-style viewer. Virtual Boy (new, with Beetle VB) shows its real 3D there, and a normal picture otherwise. Touch controls now hide the moment a controller connects and return when it disconnects.

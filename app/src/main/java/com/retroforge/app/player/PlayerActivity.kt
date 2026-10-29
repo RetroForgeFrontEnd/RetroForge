@@ -57,6 +57,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.retroforge.player.NativePlayer
+import com.retroforge.player.Pad
 import com.retroforge.player.PlayerCores
 import android.content.res.Configuration
 import android.os.Handler
@@ -110,7 +111,70 @@ class PlayerActivity : ComponentActivity() {
     private var volume by mutableStateOf(1f)
     private var filter by mutableStateOf(com.retroforge.player.ScreenFilter.SHARP)
     private var pictureRect by mutableStateOf(Rect(0, 0, 0, 0))
-    private enum class MenuPage { MAIN, OPTIONS, EMULATORS, CHEATS }
+    private enum class MenuPage { MAIN, OPTIONS, EMULATORS, CHEATS, CONTROLS }
+
+    // Controller remapping, per system: "keyCode:button,keyCode:button".
+    private var remap by mutableStateOf<Map<Int, Int>>(emptyMap())
+    private var waitingFor by mutableStateOf<Int?>(null)
+
+    private fun loadRemap(): Map<Int, Int> = prefs.getString("map.$system", null).orEmpty().split(',').mapNotNull { pair ->
+        val (key, button) = pair.split(':').takeIf { it.size == 2 } ?: return@mapNotNull null
+        (key.toIntOrNull() ?: return@mapNotNull null) to (button.toIntOrNull() ?: return@mapNotNull null)
+    }.toMap()
+
+    private fun saveRemap(next: Map<Int, Int>) {
+        remap = next
+        input.remap = next
+        prefs.edit().putString("map.$system", next.entries.joinToString(",") { "${it.key}:${it.value}" }).apply()
+    }
+
+    /** Waits for a controller button, then makes it press [button] in the game. */
+    private fun remapButton(button: Int) {
+        waitingFor = button
+        input.capture = { keyCode ->
+            runOnUiThread {
+                waitingFor = null
+                // A key does one thing: drop its old job, and the default key for this button stops pressing it.
+                val next = remap.filterKeys { it != keyCode }.toMutableMap()
+                next[keyCode] = button
+                saveRemap(next)
+            }
+        }
+    }
+
+    // On-screen buttons, per system: which game button each one presses ("label=button;label=button").
+    private var touchMap by mutableStateOf<Map<String, Int>>(emptyMap())
+
+    private fun loadTouchMap(): Map<String, Int> = prefs.getString("tmap.$system", null).orEmpty().split(';').mapNotNull { pair ->
+        val (label, button) = pair.split('=').takeIf { it.size == 2 } ?: return@mapNotNull null
+        label to (button.toIntOrNull() ?: return@mapNotNull null)
+    }.toMap()
+
+    private fun saveTouchMap(next: Map<String, Int>) {
+        touchMap = next
+        prefs.edit().putString("tmap.$system", next.entries.joinToString(";") { "${it.key}=${it.value}" }).apply()
+    }
+
+    /** The system's pad with the user's on-screen choices applied. */
+    private fun touchLayout(): PadLayout {
+        val base = PadLayout.forSystem(system)
+        fun List<Pair<String, Int>>.mapped() = map { (label, button) -> label to (touchMap[label] ?: button) }
+        return base.copy(face = base.face.mapped(), shoulders = base.shoulders.mapped(), triggers = base.triggers.mapped())
+    }
+
+    /** The system's game buttons, named as on its controller. */
+    private fun gameButtons(): List<Pair<String, Int>> {
+        val layout = PadLayout.forSystem(system)
+        return (layout.face + layout.shoulders + layout.triggers).distinctBy { it.second } +
+            listOfNotNull(if (layout.hasSelect) "Select" to Pad.SELECT else null, "Start" to Pad.START)
+    }
+
+    /** Which controller key presses [button] now: the user's choice, else the usual one. */
+    private fun keyFor(button: Int): String {
+        val chosen = remap.entries.firstOrNull { it.value == button }?.key
+        val code = chosen ?: DEFAULT_KEYS.firstOrNull { PlayerInput.buttonFor(it) == button && it !in remap }
+        return code?.let { KeyEvent.keyCodeToString(it).removePrefix("KEYCODE_").removePrefix("BUTTON_").replace('_', ' ') } ?: "none"
+    }
     private var cheats by mutableStateOf<List<Cheat>>(emptyList())
     private var cheatStatus by mutableStateOf<String?>(null)
     // While the first download runs, only the status shows (no half-built list or code boxes flashing past).
@@ -239,9 +303,13 @@ class PlayerActivity : ComponentActivity() {
             onQuit = { runOnUiThread { quit() } },
         )
 
+        remap = loadRemap()
+        input.remap = remap
+        touchMap = loadTouchMap()
+
         setContent {
             MaterialTheme(colorScheme = darkColorScheme()) {
-                PlayerScreen(PadLayout.forSystem(system), extras.getString(EXTRA_TITLE).orEmpty())
+                PlayerScreen(touchLayout(), extras.getString(EXTRA_TITLE).orEmpty())
             }
         }
 
@@ -615,6 +683,11 @@ class PlayerActivity : ComponentActivity() {
     // ---------- input ----------
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        // Remap buttons is waiting for "press the button you want": that press is the answer, not menu navigation.
+        if (menuOpen && input.capture != null && event.keyCode != KeyEvent.KEYCODE_BACK) {
+            input.onKey(event)
+            return true
+        }
         if (menuOpen) {
             when (event.keyCode) {
                 KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_BUTTON_B, KeyEvent.KEYCODE_BUTTON_MODE, KeyEvent.KEYCODE_MENU -> {
@@ -921,6 +994,7 @@ class PlayerActivity : ComponentActivity() {
                         MenuButton(onClick = { openCheats() }, modifier = wide) {
                             Text("Cheats ›" + cheats.count { it.enabled }.let { if (it > 0) "  ($it on)" else "" })
                         }
+                        MenuButton(onClick = { menuPage = MenuPage.CONTROLS }, modifier = wide) { Text("Remap buttons ›") }
                         if (PlayerCores.choices(system).size > 1) {
                             MenuButton(onClick = { menuPage = MenuPage.EMULATORS }, modifier = wide) { Text("Switch emulator ›") }
                         }
@@ -981,6 +1055,44 @@ class PlayerActivity : ComponentActivity() {
                             }
                         }
                     }
+                    MenuPage.CONTROLS -> {
+                        Text("Remap buttons", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(
+                            "Select a button, then press the controller button you want for it. Kept for this system.",
+                            color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
+                        )
+                        MenuButton(onClick = { input.capture = null; waitingFor = null; menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        val buttons = gameButtons()
+                        Text("Controller", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                        buttons.forEach { (label, button) ->
+                            MenuButton(onClick = { remapButton(button) }, modifier = wide) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(label, fontSize = 14.sp)
+                                    Text(
+                                        if (waitingFor == button) "Press a controller button…" else keyFor(button),
+                                        color = if (waitingFor == button) Color(0xFF9FE3B0) else Color(0xFFFF8A1F), fontSize = 13.sp,
+                                    )
+                                }
+                            }
+                        }
+                        if (remap.isNotEmpty()) MenuButton(onClick = { saveRemap(emptyMap()) }, modifier = wide) { Text("Controller back to normal") }
+                        Text("On-screen buttons", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
+                        Text("Select one to change which game button it presses.", color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
+                        val onScreen = PadLayout.forSystem(system).let { it.face + it.shoulders + it.triggers }
+                        onScreen.forEach { (label, default) ->
+                            val now = touchMap[label] ?: default
+                            MenuButton(onClick = {
+                                val next = buttons[(buttons.indexOfFirst { it.second == now } + 1) % buttons.size].second
+                                saveTouchMap(if (next == default) touchMap - label else touchMap + (label to next))
+                            }, modifier = wide) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text("On-screen $label", fontSize = 14.sp)
+                                    Text("presses " + (buttons.firstOrNull { it.second == now }?.first ?: "?"), color = Color(0xFFFF8A1F), fontSize = 13.sp)
+                                }
+                            }
+                        }
+                        if (touchMap.isNotEmpty()) MenuButton(onClick = { saveTouchMap(emptyMap()) }, modifier = wide) { Text("On-screen back to normal") }
+                    }
                     MenuPage.EMULATORS -> {
                         Text("Switch emulator", color = Color.White, fontWeight = FontWeight.Bold)
                         Text(
@@ -1005,6 +1117,13 @@ class PlayerActivity : ComponentActivity() {
     }
 
     companion object {
+        /** Controller keys that press a game button by default (see PlayerInput.buttonFor). */
+        private val DEFAULT_KEYS = listOf(
+            KeyEvent.KEYCODE_BUTTON_A, KeyEvent.KEYCODE_BUTTON_B, KeyEvent.KEYCODE_BUTTON_X, KeyEvent.KEYCODE_BUTTON_Y,
+            KeyEvent.KEYCODE_BUTTON_L1, KeyEvent.KEYCODE_BUTTON_R1, KeyEvent.KEYCODE_BUTTON_L2, KeyEvent.KEYCODE_BUTTON_R2,
+            KeyEvent.KEYCODE_BUTTON_START, KeyEvent.KEYCODE_BUTTON_SELECT,
+        )
+
         private const val EXTRA_CORE_PATH = "core_path"
         private const val EXTRA_URI = "uri"
         private const val EXTRA_FILE_NAME = "file_name"
