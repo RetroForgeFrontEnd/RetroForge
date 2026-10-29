@@ -231,6 +231,9 @@ class PlayerActivity : ComponentActivity() {
     /** NativePlayer.netplayState: 0 off, 1 hosting, 2 joining, 3 starting, 4 playing, 5 failed. */
     private var netState by mutableStateOf(0)
     private var netStatus by mutableStateOf("")
+    /** The status line over the game: shown while connecting or when something's wrong, and for a few seconds once playing. */
+    private var netShowStatus by mutableStateOf(false)
+    private var netPlayingSince = 0L
     private var netHosts by mutableStateOf<List<NetplayHost>?>(null)
     private var netSearching by mutableStateOf(false)
     private var netAddress by mutableStateOf("")
@@ -294,8 +297,12 @@ class PlayerActivity : ComponentActivity() {
 
     /** Netplay's state and status line, kept up to date while a session is on. */
     private fun pollNetplay() {
+        val wasPlaying = netState == 4
         netState = NativePlayer.netplayState()
         netStatus = NativePlayer.netplayStatus()
+        if (netState == 4 && !wasPlaying) netPlayingSince = android.os.SystemClock.elapsedRealtime()
+        netShowStatus = netState != 0 && netStatus.isNotBlank() &&
+            (netState != 4 || netStatus.startsWith("Waiting") || android.os.SystemClock.elapsedRealtime() - netPlayingSince < 4000)
         // Once someone has joined, nobody else needs to find this game.
         if (netState >= 3) { announcer?.stop(); announcer = null }
         if (netState != 0 && !isFinishing) window.decorView.postDelayed({ pollNetplay() }, 500)
@@ -476,14 +483,6 @@ class PlayerActivity : ComponentActivity() {
             }
         }.getOrNull() ?: -1L)
         NativePlayer.start()
-        // Started from a game's page as "Play together": host, or join the address given.
-        intent.getStringExtra(EXTRA_NETPLAY)?.let { how ->
-            runOnUiThread {
-                if (how == NETPLAY_HOST) hostNetplay()
-                else if (how == NETPLAY_FIND) { openMenu(); menuPage = MenuPage.NETPLAY; findNetplayHosts() }
-                else how.removePrefix("join:").let { joinNetplay(it.substringBeforeLast(':'), it.substringAfterLast(':').toIntOrNull() ?: Netplay.GAME_PORT) }
-            }
-        }
         runOnUiThread {
             video = av
             coreOptions = NativePlayer.options()
@@ -494,6 +493,14 @@ class PlayerActivity : ComponentActivity() {
             setUpSecondScreen()
             NativePlayer.setPaused(!foreground || menuOpen)
             surface?.let { setFrameRate(it, av) }
+        }
+        // Started from a game's page as "Play together": host, or join the address given.
+        intent.getStringExtra(EXTRA_NETPLAY)?.let { how ->
+            runOnUiThread {
+                if (how == NETPLAY_HOST) hostNetplay()
+                else if (how == NETPLAY_FIND) { openMenu(); menuPage = MenuPage.NETPLAY; findNetplayHosts() }
+                else how.removePrefix("join:").let { joinNetplay(it.substringBeforeLast(':'), it.substringAfterLast(':').toIntOrNull() ?: Netplay.GAME_PORT) }
+            }
         }
     }
 
@@ -1170,25 +1177,6 @@ class PlayerActivity : ComponentActivity() {
         }
         // No background here: the game surface sits behind the window, and anything painted would cover it.
         Box(Modifier.fillMaxSize()) {
-            if (netState != 0 && netStatus.isNotBlank()) {
-                Text(
-                    netStatus,
-                    color = if (netState == 4) Color(0xFF9FE3B0) else if (netState == 5) Color(0xFFFF9A8B) else Color(0xFFFFC56B),
-                    fontSize = 13.sp,
-                    modifier = Modifier.align(Alignment.TopEnd).padding(top = 36.dp, end = 12.dp)
-                        .background(Color(0x99000000), RoundedCornerShape(6.dp)).padding(horizontal = 8.dp, vertical = 3.dp),
-                )
-            }
-            fps?.let { shown ->
-                val target = video?.fps?.toInt() ?: 60
-                Text(
-                    "$shown / $target fps",
-                    color = if (shown >= target - 2) Color(0xFF9FE3B0) else Color(0xFFFFC56B),
-                    fontSize = 13.sp,
-                    modifier = Modifier.align(Alignment.TopStart).padding(top = 36.dp, start = 12.dp)
-                        .background(Color(0x99000000), RoundedCornerShape(6.dp)).padding(horizontal = 8.dp, vertical = 3.dp),
-                )
-            }
             BoxWithConstraints(Modifier.fillMaxSize()) {
                 val portrait = maxHeight > maxWidth
                 // Compact controls when the full-width picture wouldn't leave room for the normal ones (the DS's two screens).
@@ -1224,6 +1212,27 @@ class PlayerActivity : ComponentActivity() {
                     CompositionLocalProvider(LocalConsoleSkin provides skin) { controls(Modifier.fillMaxSize()) }
                 }
             }
+            // Drawn last, so the console look and the controls never cover them.
+            if (netShowStatus) {
+                Text(
+                    netStatus,
+                    color = if (netState == 4) Color(0xFF9FE3B0) else if (netState == 5) Color(0xFFFF9A8B) else Color(0xFFFFC56B),
+                    fontSize = 13.sp,
+                    modifier = Modifier.align(Alignment.TopEnd).padding(top = 36.dp, end = 12.dp)
+                        .background(Color(0x99000000), RoundedCornerShape(6.dp)).padding(horizontal = 8.dp, vertical = 3.dp),
+                )
+            }
+            fps?.let { shown ->
+                val target = video?.fps?.toInt() ?: 60
+                Text(
+                    "$shown / $target fps",
+                    color = if (shown >= target - 2) Color(0xFF9FE3B0) else Color(0xFFFFC56B),
+                    fontSize = 13.sp,
+                    modifier = Modifier.align(Alignment.TopStart).padding(top = 36.dp, start = 12.dp)
+                        .background(Color(0x99000000), RoundedCornerShape(6.dp)).padding(horizontal = 8.dp, vertical = 3.dp),
+                )
+            }
+
             if (phase == Phase.Playing && !menuOpen) {
                 // Swipe in from either edge for the menu. (With gesture navigation the system's own back swipe does the same.)
                 EdgeSwipe(Modifier.align(Alignment.CenterStart), fromLeft = true)

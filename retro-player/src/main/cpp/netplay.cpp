@@ -293,15 +293,16 @@ void joinLoop(std::string address, int port) {
 void resetFrames(uint32_t start) {
     frame = start;
     local.clear();
-    remote.clear();
+    for (uint32_t f = start; f < start + uint32_t(delay); f++) local[f] = Input{};
+    sentUpTo = int64_t(start) + delay - 1;
+    std::lock_guard<std::mutex> lock(m);
+    // Buttons the other player already sent for later frames stay: the host starts playing as soon as it has sent
+    // its state, while the guest may load it a while later.
+    remote.erase(remote.begin(), remote.lower_bound(start));
     ourCrc.clear();
     theirCrc.clear();
     // The first [delay] frames have no buttons from anyone yet: both sides play them with nothing pressed.
-    for (uint32_t f = start; f < start + uint32_t(delay); f++) {
-        local[f] = Input{};
-        remote[f] = Input{};
-    }
-    sentUpTo = int64_t(start) + delay - 1;
+    for (uint32_t f = start; f < start + uint32_t(delay); f++) remote.emplace(f, Input{});
 }
 
 std::string playingLine() {

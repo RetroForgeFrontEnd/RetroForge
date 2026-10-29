@@ -4,7 +4,7 @@ Last updated: 2026-10-29 evening (tester build for reviewers: streaming, Plex/DL
 
 The single source of truth for what exists, what has been verified and what is blocked, by the phases of the original brief. Detail lives in the linked documents; every test run is logged in [TESTING.md](TESTING.md).
 
-Build: debug build verified 2026-10-29; all unit tests pass. Version 0.5.1-beta. Everything is committed on `main`. Per-request status: [REQUESTS_CHECKLIST.md](REQUESTS_CHECKLIST.md).
+Build: debug build verified 2026-10-29; all unit tests pass. Version 0.6.0-beta. Everything is committed on `main`. Per-request status: [REQUESTS_CHECKLIST.md](REQUESTS_CHECKLIST.md).
 
 ## Phases
 
