@@ -67,6 +67,11 @@ private val notices = listOf(
             "library. Console and game names, logos and characters shown in it belong to their owners.",
     ),
     Notice(
+        "The Bezel Project bezels (Settings → Playing → Bezels)", "The Bezel Project's own terms",
+        "Bezel artwork by The Bezel Project, github.com/thebezelproject. Not part of RetroForge: a system's bezels are downloaded " +
+            "from their GitHub repositories when you ask, for your own use. Console and game names, logos and art shown in them belong to their owners.",
+    ),
+    Notice(
         "libretro cheat database (pause menu → Cheats)", "CC BY-SA 4.0",
         "github.com/libretro/libretro-database. Not part of RetroForge: a game's cheat file is downloaded from there when you open its Cheats page.",
     ),

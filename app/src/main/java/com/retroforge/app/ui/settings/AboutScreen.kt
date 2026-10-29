@@ -57,6 +57,11 @@ fun AboutScreen() {
             )
         }
 
+        FocusCard(modifier = Modifier.fillMaxWidth()) {
+            CardTitle("Thanks")
+            CardBody("Bezels in the built-in player are by The Bezel Project (github.com/thebezelproject), downloaded from their GitHub when you ask.")
+        }
+
         SupportCard()
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {

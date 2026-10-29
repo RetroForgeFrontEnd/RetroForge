@@ -36,6 +36,8 @@ Retro tab artwork: canvas-es by Siddy212 (CC0-1.0, github.com/Siddy212/canvas-es
 
 Cheats: libretro-database's cht files (CC BY-SA 4.0, github.com/libretro/libretro-database) are **not bundled**; one game's file is downloaded when its Cheats page is opened, and credited in Settings → Licences.
 
+Bezels: The Bezel Project's overlay PNGs (github.com/thebezelproject/bezelproject-<System>) are **not bundled**. Their repositories carry no licence file; RetroForge downloads them only when the user asks (Settings → Playing → Bezels, or Picture in the game's menu), as The Bezel Project's own installer does, into private storage for the user's own use, and credits The Bezel Project in Settings → Licences, the About screen and the README. The artwork depicts trademarks and characters of their owners; RetroForge doesn't host it.
+
 Bundled: AndroidX Media3 (ExoPlayer and its UI), Apache 2.0, for the Media tab's film player.
 
 Referenced, not bundled: TMDB (film posters, only with the user's own API key; "This product uses the TMDB API but is not endorsed or certified by TMDB"). Turnip GPU drivers (Mesa, MIT), downloaded only when the user picks one in Settings → GPU and drivers, from the GitHub releases of K11MCH1/AdrenoToolsDrivers and MrPurple666/purple-turnip; Qualcomm's proprietary driver packages on those pages are not listed. Obtainium (GPL-3.0; RetroForge only opens its documented `obtainium://add/` and `obtainium://app/` links) and the Obtainium Emulation Pack (Unlicense): its app setups for 11 emulators are copied into `standalone.json` by `tools/add_obtainium_apps.py`, and the pack itself is linked. Standalone emulators are separate apps the user installs.

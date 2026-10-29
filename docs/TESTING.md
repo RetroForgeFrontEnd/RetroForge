@@ -184,6 +184,14 @@ S22 (arm64) and the Android emulator (x86_64, software GPU). Debug build.
 - Pause menu: Genesis Plus GX's own settings listed (System Region changed auto → ntsc-u). **Switch emulator** Genesis Plus GX → PicoDrive → back: game restarts in the new emulator and the choice is remembered on the game page and in Settings → Built-in player. Found and fixed: the first switch died (new player started in the old player's process, which then ended itself).
 - Not yet tested: switching on the S22, melonDS (needs BIOS), Settings per-system emulator chips by hand, a real TV box and a real controller.
 
+### 2026-10-29: Bezel Project bezels (emulator)
+
+- Fresh AVD (Medium Phone, API 37), 2400×1080 landscape. Settings → Playing → Bezels: Download Mega Drive (game list + system bezel) worked; card then lists it with Remove.
+- Mega Drive (Genesis Plus GX), "Sonic The Hedgehog (W) (REV00) [!]": its own bezel "Sonic The Hedgehog (USA, Europe)" downloaded on first start; landscape shows the whole bezel (black bars beside it), picture exactly in the CRT window. Menu → Picture → Bezel Off brings back the console look; On restores the bezel.
+- SNES (Snes9x), "Super Mario World (USA)": without SNES bezels landscape keeps the console look; Menu → Picture → Download bezels fetched them in-game and the game's own bezel showed at once.
+- Portrait unchanged (console look) with bezels on, for both.
+- Not yet checked: other systems' packs, a real phone, games without a matching bezel (system bezel used, same code path as before the game's own arrives).
+
 ### 2026-10-28: Console look (emulator)
 
 - SNES (Snes9x): light grey body, dark screen surround, red/yellow/green/blue face buttons; portrait and landscape (picture full height in its surround, controls on the body at the sides).

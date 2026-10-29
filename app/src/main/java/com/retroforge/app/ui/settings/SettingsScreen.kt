@@ -135,6 +135,8 @@ fun SettingsScreen(
             "playing" -> {
                 coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames, library) }
 
+                BezelsCard(playerSystems)
+
                 EmulatorAppsCard()
 
                 viewPrefs?.let { DualScreenCard(it) }
