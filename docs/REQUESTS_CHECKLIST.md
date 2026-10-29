@@ -158,3 +158,5 @@ Requests that were never fully done, or only answered:
 | SteamGridDB covers with the user's own key | ✅ tested on the S22: search found Super Mario 64, covers listed with their artists, chosen cover shown on the game page with credit |
 | Dreamcast memory cards | ✅ tested on the S22 (Ikaruga creates its save file) |
 | PS2 compression to CHD | ✅ tested on the S22 (Gran Turismo 3: 3.88 GB .iso → 3.57 GB CHD, read back and checked, original set aside) |
+| Netplay for all systems | ❌ to do: libretro netplay lives in the frontend (RetroArch), so RetroForge needs its own (rollback, same game file and emulator on both sides); RetroArch launches can use RetroArch's own netplay |
+| Network drives built into RetroForge (no second app) | 🟡 in progress: own documents provider using smbj |

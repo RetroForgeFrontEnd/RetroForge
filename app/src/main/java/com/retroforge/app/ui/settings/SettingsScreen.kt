@@ -134,6 +134,8 @@ fun SettingsScreen(
 
         library?.let { EsdeImportCard(it) }
 
+        com.retroforge.app.ui.NetworkDrivesCard("Games")
+
         TexturePacksCard(LocalContext.current.getExternalFilesDir(null) ?: LocalContext.current.filesDir)
 
         coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames, library) }

@@ -121,9 +121,10 @@ fun MediaScreen(prefs: SharedPreferences) {
             key = new
             refresh++
         }
+        com.retroforge.app.ui.NetworkDrivesCard("Films")
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("Coming next")
-            CardBody("Plex servers, network drives (SMB) and cloud folders. For now, films on this device, an SD card or a USB drive.")
+            CardBody("Plex servers.")
         }
     }
 }

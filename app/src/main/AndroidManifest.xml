@@ -62,6 +62,18 @@
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/port_files" />
         </provider>
 
+        <!-- RetroForge's network drives (SMB), listed in Android's folder picker. Only the system's picker may use it. -->
+        <provider
+            android:name=".network.NetworkDrivesProvider"
+            android:authorities="${applicationId}.network"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
+
         <!-- Films from the Media tab, full screen. -->
         <activity
             android:name=".ui.media.VideoActivity"
