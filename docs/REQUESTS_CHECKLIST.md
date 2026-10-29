@@ -82,7 +82,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | GPU detector, custom GPU driver support and downloads | ✅ GPU check + Turnip list/download for apps with a driver manager (tested on the emulator); ❌ our player loading them (needs Vulkan GPU rendering first) |
 | Saturn in the built-in player | 🟡 experimental (Yabause: 1 of 2 test games boots); YabaSanshiro after GPU rendering; RetroArch and Yaba Sanshiro 2 offered |
 | Tester guide and email to Mr Sujano | ✅ docs/TESTER_GUIDE.md; email in Documents (Word) |
-| GPU rendering in the built-in player (N64, PSP, Dreamcast, GameCube, YabaSanshiro) | 🟡 OpenGL ES rendering works: ✅ N64 (Mupen64Plus-Next, Milo's Astro Lanes on the emulator); next PSP, Dreamcast, YabaSanshiro; Vulkan later |
+| GPU rendering in the built-in player (N64, PSP, Dreamcast, GameCube, YabaSanshiro) | ✅ OpenGL ES: N64, PSP, Dreamcast, 3DS tested; 🟡 Vulkan experimental (see Vulkan row); GameCube/PS2 still crash or stall |
 | Short demo video for Mr Sujano | ✅ Documents, RetroForge demo.mp4 (raw, from the emulator) |
 | Bigger portrait picture for older systems | ⛔ waiting for your choice (zoom/crop vs bigger controls) |
 
@@ -116,7 +116,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Compare with other frontends again and suggest more | ❌ after the above |
 | Remove touch controls when a controller connects | ✅ hides as soon as one connects (even mid-game), back when it disconnects; plug-in event not testable on the emulator |
 | VR: Cardboard 3D in the player; Quest; 3D films | 🟡 Cardboard VR mode (picture per eye) for every system; Virtual Boy in real 3D (Beetle VB side by side); tested on the emulator. Quest: runs as a flat Android app. 3D films: with the media section |
-| Dreamcast in the built-in player | ⛔ the laptop emulator crashed starting Ikaruga (its GPU translator); needs a phone test |
+| Dreamcast in the built-in player | ✅ Flycast on GPU rendering, tested on the S22 (Ikaruga plays and saves to its VMU) |
 | Remap buttons for touch and controller | ✅ pause menu → Remap buttons: controller keys and on-screen buttons per system; tested on the emulator |
 
 ## Found in a full re-read of the conversation (29 October)
@@ -188,3 +188,10 @@ Requests that were never fully done, or only answered:
 | Players for the systems still missing | 🟡 added: BBC Micro (b2), J2ME (SquirrelJME), Sega ST-V (MAME), 64DD (Mupen64Plus-Next) — not yet played. Still none: Apple IIGS, Astrocade, CoCo, Game.com, V.Smile (MAME's computer core, next), Daphne/Singe, Model 2/3, Hikaru, Triforce, Neo Geo 64, Jaguar CD, Xbox, and PC ports (Duke 3D, Perfect Dark, OpenJazz, OpenBOR, Sonic decomps) that need their own apps |
 | Vulkan / OpenGL choice in Settings and the pause menu | ✅ per system (Settings → Playing → Graphics and resolution, and the pause menu); OpenGL default, Vulkan marked experimental; switching restarts the game with its place saved |
 | Upscaling (internal resolution) | ✅ per system 1× up to each emulator's most (PSP and Dreamcast 10×, 3DS 9×, GameCube and PS2 8×, N64 4×), in Settings and the pause menu; picks the emulator's own resolution values. Tested: 3DS at 2× on the S22 |
+| Game manuals | ✅ "Read the manual" on the game page opens RetroBat's manual (manuals/<game>-manual.pdf) in a built-in page viewer; tested on the S22 (Rez, from the network share) |
+| Gameplay video previews | ✅ RetroBat's videos/<game>-video.mp4 plays silently on a loop on the game page; tested on the S22 (Rez) |
+| Screenshots | ✅ pause menu → Take a screenshot: the picture as shown (filters included) saved to Pictures/RetroForge |
+| Surprise me | ✅ Home → 🎲 Surprise me opens a random game (ROM hacks left out) |
+| Pause menu condensed | ✅ main page (resume, states, fast-forward, disc, keyboard, screenshot, restart, quit) plus Picture ›, Sound and controls ›, Emulator › |
+| Performance overlay (FPS) | ✅ optional: pause menu → Picture → Show FPS; frames shown per second against the game's own rate, green at full speed |
+

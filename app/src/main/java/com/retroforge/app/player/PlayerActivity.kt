@@ -113,6 +113,9 @@ class PlayerActivity : ComponentActivity() {
     private lateinit var videoChoices: CoreChoices
     private var vulkanOn by mutableStateOf(false)
     private var scale by mutableStateOf(1)
+    // FPS counter (performance check), kept for all games; fps is null while it's off.
+    private var showFps by mutableStateOf(false)
+    private var fps by mutableStateOf<Int?>(null)
     private var filter by mutableStateOf(com.retroforge.player.ScreenFilter.SHARP)
     private var pictureRect by mutableStateOf(Rect(0, 0, 0, 0))
     private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS }
@@ -290,6 +293,7 @@ class PlayerActivity : ComponentActivity() {
         prefs = getSharedPreferences("player", MODE_PRIVATE)
         coreChoices = CoreChoices(File(filesDir, "player/cores.properties"))
         videoChoices = CoreChoices(File(filesDir, "player/video.properties"))
+        showFps = videoChoices.get("show_fps") == "true"
         scale = videoChoices.get("scale.$system")?.toIntOrNull() ?: 1
         cores = CoreManager(File(filesDir, "cores"), "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}")
         shape = ScreenShape.of(prefs.getString("shape.$system", null))
@@ -1004,8 +1008,30 @@ class PlayerActivity : ComponentActivity() {
 
     @Composable
     private fun PlayerScreen(layout: PadLayout, title: String) {
+        // The FPS counter: frames put on screen over each second.
+        LaunchedEffect(showFps, phase) {
+            fps = null
+            if (!showFps || phase != Phase.Playing) return@LaunchedEffect
+            var last = NativePlayer.framesShown()
+            while (true) {
+                kotlinx.coroutines.delay(1000)
+                val now = NativePlayer.framesShown()
+                fps = (now - last).toInt().coerceAtLeast(0)
+                last = now
+            }
+        }
         // No background here: the game surface sits behind the window, and anything painted would cover it.
         Box(Modifier.fillMaxSize()) {
+            fps?.let { shown ->
+                val target = video?.fps?.toInt() ?: 60
+                Text(
+                    "$shown / $target fps",
+                    color = if (shown >= target - 2) Color(0xFF9FE3B0) else Color(0xFFFFC56B),
+                    fontSize = 13.sp,
+                    modifier = Modifier.align(Alignment.TopStart).padding(top = 36.dp, start = 12.dp)
+                        .background(Color(0x99000000), RoundedCornerShape(6.dp)).padding(horizontal = 8.dp, vertical = 3.dp),
+                )
+            }
             BoxWithConstraints(Modifier.fillMaxSize()) {
                 val portrait = maxHeight > maxWidth
                 // Compact controls when the full-width picture wouldn't leave room for the normal ones (the DS's two screens).
@@ -1188,6 +1214,10 @@ class PlayerActivity : ComponentActivity() {
                         MenuButton(onClick = { chooseVr(!vr) }, modifier = wide) {
                             Text("Cardboard VR: ${if (vr) "On" else "Off"}" + if (PlayerCores.sideBySide(coreId)) " (3D)" else "")
                         }
+                        MenuButton(onClick = {
+                            showFps = !showFps
+                            videoChoices.set("show_fps", if (showFps) "true" else null)
+                        }, modifier = wide) { Text("Show FPS: ${if (showFps) "On" else "Off"}") }
                     }
                     MenuPage.SOUND_CONTROLS -> {
                         Text("Sound and controls", color = Color.White, fontWeight = FontWeight.Bold)

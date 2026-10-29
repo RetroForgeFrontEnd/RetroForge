@@ -1,10 +1,10 @@
 # RetroForge — Project Status
 
-Last updated: 2026-10-28 (built-in player, console look, TV/controller use, PC wording)
+Last updated: 2026-10-29 evening (tester build for reviewers: streaming, Plex/DLNA, network drives, Vulkan experimental, upscaling, manuals and videos)
 
 The single source of truth for what exists, what has been verified and what is blocked, by the phases of the original brief. Detail lives in the linked documents; every test run is logged in [TESTING.md](TESTING.md).
 
-Build: debug and release (R8) build verified 2026-10-28; release build tested with the native player. All unit tests pass. Version 0.5.0-beta. Everything is committed on `main`.
+Build: debug build verified 2026-10-29; all unit tests pass. Version 0.5.0-beta. Everything is committed on `main`. Per-request status: [REQUESTS_CHECKLIST.md](REQUESTS_CHECKLIST.md).
 
 ## Phases
 
@@ -13,14 +13,14 @@ Build: debug and release (R8) build verified 2026-10-28; release build tested wi
 | 1 — Environment and feasibility audit | **Done.** RetroBat audited read-only; DroidDeck audited; risks documented ([RISK_ASSESSMENT.md](RISK_ASSESSMENT.md)) |
 | 2 — PC runtime proof of concept | **Blocked on hardware.** Approved approach: separate runtime app. The S22 (Xclipse) can't run DroidDeck; needs an Adreno 730+ device, or a GameNative/Winlator test on the S22 ([retroforge-pc-architecture.md](retroforge-pc-architecture.md)) |
 | 3 — Android foundation | **Done; device tested** (emulator, Galaxy S22). Controller-only use tested on the emulator; no real TV box or physical controller yet |
-| 4 — Retro library | **Done.** SAF folders (phone, SD card), scanner (28,274-game real collection read-only), gamelist.xml, favourites, playlists, search, filters. USB/OTG not yet tried |
-| 5 — First real retro launch | **Done on device.** Built-in player: GBA and DS on the S22; SNES, NES, Mega Drive on the emulator. RetroArch and standalone launches tested on the emulator |
+| 4 — Retro library | **Done.** SAF folders (phone, SD card), built-in network drives (SMB, no sign-in, found on the network, follow the PC when its address changes), scanner (RetroBat share: 28,448 games over Wi-Fi, read-only), gamelist.xml, favourites, playlists, search (exact titles first), filters. USB/OTG not yet tried |
+| 5 — First real retro launch | **Done on device.** Built-in player on the S22: GBA, DS, PS1 (streamed from the network), Dreamcast, 3DS, DOS and more; RetroArch and standalone launches tested on the emulator |
 | 6 — Unified experience | **Partly.** Retro library unified across routes (built-in, RetroArch, standalone); PC games aren't in the library yet (Phase 8) |
-| 7 — Emulator expansion | **Ongoing.** Built-in player: 21 cartridge systems, several emulators each, switchable mid-game. RetroArch: 91 of 121 RetroBat systems. 21 standalone emulators. Untested: PS2, 3DS, Wii, Switch standalone apps ([SYSTEM_COVERAGE.md](SYSTEM_COVERAGE.md)) |
+| 7 — Emulator expansion | **Ongoing.** Built-in player: about 100 systems (consoles, handhelds, arcade, computers with keyboard and mouse), several emulators each, switchable mid-game; 3DS plays on the S22. GameCube (Dolphin) and PS2 (LRPS2) boot but crash or stall: standalone apps offered. Games stream instead of copying. RetroArch and 21 standalone emulators ([SYSTEM_COVERAGE.md](SYSTEM_COVERAGE.md)) |
 | 8 — PC subsystem | **Minimal.** GPU check, DroidDeck detect/open, links to GameNative/Winlator on other GPUs. No PC game started from RetroForge yet ([pc-game-compatibility.md](pc-game-compatibility.md)) |
 | 9 — Artwork and metadata | **Built.** libretro box art, SteamGridDB (your key), ScreenScraper (waits for RetroForge's developer ID), your own images. Manual editing of a game's details: **built**, emulator tested (kept through rescans, Reset) |
-| 10 — Theme engine | **Built.** Documented format, 8 themes with their own home layouts, previews, ES-DE/RetroBat colour import ([retroforge-theme-format.md](retroforge-theme-format.md)). Not yet: theme images/logos import, interface sounds |
-| 11 — Controllers, graphics, firmware, saves | **Mostly built.** Controller and TV-remote navigation; player screen shapes, filters (sharp/smooth/CRT/LCD), console look; BIOS check and copy for RetroArch and the built-in player; saves and per-emulator states ([SHADERS_AND_GRAPHICS.md](SHADERS_AND_GRAPHICS.md), [BIOS_AND_FIRMWARE.md](BIOS_AND_FIRMWARE.md)). Not yet: button remapping, save backup/export, performance overlay |
+| 10 — Theme engine | **Built.** Documented format, 8 themes with their own home layouts, previews, ES-DE/RetroBat colour import ([retroforge-theme-format.md](retroforge-theme-format.md)). Interface sounds built; theme images/logos import still partial |
+| 11 — Controllers, graphics, firmware, saves | **Mostly built.** Controller and TV-remote navigation; player screen shapes, filters (sharp/smooth/CRT/LCD), console look; BIOS check and copy for RetroArch and the built-in player; saves and per-emulator states ([SHADERS_AND_GRAPHICS.md](SHADERS_AND_GRAPHICS.md), [BIOS_AND_FIRMWARE.md](BIOS_AND_FIRMWARE.md)). Since built: button remapping, save backup/restore, PlayStation memory cards, resolution (upscaling) and OpenGL/Vulkan per system (Vulkan experimental), FPS overlay, screenshots |
 | 12 — Device and performance testing | **Started.** 1 of 3 target devices (Galaxy S22). Needed: a mid-range phone, a handheld/tablet, a TV box, a real controller |
 | 13 — Release readiness | **Beta prep done** ([RELEASE_PLAN.md](RELEASE_PLAN.md)): licences screen, privacy policy, bug reports, signing setup. Still needed from you: release key, support links, issues URL, privacy policy web page. Final full test pass still to run |
 
