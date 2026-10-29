@@ -167,18 +167,6 @@
       "tags": []
     },
     {
-      "id": "smb3mix",
-      "title": "Super Mario Bros. 3Mix",
-      "system": "nes",
-      "baseGame": "Super Mario Bros. 3",
-      "authors": [
-        "Southbird"
-      ],
-      "summary": "A remix of Super Mario Bros. 3 with new levels, new power-ups and ideas from other Mario games. Find the patch and the exact ROM it needs on the hack's page.",
-      "pageUrl": "https://www.romhacking.net/?page=hacks&title=3Mix",
-      "tags": []
-    },
-    {
       "id": "alttp-redux",
       "title": "A Link to the Past Redux",
       "system": "snes",
@@ -222,6 +210,114 @@
       "tags": [
         "quality of life"
       ]
+    },
+    {
+      "id": "maternalbound-redux",
+      "title": "MaternalBound Redux",
+      "system": "snes",
+      "baseGame": "EarthBound",
+      "authors": [
+        "ShadowOne333"
+      ],
+      "tags": [
+        "remake",
+        "translation",
+        "quality of life"
+      ],
+      "summary": "Mother 1 (EarthBound Beginnings) rebuilt in EarthBound's engine, with new controls and MSU-1 support.",
+      "pageUrl": "https://github.com/ShadowOne333/MaternalBound-Redux",
+      "patchRepo": "ShadowOne333/MaternalBound-Redux"
+    },
+    {
+      "id": "super-metroid-redux",
+      "title": "Super Metroid Redux",
+      "system": "snes",
+      "baseGame": "Super Metroid",
+      "authors": [
+        "ShadowOne333"
+      ],
+      "tags": [
+        "quality of life",
+        "bug fixes"
+      ],
+      "summary": "Super Metroid with quality-of-life changes and bug fixes, keeping the original game's feel.",
+      "pageUrl": "https://github.com/ShadowOne333/Super-Metroid-Redux"
+    },
+    {
+      "id": "metroid-ii-redux",
+      "title": "Metroid II Redux",
+      "system": "gb",
+      "baseGame": "Metroid II: Return of Samus",
+      "authors": [
+        "ShadowOne333"
+      ],
+      "tags": [
+        "quality of life",
+        "colour"
+      ],
+      "summary": "Metroid II with quality-of-life improvements from the Redux series.",
+      "pageUrl": "https://github.com/ShadowOne333/Metroid2-Redux"
+    },
+    {
+      "id": "polished-crystal",
+      "title": "Pokémon Polished Crystal",
+      "system": "gbc",
+      "baseGame": "Pokémon Crystal",
+      "authors": [
+        "Rangi42"
+      ],
+      "tags": [
+        "expanded",
+        "new content",
+        "quality of life"
+      ],
+      "summary": "An upgrade to Pokémon Crystal: up-to-date features, new areas and Pokémon, and many quality-of-life changes.",
+      "pageUrl": "https://github.com/Rangi42/polishedcrystal"
+    },
+    {
+      "id": "metroid-zero-mission-redux",
+      "title": "Metroid: Zero Mission Redux",
+      "system": "gba",
+      "baseGame": "Metroid: Zero Mission",
+      "authors": [
+        "ShadowOne333"
+      ],
+      "tags": [
+        "quality of life"
+      ],
+      "summary": "Zero Mission with quality-of-life changes and fixes.",
+      "pageUrl": "https://github.com/ShadowOne333/Metroid-Zero-Mission-Redux"
+    },
+    {
+      "id": "metroid-fusion-redux",
+      "title": "Metroid Fusion Redux",
+      "system": "gba",
+      "baseGame": "Metroid Fusion",
+      "authors": [
+        "ShadowOne333"
+      ],
+      "tags": [
+        "quality of life",
+        "map changes"
+      ],
+      "summary": "Metroid Fusion with quality-of-life features and some map changes.",
+      "pageUrl": "https://github.com/ShadowOne333/Metroid-Fusion-Redux"
+    },
+    {
+      "id": "sonic-3-complete",
+      "title": "Sonic 3 Complete",
+      "system": "megadrive",
+      "baseGame": "Sonic 3 & Knuckles",
+      "authors": [
+        "Tiddles"
+      ],
+      "tags": [
+        "enhanced",
+        "restored content",
+        "options"
+      ],
+      "summary": "Sonic 3 & Knuckles with restored Sonic 3 music and layouts, fixes, and lots of options to tune the game.",
+      "pageUrl": "https://info.sonicretro.org/Sonic_3_Complete"
     }
   ]
 }

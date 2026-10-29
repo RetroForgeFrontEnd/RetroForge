@@ -102,7 +102,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Report a problem | ✅ always shown at the bottom of Settings; shares a filled-in report |
 | ROM hacks: patched ROM should appear in the library by itself | ✅ save dialog opens in the original's folder; folders rescan after saving |
 | ROM hacks: patched ROM showed as a duplicate of the original after rescan | ✅ the patch name now shows in the subtitle |
-| ROM hacks: more consoles (only 2) | 🟡 now NES, SNES, N64, GBC, GBA (12 hacks); more to add |
+| ROM hacks: more consoles (only 2) | ✅ 21 hacks for NES, SNES, N64, Game Boy, Game Boy Color, GBA and Mega Drive (duplicate removed); GitHub-hosted ones (Redux series, MaternalBound Redux) download and patch directly |
 | Original Xbox and Xbox 360 emulation | ❌ look into (Android options are very limited) |
 | PC ports for ROMs the user owns (like Quiver), in the PC section | 🟡 Ports section in the PC tab: 28 Android-native ports, matched to your games (hacks excluded), Get via Obtainium, Open when installed, Prepare files copies your ROM to Download/RetroForge/Ports (original kept). Tested: matching, Open (Zelda 3 port starts), Prepare files. Windows ports tab (Zelda64Recomp, OpenGOAL, UnleashedRecomp) with Windows download, GameNative/Winlator button and steps; experimental, Snapdragon only |
 | Links: Modern Vintage Gamer, Digital Foundry, My Life in Gaming, The Gaming Historian | ✅ |
