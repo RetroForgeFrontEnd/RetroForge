@@ -110,6 +110,7 @@ private const val SETUP_ROUTE = "setup"
 private const val ABOUT_ROUTE = "settings/about"
 private const val HOTKEYS_ROUTE = "settings/hotkeys"
 private const val GPU_ROUTE = "settings/gpu"
+private const val APPS_ROUTE = "apps"
 private const val TUTORIAL_ROUTE = "settings/tutorial"
 private const val THEMES_ROUTE = "settings/themes"
 private const val LICENCES_ROUTE = "settings/licences"
@@ -199,6 +200,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         composable(Section.HOME.route) {
                             HomeScreen(
                                 showPc = settings.showPcSection, library = libraryViewModel, onOpen = { nav.goTo(it) },
+                                onOpenApps = { nav.navigate(APPS_ROUTE) },
                                 onOpenGame = { nav.navigate("retro/game/$it") }, onOpenSystem = { nav.navigate("retro/system/$it") },
                                 onOpenPlaylist = { nav.navigate("retro/playlist/$it") },
                             )
@@ -302,13 +304,14 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         composable(Section.SETTINGS.route) {
                             val counts by container.library.systemCounts.collectAsStateWithLifecycle(initialValue = emptyList())
                             SettingsScreen(settingsViewModel,
-                                playerSystems = counts.map { it.system to container.library.systemName(it.system) }, coreChoices = container.coreChoices, viewPrefs = container.viewPrefs, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenGpu = { nav.navigate(GPU_ROUTE) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
+                                playerSystems = counts.map { it.system to container.library.systemName(it.system) }, coreChoices = container.coreChoices, viewPrefs = container.viewPrefs, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenGpu = { nav.navigate(GPU_ROUTE) }, onOpenApps = { nav.navigate(APPS_ROUTE) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
                                 onOpenLicences = { nav.navigate(LICENCES_ROUTE) }, onOpenPrivacy = { nav.navigate(PRIVACY_ROUTE) },
                             )
                         }
                         composable(ABOUT_ROUTE) { AboutScreen() }
                         composable(HOTKEYS_ROUTE) { HotkeysScreen(settingsViewModel) }
                         composable(GPU_ROUTE) { GpuDriversScreen() }
+                        composable(APPS_ROUTE) { com.retroforge.app.ui.apps.AppsScreen() }
                         composable(TUTORIAL_ROUTE) { TutorialScreen() }
                         composable(LICENCES_ROUTE) { LicencesScreen() }
                         composable(PRIVACY_ROUTE) { PrivacyScreen() }

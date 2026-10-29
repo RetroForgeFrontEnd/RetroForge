@@ -107,7 +107,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | PC ports for ROMs the user owns (like Quiver), in the PC section | 🟡 Ports section in the PC tab: 28 Android-native ports, matched to your games (hacks excluded), Get via Obtainium, Open when installed, Prepare files copies your ROM to Download/RetroForge/Ports (original kept). Tested: matching, Open (Zelda 3 port starts), Prepare files. Windows ports tab (Zelda64Recomp, OpenGOAL, UnleashedRecomp) with Windows download, GameNative/Winlator button and steps; experimental, Snapdragon only |
 | Links: Modern Vintage Gamer, Digital Foundry, My Life in Gaming, The Gaming Historian | ✅ |
 | Scan for new games when the app starts | ✅ on by default, switch in Settings |
-| Use RetroForge as the Android home screen (launcher), with Android apps and Android settings | ❌ |
+| Use RetroForge as the Android home screen (launcher), with Android apps and Android settings | ✅ Android apps screen (Home and Settings), settings shortcuts, launcher-mode switch; tested on the emulator (Home button opens RetroForge) |
 | Media section (films, Plex-style, artwork, Plex servers, network drives) | ❌ idea |
 | Games from network drives, Google Drive, Dropbox | ❌ idea |
 | PC / iOS / Linux / Raspberry Pi versions | ❌ question |

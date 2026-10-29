@@ -19,6 +19,8 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Saves and storage**: Settings → Built-in player → Back up saves writes one zip with in-game saves, save states and cheats; Restore puts them back (on this or another device), replacing same-named saves and keeping the rest. A Storage card shows the space emulators and copied CD/arcade games use, with Clear copied games. Each game's page shows its time played in the built-in player.
 
+**Android apps and launcher mode**: an Android apps screen (from Home or Settings) lists your other apps with a search box and shortcuts to Android's settings (Wi-Fi, Bluetooth for controllers, display, sound). For handhelds and TV boxes, RetroForge can become the home screen: the device starts in it and the home button comes back to it. Off unless you switch it on.
+
 **Ports** (PC tab): native Android ports of classic games (Ship of Harkinian, Ghostship, SpaghettiKart, Zelda 3, Perfect Dark, DevilutionX and more). RetroForge shows which ones your games can use, gets them through Obtainium from their official releases, opens them once installed, and copies your ROM (unzipped) to Download/RetroForge/Ports for the port to read. Your original stays where it is; RetroForge never supplies game files.
 
 **N64 in the built-in player**: the player now runs emulators that draw with the GPU (OpenGL ES 3). Nintendo 64 plays with Mupen64Plus-Next (or ParaLLEl N64), with an N64 pad: stick, C buttons on the right stick, A, B, Z, L, R.

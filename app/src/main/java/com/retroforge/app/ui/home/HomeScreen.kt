@@ -52,6 +52,7 @@ fun HomeScreen(
     showPc: Boolean,
     library: LibraryViewModel,
     onOpen: (Section) -> Unit,
+    onOpenApps: () -> Unit = {},
     onOpenGame: (Long) -> Unit,
     onOpenSystem: (String) -> Unit,
     onOpenPlaylist: (Long) -> Unit = {},
@@ -125,9 +126,13 @@ fun HomeScreen(
             if (showPc) {
                 FocusCard(modifier = Modifier.weight(1f), onClick = { onOpen(Section.PC) }) {
                     CardTitle("PC")
-                    CardBody("Windows games on supported devices.")
+                    CardBody("Ports of your games, and Windows games on supported devices.")
                 }
             }
+        }
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenApps) {
+            CardTitle("Android apps")
+            CardBody("Your other apps and Android's settings. Also where RetroForge can become the home screen.")
         }
     }
 }

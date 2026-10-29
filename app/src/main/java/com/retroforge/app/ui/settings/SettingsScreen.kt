@@ -44,6 +44,7 @@ fun SettingsScreen(
     onOpenAbout: () -> Unit,
     onOpenHotkeys: () -> Unit,
     onOpenGpu: () -> Unit,
+    onOpenApps: () -> Unit = {},
     onOpenTutorial: () -> Unit,
     onOpenThemes: () -> Unit,
     onOpenLicences: () -> Unit,
@@ -114,6 +115,11 @@ fun SettingsScreen(
         coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames) }
 
         EmulatorAppsCard()
+
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenApps) {
+            CardTitle("Android apps and home screen")
+            CardBody("Open your other apps and Android's settings, and make RetroForge the device's home screen (for handhelds and TV boxes).")
+        }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenGpu) {
             CardTitle("GPU and drivers")
