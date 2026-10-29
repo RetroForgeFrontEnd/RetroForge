@@ -44,6 +44,7 @@ fun SettingsScreen(
     onOpenAbout: () -> Unit,
     onOpenHotkeys: () -> Unit,
     onOpenGpu: () -> Unit,
+    onOpenCheck: () -> Unit = {},
     onOpenApps: () -> Unit = {},
     onOpenTutorial: () -> Unit,
     onOpenThemes: () -> Unit,
@@ -66,6 +67,11 @@ fun SettingsScreen(
             CardTitle("About RetroForge")
             CardBody("Version ${BuildConfig.VERSION_NAME}, made by Darren Glancy.")
             CardBody("Who made it, what RetroForge does, and what the name stands for (sort of).")
+        }
+
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenCheck) {
+            CardTitle("Check my setup")
+            CardBody("Every system you have games for, checked: emulator ready, BIOS in place, games found. Problems first.")
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSetup) {

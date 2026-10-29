@@ -138,7 +138,7 @@ Requests that were never fully done, or only answered:
 | Themes: fan-made console artwork from SteamGridDB | ❌ (canvas-es console art is used instead) |
 | Import a favourite theme so it looks identical | 🟡 colours and system art only |
 | Use RetroBat's per-system controller config files | ❌ (Remap buttons covers most of the need) |
-| A test function for every system and feature before release | 🟡 scripted boot test (outside the app) + release test plan; no in-app/automated run |
+| A test function for every system and feature before release | ✅ Settings → Check my setup: every system's emulator, BIOS and games, problems first (tested); scripted boot test for development |
 | Dual screen for the app itself (not just DS games) | ❌ |
 | Migration from other frontends (ES-DE and others) | 🟡 reads their folders, gamelist.xml and theme colours; no settings/collections import |
 | Remove the name DroidDeck from the app but still use it | 🟡 RetroBat removed; DroidDeck is still named because users install it themselves |
@@ -150,3 +150,4 @@ Requests that were never fully done, or only answered:
 | Dual screen options in main Settings | ✅ Dual screen card: second screen detected or not; DS games on both screens on/off |
 | Direct ROM hack downloads | ✅ for hacks published on GitHub (A Link to the Past, Zelda 1, Zelda II Redux): Download and patch; romhacking.net refuses automated downloads |
 | Spelling across the app; ROM Manager capital M | ✅ every on-screen sentence spell-checked (no misspellings found); ROM Manager capitalised everywhere |
+| Final Burn should be FB Neo | ✅ |

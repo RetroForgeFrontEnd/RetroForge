@@ -115,6 +115,7 @@ private const val SETUP_ROUTE = "setup"
 private const val ABOUT_ROUTE = "settings/about"
 private const val HOTKEYS_ROUTE = "settings/hotkeys"
 private const val GPU_ROUTE = "settings/gpu"
+private const val CHECK_ROUTE = "settings/check"
 private const val TUTORIAL_ROUTE = "settings/tutorial"
 private const val THEMES_ROUTE = "settings/themes"
 private const val LICENCES_ROUTE = "settings/licences"
@@ -168,7 +169,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
         val current = sections.firstOrNull { it.route == route } ?: when {
             route == PATCHER_ROUTE || route?.startsWith("retro/") == true -> Section.RETRO
             route?.startsWith("hacks/") == true -> Section.HACKS
-            route == SETUP_ROUTE || route == ABOUT_ROUTE || route == HOTKEYS_ROUTE || route == GPU_ROUTE || route == TUTORIAL_ROUTE || route == THEMES_ROUTE || route == LICENCES_ROUTE || route == PRIVACY_ROUTE -> Section.SETTINGS
+            route == SETUP_ROUTE || route == ABOUT_ROUTE || route == HOTKEYS_ROUTE || route == GPU_ROUTE || route == CHECK_ROUTE || route == TUTORIAL_ROUTE || route == THEMES_ROUTE || route == LICENCES_ROUTE || route == PRIVACY_ROUTE -> Section.SETTINGS
             else -> Section.HOME
         }
         val libraryViewModel: LibraryViewModel = viewModel(factory = LibraryViewModel.factory(container.library, container.retroArch, container.covers, container.standalone, container.settings, container.retroArchHotkeys, container.cores, container.coreChoices, container.systemArt, container.contentResolver, container.viewPrefs, container.canvasArt))
@@ -308,13 +309,16 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                         composable(Section.SETTINGS.route) {
                             val counts by container.library.systemCounts.collectAsStateWithLifecycle(initialValue = emptyList())
                             SettingsScreen(settingsViewModel,
-                                playerSystems = counts.map { it.system to container.library.systemName(it.system) }, coreChoices = container.coreChoices, viewPrefs = container.viewPrefs, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenGpu = { nav.navigate(GPU_ROUTE) }, onOpenApps = { nav.goTo(Section.APPS) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
+                                playerSystems = counts.map { it.system to container.library.systemName(it.system) }, coreChoices = container.coreChoices, viewPrefs = container.viewPrefs, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenGpu = { nav.navigate(GPU_ROUTE) }, onOpenCheck = { nav.navigate(CHECK_ROUTE) }, onOpenApps = { nav.goTo(Section.APPS) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
                                 onOpenLicences = { nav.navigate(LICENCES_ROUTE) }, onOpenPrivacy = { nav.navigate(PRIVACY_ROUTE) },
                             )
                         }
                         composable(ABOUT_ROUTE) { AboutScreen() }
                         composable(HOTKEYS_ROUTE) { HotkeysScreen(settingsViewModel) }
                         composable(GPU_ROUTE) { GpuDriversScreen() }
+                        composable(CHECK_ROUTE) {
+                            com.retroforge.app.ui.settings.SetupCheckScreen(container.library, container.cores, container.playerSystemDir, onOpenSetup = { nav.navigate(SETUP_ROUTE) })
+                        }
                         composable(Section.APPS.route) { com.retroforge.app.ui.apps.AppsScreen() }
                         composable(Section.VR.route) {
                             com.retroforge.app.ui.vr.VrScreen(container.viewPrefs, container.library, onOpenGame = { nav.navigate("retro/game/$it") }, onOpenMedia = { nav.goTo(Section.MEDIA) })
