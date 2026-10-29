@@ -63,7 +63,9 @@ class CatalogueTest {
         val result = valid(text)
         assertTrue(result.catalogue.hacks.isNotEmpty())
         assertTrue(result.warnings.toString(), result.warnings.isEmpty())
-        assertTrue(result.catalogue.hacks.all { it.pageUrl.startsWith("https://www.romhacking.net/hacks/") })
+        // Official pages only: romhacking.net or the hack's own GitHub project (which also gives direct patch downloads).
+        assertTrue(result.catalogue.hacks.all { it.pageUrl.startsWith("https://www.romhacking.net/") || it.pageUrl.startsWith("https://github.com/") })
+        assertTrue(result.catalogue.hacks.filter { it.patchRepo != null }.all { it.pageUrl == "https://github.com/${it.patchRepo}" })
     }
 
     @Test

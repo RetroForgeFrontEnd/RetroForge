@@ -16,12 +16,12 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import com.retroforge.core.ui.ControllerTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -32,13 +32,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.retroforge.app.ui.CardBody
 import com.retroforge.app.ui.CardTitle
 import com.retroforge.app.ui.ScreenFrame
+import com.retroforge.app.ui.library.GameTile
+import com.retroforge.app.ui.library.LibraryViewModel
+import com.retroforge.core.ui.ControllerTextField
 import com.retroforge.core.ui.FocusCard
 import com.retroforge.core.ui.FocusChip
 import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
-import com.retroforge.app.ui.library.GameTile
-import com.retroforge.app.ui.library.LibraryViewModel
 import com.retroforge.hacks.ListedHack
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.DateFormat
 import java.util.Date
 
@@ -163,6 +167,26 @@ fun HackDetailScreen(viewModel: HacksViewModel, key: String, onOpenPatcher: () -
                 "Listed in: ${hack.sourceName}",
             )
             facts.forEach { CardBody(it) }
+        }
+
+        entry.patchRepo?.let { repo ->
+            var status by remember { mutableStateOf<String?>(null) }
+            val scope = rememberCoroutineScope()
+            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
+                status = "Getting the latest patch…"
+                scope.launch {
+                    val result = withContext(Dispatchers.IO) { runCatching { HackDownloads.latestPatch(repo) } }
+                    result.onSuccess { file ->
+                        com.retroforge.app.ui.patcher.PendingPatch.file = file
+                        status = null
+                        onOpenPatcher()
+                    }.onFailure { status = "Couldn't download it: ${it.message}" }
+                }
+            }) {
+                CardTitle("Download and patch")
+                CardBody("Gets the latest patch from the hack's GitHub releases ($repo) and opens the patcher with it. Then pick your ${entry.baseGame} ROM.")
+                status?.let { CardBody(it) }
+            }
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { openError = openPage(context, entry.pageUrl) }) {

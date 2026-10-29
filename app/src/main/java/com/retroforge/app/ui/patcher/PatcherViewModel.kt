@@ -81,6 +81,13 @@ class PatcherViewModel(private val resolver: ContentResolver, private val onSave
 
     fun onPatchPicked(uri: Uri) = load(uri) { name, bytes -> addPatch(name, bytes, entryName = null) }
 
+    /** Takes a patch the hack page downloaded, if one is waiting. */
+    fun takePending() {
+        val (name, bytes) = PendingPatch.file ?: return
+        PendingPatch.file = null
+        viewModelScope.launch(Dispatchers.Default) { addPatch(name, bytes, entryName = null) }
+    }
+
     fun onPatchChosen(entryName: String) {
         val choice = _state.value.choice ?: return
         _state.update { it.copy(choice = null) }

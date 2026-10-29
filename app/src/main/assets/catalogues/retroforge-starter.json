@@ -177,6 +177,51 @@
       "summary": "A remix of Super Mario Bros. 3 with new levels, new power-ups and ideas from other Mario games. Find the patch and the exact ROM it needs on the hack's page.",
       "pageUrl": "https://www.romhacking.net/?page=hacks&title=3Mix",
       "tags": []
+    },
+    {
+      "id": "alttp-redux",
+      "title": "A Link to the Past Redux",
+      "system": "snes",
+      "baseGame": "The Legend of Zelda: A Link to the Past",
+      "authors": [
+        "ShadowOne333"
+      ],
+      "summary": "A Link to the Past with an improved script, restored content and quality-of-life fixes, close to the original.",
+      "pageUrl": "https://github.com/ShadowOne333/A-Link-to-the-Past-Redux",
+      "patchRepo": "ShadowOne333/A-Link-to-the-Past-Redux",
+      "tags": [
+        "quality of life"
+      ]
+    },
+    {
+      "id": "zelda1-redux",
+      "title": "The Legend of Zelda Redux",
+      "system": "nes",
+      "baseGame": "The Legend of Zelda",
+      "authors": [
+        "ShadowOne333"
+      ],
+      "summary": "The first Zelda with a full-screen map, better text, an improved menu and other modern touches.",
+      "pageUrl": "https://github.com/ShadowOne333/The-Legend-of-Zelda-Redux",
+      "patchRepo": "ShadowOne333/The-Legend-of-Zelda-Redux",
+      "tags": [
+        "quality of life"
+      ]
+    },
+    {
+      "id": "zelda2-redux",
+      "title": "Zelda II Redux",
+      "system": "nes",
+      "baseGame": "Zelda II: The Adventure of Link",
+      "authors": [
+        "ShadowOne333"
+      ],
+      "summary": "Zelda II with a better script, graphics touches and gameplay fixes, staying faithful to the original.",
+      "pageUrl": "https://github.com/ShadowOne333/Zelda2-Redux",
+      "patchRepo": "ShadowOne333/Zelda2-Redux",
+      "tags": [
+        "quality of life"
+      ]
     }
   ]
 }

@@ -37,6 +37,7 @@ private const val README_PREVIEW_LINES = 4
 @Composable
 fun PatcherScreen(viewModel: PatcherViewModel) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) { viewModel.takePending() }
     val pickRom = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { it?.let(viewModel::onRomPicked) }
     val pickPatch = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { it?.let(viewModel::onPatchPicked) }
     // Opens in the original ROM's folder, so the patched copy lands next to it (and in the library).

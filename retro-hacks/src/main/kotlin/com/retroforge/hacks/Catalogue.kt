@@ -28,6 +28,8 @@ data class HackEntry(
     /** The catalogue maintainer's own short summary, not text copied from the hack's page. */
     val summary: String,
     val pageUrl: String,
+    /** "owner/repo" when the hack publishes its patch as GitHub releases: RetroForge can download it directly. */
+    val patchRepo: String? = null,
     val authors: List<String> = emptyList(),
     val version: String? = null,
     val released: String? = null,

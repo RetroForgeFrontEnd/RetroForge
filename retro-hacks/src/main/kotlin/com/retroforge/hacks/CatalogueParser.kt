@@ -70,6 +70,7 @@ object CatalogueParser {
         entry.baseGame.isBlank() || entry.baseGame.length > 200 -> "base game missing or too long"
         entry.summary.isBlank() || entry.summary.length > 1000 -> "summary missing or longer than 1000 characters"
         !isHttps(entry.pageUrl) -> "page link must be an https:// address"
+        entry.patchRepo?.let { !Regex("""[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+""").matches(it) } == true -> "patchRepo must be owner/repo"
         entry.authors.size > 20 || entry.authors.any { it.length > 100 } -> "too many or too long author names"
         entry.tags.size > 20 || entry.tags.any { it.length > 40 } -> "too many or too long tags"
         entry.baseRom?.crc32?.let { !crcPattern.matches(it) } == true -> "base ROM CRC32 must be 8 hex digits"
