@@ -14,6 +14,8 @@
 #include <GLES3/gl3.h>
 
 #include <algorithm>
+#include <initializer_list>
+#include <utility>
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
@@ -145,7 +147,10 @@ struct Player {
     EGLSurface surface2 = EGL_NO_SURFACE;
     ANativeWindow *window2 = nullptr;
     GLuint program = 0, texture = 0;
-    GLint uTexSize = -1, uOutSize = -1, uSrcSize = -1, uFilter = -1, uRegion = -1;
+    // The frame before, for LCD ghosting (filter 5): the two textures swap places each frame.
+    GLuint prevTexture = 0;
+    unsigned prevW = 0, prevH = 0;
+    GLint uTexSize = -1, uOutSize = -1, uSrcSize = -1, uFilter = -1, uRegion = -1, uPrev = -1;
     std::atomic<int> filter{0};
     unsigned texW = 0, texH = 0;
     bool hasFrame = false;
@@ -377,9 +382,12 @@ void main() { vUv = aUv; gl_Position = vec4(aPos, 0.0, 1.0); })";
 // uFilter 0, sharp: whole-pixel scaling with a one-pixel blend at the edges, so pixel art stays crisp at any size
 // without the uneven pixels of nearest-neighbour. 1, smooth: plain bilinear. 2, CRT: sharp plus darkened gaps between
 // the console's scan lines. 3, LCD: sharp plus a faint grid between pixels, like a handheld's screen.
+// 5, LCD with ghosting: the LCD grid, with each frame blended into the one before, as on a Game Boy's slow screen
+// (games that flicker sprites for transparency look as intended).
 const char *kFragment = R"(
 precision mediump float;
 uniform sampler2D uTex;
+uniform sampler2D uPrev;
 uniform vec2 uTexSize;
 uniform vec2 uOutSize;
 uniform vec2 uSrcSize;
@@ -407,7 +415,9 @@ void main() {
     vec2 region = 0.5 - 0.5 / scale;
     vec2 centre = fract(texel) - 0.5;
     vec2 f = (centre - clamp(centre, -region, region)) * scale + 0.5;
-    vec3 colour = texture2D(uTex, (floor(texel) + f) / uTexSize).rgb;
+    vec2 at = (floor(texel) + f) / uTexSize;
+    vec3 colour = texture2D(uTex, at).rgb;
+    if (uFilter == 5) colour = mix(texture2D(uPrev, at).rgb, colour, 0.6);
     if (uFilter == 2) {
         float d = abs(fract(texel.y) - 0.5) * 2.0;
         colour *= (1.0 - 0.5 * d * d) * 1.15;
@@ -415,7 +425,7 @@ void main() {
         float d = abs(fract(texel.y) - 0.5) * 2.0;
         vec2 local = (uv - uRegion.xy) / (uRegion.zw - uRegion.xy) * 2.0 - 1.0;
         colour *= (1.0 - 0.45 * d * d) * 1.18 * (1.0 - 0.25 * dot(local, local) * 0.5);
-    } else if (uFilter == 3) {
+    } else if (uFilter == 3 || uFilter == 5) {
         vec2 d = abs(fract(texel) - 0.5) * 2.0;
         colour *= 1.0 - 0.35 * smoothstep(0.7, 1.0, max(d.x, d.y));
     }
@@ -469,13 +479,19 @@ void glSetup() {
     p.uSrcSize = glGetUniformLocation(p.program, "uSrcSize");
     p.uRegion = glGetUniformLocation(p.program, "uRegion");
     p.uFilter = glGetUniformLocation(p.program, "uFilter");
-    glGenTextures(1, &p.texture);
-    glBindTexture(GL_TEXTURE_2D, p.texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    p.texW = p.texH = 0;
+    p.uPrev = glGetUniformLocation(p.program, "uPrev");
+    glUseProgram(p.program);
+    glUniform1i(glGetUniformLocation(p.program, "uTex"), 0);
+    glUniform1i(p.uPrev, 1);
+    for (GLuint *texture : {&p.texture, &p.prevTexture}) {
+        glGenTextures(1, texture);
+        glBindTexture(GL_TEXTURE_2D, *texture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+    p.texW = p.texH = p.prevW = p.prevH = 0;
 }
 
 // (Re)sizes the GPU core's framebuffer to the core's largest picture.
@@ -650,6 +666,12 @@ void videoRefresh(const void *data, unsigned width, unsigned height, size_t pitc
         glType = GL_UNSIGNED_SHORT_5_6_5;
     }
     glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+    if (p.filter == 5) {
+        // Keep the last frame for ghosting: upload into the older texture, which becomes the current one.
+        std::swap(p.texture, p.prevTexture);
+        std::swap(p.texW, p.prevW);
+        std::swap(p.texH, p.prevH);
+    }
     glBindTexture(GL_TEXTURE_2D, p.texture);
     if (width != p.texW || height != p.texH) {
         glTexImage2D(GL_TEXTURE_2D, 0, glFormat, width, height, 0, glFormat, glType, p.staging.data());
@@ -710,6 +732,11 @@ void drawPicture(int ax, int ay, int aw, int ah, int sh, float x0, float x1, flo
     glUniform2f(p.uOutSize, float(vw), float(vh));
     glUniform1i(p.uFilter, p.filter);
     glUniform4f(p.uRegion, left, std::min(top, bottom), right, std::max(top, bottom));
+    // The frame before (filter 5), or this one again until there is one of the same size.
+    bool havePrev = !p.hwFrame && p.prevW == p.texW && p.prevH == p.texH;
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, p.hwFrame ? p.hwTexture : havePrev ? p.prevTexture : p.texture);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, p.hwFrame ? p.hwTexture : p.texture);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), quad);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), quad + 2);

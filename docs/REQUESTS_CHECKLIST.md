@@ -69,7 +69,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Volume too low | ✅ volume keys + boost (needs your ears on the phone) |
 | Cheats | ✅ |
 | Widescreen hacks | ✅ Widescreen switch in the pause menu for N64 (tested, restarts by itself) and Dreamcast (untested) |
-| More shaders (CRT curvature, LCD ghosting, upscaler) | 🟡 curved CRT added (tested); LCD ghosting and upscaler not yet |
+| More shaders (CRT curvature, LCD ghosting, upscaler) | ✅ curved CRT (tested); ✅ LCD with ghosting (each frame blended with the last, LCD grid; renders correctly on the emulator, blending not yet checked in a flickering game); upscaler not yet |
 | Arcade: FBNeo, MAME, CPS; Naomi | ✅ FBNeo/MAME 2003-Plus; 🟡 Naomi/Atomiswave on Flycast, untested |
 | Rename a game folder | ✅ |
 | Retro tab only shows systems with games; setting for all | ✅ |
