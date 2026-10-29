@@ -13,11 +13,13 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Built-in player (new)**: RetroForge plays cartridge games itself: GBA, GB/GBC, NES, SNES, Mega Drive/Genesis, Master System, Game Gear, SG-1000, 32X, PC Engine, Neo Geo Pocket, WonderSwan, Atari 2600, Lynx and DS. The emulator cores download in the background when your library has those systems, so there is nothing to set up. Sharp pixel scaling, touch controls laid out per system (can be turned off), controller support with the same hotkeys, hold R2 to fast-forward, carry on where you left off, save/load state, screen shape (Original, 4:3, 16:9, stretch, pixel perfect), swipe in from either edge for the menu, works in portrait and landscape. Zipped and 7z games play directly. The pause menu also has fast-forward, each emulator's own settings (like RetroArch's core options) and **Switch emulator** (e.g. mGBA / gpSP / VBA Next, Snes9x / Snes9x 2010, DeSmuME / melonDS) with the choice remembered per system, also under Settings → Built-in player. DS screens go side by side in landscape. Works with only a controller or TV remote (no touch controls shown, text boxes don't trap the d-pad). Console look (on by default, off in the pause menu): each system gets a console-inspired body colour, screen surround and pad-coloured buttons, drawn in code so it fits any screen in both orientations; original designs with no logos. Disc games still use RetroArch or standalone emulators.
 
-**Edit game details**: change a game's title, description, release date, developer, publisher, genre and players from its page. Saved in RetroForge only (game files and gamelist.xml untouched), kept through rescans and ROM manager changes, with Reset to the scanned details.
+**Edit game details**: change a game's title, description, release date, developer, publisher, genre and players from its page. Saved in RetroForge only (game files and gamelist.xml untouched), kept through rescans and ROM Manager changes, with Reset to the scanned details.
 
 **Retro tab, canvas style**: systems first, as a big centred rounded tile with neighbours peeking in, the logo, year and game count underneath on the theme's wallpaper. Ready on first start: console pictures, logos and details from canvas-es (by Siddy212, CC0) download by themselves for the systems in your library, drawn in RetroForge's colours with the faded RetroForge logo behind. Tiles can show consoles, game art or plain name plates, and you can use your own theme folder instead (canvas-es and other ES-DE-style themes, Alekfull-NX). RetroForge ships none of this artwork.
 
 **Saves and storage**: Settings → Built-in player → Back up saves and settings writes one zip with in-game saves, save states, cheats and RetroForge's settings (screen shapes, filters, remapped buttons, emulator choices); Restore puts them back (on this or another device), replacing same-named saves and keeping the rest. A Storage card shows the space emulators and copied CD/arcade games use, with Clear copied games. Each game's page shows its time played in the built-in player.
+
+**Sort loose games** (ROM Manager → Sort): moves games found outside their system folders into the right ones, keeping the folder names you already use (GBA stays GBA). Favourites and playlists go with them; History can undo it.
 
 **Games anywhere in your folder**: games outside system folders (loose files, a Downloads or Extras folder) are found by their file type, such as .gba, .nds, .sfc or .z64. Archives and disc images there (zip, iso, chd) could be for any system, so RetroForge says how many it found instead of guessing.
 
@@ -53,7 +55,7 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Covers**: free libretro box art (one game or a whole system), SteamGridDB (your own key), ScreenScraper (needs RetroForge's developer ID), or any image on your device.
 
-**ROM tools**: IPS/BPS/UPS patcher with patch chains and readmes; ROM hacks tab with catalogues; ROM manager (duplicates, compress discs to CHD and cartridges to .zip, multi-disc playlists, delete, undo, free up space).
+**ROM tools**: IPS/BPS/UPS patcher with patch chains and readmes; ROM hacks tab with catalogues; ROM Manager (duplicates, compress discs to CHD and cartridges to .zip, multi-disc playlists, delete, undo, free up space).
 
 **Looks**: 8 themes with their own home layouts (dashboard, Cross Bar, Hero, Blades), bundled fonts, backgrounds and effects; import theme files or colours from ES-DE/RetroBat themes.
 

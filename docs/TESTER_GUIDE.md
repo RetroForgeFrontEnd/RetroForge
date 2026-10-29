@@ -23,7 +23,7 @@ Thanks for trying it. This takes about 20 minutes. Bring your own games and BIOS
 **Everything else**
 - Retro tab looks and loads right in both orientations.
 - Standalone emulators: the "Get" button (with Obtainium installed it should open Obtainium set up for the app).
-- ROM manager, covers, playlists, if you fancy it.
+- ROM Manager, covers, playlists, if you fancy it.
 
 ## Known issues
 

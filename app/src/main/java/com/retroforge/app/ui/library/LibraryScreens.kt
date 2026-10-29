@@ -100,7 +100,7 @@ fun RetroScreen(
                 CardTitle("Add your game folder")
                 CardBody(
                     "Select to choose the folder that holds your system folders, such as an existing \"roms\" folder from another frontend " +
-                        "(with snes, nes, psx … inside), or a single system folder. RetroForge only reads it: nothing is renamed, moved or written unless you use the ROM manager and allow it.",
+                        "(with snes, nes, psx … inside), or a single system folder. RetroForge only reads it: nothing is renamed, moved or written unless you use the ROM Manager and allow it.",
                 )
             }
             else -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenFolders) {
@@ -161,7 +161,7 @@ fun RetroScreen(
 
         if (!roots.isNullOrEmpty()) {
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenManager) {
-                CardTitle("ROM manager")
+                CardTitle("ROM Manager")
                 CardBody("Tidy duplicate copies and compress games (CHD for discs, .zip for cartridges). Shows every change first and can undo it; files are set aside, not deleted.")
             }
         }
@@ -175,7 +175,7 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
     val scans by viewModel.scans.collectAsStateWithLifecycle()
     val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::addFolder) }
 
-    ScreenFrame(title = "Game folders", subtitle = "RetroForge keeps its own index of these folders. Your files are only read, unless you allow the ROM manager to change them.") {
+    ScreenFrame(title = "Game folders", subtitle = "RetroForge keeps its own index of these folders. Your files are only read, unless you allow the ROM Manager to change them.") {
         roots.orEmpty().forEach { root ->
             val state = scans[root.id]
             val problems by remember(root.id) { viewModel.problems(root.id) }.collectAsState(initial = emptyList())

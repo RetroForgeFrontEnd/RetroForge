@@ -34,7 +34,7 @@ Generated from the in-app tutorial (Settings → How to use RetroForge) by `tool
 
 - A game with an .m3u playlist shows once and plays as one game.
 - To change disc in RetroArch: open the menu, Disc Control → Eject, choose the next disc in Current Disc Index, then Insert.
-- No .m3u yet? ROM manager → Multi-disc makes them for you.
+- No .m3u yet? ROM Manager → Multi-disc makes them for you.
 
 ## Covers
 
@@ -54,7 +54,7 @@ Generated from the in-app tutorial (Settings → How to use RetroForge) by `tool
 - ROM hacks shows hacks you already have and hacks from catalogues, with links to their official pages.
 - ROM Patcher (on the Retro screen) applies IPS, BPS or UPS patches, one after another, to make a new patched copy. Your original ROM is never changed.
 
-## ROM manager
+## ROM Manager
 
 - The only part of RetroForge that changes your files, and only after showing you exactly what it will do.
 - Duplicates: finds the same game in several files and checks whether they hold the same data.

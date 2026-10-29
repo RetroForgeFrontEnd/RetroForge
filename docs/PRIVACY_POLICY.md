@@ -6,7 +6,7 @@ Effective 2026-10-28 (beta). Publish this page (for example on GitHub Pages) bef
 
 ## What stays on your device
 
-Your library index, play history, favourites, playlists, chosen covers, settings, themes, ROM manager history and any API keys or logins you add are stored only in RetroForge's private storage on your device. They are never sent to the RetroForge developer. Uninstalling RetroForge deletes them. Device backup is turned off for this data.
+Your library index, play history, favourites, playlists, chosen covers, settings, themes, ROM Manager history and any API keys or logins you add are stored only in RetroForge's private storage on your device. They are never sent to the RetroForge developer. Uninstalling RetroForge deletes them. Device backup is turned off for this data.
 
 ## When RetroForge connects to the internet
 
@@ -23,7 +23,7 @@ Each service has its own privacy policy. Opening a link (an emulator's download 
 
 ## Files
 
-RetroForge reads the game folders you choose. It changes files there only when you confirm a ROM manager action, and it never uploads them anywhere.
+RetroForge reads the game folders you choose. It changes files there only when you confirm a ROM Manager action, and it never uploads them anywhere.
 
 ## Contact
 

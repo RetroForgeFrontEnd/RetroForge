@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Edit a game's title and details by hand. Edits are kept apart from what the scan found, put back after every
- * rescan, and follow the file through ROM manager changes; "Reset" goes back to the scanned details. The game file
+ * rescan, and follow the file through ROM Manager changes; "Reset" goes back to the scanned details. The game file
  * and any gamelist.xml are never changed.
  */
 @Composable

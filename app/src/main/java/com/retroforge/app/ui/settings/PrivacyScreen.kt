@@ -14,7 +14,7 @@ fun PrivacyScreen() {
     ScreenFrame(title = "Privacy", subtitle = "RetroForge collects nothing about you: no accounts, no analytics, no ads, no tracking.") {
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("On your device only")
-            CardBody("Your library, play history, favourites, playlists, covers, settings, themes, ROM manager history and any keys or logins you add stay in RetroForge's private storage. Uninstalling deletes them.")
+            CardBody("Your library, play history, favourites, playlists, covers, settings, themes, ROM Manager history and any keys or logins you add stay in RetroForge's private storage. Uninstalling deletes them.")
         }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("Internet, only when you ask")
@@ -26,7 +26,7 @@ fun PrivacyScreen() {
         }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("Your files")
-            CardBody("RetroForge reads the folders you choose and changes files only when you confirm a ROM manager action. Nothing is uploaded.")
+            CardBody("RetroForge reads the folders you choose and changes files only when you confirm a ROM Manager action. Nothing is uploaded.")
         }
     }
 }

@@ -26,7 +26,7 @@ Build: debug and release (R8) build verified 2026-10-28; release build tested wi
 
 ## Also built (asked for along the way)
 
-ROM manager (duplicates, CHD/zip compression verified against chdman, multi-disc playlists, delete, undo) · ROM patcher and ROM hacks catalogues · hotkeys (RetroArch and built-in player), hold-R2 fast-forward, carry on where you left off · setup wizard · tutorial, About, Links · Obtainium links.
+ROM Manager (duplicates, CHD/zip compression verified against chdman, multi-disc playlists, delete, undo) · ROM patcher and ROM hacks catalogues · hotkeys (RetroArch and built-in player), hold-R2 fast-forward, carry on where you left off · setup wizard · tutorial, About, Links · Obtainium links.
 
 ## Waiting on you
 

@@ -11,7 +11,7 @@ This is the first RetroForge feature that would **change files in the user's col
 3. **Undo log.** Each run writes a log in RetroForge's storage; "Undo" reverses it exactly.
 4. **Never delete.** Duplicates are moved to a `_duplicates` folder inside the same system folder. The user deletes them themselves if they want to.
 5. **Keep other frontends working.** RetroBat/ES-DE `gamelist.xml` files refer to ROMs and artwork by path. When a ROM is renamed or moved, its `<path>` (and media paths named after it) are updated too, after backing up `gamelist.xml` to `gamelist.xml.retroforge-backup`. Without this, RetroBat would lose that game's artwork.
-6. **Write access is separate.** The library only needs read access; the ROM manager asks for write access to a folder only when used.
+6. **Write access is separate.** The library only needs read access; the ROM Manager asks for write access to a folder only when used.
 
 ## Features
 

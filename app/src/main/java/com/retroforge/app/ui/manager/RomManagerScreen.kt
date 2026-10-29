@@ -60,7 +60,7 @@ fun RomManagerScreen(viewModel: RomManagerViewModel, deleteGameId: Long = -1) {
     }
 
     ScreenFrame(
-        title = "ROM manager",
+        title = "ROM Manager",
         subtitle = "Tidy duplicates and compress games. Every change is shown first and History can undo it. Files are set aside, never deleted, until you choose Free up space.",
     ) {
         val root = roots?.firstOrNull { it.id == rootId }
@@ -90,6 +90,7 @@ fun RomManagerScreen(viewModel: RomManagerViewModel, deleteGameId: Long = -1) {
             ManagerTab.DUPLICATES -> DuplicatesTab(viewModel)
             ManagerTab.COMPRESS -> CompressTab(viewModel)
             ManagerTab.MULTI_DISC -> MultiDiscTab(viewModel)
+            ManagerTab.SORT -> SortTab(viewModel)
             ManagerTab.HISTORY -> HistoryTab(viewModel, root)
         }
     }
@@ -163,6 +164,13 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
                 CardBody(
                     "${plural(pending.summary.files, "file")} (${formatBytes(pending.summary.bytes)}) will be deleted for good. " +
                         "History entries that would need them can no longer be undone.",
+                )
+            }
+            is Pending.SortLoose -> {
+                CardTitle("Move ${plural(pending.count, "game")} into system folders?")
+                CardBody(
+                    "Each game moves into the folder for its system (made if needed). Favourites, playlists and play history go with " +
+                        "them. Other frontends will find them there too. Undo from History puts every file back.",
                 )
             }
             is Pending.MakePlaylists -> {
@@ -311,6 +319,37 @@ private fun CompressTab(viewModel: RomManagerViewModel) {
 }
 
 @OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SortTab(viewModel: RomManagerViewModel) {
+    val state by viewModel.loose.collectAsStateWithLifecycle()
+    when (val s = state) {
+        Loadable.Idle -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = viewModel::findLoose) {
+            CardTitle("Sort loose games into system folders")
+            CardBody(
+                "Finds games outside a folder for their system (loose files, a Downloads or Extras folder) and shows where each " +
+                    "would go: the folder you already use for that system, or a new one named like RetroBat and ES-DE. This only reads your files.",
+            )
+        }
+        is Loadable.Loading -> { CardBody("Looking for loose games …"); LinearProgressIndicator(Modifier.fillMaxWidth()) }
+        is Loadable.Failed -> { StatusPill("Couldn't check", StatusTone.BAD); CardBody(s.reason); FocusChip("Try again", onClick = viewModel::findLoose) }
+        is Loadable.Ready -> {
+            val jobs = s.value
+            if (jobs.isEmpty()) CardBody("Every game is already in its system's folder.")
+            jobs.groupBy { it.folder }.forEach { (folder, list) ->
+                FocusCard(modifier = Modifier.fillMaxWidth()) {
+                    Text("Into $folder: ${plural(list.size, "game")}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+                    list.take(5).forEach { CardBody("${it.title}  (from ${it.path.substringBeforeLast('/', "the top folder")})") }
+                    if (list.size > 5) CardBody("… and ${list.size - 5} more")
+                }
+            }
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (jobs.isNotEmpty()) FocusChip("Move ${plural(jobs.size, "game")}", onClick = viewModel::askSortLoose)
+                FocusChip("Check again", onClick = viewModel::findLoose)
+            }
+        }
+    }
+}
+
 @Composable
 private fun MultiDiscTab(viewModel: RomManagerViewModel) {
     val state by viewModel.multiDisc.collectAsStateWithLifecycle()

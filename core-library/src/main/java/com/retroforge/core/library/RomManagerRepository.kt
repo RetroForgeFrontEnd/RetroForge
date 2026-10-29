@@ -48,6 +48,9 @@ data class CompressReport(val jobs: List<CompressJob>, val skipped: List<Compres
 
 data class PlaylistReport(val jobs: List<PlaylistJob>, val skipped: List<PlaylistSkip>)
 
+/** A game found outside its system's folder, and the folder it would move to. */
+data class SortJob(val path: String, val system: String, val title: String, val folder: String)
+
 sealed interface ManagerRun {
     data class Running(val title: String, val detail: String, val fraction: Float?) : ManagerRun
     data class Done(val title: String, val summary: String, val problems: List<String>) : ManagerRun
@@ -118,6 +121,46 @@ class RomManagerRepository(
         val games = dao.gamesIn(root.id).map { CompressCandidate(it.system, it.relativePath, systemFolder(root, it), it.title, it.sizeBytes) }
         val (jobs, skipped) = MultiDiscPlanner.plan(games, SafCollectionFiles(resolver, Uri.parse(root.treeUri)), library.rules)
         PlaylistReport(jobs, skipped)
+    }
+
+    /**
+     * Games outside a folder for their system (found by file type), each with the folder it belongs in: the one this
+     * collection already uses for that system (so "GBA" stays "GBA"), else a new one named like RetroBat/ES-DE ("gba").
+     */
+    suspend fun findLoose(root: RootEntity): List<SortJob> = withContext(Dispatchers.IO) {
+        if (root.layout == "SINGLE_SYSTEM") return@withContext emptyList()
+        val games = dao.gamesIn(root.id)
+        fun loose(g: GameEntity) = g.relativePath.split('/').dropLast(1).none { library.rules.forFolder(it)?.id == g.system }
+        val (outside, inside) = games.partition(::loose)
+        val existing = inside.groupBy { it.system }.mapValues { (_, list) -> systemFolder(root, list.first()) }
+        // Where system folders live: next to each other in "roms/" or at the top.
+        val base = existing.values.firstOrNull()?.substringBeforeLast('/', "")?.let { if (it.isEmpty()) "" else "$it/" } ?: ""
+        outside.map { g -> SortJob(g.relativePath, g.system, g.title, existing[g.system] ?: (base + g.system)) }
+            .sortedWith(compareBy({ it.system }, { it.title.lowercase() }))
+    }
+
+    fun sortLoose(root: RootEntity, jobs: List<SortJob>) = start(root, "sort", "Sorted ${jobs.size} games into system folders") { files, journal ->
+        _run.value = ManagerRun.Running("Sorting games", "Moving ${jobs.size} games into their system folders", null)
+        val problems = mutableListOf<String>()
+        val moves = mutableListOf<Pair<String, String>>()
+        for (job in jobs) {
+            if (!isActive) break
+            val name = job.path.substringAfterLast('/')
+            val to = "${job.folder}/$name"
+            try {
+                if (files.exists(to)) { problems += "$name is already in ${job.folder}"; continue }
+                files.makeFolders(job.folder)
+                files.move(job.path, job.folder)
+                journal.record(Step.Moved(job.path, to))
+                moves += job.path to to
+            } catch (e: Exception) {
+                problems += "$name: ${e.message}"
+            }
+        }
+        relink(root, journal, moves, reverseOnUndo = true)
+        val summary = "Sorted ${moves.size} ${if (moves.size == 1) "game" else "games"} into system folders"
+        journal.finish(summary)
+        ManagerRun.Done("Games sorted", "$summary. Undo from History puts them back.", problems)
     }
 
     fun makePlaylists(root: RootEntity, jobs: List<PlaylistJob>) = start(root, "playlists", "Made ${jobs.size} playlists") { files, journal ->

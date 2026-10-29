@@ -131,9 +131,9 @@ All six YouTube handles resolved to the named channels on youtube.com (checked 2
 
 Not tested: physical gamepad, Android TV device or TV emulator image, tablet, light theme visuals, "System" theme switching, opening the DroidDeck releases page (browser), DroidDeck-installed state, the real Adreno GPU path.
 
-### 2026-10-28: ROM manager, emulators and hotkeys (emulator)
+### 2026-10-28: ROM Manager, emulators and hotkeys (emulator)
 
-- ROM manager on a copy of real ROMs (`/sdcard/ManagerTest`): duplicates moved and gamelist updated; discs to CHD and a cartridge to .zip; History undo restored byte-identical files; delete to `_deleted` then permanent delete; Command & Conquer playlist made and disc 2 swapped in RetroArch. Details: [ROM_MANAGER.md](ROM_MANAGER.md).
+- ROM Manager on a copy of real ROMs (`/sdcard/ManagerTest`): duplicates moved and gamelist updated; discs to CHD and a cartridge to .zip; History undo restored byte-identical files; delete to `_deleted` then permanent delete; Command & Conquer playlist made and disc 2 swapped in RetroArch. Details: [ROM_MANAGER.md](ROM_MANAGER.md).
 - RetroArch hotkey file: combos, "Confirm Quit" off and "Fast-Forward (Hold): Button 105" shown in RetroArch's own menus; `.state.auto` written on close and auto-loaded on the next launch (3 Ninjas Kick Back, Snes9x).
 - **Standalone emulator: PPSSPP 1.20.4** (official APK from ppsspp.org, signed by Henrik Rydgård; x86_64 build included). Pinball Dreams (.cso, from the RetroBat collection) launched from RetroForge's "Play with PPSSPP" via a content:// URI with per-file read access: reached the game's table select. "Use by default" made the main Play button launch PPSSPP; play history recorded.
 - Not tested: a physical controller (combos, R2), other standalone emulators (most are ARM64-only).
@@ -142,7 +142,7 @@ Not tested: physical gamepad, Android TV device or TV emulator image, tablet, li
 
 - Upgraded the installed app from database v3 to v4: library (251 games), recently played and covers kept.
 - Favourited a game (★ shown, Favourites row on the Retro screen); made a playlist from a game's page, added a second game, opened it, moved a game down, renamed it, deleted it after the confirmation; the games stayed in the library.
-- Fixed the same day: when the ROM manager compresses a game or tidies a duplicate, its favourite, playlist entries, play history and chosen cover move with it (journalled; compression undo moves them back). Emulator: Batman Forever favourited, compressed to .chd (still a favourite), undone (still a favourite). A deleted game's entries stay hidden and return if the delete is undone.
+- Fixed the same day: when the ROM Manager compresses a game or tidies a duplicate, its favourite, playlist entries, play history and chosen cover move with it (journalled; compression undo moves them back). Emulator: Batman Forever favourited, compressed to .chd (still a favourite), undone (still a favourite). A deleted game's entries stay hidden and return if the delete is undone.
 - The emulator crashed with host GPU rendering after a long session; `-gpu swiftshader_indirect` was stable.
 
 ### 2026-10-28: Themes (emulator)
@@ -197,7 +197,7 @@ S22 (arm64) and the Android emulator (x86_64, software GPU). Debug build.
 - Edited an NES hack's title ("TMNT Ultimate Hack") and genre: shown at once on the game page and in search.
 - Rescanned all three folders: the edit was put back by the scan.
 - "Reset to the scanned details" showed the scanned title and restored it.
-- Not tested: an edit following a file through ROM manager compress/undo (uses the same relink as favourites, which is tested).
+- Not tested: an edit following a file through ROM Manager compress/undo (uses the same relink as favourites, which is tested).
 
 ### 2026-10-28: canvas-style Retro tab with theme artwork (emulator)
 
@@ -245,7 +245,7 @@ Everything is re-tested together on real hardware, so nothing that worked earlie
 1. **Every system**: for each system in [SYSTEM_COVERAGE.md](SYSTEM_COVERAGE.md) marked "Should work", launch one real game with the default RetroArch core and with each listed standalone emulator; mark Launch tested / Gameplay tested / Fails (with the reason) and update the coverage table.
 2. **Devices**: a mid-range and a high-end phone, a tablet, an Android TV box and a handheld with built-in controls; internal storage, SD card and USB drive.
 3. **Controllers**: Bluetooth and USB pads, a TV remote, keyboard; every RetroForge screen reachable without touch; RetroArch quit/menu combos and hold-R2 fast-forward.
-4. **Every app function**: setup wizard, folder add/rescan/forget, search, covers (libretro and SteamGridDB), BIOS check and copy, patcher and patch chains, ROM hacks catalogues, ROM manager (each tab, undo, free up space), multi-disc games, resume, hotkeys page, links, about, legal notice, PC section.
-5. **Automated**: all unit tests, plus the opt-in real-collection runs (scan, CHD round trip against chdman, ROM manager dry run).
-6. **Regression**: a short "smoke" list (add folder → play a SNES, PS1 multi-disc and PSP game → return → undo a ROM manager change) after every change in the final stage.
+4. **Every app function**: setup wizard, folder add/rescan/forget, search, covers (libretro and SteamGridDB), BIOS check and copy, patcher and patch chains, ROM hacks catalogues, ROM Manager (each tab, undo, free up space), multi-disc games, resume, hotkeys page, links, about, legal notice, PC section.
+5. **Automated**: all unit tests, plus the opt-in real-collection runs (scan, CHD round trip against chdman, ROM Manager dry run).
+6. **Regression**: a short "smoke" list (add folder → play a SNES, PS1 multi-disc and PSP game → return → undo a ROM Manager change) after every change in the final stage.
 

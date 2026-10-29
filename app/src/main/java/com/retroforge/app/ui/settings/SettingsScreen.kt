@@ -58,7 +58,7 @@ fun SettingsScreen(
     ScreenFrame(title = "Settings") {
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenTutorial) {
             CardTitle("How to use RetroForge")
-            CardBody("A short guide to every feature: playing, emulators, hotkeys, covers, playlists, the ROM manager and more.")
+            CardBody("A short guide to every feature: playing, emulators, hotkeys, covers, playlists, the ROM Manager and more.")
             CardBody("With a controller: D-pad to move, A to select, B to go back, L1/R1 to switch tabs.")
         }
 

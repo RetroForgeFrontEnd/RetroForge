@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-enum class ManagerTab(val label: String) { DUPLICATES("Duplicates"), COMPRESS("Compress"), MULTI_DISC("Multi-disc"), HISTORY("History") }
+enum class ManagerTab(val label: String) { DUPLICATES("Duplicates"), COMPRESS("Compress"), MULTI_DISC("Multi-disc"), SORT("Sort"), HISTORY("History") }
 
 sealed interface Loadable<out T> {
     data object Idle : Loadable<Nothing>
@@ -43,6 +43,7 @@ sealed interface Pending {
     data class DeleteGame(val game: GameEntity, val parts: List<String>) : Pending
     data class Purge(val summary: HoldingSummary) : Pending
     data class MakePlaylists(val count: Int) : Pending
+    data class SortLoose(val count: Int) : Pending
 }
 
 class RomManagerViewModel(private val library: LibraryRepository, private val manager: RomManagerRepository) : ViewModel() {
@@ -81,6 +82,20 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
                 Loadable.Failed(e.message ?: "Couldn't look for multi-disc games")
             }
         }
+    }
+
+    val loose = MutableStateFlow<Loadable<List<com.retroforge.core.library.SortJob>>>(Loadable.Idle)
+
+    fun findLoose() {
+        val root = root() ?: return
+        viewModelScope.launch {
+            loose.value = Loadable.Loading(0, 0)
+            loose.value = try { Loadable.Ready(manager.findLoose(root)) } catch (e: Exception) { Loadable.Failed(e.message ?: "Couldn't look") }
+        }
+    }
+
+    fun askSortLoose() {
+        pending.value = Pending.SortLoose((loose.value as? Loadable.Ready)?.value.orEmpty().size)
     }
 
     fun askMakePlaylists() {
@@ -194,6 +209,10 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
             is Pending.MakePlaylists -> {
                 manager.makePlaylists(root, (multiDisc.value as? Loadable.Ready)?.value?.jobs.orEmpty())
                 multiDisc.value = Loadable.Idle
+            }
+            is Pending.SortLoose -> {
+                manager.sortLoose(root, (loose.value as? Loadable.Ready)?.value.orEmpty())
+                loose.value = Loadable.Idle
             }
             null -> Unit
         }

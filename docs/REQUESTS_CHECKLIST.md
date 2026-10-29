@@ -25,7 +25,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 
 | Request | Status |
 |---|---|
-| ROM manager: duplicates, compressor (CHD/zip), delete, undo | ✅ |
+| ROM Manager: duplicates, compressor (CHD/zip), delete, undo | ✅ |
 | Covers: SteamGridDB, ScreenScraper, The Cover Project | ✅ SteamGridDB, own images; ⛔ ScreenScraper needs RetroForge's developer ID; The Cover Project: link only (site blocks automated access) |
 | Selling for £2 / funding | ✅ answered; support links built (need your URLs) |
 | Standalone emulators with downloads (Obtainium, Emulation Pack) | ✅ |
@@ -133,7 +133,7 @@ Requests that were never fully done, or only answered:
 | Android tab with every app | ✅ main tab (Android), with settings shortcuts and launcher mode |
 | Download ROM hacks directly in the app and apply them | ❌ (catalogue links to pages only) |
 | Texture packs for systems that support them | ❌ |
-| Setup: offer to reorganise a roms folder into RetroForge's structure | ❌ |
+| Setup: offer to reorganise a roms folder into RetroForge's structure | ✅ ROM Manager → Sort: loose games planned into their system folders (existing names kept), moved with permission, undo from History; tested move and undo |
 | Themes: Aurora (Xbox 360), ReLive, PS3/PS4/PS5 and current Xbox-style layouts | 🟡 8 layouts exist; not all of these looks |
 | Themes: fan-made console artwork from SteamGridDB | ❌ (canvas-es console art is used instead) |
 | Import a favourite theme so it looks identical | 🟡 colours and system art only |
@@ -149,4 +149,4 @@ Requests that were never fully done, or only answered:
 | Settings wording messed up | ✅ controller help moved to How to use; duplicate Carry on card removed; set-up and built-in player texts updated |
 | Dual screen options in main Settings | ✅ Dual screen card: second screen detected or not; DS games on both screens on/off |
 | Direct ROM hack downloads | ✅ for hacks published on GitHub (A Link to the Past, Zelda 1, Zelda II Redux): Download and patch; romhacking.net refuses automated downloads |
-
+| Spelling across the app; ROM Manager capital M | ✅ every on-screen sentence spell-checked (no misspellings found); ROM Manager capitalised everywhere |
