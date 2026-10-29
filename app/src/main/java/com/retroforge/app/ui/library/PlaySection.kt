@@ -99,8 +99,8 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
                 if (builtIn != null && !retroArchChosen) FocusChip("Use RetroArch by default", onClick = { viewModel.setEmulatorChoice(game.system, RETROARCH_CHOICE) })
             }
         }
-        // With the built-in player there, RetroArch is optional: no need to warn that it's missing.
-        is LaunchPlan.NotPossible if builtIn != null && plan.reason == LaunchProblem.RetroArchNotInstalled -> Unit
+        // With the built-in player (or a chosen emulator app) there, RetroArch is optional: no "can't play" card.
+        is LaunchPlan.NotPossible if builtIn != null || chosen != null -> Unit
         is LaunchPlan.NotPossible -> FocusCard(
             modifier = Modifier.fillMaxWidth(),
             onClick = if (plan.reason == LaunchProblem.RetroArchNotInstalled) {
@@ -182,7 +182,7 @@ private fun describe(problem: LaunchProblem, viewModel: LibraryViewModel): Strin
     LaunchProblem.RetroArchNotInstalled ->
         "RetroForge plays games through RetroArch, a free app installed separately. Select to open RetroArch's official download page (${RetroArchLauncher.DOWNLOAD_URL})."
     is LaunchProblem.SystemNotSupported ->
-        "Launching ${viewModel.systemName(problem.system)} games isn't set up in RetroForge yet. See docs/EMULATOR_COMPATIBILITY.md for what's supported."
+        "RetroArch can't start ${viewModel.systemName(problem.system)} games from RetroForge. Use one of the emulator apps below (Get installs it), or Settings → Help and about → How to use RetroForge → Other emulators."
     LaunchProblem.LocationNotSupported ->
         "This game is in a location RetroArch can't open directly (for example a cloud drive). Games on internal storage, an SD card or a USB drive work."
     is LaunchProblem.StartFailed -> problem.detail

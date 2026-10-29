@@ -60,6 +60,8 @@ data class PadLayout(
     val rightStick: Boolean = true,
     /** Printed on the right stick when it stands for buttons (the N64's C buttons). */
     val rightStickLabel: String? = null,
+    /** Where each face button sits when it isn't the libretro/SNES diamond (the GameCube's Y top, X right, A low, B left). */
+    val facePlaces: Map<Int, Alignment>? = null,
 ) {
     companion object {
         private val twoButton = PadLayout(listOf("B" to Pad.B, "A" to Pad.A))
@@ -117,8 +119,34 @@ data class PadLayout(
                 listOf("L" to Pad.L, "R" to Pad.R),
             )
             "atari2600" -> PadLayout(listOf("Fire" to Pad.B))
-            // PlayStation: △ top, ○ right, ✕ bottom, □ left (libretro X, A, B, Y), L1/R1, L2/R2 and both sticks.
-            "psx" -> PadLayout(
+            // GameCube (Dolphin): B left, Y top, A bottom (the big one), X right; Z is R1; L/R are the analog triggers
+            // (L2/R2); the C-stick is the right stick.
+            "gamecube", "gc" -> PadLayout(
+                listOf("B" to Pad.B, "Y" to Pad.Y, "A" to Pad.A, "X" to Pad.X),
+                listOf("Z" to Pad.R),
+                facePlaces = mapOf(Pad.Y to Alignment.TopCenter, Pad.B to Alignment.CenterStart, Pad.X to Alignment.CenterEnd, Pad.A to Alignment.BottomCenter),
+                triggers = listOf("L" to Pad.L2, "R" to Pad.R2),
+                hasSelect = false,
+                sticks = true,
+                rightStickLabel = "C",
+            )
+            // Wii (Dolphin, Classic Controller): SNES-style face buttons, ZL/ZR and L/R, two sticks.
+            "wii" -> PadLayout(
+                listOf("Y" to Pad.Y, "X" to Pad.X, "B" to Pad.B, "A" to Pad.A),
+                listOf("ZL" to Pad.L, "ZR" to Pad.R),
+                triggers = listOf("L" to Pad.L2, "R" to Pad.R2),
+                sticks = true,
+            )
+            // 3DS (Citra): SNES-style face buttons, L/R, ZL/ZR (New 3DS) and the circle pad.
+            "3ds", "n3ds" -> PadLayout(
+                listOf("Y" to Pad.Y, "X" to Pad.X, "B" to Pad.B, "A" to Pad.A),
+                listOf("L" to Pad.L, "R" to Pad.R),
+                triggers = listOf("ZL" to Pad.L2, "ZR" to Pad.R2),
+                sticks = true,
+                rightStick = false,
+            )
+            // PlayStation and PS2: △ top, ○ right, ✕ bottom, □ left (libretro X, A, B, Y), L1/R1, L2/R2 and both sticks.
+            "psx", "ps2" -> PadLayout(
                 listOf("□" to Pad.Y, "△" to Pad.X, "✕" to Pad.B, "○" to Pad.A),
                 listOf("L1" to Pad.L, "R1" to Pad.R),
                 triggers = listOf("L2" to Pad.L2, "R2" to Pad.R2),
@@ -195,9 +223,7 @@ fun TouchControls(
                             PadButton(label, RoundedCornerShape(10.dp), 52.dp * k, 28.dp * k, small = true, faint = true, role = ButtonRole.SHOULDER) { down -> set(13, if (down) Pad.bit(button) else 0) }
                         }
                     }
-                    FaceButtons(
-                        layout.face,
-                        // Fewer buttons get bigger ones (GBA's two are easy to miss at the four-button size).
+                    FaceButtons(layout.face, places = layout.facePlaces, size = // Fewer buttons get bigger ones (GBA's two are easy to miss at the four-button size).
                         when {
                             layout.sticks -> 38.dp * k
                             layout.face.size <= 2 -> 58.dp * k
@@ -231,7 +257,7 @@ fun TouchControls(
                 layout.shoulders.getOrNull(1)?.let { (label, button) ->
                     PadButton(label, RoundedCornerShape(10.dp), 64.dp, 32.dp, small = true, role = ButtonRole.SHOULDER) { down -> set(11, if (down) Pad.bit(button) else 0) }
                 }
-                FaceButtons(layout.face, 46.dp) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
+                FaceButtons(layout.face, places = layout.facePlaces, size = 46.dp) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
             }
         }
         return
@@ -266,7 +292,7 @@ fun TouchControls(
             val k = ((maxWidth - gaps - 24.dp) / (168.dp + 64.dp * faceSpan)).coerceAtMost(1f)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 DPad(168.dp * k) { set(0, it) }
-                FaceButtons(layout.face, 64.dp * k) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
+                FaceButtons(layout.face, places = layout.facePlaces, size = 64.dp * k) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
             }
         }
         if (layout.sticks) {
@@ -296,11 +322,11 @@ fun TouchControls(
 }
 
 @Composable
-private fun FaceButtons(face: List<Pair<String, Int>>, size: Dp, faint: Boolean = false, onPress: (Int, Boolean) -> Unit) {
+private fun FaceButtons(face: List<Pair<String, Int>>, size: Dp, faint: Boolean = false, places: Map<Int, Alignment>? = null, onPress: (Int, Boolean) -> Unit) {
     when (face.size) {
         4 -> Box(Modifier.size(size * 3)) {
             // Diamond by button position (libretro/SNES): X top, Y left, A right, B bottom. PlayStation: △ ○ ✕ □.
-            val at = mapOf(Pad.X to Alignment.TopCenter, Pad.Y to Alignment.CenterStart, Pad.A to Alignment.CenterEnd, Pad.B to Alignment.BottomCenter)
+            val at = places ?: mapOf(Pad.X to Alignment.TopCenter, Pad.Y to Alignment.CenterStart, Pad.A to Alignment.CenterEnd, Pad.B to Alignment.BottomCenter)
             face.forEachIndexed { i, (label, button) ->
                 Box(Modifier.align(at[button] ?: Alignment.Center)) { PadButton(label, CircleShape, size, size, faint = faint) { onPress(i, it) } }
             }
