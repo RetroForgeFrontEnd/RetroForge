@@ -1060,7 +1060,9 @@ JNIEXPORT jboolean JNI(loadGame)(JNIEnv *env, jobject, jstring path, jint fd, jb
     if (!p.core.load_game(&game)) return JNI_FALSE;
     p.gameLoaded = true;
     p.core.get_system_av_info(&p.av);
+    // Every port, as RetroArch does: one controller, the rest empty. Flycast attaches memory cards here.
     p.core.set_controller_port_device(0, RETRO_DEVICE_JOYPAD);
+    for (unsigned port = 1; port < 4; port++) p.core.set_controller_port_device(port, RETRO_DEVICE_NONE);
     LOGI("loaded %s: %ux%u %.2f fps %.0f Hz", p.contentPath.c_str(), p.av.geometry.base_width, p.av.geometry.base_height,
          p.av.timing.fps, p.av.timing.sample_rate);
     return JNI_TRUE;

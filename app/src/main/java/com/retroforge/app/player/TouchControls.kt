@@ -54,8 +54,12 @@ data class PadLayout(
     val hasSelect: Boolean = true,
     /** Second shoulder pair (L2/R2), beside the first. */
     val triggers: List<Pair<String, Int>> = emptyList(),
-    /** Two analog thumbsticks; a quick tap on one is L3/R3. */
+    /** Analog thumbsticks; a quick tap on one is L3/R3. */
     val sticks: Boolean = false,
+    /** False for one-stick controllers (Dreamcast, PSP). */
+    val rightStick: Boolean = true,
+    /** Printed on the right stick when it stands for buttons (the N64's C buttons). */
+    val rightStickLabel: String? = null,
 ) {
     companion object {
         private val twoButton = PadLayout(listOf("B" to Pad.B, "A" to Pad.A))
@@ -81,12 +85,14 @@ data class PadLayout(
                 triggers = listOf("Z" to Pad.L2),
                 hasSelect = false,
                 sticks = true,
+                rightStickLabel = "C",
             )
             // PSP (PPSSPP): PlayStation symbols, L/R and the analog stick.
             "psp" -> PadLayout(
                 listOf("□" to Pad.Y, "△" to Pad.X, "✕" to Pad.B, "○" to Pad.A),
                 listOf("L" to Pad.L, "R" to Pad.R),
                 sticks = true,
+                rightStick = false,
             )
             // Dreamcast (Flycast): Y top, X left, B right, A bottom; the analog triggers are L2/R2.
             "dreamcast" -> PadLayout(
@@ -94,6 +100,7 @@ data class PadLayout(
                 triggers = listOf("L" to Pad.L2, "R" to Pad.R2),
                 hasSelect = false,
                 sticks = true,
+                rightStick = false,
             )
             "naomi", "naomi2", "atomiswave" -> PadLayout(
                 listOf("3" to Pad.Y, "4" to Pad.X, "1" to Pad.B, "2" to Pad.A),
@@ -199,7 +206,7 @@ fun TouchControls(
                         },
                         faint = true,
                     ) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
-                    if (layout.sticks) Stick(84.dp * k, faint = true, onMove = { x, y -> onAnalog(1, x, y) }) { set(15, if (it) Pad.bit(Pad.R3) else 0) }
+                    if (layout.sticks && layout.rightStick) Stick(84.dp * k, faint = true, label = layout.rightStickLabel, onMove = { x, y -> onAnalog(1, x, y) }) { set(15, if (it) Pad.bit(Pad.R3) else 0) }
                     PadButton("Start", RoundedCornerShape(50), 60.dp * k, 26.dp * k, small = true, faint = true, role = ButtonRole.PILL) { set(9, if (it) Pad.bit(Pad.START) else 0) }
                 }
             }
@@ -271,7 +278,8 @@ fun TouchControls(
                     PadButton("Start", RoundedCornerShape(50), 68.dp, 30.dp, small = true, role = ButtonRole.PILL) { set(9, if (it) Pad.bit(Pad.START) else 0) }
                     PadButton("☰", CircleShape, 36.dp, 36.dp, small = true, role = ButtonRole.PILL) { if (it) onMenu() }
                 }
-                Stick(112.dp, onMove = { x, y -> onAnalog(1, x, y) }) { set(15, if (it) Pad.bit(Pad.R3) else 0) }
+                if (layout.rightStick) Stick(112.dp, label = layout.rightStickLabel, onMove = { x, y -> onAnalog(1, x, y) }) { set(15, if (it) Pad.bit(Pad.R3) else 0) }
+                else Spacer(Modifier.size(112.dp))
             }
             return@Column
         }
@@ -493,7 +501,7 @@ private fun DPad(size: Dp, faint: Boolean = false, onMask: (Int) -> Unit) {
  * Reports -1..1 on each axis; a quick tap without moving is a stick click (L3/R3).
  */
 @Composable
-private fun Stick(size: Dp, faint: Boolean = false, onMove: (Float, Float) -> Unit, onClick: (Boolean) -> Unit) {
+private fun Stick(size: Dp, faint: Boolean = false, label: String? = null, onMove: (Float, Float) -> Unit, onClick: (Boolean) -> Unit) {
     val skin = LocalConsoleSkin.current
     val scope = androidx.compose.runtime.rememberCoroutineScope()
     var knob by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(Offset.Zero) }
@@ -560,6 +568,12 @@ private fun Stick(size: Dp, faint: Boolean = false, onMove: (Float, Float) -> Un
                 drawCircle(cap.shade(-0.28f), r * 0.72f, style = androidx.compose.ui.graphics.drawscope.Stroke(r * 0.07f))
                 drawCircle(cap.shade(0.1f), r * 0.52f, style = androidx.compose.ui.graphics.drawscope.Stroke(r * 0.04f))
             }
+        }
+        if (label != null) {
+            androidx.compose.material3.Text(
+                label, color = Color.White, fontWeight = FontWeight.Bold, fontSize = (size.value * 0.2f).sp,
+                modifier = Modifier.offset(travel * knob.x, travel * knob.y),
+            )
         }
     }
 }

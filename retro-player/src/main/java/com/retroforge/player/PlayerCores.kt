@@ -124,6 +124,8 @@ object PlayerCores {
         "swanstation" -> mapOf("swanstation_Controller1_Type" to "AnalogController")
         // Both eyes side by side: real 3D in Cardboard VR, the left eye alone otherwise.
         "mednafen_vb" -> mapOf("vb_3dmode" to "side-by-side", "vb_sidebyside_separation" to "0")
+        // A memory card (VMU) in the first controller, or games can't save; one card per game so they never fill up.
+        "flycast" -> mapOf("reicast_device_port1_slot1" to "VMU", "reicast_per_content_vmus" to "VMU A1")
         else -> emptyMap()
     }
 

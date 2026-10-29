@@ -64,7 +64,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Setup reappearing after Done | ✅ fixed (not re-tested on a fresh install) |
 | RF neon icon from the logo | ✅ |
 | PC ports section (like Quiver, retro decomps) | ✅ Ports in the PC tab (see below) |
-| Own cores for N64, PSP, Dreamcast (GPU) | ✅ N64 and PSP play on GPU rendering; 🟡 Dreamcast built, untested (emulator crashed) |
+| Own cores for N64, PSP, Dreamcast (GPU) | ✅ N64 and PSP play on GPU rendering; ✅ Dreamcast tested on the S22 (Ikaruga: boots on GPU rendering, memory card saves) |
 | PS1 with sticks, L2/R2/L3/R3; nicer pad | ✅ |
 | Volume too low | ✅ volume keys + boost (needs your ears on the phone) |
 | Cheats | ✅ |
