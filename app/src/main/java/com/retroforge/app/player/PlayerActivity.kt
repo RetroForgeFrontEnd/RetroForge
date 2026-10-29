@@ -431,11 +431,25 @@ class PlayerActivity : ComponentActivity() {
         }
         val named = File(cache, fileName)
         if (needsFile) {
-            // Copied once into RetroForge's cache and reused next time; only the two most recent games are kept.
             val root = File(externalCacheDir ?: cacheDir, "games")
             val dir = File(root, Integer.toHexString(uri.toString().hashCode()))
+            val files = GameFiles(contentResolver, dir)
+            // Streamed first: the core reads the game straight from its folder or network drive through the player's
+            // VFS, so even a 4 GB disc starts at once. A copy made earlier is used when there is one (it's local), and
+            // a copy is made when the core can't stream or the user chose "Copy games to the phone first".
+            val copyFirst = intent.getBooleanExtra(EXTRA_COPY_FIRST, false)
+            if (!copyFirst && !File(dir, fileName).isFile && NativePlayer.vfsRequested()) {
+                val streamDir = File(cacheDir, "stream").apply { deleteRecursively(); mkdirs() }
+                val opened = runCatching { files.open(uri, fileName, PlayerCores.companions(system), fallback = systemDir) }.getOrNull()
+                if (opened != null) {
+                    opened.forEach { (name, pfd) -> pfd.use { NativePlayer.addStream(File(streamDir, name).path, it.fd) } }
+                    if (NativePlayer.loadGame(File(streamDir, fileName).path, -1, false)) return true
+                    android.util.Log.w("RetroForgePlayer", "$coreId couldn't stream $fileName; copying it instead")
+                }
+            }
+            // Copied once into RetroForge's cache and reused next time; only the two most recent games are kept.
             GameFiles.prune(root, keep = 2, current = dir)
-            val path = GameFiles(contentResolver, dir).expose(uri, fileName, PlayerCores.companions(system), fallback = systemDir) { percent ->
+            val path = files.expose(uri, fileName, PlayerCores.companions(system), fallback = systemDir) { percent ->
                 runOnUiThread { loadingDetail = "Preparing the game for the first time… $percent%" }
             }
             return NativePlayer.loadGame(path, -1, false)
@@ -1217,6 +1231,10 @@ class PlayerActivity : ComponentActivity() {
         private const val EXTRA_FAST_FORWARD_R2 = "fast_forward_r2"
         private const val EXTRA_MENU_COMBO = "menu_combo"
         private const val EXTRA_QUIT_COMBO = "quit_combo"
+        private const val EXTRA_COPY_FIRST = "copy_first"
+
+        /** In the "views" preferences: copy games that must be files to the phone before playing, instead of streaming. */
+        const val COPY_FIRST_PREF = "copy_games_first"
 
         fun intent(
             context: Context,
@@ -1229,7 +1247,9 @@ class PlayerActivity : ComponentActivity() {
             fastForwardOnR2: Boolean,
             menuCombo: HotkeyCombo,
             quitCombo: HotkeyCombo,
+            copyFirst: Boolean = false,
         ): Intent = Intent(context, PlayerActivity::class.java)
+            .putExtra(EXTRA_COPY_FIRST, copyFirst)
             .putExtra(EXTRA_CORE_PATH, corePath)
             .putExtra(EXTRA_URI, uri.toString())
             .putExtra(EXTRA_FILE_NAME, fileName)

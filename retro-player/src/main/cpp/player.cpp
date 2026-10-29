@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "libretro.h"
+#include "vfs.h"
 
 #define TAG "RetroForgePlayer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
@@ -243,6 +244,9 @@ retro_proc_address_t hwProcAddress(const char *sym) {
 
 bool environment(unsigned cmd, void *data) {
     switch (cmd) {
+        // Files through the player, so games RetroForge streams (network drives, Android folders) need no copy.
+        case RETRO_ENVIRONMENT_GET_VFS_INTERFACE:
+            return vfs::provide(static_cast<retro_vfs_interface_info *>(data));
         case RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
             static_cast<retro_log_callback *>(data)->log = coreLog;
             return true;
@@ -1082,6 +1086,7 @@ extern "C" {
 JNIEXPORT jstring JNI(openCore)(JNIEnv *env, jobject, jstring corePath, jstring systemDir, jstring saveDir,
                                 jobjectArray optionKeys, jobjectArray optionValues) {
     if (P) return env->NewStringUTF("A game is already open");
+    vfs::resetRequested();
     P = new Player();
     Player &p = *P;
     p.corePath = str(env, corePath);
@@ -1288,6 +1293,10 @@ JNIEXPORT void JNI(setOption)(JNIEnv *env, jobject, jstring key, jstring value) 
     P->variablesChanged = true;
 }
 
+JNIEXPORT void JNI(addStream)(JNIEnv *env, jobject, jstring path, jint fd) { vfs::addStream(str(env, path), fd); }
+
+JNIEXPORT jboolean JNI(vfsRequested)(JNIEnv *, jobject) { return vfs::wasRequested() ? JNI_TRUE : JNI_FALSE; }
+
 JNIEXPORT void JNI(setMouse)(JNIEnv *, jobject, jint dx, jint dy, jint buttons) {
     if (!P) return;
     P->mouseDx += dx;
@@ -1436,6 +1445,7 @@ JNIEXPORT void JNI(close)(JNIEnv *, jobject) {
     }
     delete P;
     P = nullptr;
+    vfs::clearStreams();
 }
 
 } // extern "C"

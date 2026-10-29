@@ -251,6 +251,7 @@ class LibraryViewModel(
             fastForwardOnR2 = s?.fastForwardOnR2 != false && game.system in RetroArchHotkeys.NO_R2_SYSTEMS,
             menuCombo = HotkeyCombo.of(s?.menuCombo ?: HotkeyCombo.DOWN_SELECT.value),
             quitCombo = HotkeyCombo.of(s?.quitCombo ?: HotkeyCombo.START_SELECT.value),
+            copyFirst = viewPrefs.getBoolean(PlayerActivity.COPY_FIRST_PREF, false),
         )
     }
 

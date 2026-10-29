@@ -29,6 +29,10 @@ object NativePlayer {
 
     /** [path] is the game's file (or a name with the right extension when [fd] supplies the bytes). */
     external fun loadGame(path: String, fd: Int, fromFileIntoMemory: Boolean): Boolean
+    /** Makes [path] read from [fd] (duplicated) for cores that open files through the player's VFS: games stream, no copy. */
+    external fun addStream(path: String, fd: Int)
+    /** Whether the open core asked for the player's VFS (so streamed paths reach it). Known right after openCore. */
+    external fun vfsRequested(): Boolean
 
     /** fps, sample rate, base width, base height, aspect ratio. */
     private external fun avInfo(): FloatArray

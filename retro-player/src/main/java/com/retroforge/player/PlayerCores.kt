@@ -312,6 +312,8 @@ object PlayerCores {
         // need Vulkan rendering in the player (planned). Its software renderer runs everywhere, using the phone's cores.
         // Fastmem catches memory faults on purpose, which crashes inside an Android app process; off is a little slower.
         "pcsx2" -> mapOf("pcsx2_renderer" to "Software", "pcsx2_fastmem" to "disabled")
+        // Dolphin's fastmem, like PCSX2's, catches memory faults on purpose and crashes inside an Android app process.
+        "dolphin" -> mapOf("dolphin_fastmem" to "disabled")
         "citra" -> mapOf("citra_use_hw_shaders" to "disabled", "citra_use_acc_geo_shaders" to "disabled")
         else -> emptyMap()
     }
