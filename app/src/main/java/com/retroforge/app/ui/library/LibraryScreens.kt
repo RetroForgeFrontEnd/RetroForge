@@ -313,6 +313,14 @@ fun GameDetailScreen(
     }
     ScreenFrame(title = null) {
         GameHero(g, art, eyebrow = viewModel.systemName(g.system), subtitle = tagLine(g), actionLabel = null, onAction = null)
+        // RetroBat's manual and gameplay video for this game, when its folder has them.
+        val media by androidx.compose.runtime.produceState(GameMedia(null, null), g.id) { value = findGameMedia(context.contentResolver, rootsById[g.rootId], g) }
+        var manualOpen by remember { mutableStateOf(false) }
+        media.video?.let { GameVideo(it) }
+        media.manual?.let { manual ->
+            FocusChip("Read the manual", onClick = { manualOpen = true })
+            if (manualOpen) ManualViewer(manual, g.title, onClose = { manualOpen = false })
+        }
         CoverControls(g, viewModel, onChangeCover = { onChangeCover(g.id) })
         FocusChip("Edit details", onClick = { onEditDetails(g.id) })
         FavouriteAndPlaylists(g, viewModel)
