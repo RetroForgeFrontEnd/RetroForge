@@ -64,13 +64,15 @@ fun VrScreen(prefs: SharedPreferences, library: LibraryRepository, onOpenGame: (
                 }
             }
         }
-        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenMedia) {
+        FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("3D films")
             CardBody(
                 "Side-by-side and top-and-bottom 3D films play one half per eye; any 2D film can play on a big screen per eye " +
-                    "(cinema mode). Select to open Media; 3D films there have a 3D badge.",
+                    "(cinema mode). Your 3D films are below; all films are in Media.",
             )
+            FocusChip("Open Media", onClick = onOpenMedia)
         }
+        com.retroforge.app.ui.media.ThreeDFilms(prefs)
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("Meta Quest")
             CardBody("On a Quest, RetroForge runs as a flat Android window: games and films play on a big virtual screen.")

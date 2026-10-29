@@ -72,6 +72,7 @@ fun MediaScreen(prefs: SharedPreferences) {
     // Only ever the user's own TMDB key (TMDB's free API is for personal use; RetroForge doesn't ship one).
     var key by remember { mutableStateOf(prefs.getString(TMDB_KEY, null)) }
     var refresh by remember { mutableIntStateOf(0) }
+    var only3d by remember { mutableStateOf(false) }
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
         uri ?: return@rememberLauncherForActivityResult
         runCatching { context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
@@ -106,8 +107,16 @@ fun MediaScreen(prefs: SharedPreferences) {
             list == null -> CardBody("Looking for films…")
             list.isEmpty() -> CardBody("No films found in that folder (mp4, mkv, avi, mov and others).")
             else -> {
+                // All films, or just the 3D ones (for watching in a Cardboard viewer).
+                com.retroforge.app.ui.ChipRow {
+                    FocusChip((if (!only3d) "● " else "") + "All films (${list.size})", onClick = { only3d = false })
+                    FocusChip((if (only3d) "● " else "") + "3D films (${list.count { it.is3d }})", onClick = { only3d = true })
+                }
+                if (only3d && list.none { it.is3d }) {
+                    CardBody("No 3D films yet. Films with 3D, SBS, HSBS, TAB or HOU in their name (or in a \"3D Films\" folder) show here.")
+                }
                 // 3D films first, in their own row, then the rest.
-                list.partition { it.is3d }.toList().zip(listOf("3D films", "Films")).forEach { (group, title) ->
+                list.partition { it.is3d }.toList().zip(listOf("3D films", "Films")).filter { !only3d || it.second == "3D films" }.forEach { (group, title) ->
                     if (group.isEmpty()) return@forEach
                     Text("$title (${group.size})", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -129,6 +138,26 @@ fun MediaScreen(prefs: SharedPreferences) {
             if (count == 0) "Added, but no films were found there." else "Added: $count film${if (count == 1) "" else "s"} found. They're above."
         })
         MediaServersCard(prefs)
+    }
+}
+
+/** The 3D films in the Media folder, as posters to play: for the VR tab. Nothing when there's no folder or no 3D film. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun ThreeDFilms(prefs: SharedPreferences) {
+    val context = LocalContext.current
+    val folder = remember { prefs.getString(FOLDER, null) }
+    val films by produceState<List<Film>?>(null, folder) {
+        value = folder?.let { tree -> withContext(Dispatchers.IO) { runCatching { scan(context, tree.toUri()).filter { it.is3d } }.getOrDefault(emptyList()) } }
+    }
+    val list = films
+    if (folder == null || list?.isEmpty() == true) {
+        CardBody("No 3D films yet. Put them in Movies/RetroForge/3D Films (Media → Use RetroForge's film folders) or name them with 3D, SBS or TAB, and they show here.")
+        return
+    }
+    if (list == null) return
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        list.forEach { FilmCard(it, prefs.getString(TMDB_KEY, null)) }
     }
 }
 
