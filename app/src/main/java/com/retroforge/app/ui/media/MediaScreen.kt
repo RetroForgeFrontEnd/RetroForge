@@ -206,8 +206,7 @@ private fun TmdbCard(saved: String?, onSave: (String?) -> Unit) {
     var show by remember { mutableStateOf(false) }
     val context = LocalContext.current
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Film posters and stories")
-        StatusPill(if (saved.isNullOrBlank()) "Using frames from the films" else "TMDB key saved", if (saved.isNullOrBlank()) StatusTone.NEUTRAL else StatusTone.GOOD)
+        CardTitle("Film posters and stories") { StatusPill(if (saved.isNullOrBlank()) "Using frames from the films" else "TMDB key saved", if (saved.isNullOrBlank()) StatusTone.NEUTRAL else StatusTone.GOOD) }
         CardBody(
             "RetroForge uses the poster and .nfo file saved next to each film, as Kodi, Plex and Jellyfin do (Film-poster.jpg or " +
                 "Film.jpg, poster.jpg in a film's own folder, Film.nfo or movie.nfo). Media Companion or tinyMediaManager on a PC " +

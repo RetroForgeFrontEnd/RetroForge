@@ -77,10 +77,43 @@ fun ScreenFrame(title: String?, subtitle: String? = null, compact: Boolean = fal
     }
 }
 
+/**
+ * A card's title. [status] (an On/Off pill and the like) goes at the end of the title line on compact pages, so it
+ * doesn't take a line of its own, and under the title elsewhere.
+ */
 @Composable
-fun CardTitle(text: String) {
-    val style = if (LocalCompactCards.current) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleLarge
+fun CardTitle(text: String, status: (@Composable () -> Unit)? = null) {
+    val compact = LocalCompactCards.current
+    val style = if (compact) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleLarge
+    if (status != null && compact) {
+        // A short pill (On, Off …) sits at the end of the title line; a long one would squeeze the title, so it goes under.
+        androidx.compose.ui.layout.Layout(content = {
+            Text(text, style = style, color = MaterialTheme.colorScheme.onSurface)
+            status()
+        }) { (title, pill), constraints ->
+            val gap = 12.dp.roundToPx()
+            val free = constraints.copy(minWidth = 0, minHeight = 0)
+            val pillPlaced = pill.measure(free)
+            if (pillPlaced.width <= constraints.maxWidth / 3) {
+                val titlePlaced = title.measure(free.copy(maxWidth = (constraints.maxWidth - pillPlaced.width - gap).coerceAtLeast(0)))
+                val height = maxOf(titlePlaced.height, pillPlaced.height)
+                layout(constraints.maxWidth, height) {
+                    titlePlaced.place(0, (height - titlePlaced.height) / 2)
+                    pillPlaced.place(constraints.maxWidth - pillPlaced.width, (height - pillPlaced.height) / 2)
+                }
+            } else {
+                val titlePlaced = title.measure(free)
+                val spacing = 8.dp.roundToPx()
+                layout(constraints.maxWidth, titlePlaced.height + spacing + pillPlaced.height) {
+                    titlePlaced.place(0, 0)
+                    pillPlaced.place(0, titlePlaced.height + spacing)
+                }
+            }
+        }
+        return
+    }
     Text(text, style = style, color = MaterialTheme.colorScheme.onSurface)
+    status?.invoke()
 }
 
 /** A card's explanation. On compact pages it's cut to two lines, with More (and then Less) when there's more to read. */

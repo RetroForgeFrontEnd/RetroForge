@@ -50,8 +50,7 @@ fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices,
         )
     }
     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { onResume(!resume) }) {
-        CardTitle("Carry on where you left off")
-        StatusPill(if (resume) "On" else "Off", if (resume) StatusTone.GOOD else StatusTone.NEUTRAL)
+        CardTitle("Carry on where you left off") { StatusPill(if (resume) "On" else "Off", if (resume) StatusTone.GOOD else StatusTone.NEUTRAL) }
         CardBody("Games save their place when you quit and start from there next time, in the built-in player and in RetroArch.")
     }
     CopyFirstCard()
@@ -134,8 +133,7 @@ private fun CopyFirstCard() {
         copyFirst = !copyFirst
         prefs.edit().putBoolean(com.retroforge.app.player.PlayerActivity.COPY_FIRST_PREF, copyFirst).apply()
     }) {
-        CardTitle("Big games: stream or copy")
-        StatusPill(if (copyFirst) "Copy to the phone first" else "Stream (starts at once)", if (copyFirst) StatusTone.NEUTRAL else StatusTone.GOOD)
+        CardTitle("Big games: stream or copy") { StatusPill(if (copyFirst) "Copy to the phone first" else "Stream (starts at once)", if (copyFirst) StatusTone.NEUTRAL else StatusTone.GOOD) }
         CardBody(
             "Disc games (GameCube, PlayStation, Dreamcast …) and arcade sets play straight from their folder or network drive, " +
                 "so they start at once. Select to copy them to the phone first instead: smoother on slow Wi-Fi, and the copy is " +

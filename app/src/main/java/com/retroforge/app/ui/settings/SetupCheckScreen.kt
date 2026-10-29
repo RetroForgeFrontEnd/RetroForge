@@ -76,8 +76,7 @@ fun SetupCheckScreen(library: LibraryRepository, cores: CoreManager, biosDir: Fi
         }
         lines.forEach { line ->
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                CardTitle(line.name)
-                StatusPill(line.verdict, line.tone)
+                CardTitle(line.name) { StatusPill(line.verdict, line.tone) }
                 CardBody("${line.games} ${if (line.games == 1) "game" else "games"}. ${line.detail}")
                 line.coreId?.let { id ->
                     FocusChip("Download now", onClick = { scope.launch { cores.ensure(id); refresh++ } })

@@ -111,8 +111,7 @@ fun SettingsScreen(
                         scanOnStart = !scanOnStart
                         prefs.edit().putBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, scanOnStart).apply()
                     }) {
-                        CardTitle("Look for new games when RetroForge starts")
-                        StatusPill(if (scanOnStart) "On" else "Off", if (scanOnStart) StatusTone.GOOD else StatusTone.NEUTRAL)
+                        CardTitle("Look for new games when RetroForge starts") { StatusPill(if (scanOnStart) "On" else "Off", if (scanOnStart) StatusTone.GOOD else StatusTone.NEUTRAL) }
                         CardBody("Rescans the game folders on this device each time the app opens, so games you add show up by themselves. Network drives are left out (too slow over Wi-Fi): rescan those in Retro → Game folders.")
                     }
                     var showAll by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SHOW_ALL_SYSTEMS, false)) }
@@ -120,8 +119,7 @@ fun SettingsScreen(
                         showAll = !showAll
                         prefs.edit().putBoolean(com.retroforge.app.ui.library.LibraryViewModel.SHOW_ALL_SYSTEMS, showAll).apply()
                     }) {
-                        CardTitle("Retro tab: show systems without games")
-                        StatusPill(if (showAll) "On" else "Off", if (showAll) StatusTone.GOOD else StatusTone.NEUTRAL)
+                        CardTitle("Retro tab: show systems without games") { StatusPill(if (showAll) "On" else "Off", if (showAll) StatusTone.GOOD else StatusTone.NEUTRAL) }
                         CardBody("Off: the Retro tab shows only the systems you have games for. On: every system RetroForge knows, for browsing.")
                     }
                 }
@@ -129,8 +127,7 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { viewModel.setShowPcSection(!settings.showPcSection) },
                 ) {
-                    CardTitle("Show PC section")
-                    StatusPill(if (settings.showPcSection) "On" else "Off", if (settings.showPcSection) StatusTone.GOOD else StatusTone.NEUTRAL)
+                    CardTitle("Show PC section") { StatusPill(if (settings.showPcSection) "On" else "Off", if (settings.showPcSection) StatusTone.GOOD else StatusTone.NEUTRAL) }
                     CardBody("Hide the PC section if you only play retro games or this device cannot run PC games.")
                 }
 
@@ -150,8 +147,7 @@ fun SettingsScreen(
                 HotkeysCard(settings.retroArchHotkeys, HotkeyCombo.of(settings.menuCombo), HotkeyCombo.of(settings.quitCombo), viewModel::setRetroArchHotkeys, onOpenHotkeys)
                 if (settings.retroArchHotkeys) {
                     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.setFastForwardOnR2(!settings.fastForwardOnR2) }) {
-                        CardTitle("Hold R2 to fast-forward")
-                        StatusPill(if (settings.fastForwardOnR2) "On" else "Off", if (settings.fastForwardOnR2) StatusTone.GOOD else StatusTone.NEUTRAL)
+                        CardTitle("Hold R2 to fast-forward") { StatusPill(if (settings.fastForwardOnR2) "On" else "Off", if (settings.fastForwardOnR2) StatusTone.GOOD else StatusTone.NEUTRAL) }
                         CardBody("For systems whose controllers had no R2 (Game Boy, GBA, NES, SNES, Mega Drive …): skip through slow dialogue. Select to switch.")
                     }
                 }
@@ -176,8 +172,7 @@ fun SettingsScreen(
                         prefs.edit().putBoolean(com.retroforge.app.UI_SOUNDS, sounds).apply()
                         com.retroforge.core.ui.UiSounds.enabled = sounds
                     }) {
-                        CardTitle("Interface sounds")
-                        StatusPill(if (sounds) "On" else "Off", if (sounds) StatusTone.GOOD else StatusTone.NEUTRAL)
+                        CardTitle("Interface sounds") { StatusPill(if (sounds) "On" else "Off", if (sounds) StatusTone.GOOD else StatusTone.NEUTRAL) }
                         CardBody("A soft tick when moving with a controller or remote, and a chime when selecting or going back.")
                     }
                 }

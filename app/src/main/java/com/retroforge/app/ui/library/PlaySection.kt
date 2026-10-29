@@ -113,8 +113,7 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
                 }
             } else null,
         ) {
-            CardTitle("Play")
-            StatusPill("Can't play yet", StatusTone.CAUTION)
+            CardTitle("Play") { StatusPill("Can't play yet", StatusTone.CAUTION) }
             CardBody(describe(plan.reason, viewModel))
         }
     }

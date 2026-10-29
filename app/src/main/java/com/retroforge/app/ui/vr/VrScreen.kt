@@ -50,8 +50,7 @@ fun VrScreen(prefs: SharedPreferences, library: LibraryRepository, onOpenGame: (
             byDefault = !byDefault
             prefs.edit().putBoolean(VR_BY_DEFAULT, byDefault).apply()
         }) {
-            CardTitle("Start every game in Cardboard VR")
-            StatusPill(if (byDefault) "On" else "Off", if (byDefault) StatusTone.GOOD else StatusTone.NEUTRAL)
+            CardTitle("Start every game in Cardboard VR") { StatusPill(if (byDefault) "On" else "Off", if (byDefault) StatusTone.GOOD else StatusTone.NEUTRAL) }
             CardBody("For a session in the viewer. Any game can still be switched back in its pause menu.")
         }
         FocusCard(modifier = Modifier.fillMaxWidth()) {

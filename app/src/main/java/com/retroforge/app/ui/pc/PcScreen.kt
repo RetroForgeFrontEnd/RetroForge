@@ -48,8 +48,7 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
             DeviceCard(loaded)
             DroidDeckCard(loaded, bridge)
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                CardTitle("Launching PC games from RetroForge")
-                StatusPill("Not built yet", StatusTone.NEUTRAL)
+                CardTitle("Launching PC games from RetroForge") { StatusPill("Not built yet", StatusTone.NEUTRAL) }
                 CardBody(
                     "Starting a specific Steam game from RetroForge will be added once a test on real hardware " +
                         "confirms the runtime's launch request works. Only Steam games can be started this way; " +
@@ -130,8 +129,7 @@ private fun DroidDeckCard(status: PcStatus, bridge: DroidDeckBridge) {
                 }
             },
         ) {
-            CardTitle("PC game runtime")
-            StatusPill("Not installed", StatusTone.NEUTRAL)
+            CardTitle("PC game runtime") { StatusPill("Not installed", StatusTone.NEUTRAL) }
             CardBody(
                 "RetroForge works with DroidDeck, a free, separately developed app. Install it only from its official releases page: ${DroidDeckBridge.RELEASES_URL}. " +
                     "Select this card to open it in a browser.",
@@ -144,8 +142,7 @@ private fun DroidDeckCard(status: PcStatus, bridge: DroidDeckBridge) {
             modifier = Modifier.fillMaxWidth(),
             onClick = openIntent?.let { intent -> { context.startActivity(intent) } },
         ) {
-            CardTitle("PC game runtime")
-            StatusPill("Installed ${install.versionName.orEmpty()}".trim(), StatusTone.GOOD)
+            CardTitle("PC game runtime") { StatusPill("Installed ${install.versionName.orEmpty()}".trim(), StatusTone.GOOD) }
             CardBody(
                 if (install.acceptsLaunchIntent) "It accepts game launch requests from other apps."
                 else "This version does not accept launch requests from other apps.",

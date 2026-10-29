@@ -72,8 +72,7 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, onDone: 
         val loose by androidx.compose.runtime.produceState(0, s?.games) { value = viewModel.looseGames() }
         if (loose > 0) {
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSort) {
-                CardTitle("Tidy your games folder?")
-                StatusPill("${plural(loose, "game")} not in a system folder", StatusTone.CAUTION)
+                CardTitle("Tidy your games folder?") { StatusPill("${plural(loose, "game")} not in a system folder", StatusTone.CAUTION) }
                 CardBody(
                     "They play fine where they are. Other frontends (RetroArch, ES-DE, RetroBat) want each game in its system's " +
                         "folder, though. Select to see them in the ROM Manager: it shows every move first, and History can undo it.",

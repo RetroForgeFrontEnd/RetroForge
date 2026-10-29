@@ -160,8 +160,7 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
                 if (pending.parts.size > 6) CardBody("… and ${pending.parts.size - 6} more")
             }
             is Pending.Purge -> {
-                CardTitle("Delete ${pending.summary.folder} permanently?")
-                StatusPill("This can't be undone", StatusTone.BAD)
+                CardTitle("Delete ${pending.summary.folder} permanently?") { StatusPill("This can't be undone", StatusTone.BAD) }
                 CardBody(
                     "${plural(pending.summary.files, "file")} (${formatBytes(pending.summary.bytes)}) will be deleted for good. " +
                         "History entries that would need them can no longer be undone.",
