@@ -90,23 +90,23 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 
 | Request | Status |
 |---|---|
-| Way back from every inner screen: red ✕ for touch, B on a controller | 🟡 built (✕ on every inner page; B already went back) |
-| Test APK for Mr Sujano | 🟡 in progress |
-| Turnip drivers: search for a specific driver | ❌ |
-| Landscape: touch buttons too small on some systems (GBA) | ❌ |
-| Cheats: raw code flashes for a moment the first time | ❌ |
-| Settings: the About card's short text reads jumbled | ❌ |
-| Home: the writing on the logo can't be read | ❌ |
+| Way back from every inner screen: red ✕ for touch, B on a controller | ✅ tested on the emulator |
+| Test APK for Mr Sujano | ✅ Documents\RetroForge-0.5.0-beta-tester.apk (test-signed; a release key isn't set up yet) |
+| Turnip drivers: search for a specific driver | ✅ search box, 30 releases per source |
+| Landscape: touch buttons too small on some systems (GBA) | ✅ 2-3 button systems get bigger buttons and d-pad (GBA checked) |
+| Cheats: raw code flashes for a moment the first time | ✅ list and code boxes wait for the download (not re-tested on the phone) |
+| Settings: the About card's short text reads jumbled | ✅ |
+| Home: the writing on the logo can't be read | ✅ name and tagline as text under the art |
 | RetroArch games have no RetroForge swipe menu | ❌ answer: RetroArch is a separate app; its own menu (hotkey) is used there |
-| ScreenScraper: show/hide password | ❌ |
-| Report a problem | ❌ |
-| ROM hacks: patched ROM should appear in the library by itself | ❌ |
-| ROM hacks: patched ROM showed as a duplicate of the original after rescan | ❌ |
-| ROM hacks: more consoles (only 2) | ❌ |
+| ScreenScraper: show/hide password | ✅ (and for the SteamGridDB key) |
+| Report a problem | ✅ always shown at the bottom of Settings; shares a filled-in report |
+| ROM hacks: patched ROM should appear in the library by itself | ✅ save dialog opens in the original's folder; folders rescan after saving |
+| ROM hacks: patched ROM showed as a duplicate of the original after rescan | ✅ the patch name now shows in the subtitle |
+| ROM hacks: more consoles (only 2) | 🟡 now NES, SNES, N64, GBC, GBA (12 hacks); more to add |
 | Original Xbox and Xbox 360 emulation | ❌ look into (Android options are very limited) |
 | PC ports for ROMs the user owns (like Quiver), in the PC section | ❌ |
-| Links: Modern Vintage Gamer, Digital Foundry, My Life in Gaming, The Gaming Historian | ❌ |
-| Scan for new games when the app starts | ❌ |
+| Links: Modern Vintage Gamer, Digital Foundry, My Life in Gaming, The Gaming Historian | ✅ |
+| Scan for new games when the app starts | ✅ on by default, switch in Settings |
 | Use RetroForge as the Android home screen (launcher), with Android apps and Android settings | ❌ |
 | Media section (films, Plex-style, artwork, Plex servers, network drives) | ❌ idea |
 | Games from network drives, Google Drive, Dropbox | ❌ idea |
