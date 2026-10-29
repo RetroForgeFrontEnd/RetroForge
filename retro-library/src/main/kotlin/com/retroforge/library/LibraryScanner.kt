@@ -92,6 +92,16 @@ class LibraryScanner(private val rules: SystemRules) {
 
         val (layout, systemDirs, unrecognised) = detectLayout(root, topChildren, problems)
         val games = mutableListOf<ScannedGame>()
+        // Games outside system folders: loose files and folders not named after a system, sorted by file type.
+        val (looseBase, loosePrefix) = when {
+            layout == RootLayout.SINGLE_SYSTEM -> null to ""
+            systemDirs.firstOrNull()?.prefix?.startsWith("roms/", ignoreCase = true) == true ->
+                topChildren.firstOrNull { it.isDirectory && it.name.equals("roms", ignoreCase = true) } to systemDirs.first().prefix.substringBefore('/') + "/"
+            else -> root to ""
+        }
+        val loose = looseBase?.let { base -> scanLoose(base, loosePrefix, problems, isCancelled) }.orEmpty()
+        games += loose
+        val looseFolders = loose.map { it.relativePath.removePrefix(loosePrefix).substringBefore('/', "") }.toSet()
         var filesSeen = 0
         systemDirs.forEachIndexed { index, (prefix, dir, rule) ->
             if (isCancelled()) throw ScanCancelled()
@@ -101,7 +111,9 @@ class LibraryScanner(private val rules: SystemRules) {
             games += found
         }
         onProgress(ScanProgress(systemDirs.size, systemDirs.size, null, filesSeen))
-        return ScanResult(layout, markDuplicates(games), problems, unrecognised)
+        val finalLayout = if (layout == RootLayout.UNRECOGNISED && loose.isNotEmpty()) RootLayout.COLLECTION else layout
+        if (finalLayout != layout) problems.removeAll { it.message.startsWith("No system folders found") }
+        return ScanResult(finalLayout, markDuplicates(games), problems, unrecognised.filter { it !in looseFolders })
     }
 
     private data class SystemDir(val prefix: String, val dir: ScanNode, val rule: SystemRule)
@@ -132,6 +144,64 @@ class LibraryScanner(private val rules: SystemRules) {
     }
 
     private data class FileEntry(val path: String, val node: ScanNode)
+
+    /**
+     * Games in [base] that aren't in a system folder: loose files, and anything in folders not named after a system.
+     * Only file types that belong to one system are taken; archives and disc images (zip, iso, chd …) could be
+     * anything, so they're counted and reported instead.
+     */
+    private fun scanLoose(base: ScanNode, prefix: String, problems: MutableList<ScanProblem>, isCancelled: () -> Boolean): List<ScannedGame> {
+        val found = mutableListOf<ScannedGame>()
+        var unsure = 0
+        fun walk(node: ScanNode, path: String, depth: Int) {
+            if (isCancelled()) throw ScanCancelled()
+            val children = try { node.children() } catch (e: IOException) { return }
+            for (child in children) {
+                val childPath = if (path.isEmpty()) child.name else "$path/${child.name}"
+                val lower = child.name.lowercase()
+                when {
+                    lower.startsWith(".") -> Unit
+                    child.isDirectory -> {
+                        // System folders are scanned on their own; media and holding folders aren't games.
+                        val skip = (depth == 0 && rules.forFolder(child.name) != null) || lower in mediaFolders || lower in HOLDING_FOLDERS
+                        if (!skip && depth < maxDepth) walk(child, childPath, depth + 1)
+                    }
+                    else -> {
+                        val ext = lower.substringAfterLast('.', "")
+                        val system = LOOSE_EXTENSIONS[ext]?.let { rules.byId(it) }
+                        if (system != null) {
+                            val name = RomNames.parse(child.name)
+                            found += ScannedGame(
+                                system = system.id,
+                                relativePath = prefix + childPath,
+                                fileName = child.name,
+                                nodeId = child.id,
+                                size = child.size,
+                                lastModified = child.lastModified,
+                                name = name,
+                                hackFolder = hackFolderOf(childPath) ?: name.hackName ?: if (RomFlag.HACK in name.flags) "" else null,
+                                metadata = null,
+                                imageNodeId = null,
+                                duplicateKey = null,
+                                discs = null,
+                            )
+                        } else if (ext in UNSURE_EXTENSIONS) {
+                            unsure++
+                        }
+                    }
+                }
+            }
+        }
+        walk(base, "", 0)
+        if (unsure > 0) {
+            problems += ScanProblem(
+                base.name,
+                "$unsure files outside system folders could be for several systems (zip, 7z, iso, chd, cue, bin …), so they weren't added. " +
+                    "Put them in a folder named after their system (psx, snes …) to add them.",
+            )
+        }
+        return found
+    }
 
     private fun scanSystem(prefix: String, dir: ScanNode, rule: SystemRule, problems: MutableList<ScanProblem>, isCancelled: () -> Boolean): List<ScannedGame> {
         val romFiles = mutableListOf<FileEntry>()
@@ -262,3 +332,17 @@ class LibraryScanner(private val rules: SystemRules) {
         return games.map { if ((counts[key(it)] ?: 0) > 1) it.copy(duplicateKey = key(it)) else it }
     }
 }
+
+/** File types that belong to a single system, for games found outside system folders. */
+private val LOOSE_EXTENSIONS = mapOf(
+    "gba" to "gba", "gb" to "gb", "gbc" to "gbc", "nes" to "nes", "fds" to "fds", "sfc" to "snes", "smc" to "snes",
+    "n64" to "n64", "z64" to "n64", "v64" to "n64", "nds" to "nds", "3ds" to "3ds", "cia" to "3ds",
+    "sms" to "mastersystem", "gg" to "gamegear", "md" to "megadrive", "gen" to "megadrive", "smd" to "megadrive",
+    "32x" to "sega32x", "sg" to "sg1000", "pce" to "pcengine", "sgx" to "supergrafx", "a26" to "atari2600",
+    "a78" to "atari7800", "lnx" to "lynx", "j64" to "jaguar", "ws" to "wswan", "wsc" to "wswanc", "ngp" to "ngp",
+    "ngc" to "ngpc", "vb" to "virtualboy", "col" to "colecovision", "int" to "intellivision", "vec" to "vectrex",
+    "min" to "pokemini", "cso" to "psp", "xci" to "switch", "nsp" to "switch", "wbfs" to "wii", "gcm" to "gamecube",
+)
+
+/** Archives and disc images: could be for many systems. */
+private val UNSURE_EXTENSIONS = setOf("zip", "7z", "rar", "iso", "chd", "cue", "bin", "img", "pbp", "rvz", "m3u", "gdi", "cdi")

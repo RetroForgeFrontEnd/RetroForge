@@ -179,4 +179,28 @@ class LibraryScannerTest {
         assertEquals("A", result.games.single().displayTitle)
         assertTrue(result.problems.single().message.startsWith("Couldn't read gamelist.xml"))
     }
+
+    @Test
+    fun findsLooseGamesByFileType() {
+        val root = dir(
+            "Downloads",
+            file("Pokemon Emerald (USA).gba"),
+            file("Something.zip"),
+            dir("My stuff", file("Super Mario 64 (USA).z64"), file("holiday.jpg")),
+        )
+        val result = scanner.scan(root)
+        assertEquals(setOf("gba" to "Pokemon Emerald (USA).gba", "n64" to "Super Mario 64 (USA).z64"), result.games.map { it.system to it.fileName }.toSet())
+        assertEquals("My stuff/Super Mario 64 (USA).z64", result.games.first { it.system == "n64" }.relativePath)
+        assertTrue(result.problems.any { it.message.contains("could be for several systems") })
+        assertTrue(result.problems.none { it.message.startsWith("No system folders found") })
+    }
+
+    @Test
+    fun looseGamesBesideSystemFolders() {
+        val root = dir("roms", dir("snes", file("Star Fox (USA).sfc")), dir("New stuff", file("Tetris (World).gb")))
+        val result = scanner.scan(root)
+        assertEquals(setOf("snes", "gb"), result.games.map { it.system }.toSet())
+        assertTrue("New stuff" !in result.unrecognisedFolders)
+    }
 }
+

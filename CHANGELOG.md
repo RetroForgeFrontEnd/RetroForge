@@ -19,6 +19,8 @@ Tested on the Android emulator; real-device testing is part of this beta.
 
 **Saves and storage**: Settings → Built-in player → Back up saves and settings writes one zip with in-game saves, save states, cheats and RetroForge's settings (screen shapes, filters, remapped buttons, emulator choices); Restore puts them back (on this or another device), replacing same-named saves and keeping the rest. A Storage card shows the space emulators and copied CD/arcade games use, with Clear copied games. Each game's page shows its time played in the built-in player.
 
+**Games anywhere in your folder**: games outside system folders (loose files, a Downloads or Extras folder) are found by their file type, such as .gba, .nds, .sfc or .z64. Archives and disc images there (zip, iso, chd) could be for any system, so RetroForge says how many it found instead of guessing.
+
 **Media and Android tabs**: Media shows the films in a folder you choose as a poster grid with tidied titles and years (TMDB posters with your own free key, otherwise a frame from the film), marks 3D films, and plays them in a built-in player; side-by-side 3D films play sideways for a Cardboard viewer. Android lists every app on the device with Android settings shortcuts and launcher mode. With eight tabs the bottom bar scrolls sideways on phones.
 
 **Interface sounds**: a soft tick when moving with a controller or remote, a chime on select and on back. RetroForge's own sounds; switch them off in Settings.
