@@ -53,7 +53,8 @@ fun LinksScreen() {
     ScreenFrame(title = "Links", subtitle = "Channels and sites worth following. Links open in YouTube or your browser.") {
         usefulLinks.forEach { group ->
             Text(group.title, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
-            group.links.forEach { link ->
+            // A to Z, ignoring a leading "The" (The Gaming Historian goes under G).
+            group.links.sortedBy { it.title.removePrefix("The ").lowercase() }.forEach { link ->
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { error = open(context, link.url) }) {
                     CardTitle(link.title)
                     CardBody(link.summary)
