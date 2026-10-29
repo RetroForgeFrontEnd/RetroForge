@@ -155,3 +155,6 @@ Requests that were never fully done, or only answered:
 | Download texture packs directly | ✅ Settings → Download N64 texture packs: GhostlyDark's free packs (SM64, MK64, Smash Bros., Majora's Mask, Ocarina of Time) from GitHub, unpacked where the N64 emulator looks and switched on automatically. PSP packs: add a folder (no free direct source found) |
 
 | System list: a separate section for ROM hacks | ✅ each system has Games and ROM hacks tabs when it has hacks (NES: 41 games, 30 hacks; tested on the emulator) |
+| SteamGridDB covers with the user's own key | ✅ tested on the S22: search found Super Mario 64, covers listed with their artists, chosen cover shown on the game page with credit |
+| Dreamcast memory cards | ✅ tested on the S22 (Ikaruga creates its save file) |
+| PS2 compression to CHD | ✅ tested on the S22 (Gran Turismo 3: 3.88 GB .iso → 3.57 GB CHD, read back and checked, original set aside) |
