@@ -12,7 +12,7 @@ How each thing a RetroBat user does is done in RetroForge on Android. Status as 
 | Pick emulator per system / per game (Advanced settings) | Game page → Play with …; system default in Settings | ✅ |
 | In-game: hotkey + Start to quit, save/load states | Built-in player: swipe from the edge or the menu button; hotkeys; RetroArch keeps its own | ✅ |
 | Change disc (multi-disc m3u) | Built-in player menu → Change disc; RetroArch via m3u | ✅ |
-| Bezels / decorations, shaders | Console look (on by default), Sharp/Smooth/CRT/LCD filters | 🟡 no bezel packs |
+| Bezels / decorations, shaders | Console look (on by default), Sharp/Smooth/CRT/LCD filters | 🟡 Bezel Project bezels in landscape (download per system); no shader presets |
 | Cheats | Built-in player → Cheats (libretro database + own codes) | ✅ |
 | Favourites, collections | ✅ favourites, history, own collections | ✅ |
 | Edit metadata | Game page → Edit details (kept in RetroForge, gamelist.xml untouched) | ✅ |

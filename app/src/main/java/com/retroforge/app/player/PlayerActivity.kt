@@ -48,6 +48,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -118,6 +119,15 @@ class PlayerActivity : ComponentActivity() {
     private var fps by mutableStateOf<Int?>(null)
     private var filter by mutableStateOf(com.retroforge.player.ScreenFilter.SHARP)
     private var pictureRect by mutableStateOf(Rect(0, 0, 0, 0))
+    // The Bezel Project's frame (landscape only): the image, its see-through window (image pixels), whether it's on,
+    // and where it's drawn on screen (null when it isn't shown).
+    private var bezelImage by mutableStateOf<androidx.compose.ui.graphics.ImageBitmap?>(null)
+    private var bezelWindow: Rect? = null
+    private var bezelOn by mutableStateOf(true)
+    private var bezelPlace by mutableStateOf<Rect?>(null)
+    private var bezelBusy by mutableStateOf(false)
+    private var bezelStatus by mutableStateOf<String?>(null)
+    private val bezels by lazy { Bezels(File(filesDir, "bezels"), "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}") }
     private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS, NETPLAY }
 
     // Controller remapping, per system: "keyCode:button,keyCode:button".
@@ -389,6 +399,8 @@ class PlayerActivity : ComponentActivity() {
         shape = ScreenShape.of(prefs.getString("shape.$system", null))
         touchEnabled = prefs.getBoolean("touch.$system", true)
         consoleLook = prefs.getBoolean("look.$system", true)
+        // Per system from the in-game menu, otherwise Settings → Playing → Bezels.
+        bezelOn = prefs.getBoolean("bezel.$system", getSharedPreferences("views", MODE_PRIVATE).getBoolean(Bezels.PREF, true))
         // Per system, or every game when the VR tab says so.
         vr = prefs.getBoolean("vr.$system", false) || getSharedPreferences("views", MODE_PRIVATE).getBoolean("vr_by_default", false)
         if (vr) requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
@@ -495,6 +507,7 @@ class PlayerActivity : ComponentActivity() {
             }
         }.getOrNull() ?: -1L)
         NativePlayer.start()
+        loadBezel(fileName)
         runOnUiThread {
             video = av
             coreOptions = NativePlayer.options()
@@ -1066,6 +1079,20 @@ class PlayerActivity : ComponentActivity() {
     /** Places the picture for the current screen shape; the touchscreen mapping uses the same rectangle. */
     private fun applyViewport() {
         val av = video ?: return
+        // With a bezel, the whole bezel fits the screen and the picture fills its window.
+        val image = bezelImage
+        val window = bezelWindow
+        if (image != null && window != null && bezelOn && isLandscape() && !vr && !dualScreen && surfaceWidth > 0 && surfaceHeight > 0) {
+            val scale = minOf(surfaceWidth.toFloat() / image.width, surfaceHeight.toFloat() / image.height)
+            val x = (surfaceWidth - image.width * scale) / 2
+            val y = (surfaceHeight - image.height * scale) / 2
+            bezelPlace = Rect(x.toInt(), y.toInt(), (image.width * scale).toInt(), (image.height * scale).toInt())
+            picture = Rect((x + window.x * scale).toInt(), (y + window.y * scale).toInt(), (window.w * scale).toInt(), (window.h * scale).toInt())
+            pictureRect = picture
+            if (loaded) picture.let { NativePlayer.setViewport(it.x, it.y, it.w, it.h) }
+            return
+        }
+        bezelPlace = null
         // With the console look, the picture keeps a margin for the screen surround.
         val inset = if (consoleLook && !vr) (bezelMargin(!isLandscape()).value * resources.displayMetrics.density).toInt() else 0
         // With a second display the main screen shows only the top half (the DS's upper screen).
@@ -1112,6 +1139,51 @@ class PlayerActivity : ComponentActivity() {
         consoleLook = on
         prefs.edit().putBoolean("look.$system", on).apply()
         applyViewport()
+    }
+
+    private fun chooseBezel(on: Boolean) {
+        bezelOn = on
+        prefs.edit().putBoolean("bezel.$system", on).apply()
+        applyViewport()
+    }
+
+    /**
+     * The system bezel straight away, then the game's own once it's downloaded (the first time the game is played).
+     * Nothing when this system's bezels haven't been downloaded.
+     */
+    private fun loadBezel(fileName: String) {
+        if (!bezels.downloaded(system)) return
+        fun show(file: File?) {
+            val bitmap = file?.let { android.graphics.BitmapFactory.decodeFile(it.path) } ?: return
+            val window = Bezels.window(bitmap) ?: return
+            val image = bitmap.asImageBitmap()
+            image.prepareToDraw()
+            runOnUiThread {
+                bezelImage = image
+                bezelWindow = window
+                applyViewport()
+            }
+        }
+        Thread {
+            show(bezels.systemBezel(system))
+            runCatching { show(bezels.gameBezel(system, fileName)) }
+                .onFailure { android.util.Log.w("RetroForgePlayer", "bezel: ${it.message}") }
+        }.start()
+    }
+
+    /** From the in-game menu: this system's bezels, so the game shows its bezel straight away. */
+    private fun downloadBezels() {
+        bezelBusy = true
+        bezelStatus = "Downloading bezels from The Bezel Project…"
+        Thread {
+            val error = runCatching { bezels.install(system) }.exceptionOrNull()
+            runOnUiThread {
+                bezelBusy = false
+                bezelStatus = if (error == null) "Bezels downloaded. They show in landscape." else "Couldn't download bezels: ${error.message}"
+                if (error == null) chooseBezel(true)
+            }
+            if (error == null) loadBezel(intent.getStringExtra(EXTRA_FILE_NAME).orEmpty())
+        }.start()
     }
 
     private fun chooseTouch(on: Boolean) {
@@ -1220,7 +1292,20 @@ class PlayerActivity : ComponentActivity() {
                 } else {
                     // Landscape: the picture uses the full height; the controls sit over it at the sides.
                     GameSurface(Modifier.fillMaxSize())
-                    skin?.let { ConsoleFrame(it, pictureRect, Modifier.fillMaxSize()) }
+                    val bezel = bezelImage
+                    val place = bezelPlace
+                    if (bezel != null && place != null) {
+                        // The Bezel Project's frame round the picture, instead of the console look.
+                        androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
+                            drawImage(
+                                bezel, dstOffset = androidx.compose.ui.unit.IntOffset(place.x, place.y),
+                                dstSize = androidx.compose.ui.unit.IntSize(place.w, place.h),
+                                filterQuality = androidx.compose.ui.graphics.FilterQuality.High,
+                            )
+                        }
+                    } else {
+                        skin?.let { ConsoleFrame(it, pictureRect, Modifier.fillMaxSize()) }
+                    }
                     CompositionLocalProvider(LocalConsoleSkin provides skin) { controls(Modifier.fillMaxSize()) }
                 }
             }
@@ -1437,6 +1522,14 @@ class PlayerActivity : ComponentActivity() {
                         MenuButton(onClick = { chooseShape(shape.next()) }, modifier = wide) { Text("Screen shape: ${shape.label}") }
                         MenuButton(onClick = { chooseFilter(filter.next()) }, modifier = wide) { Text("Screen filter: ${filter.label}") }
                         MenuButton(onClick = { chooseLook(!consoleLook) }, modifier = wide) { Text("Console look: ${if (consoleLook) "On" else "Off"}") }
+                        if (Bezels.repoFor(system) != null) {
+                            if (bezels.downloaded(system)) MenuButton(onClick = { chooseBezel(!bezelOn) }, modifier = wide) {
+                                Text("Bezel (landscape): ${if (bezelOn) "On" else "Off"}")
+                            } else MenuButton(onClick = { if (!bezelBusy) downloadBezels() }, modifier = wide) {
+                                Text(if (bezelBusy) "Downloading bezels…" else "Download bezels (The Bezel Project)")
+                            }
+                            bezelStatus?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
+                        }
                         PlayerCores.widescreenOption(coreId)?.let { (key, wideValue, _) ->
                             val on = coreOptions.firstOrNull { it.key == key }?.value == wideValue
                             MenuButton(onClick = { chooseWidescreen() }, modifier = wide) { Text("Widescreen: ${if (on) "On" else "Off"}") }

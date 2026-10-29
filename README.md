@@ -21,7 +21,9 @@ Feedback and bug reports are very welcome: [open an issue](../../issues).
   sign-in. Games stream straight from the PC, so even big disc games start at once.
 - **In the game:** save states, fast-forward, cheats, screen shapes, CRT and LCD filters, upscaling
   (up to 10x for PSP), screenshots, an FPS counter, remappable buttons, keyboard and mouse for
-  computers, dual-screen handhelds and Cardboard VR.
+  computers, dual-screen handhelds and Cardboard VR. Optional bezels in landscape from
+  [The Bezel Project](https://github.com/thebezelproject), downloaded per system from their GitHub
+  (not included in RetroForge; thanks to The Bezel Project for the artwork).
 - **More ways to play:** RetroArch and 21 standalone emulators (Dolphin, NetherSX2, Azahar, Eden and
   more) through Obtainium, PC ports of games you own, and Windows games through GameNative,
   Winlator or DroidDeck.

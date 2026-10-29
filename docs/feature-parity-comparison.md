@@ -20,7 +20,7 @@ Written 2026-10-28. RetroBat was inspected read-only on this PC (`G:\Retrobat`, 
 | Background music / UI sounds | ✅ | ✅ | ✅ | ❌ | ? | ? | ✅ | ❌ |
 | Dual-screen handhelds (AYN Thor, Pocket DS) | — | — | 🟡 | 🟡 | ? | ✅ | ✅ | ❌ (DS layouts on one screen only) |
 | Playtime tracking | ✅ | ✅ | ❌ | ✅ | ✅ | ? | ✅ per second | 🟡 play history, no playtime |
-| Shaders, bezels | ✅ | ✅ | — | — | — | — | — | 🟡 4 filters + console look; no bezel packs |
+| Shaders, bezels | ✅ | ✅ | — | — | — | — | — | 🟡 filters + console look; Bezel Project bezels (download per system) |
 | Cheats | ✅ | ✅ | — | — | — | — | — | ✅ built-in player |
 | Save states, auto resume | ✅ | ✅ | — | — | — | — | — | ✅ built-in player |
 | Hotkeys | ✅ | ✅ | — | — | — | — | — | ✅ |
