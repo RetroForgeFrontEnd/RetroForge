@@ -164,7 +164,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
         var askClose by remember { mutableStateOf(false) }
         androidx.activity.compose.BackHandler(enabled = atHome && nav.previousBackStackEntry == null) { askClose = true }
         if (askClose) {
-            val activity = androidx.compose.ui.platform.LocalContext.current as? android.app.Activity
+            val activity = androidx.activity.compose.LocalActivity.current
             androidx.compose.material3.AlertDialog(
                 onDismissRequest = { askClose = false },
                 title = { androidx.compose.material3.Text("Close RetroForge?") },

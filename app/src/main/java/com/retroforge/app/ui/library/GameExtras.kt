@@ -73,6 +73,7 @@ suspend fun findGameMedia(resolver: ContentResolver, root: RootEntity?, game: Ga
 }
 
 /** The game's video, silent and looping, like a frontend's game page. */
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class) // PlayerView.resizeMode
 @Composable
 fun GameVideo(uri: Uri, modifier: Modifier = Modifier) {
     val context = LocalContext.current

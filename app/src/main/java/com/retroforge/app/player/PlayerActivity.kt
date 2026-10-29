@@ -320,6 +320,11 @@ class PlayerActivity : ComponentActivity() {
         remap = loadRemap()
         input.remap = remap
         touchMap = loadTouchMap()
+        // Back (the gesture, the button and the Back key): Android 16's back gesture only reaches callbacks like this
+        // one, never dispatchKeyEvent.
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() = onBack()
+        })
 
         setContent {
             MaterialTheme(colorScheme = darkColorScheme()) {
@@ -845,18 +850,31 @@ class PlayerActivity : ComponentActivity() {
 
     // ---------- input ----------
 
+    /** Back in the menu goes up a page, then closes it; in the game it opens the menu (or leaves a game that failed). */
+    private fun onBack() {
+        when {
+            menuOpen -> if (menuPage != MenuPage.MAIN) menuPage = MenuPage.MAIN else closeMenu()
+            phase is Phase.Failed -> finish()
+            else -> openMenu()
+        }
+    }
+
+    // ComponentActivity marks its dispatchKeyEvent as library-internal, but overriding Activity's is how every app
+    // reads controller keys.
+    @SuppressLint("RestrictedApi")
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        // System keys go to Android: Back to the back callback (see onCreate), as the gesture does, volume to the sound.
+        // Menu stays ours.
+        if (event.isSystem && event.keyCode != KeyEvent.KEYCODE_MENU) return super.dispatchKeyEvent(event)
         // Remap buttons is waiting for "press the button you want": that press is the answer, not menu navigation.
-        if (menuOpen && input.capture != null && event.keyCode != KeyEvent.KEYCODE_BACK) {
+        if (menuOpen && input.capture != null) {
             input.onKey(event)
             return true
         }
         if (menuOpen) {
             when (event.keyCode) {
-                KeyEvent.KEYCODE_BACK, KeyEvent.KEYCODE_BUTTON_B, KeyEvent.KEYCODE_BUTTON_MODE, KeyEvent.KEYCODE_MENU -> {
-                    if (event.action == KeyEvent.ACTION_UP) {
-                        if (menuPage != MenuPage.MAIN) menuPage = MenuPage.MAIN else closeMenu()
-                    }
+                KeyEvent.KEYCODE_BUTTON_B, KeyEvent.KEYCODE_BUTTON_MODE, KeyEvent.KEYCODE_MENU -> {
+                    if (event.action == KeyEvent.ACTION_UP) onBack()
                     return true
                 }
                 KeyEvent.KEYCODE_BUTTON_A -> return super.dispatchKeyEvent(
@@ -865,10 +883,8 @@ class PlayerActivity : ComponentActivity() {
             }
             return super.dispatchKeyEvent(event)
         }
-        if (event.keyCode == KeyEvent.KEYCODE_BACK || event.keyCode == KeyEvent.KEYCODE_BUTTON_MODE || event.keyCode == KeyEvent.KEYCODE_MENU) {
-            if (event.action == KeyEvent.ACTION_UP) {
-                if (phase is Phase.Failed) finish() else openMenu()
-            }
+        if (event.keyCode == KeyEvent.KEYCODE_BUTTON_MODE || event.keyCode == KeyEvent.KEYCODE_MENU) {
+            if (event.action == KeyEvent.ACTION_UP) onBack()
             return true
         }
         // A real keyboard (Bluetooth or USB) types into computers; on other systems its keys stay controller keys.

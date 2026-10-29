@@ -6,7 +6,7 @@ A free Android frontend for retro games and PC games, all in one place.
 
 Made by Darren Glancy, built with a lot of help from AI (Claude). Tested on a Samsung Galaxy S22 as it went.
 
-**Status: beta (0.5.0).** It works well for most systems, but it's still being tested on more devices.
+**Status: beta (0.5.1).** It works well for most systems, but it's still being tested on more devices.
 Feedback and bug reports are very welcome: [open an issue](../../issues).
 
 ## What it does
@@ -39,9 +39,9 @@ newer). Then open RetroForge and follow **Set up RetroForge**.
 ## Good to know
 
 - **No games or BIOS files are included.** Use your own legally obtained games and BIOS dumps.
-- GameCube, Wii and PS2 in the built-in player are experimental and don't play yet on Samsung
-  (Exynos) phones; the Dolphin and NetherSX2/ARMSX2 apps play them meanwhile. Vulkan rendering is
-  experimental too.
+- GameCube, Wii and PS2 in the built-in player are new: they play on Vulkan (tested on a Galaxy S22),
+  but have had far less testing than the other systems. The Dolphin and NetherSX2/ARMSX2 apps are
+  offered too.
 - No accounts, no ads, no tracking. See [SECURITY_AND_PRIVACY](docs/SECURITY_AND_PRIVACY.md).
 
 ## Building it yourself

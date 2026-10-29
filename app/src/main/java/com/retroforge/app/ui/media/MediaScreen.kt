@@ -327,13 +327,17 @@ private fun artwork(context: Context, film: Film, tmdbKey: String?): File? {
     val frame = File(context.cacheDir, "frames/$name.jpg")
     if (frame.isFile) return frame
     return runCatching {
-        MediaMetadataRetriever().use { r ->
+        // Released by hand: MediaMetadataRetriever is only AutoCloseable (use {}) from Android 10.
+        val r = MediaMetadataRetriever()
+        try {
             r.setDataSource(context, film.uri.toUri())
             val length = r.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull() ?: 0L
             val bitmap = r.getFrameAtTime(length * 100, MediaMetadataRetriever.OPTION_CLOSEST_SYNC) ?: return null
             frame.parentFile?.mkdirs()
             frame.outputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 82, it) }
             frame
+        } finally {
+            r.release()
         }
     }.getOrNull()
 }

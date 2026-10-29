@@ -25,6 +25,7 @@ import androidx.media3.ui.PlayerView
  * Plays one film full screen (Media3 ExoPlayer, Apache 2.0), drawn by [StereoRenderer] so it can also be shown for a
  * Cardboard viewer: a 2D film once per eye, or a 3D film's halves (side by side or top and bottom) one per eye.
  */
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class) // PlayerView's shutter, subtitle button and surface view
 class VideoActivity : ComponentActivity() {
     private var player: ExoPlayer? = null
     private var renderer: StereoRenderer? = null
