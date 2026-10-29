@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Port APKs RetroForge downloaded, shared with Android's package installer. -->
+<paths>
+    <cache-path name="ports" path="ports/" />
+</paths>

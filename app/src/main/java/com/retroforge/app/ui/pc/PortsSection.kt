@@ -113,14 +113,37 @@ private fun PortCard(port: GamePort, owned: GameEntity?, library: LibraryReposit
         }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (port.isWindows) {
-                FocusChip("Windows download", onClick = { open(context, port.repo + "/releases/latest") })
+                FocusChip("Download Windows version", onClick = {
+                    prepared = "Looking for the Windows version…"
+                    scope.launch {
+                        prepared = withContext(Dispatchers.IO) {
+                            runCatching {
+                                val file = PortDownloads.pickWindows(PortDownloads.latest(port)) ?: return@runCatching "No Windows download in the latest release. Use Project page."
+                                val where = PortDownloads.unpackWindows(context, port, file) { p -> prepared = "Downloading ${file.name}… $p%" }
+                                "Unpacked into $where. In GameNative, add it as a custom game and pick its .exe."
+                            }.getOrElse { "Didn't download: ${it.message}" }
+                        }
+                    }
+                })
                 val runner = WINDOWS_RUNNERS.firstNotNullOfOrNull { context.packageManager.getLaunchIntentForPackage(it) }
                 FocusChip(if (runner != null) "Open GameNative" else "Get GameNative", onClick = {
                     if (runner != null) runCatching { context.startActivity(runner) } else open(context, GAMENATIVE_PAGE)
                 })
             } else {
                 if (launch != null) FocusChip("Open", onClick = { runCatching { context.startActivity(launch) } })
-                FocusChip(if (launch != null) "Update" else "Get", onClick = { get(context, port) })
+                FocusChip(if (launch != null) "Update" else "Download and install", onClick = {
+                    prepared = "Looking for the latest version…"
+                    scope.launch {
+                        prepared = withContext(Dispatchers.IO) {
+                            runCatching {
+                                val file = PortDownloads.pickApk(PortDownloads.latest(port)) ?: return@runCatching "No Android download in the latest release. Use Project page."
+                                PortDownloads.installApk(context, file) { p -> prepared = "Downloading ${file.name}… $p%" }
+                                "Downloaded ${file.name}. Confirm the install in Android's window (the first time, allow RetroForge to install apps)."
+                            }.getOrElse { "Didn't download: ${it.message}" }
+                        }
+                    }
+                })
+                FocusChip("Get with Obtainium", onClick = { get(context, port) })
             }
             if (owned != null) FocusChip("Prepare files", onClick = {
                 prepared = "Copying…"
@@ -158,7 +181,7 @@ private suspend fun prepare(context: Context, library: LibraryRepository, port: 
     val root = library.roots.first().firstOrNull { it.id == game.rootId } ?: error("its game folder isn't available")
     val source = library.documentUri(root, game.documentId)
     val resolver = context.contentResolver
-    val folder = "${android.os.Environment.DIRECTORY_DOWNLOADS}/RetroForge/Ports/${port.name.replace(Regex("[\\/:*?\"<>|]"), "_")}"
+    val folder = "${android.os.Environment.DIRECTORY_DOWNLOADS}/RetroForge/Ports/${port.name.replace(":", " -").replace(Regex("[\\/*?\"<>|]"), "_")}"
     fun save(name: String, write: (java.io.OutputStream) -> Unit) {
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) error("needs Android 10 or newer")
         val values = android.content.ContentValues().apply {
