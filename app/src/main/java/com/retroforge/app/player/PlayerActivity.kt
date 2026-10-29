@@ -358,7 +358,7 @@ class PlayerActivity : ComponentActivity() {
         }
         vulkanOn = PlayerCores.usesVulkan(coreId, videoChoices.get("graphics.$system"))
         val options = PlayerCores.defaultOptions(coreId) + PlayerCores.graphicsOptions(coreId, vulkanOn) + texturePacks + savedOptions() +
-            PlayerCores.orientationOptions(coreId, isLandscape())
+            PlayerCores.orientationOptions(coreId, isLandscape()) + wonderSwanRotation(uri, fileName)
         // Play! keeps its memory cards and settings under $EXTERNAL_STORAGE ("/sdcard/Play Data Files"), which apps can't
         // write to any more, and stops when it can't. This process is the player's alone, so point it at our own folder.
         if (coreId == "play") runCatching { android.system.Os.setenv("EXTERNAL_STORAGE", File(systemDir, "play").apply { mkdirs() }.path, true) }
@@ -394,6 +394,8 @@ class PlayerActivity : ComponentActivity() {
             video = av
             coreOptions = NativePlayer.options()
             applyViewport()
+            // Cores that turn or resize the picture once running (WonderSwan's upright games) get picked up.
+            refreshVideo(40)
             phase = Phase.Playing
             setUpSecondScreen()
             NativePlayer.setPaused(!foreground || menuOpen)
@@ -452,7 +454,7 @@ class PlayerActivity : ComponentActivity() {
             // VFS, so even a 4 GB disc starts at once. A copy made earlier is used when there is one (it's local), and
             // a copy is made when the core can't stream or the user chose "Copy games to the phone first".
             val copyFirst = intent.getBooleanExtra(EXTRA_COPY_FIRST, false)
-            if (!copyFirst && !File(dir, fileName).isFile && NativePlayer.vfsRequested()) {
+            if (!copyFirst && !File(dir, fileName).isFile && coreId in PlayerCores.streamingCores && NativePlayer.vfsRequested()) {
                 val streamDir = File(cacheDir, "stream").apply { deleteRecursively(); mkdirs() }
                 val opened = runCatching { files.open(uri, fileName, PlayerCores.companions(system), fallback = systemDir) }.getOrNull()
                 if (opened != null) {
@@ -507,6 +509,32 @@ class PlayerActivity : ComponentActivity() {
         NativePlayer.setOption(option.key, next)
         coreOptions = NativePlayer.options()
         refreshVideo(10) // some settings change the picture (borders, layouts)
+    }
+
+    /**
+     * WonderSwan games made to be held upright (Tetris, Klonoa, many puzzle games) say so in their header: bit 0 of the
+     * byte 4 from the end. Beetle Cygne then turns the picture ("portrait"), and the player shows it upright.
+     */
+    private fun wonderSwanRotation(uri: Uri, fileName: String): Map<String, String> {
+        if (coreId != "mednafen_wswan") return emptyMap()
+        val vertical = runCatching {
+            if (fileName.endsWith(".zip", ignoreCase = true)) {
+                contentResolver.openInputStream(uri)?.use { stream ->
+                    ZipInputStream(stream).use { zip ->
+                        generateSequence { zip.nextEntry }.firstOrNull { it.name.substringAfterLast('.').lowercase() in setOf("ws", "wsc") }
+                            ?.let { zip.readBytes() }
+                    }
+                }?.let { rom -> rom.size >= 16 && rom[rom.size - 4].toInt() and 1 == 1 }
+            } else {
+                contentResolver.openFileDescriptor(uri, "r")?.use { pfd ->
+                    java.io.FileInputStream(pfd.fileDescriptor).channel.use { ch ->
+                        val size = ch.size()
+                        if (size < 16) null else java.nio.ByteBuffer.allocate(1).also { ch.read(it, size - 4) }.get(0).toInt() and 1 == 1
+                    }
+                }
+            }
+        }.getOrNull() == true
+        return if (vertical) mapOf("wswan_rotate_display" to "portrait") else emptyMap()
     }
 
     /** The internal resolution chosen for this system: the Nth value of the core's own resolution option. */

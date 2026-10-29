@@ -26,7 +26,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "SCREENSCRAPER_DEV_ID", quoted("screenscraper.devid"))
         buildConfigField("String", "SCREENSCRAPER_DEV_PASSWORD", quoted("screenscraper.devpassword"))
-        buildConfigField("String", "BUG_REPORT_URL", quoted("bugreport.url"))
+        // Bug reports go to the project's GitHub issues unless local.properties names another tracker.
+        buildConfigField("String", "BUG_REPORT_URL", "\"" + (localProps.getProperty("bugreport.url") ?: "https://github.com/RetroForgeFrontEnd/RetroForge/issues") + "\"")
         // Optional support links (local.properties): support.buymeacoffee, support.kofi, support.patreon, support.github
         buildConfigField("String", "SUPPORT_BUYMEACOFFEE", quoted("support.buymeacoffee"))
         buildConfigField("String", "SUPPORT_KOFI", quoted("support.kofi"))

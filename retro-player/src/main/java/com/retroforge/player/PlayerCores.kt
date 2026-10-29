@@ -332,6 +332,15 @@ object PlayerCores {
      */
     val vulkanCores = setOf("dolphin", "pcsx2", "ppsspp")
 
+    /**
+     * Cores that read their whole game through the player's VFS, so games can stream instead of being copied: the CD
+     * and disc emulators. Others (VICE's disk drive, for one) also ask for the VFS but open the file by path themselves.
+     */
+    val streamingCores = setOf(
+        "pcsx_rearmed", "swanstation", "genesis_plus_gx", "picodrive", "mednafen_pce_fast", "mednafen_supergrafx",
+        "mednafen_saturn", "yabause", "ppsspp", "flycast", "opera", "neocd",
+    )
+
     /** OpenGL unless the user picked Vulkan, which is still experimental in the built-in player. */
     fun usesVulkan(coreId: String, choice: String?): Boolean = coreId in vulkanCores && choice == "vulkan"
 

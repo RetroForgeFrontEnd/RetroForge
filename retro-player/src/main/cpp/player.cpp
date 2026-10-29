@@ -182,6 +182,8 @@ struct Player {
     // Vulkan cores (Dolphin, Citra, PCSX2 …): their frames are copied into hwTexture (vulkan_render.cpp). preferVulkan
     // is the user's choice for this system ("retroforge_graphics" = "vulkan"), told to cores that ask what's preferred.
     bool vulkan = false, preferVulkan = false;
+    // RETRO_ENVIRONMENT_SET_ROTATION: the picture turned this many quarter turns anticlockwise.
+    std::atomic<unsigned> rotation{0};
     // Frames put on screen, for the FPS counter (read once a second by the app).
     std::atomic<uint64_t> framesShown{0};
     GLuint hwFbo = 0, hwTexture = 0, hwDepth = 0;
@@ -391,6 +393,10 @@ bool environment(unsigned cmd, void *data) {
             P->keyboardCallback = cb ? cb->callback : nullptr;
             return true;
         }
+        case RETRO_ENVIRONMENT_SET_ROTATION:
+            P->rotation = *static_cast<const unsigned *>(data) & 3;
+            LOGI("core rotates the picture %u x 90 degrees", P->rotation.load());
+            return true;
         case RETRO_ENVIRONMENT_GET_PREFERRED_HW_RENDER:
             *static_cast<unsigned *>(data) = P->preferVulkan ? RETRO_HW_CONTEXT_VULKAN : RETRO_HW_CONTEXT_OPENGLES3;
             return true;
@@ -822,7 +828,14 @@ void drawPicture(int ax, int ay, int aw, int ah, int sh, float x0, float x1, flo
         top = p.hw.bottom_left_origin ? (1 - y0) * v : y0 * v;
         bottom = p.hw.bottom_left_origin ? (1 - y1) * v : y1 * v;
     }
-    const GLfloat quad[] = {-1, -1, left, bottom, 1, -1, right, bottom, -1, 1, left, top, 1, 1, right, top};
+    // The core's rotation (vertical WonderSwan and arcade games): each screen corner shows the image corner r steps
+    // clockwise from it, which turns the picture r x 90 degrees anticlockwise. Corners: top left, top right,
+    // bottom right, bottom left.
+    const GLfloat corners[4][2] = {{left, top}, {right, top}, {right, bottom}, {left, bottom}};
+    unsigned r = p.rotation & 3;
+    auto uv = [&](unsigned corner) { return corners[(corner + r) & 3]; };
+    const GLfloat quad[] = {-1, -1, uv(3)[0], uv(3)[1], 1, -1, uv(2)[0], uv(2)[1],
+                            -1, 1, uv(0)[0], uv(0)[1], 1, 1, uv(1)[0], uv(1)[1]};
     glUseProgram(p.program);
     if (p.hwFrame) {
         glUniform2f(p.uTexSize, float(p.hwW), float(p.hwH));
@@ -1243,8 +1256,16 @@ JNIEXPORT jfloatArray JNI(avInfo)(JNIEnv *env, jobject) {
     const retro_system_av_info &a = P->av;
     float aspect = a.geometry.aspect_ratio > 0 ? a.geometry.aspect_ratio
                    : a.geometry.base_height > 0 ? float(a.geometry.base_width) / float(a.geometry.base_height) : 4.0f / 3.0f;
-    float values[5] = {float(a.timing.fps), float(a.timing.sample_rate), float(a.geometry.base_width),
-                       float(a.geometry.base_height), aspect};
+    // A quarter-turned picture swaps its width and height, so the app fits it the right way round. Some cores (Beetle
+    // Cygne) already give the turned shape as their aspect ratio (upright, while the image itself is wide): that one
+    // is kept as it is.
+    bool turned = P->rotation & 1;
+    bool wideImage = a.geometry.base_width >= a.geometry.base_height;
+    bool alreadyTurned = turned && wideImage && aspect < 1.0f;
+    float shown = turned && !alreadyTurned ? 1.0f / aspect : aspect;
+    float values[5] = {float(a.timing.fps), float(a.timing.sample_rate), float(turned ? a.geometry.base_height : a.geometry.base_width),
+                       float(turned ? a.geometry.base_width : a.geometry.base_height), shown};
+    LOGI("picture %ux%u, aspect %.3f, rotation %u -> shown aspect %.3f", a.geometry.base_width, a.geometry.base_height, aspect, P->rotation.load(), shown);
     env->SetFloatArrayRegion(out, 0, 5, values);
     return out;
 }
