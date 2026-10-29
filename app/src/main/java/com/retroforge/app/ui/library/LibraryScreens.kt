@@ -107,7 +107,8 @@ fun RetroScreen(
                 CardTitle("Game folders")
                 CardBody("${plural(systems.sumOf { it.games }, "game")} in ${plural(systems.size, "system")} from ${plural(roots!!.size, "folder")}.")
                 if (running != null) {
-                    StatusPill("Scanning ${running.progress.currentSystem ?: "…"}", StatusTone.CAUTION)
+                    val percent = if (running.progress.systemsTotal > 0) " · ${running.progress.systemsDone * 100 / running.progress.systemsTotal}%" else ""
+                    StatusPill("Scanning ${running.progress.currentSystem ?: "…"}$percent", StatusTone.CAUTION)
                     if (running.progress.systemsTotal > 0) {
                         LinearProgressIndicator(
                             progress = { running.progress.systemsDone.toFloat() / running.progress.systemsTotal },
@@ -192,7 +193,8 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
                 when (state) {
                     is ScanState.Running -> {
                         val p = state.progress
-                        CardBody("System ${minOf(p.systemsDone + 1, maxOf(p.systemsTotal, 1))} of ${maxOf(p.systemsTotal, 1)}: ${p.currentSystem ?: "starting"} · ${p.filesSeen} games found so far")
+                        val percent = if (p.systemsTotal > 0) "${p.systemsDone * 100 / p.systemsTotal}% · " else ""
+                        CardBody("${percent}System ${minOf(p.systemsDone + 1, maxOf(p.systemsTotal, 1))} of ${maxOf(p.systemsTotal, 1)}: ${p.currentSystem ?: "starting"} · ${p.filesSeen} games found so far")
                         if (p.systemsTotal > 0) LinearProgressIndicator(progress = { p.systemsDone.toFloat() / p.systemsTotal }, modifier = Modifier.fillMaxWidth())
                     }
                     is ScanState.Failed -> CardBody(state.reason)
@@ -216,7 +218,7 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
             }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (renaming == null) {
-                    FocusChip("Rescan", onClick = { viewModel.rescan(root) }, enabled = access && state !is ScanState.Running)
+                    FocusChip("Scan for new games", onClick = { viewModel.rescan(root) }, enabled = access && state !is ScanState.Running)
                     FocusChip("Rename", onClick = { renaming = root.name })
                     FocusChip("Forget folder", onClick = { viewModel.forget(root) })
                 } else {

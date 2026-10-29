@@ -87,7 +87,7 @@ fun SettingsScreen(
                         // A short running report while it scans: which system, and how far.
                         val root = lib.addFolderAndWait(uri) { p ->
                             val system = p.currentSystem?.let { " ${lib.systemName(it)}" }.orEmpty()
-                            val of = if (p.systemsTotal > 0) " (${p.systemsDone} of ${p.systemsTotal} systems)" else ""
+                            val of = if (p.systemsTotal > 0) " (${p.systemsDone * 100 / p.systemsTotal}%, ${p.systemsDone} of ${p.systemsTotal} systems)" else ""
                             progress("Looking in$system… ${p.filesSeen} files checked$of", if (p.systemsTotal > 0) p.systemsDone.toFloat() / p.systemsTotal else null)
                         }
                         when {

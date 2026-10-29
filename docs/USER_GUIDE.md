@@ -7,7 +7,7 @@ The same guide as Settings → How to use RetroForge in the app.
 - Settings → Set up RetroForge walks you through it: pick your games folder, check your BIOS files and choose emulators. The built-in player's emulators download by themselves.
 - Your games folder can be a "roms" folder from another frontend (RetroBat, ES-DE: snes, nes, psx … inside), a single system folder, or just a folder of games: RetroForge recognises loose games by their file type (.gba, .nds, .sfc, .z64 …).
 - It can be on the phone, an SD card or a USB drive. RetroForge only reads it; nothing is changed unless you use the ROM Manager.
-- New games: Retro → Game folders → Rescan finds them. Settings → Games and library can also look each time the app starts (folders on the device only; network drives are rescanned by hand).
+- New games: Retro → Game folders → Scan for new games finds them. Settings → Games and library can also look each time the app starts (folders on the device only; network drives are rescanned by hand).
 - Settings → Check my setup shows every system at once: its emulator, BIOS and games, and what's missing.
 - RetroForge comes with no games and no BIOS. Use your own.
 
