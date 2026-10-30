@@ -30,7 +30,10 @@ enum class ManagerTab(val label: String) { DUPLICATES("Duplicates"), COMPRESS("C
 
 sealed interface Loadable<out T> {
     data object Idle : Loadable<Nothing>
-    data class Loading(val done: Int, val total: Int) : Loadable<Nothing>
+    data class Loading(val done: Int, val total: Int) : Loadable<Nothing> {
+        /** How far it has got, 0 to 1, or null before it knows how much there is. */
+        val share: Float? get() = if (total > 0) done.toFloat() / total else null
+    }
     data class Ready<T>(val value: T) : Loadable<T>
     data class Failed(val reason: String) : Loadable<Nothing>
 }
@@ -80,7 +83,7 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
         viewModelScope.launch {
             multiDisc.value = Loadable.Loading(0, 0)
             multiDisc.value = try {
-                Loadable.Ready(manager.findMultiDisc(root))
+                Loadable.Ready(manager.findMultiDisc(root) { done, total -> multiDisc.value = Loadable.Loading(done, total) })
             } catch (e: Exception) {
                 Loadable.Failed(e.message ?: "Couldn't look for multi-disc games")
             }
@@ -169,7 +172,7 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
         viewModelScope.launch {
             compressible.value = Loadable.Loading(0, 0)
             compressible.value = try {
-                val report = manager.findCompressible(root)
+                val report = manager.findCompressible(root) { done, total -> compressible.value = Loadable.Loading(done, total) }
                 selectedSystems.value = emptySet()
                 Loadable.Ready(report)
             } catch (e: Exception) {

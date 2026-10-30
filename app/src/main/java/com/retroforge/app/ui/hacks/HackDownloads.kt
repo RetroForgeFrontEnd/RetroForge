@@ -11,13 +11,13 @@ object HackDownloads {
     private val patchFiles = Regex("""\.(zip|ips|bps|ups|xdelta)$""", RegexOption.IGNORE_CASE)
 
     /** The latest release's patch file: (file name, bytes). */
-    fun latestPatch(repo: String): Pair<String, ByteArray> {
+    fun latestPatch(repo: String, onProgress: (Float?) -> Unit = {}): Pair<String, ByteArray> {
         val release = JSONObject(get("https://api.github.com/repos/$repo/releases/latest").decodeToString())
         val assets = release.optJSONArray("assets") ?: throw IOException("no files in the latest release")
         val asset = (0 until assets.length()).map { assets.getJSONObject(it) }.firstOrNull { patchFiles.containsMatchIn(it.optString("name")) }
             ?: throw IOException("no patch file in the latest release")
         if (asset.optLong("size") > 64L * 1024 * 1024) throw IOException("the patch is over 64 MB")
-        return asset.getString("name") to get(asset.getString("browser_download_url"))
+        return asset.getString("name") to com.retroforge.app.Downloads.bytes(asset.getString("browser_download_url"), 64L * 1024 * 1024, onProgress)
     }
 
     private fun get(url: String): ByteArray {

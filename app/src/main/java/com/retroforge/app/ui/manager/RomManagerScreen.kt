@@ -220,7 +220,7 @@ private fun DuplicatesTab(viewModel: RomManagerViewModel) {
         }
         is Loadable.Loading -> {
             CardBody(if (s.total == 0) "Looking for duplicates …" else "Checking set ${s.done + 1} of ${s.total} …")
-            LinearProgressIndicator(Modifier.fillMaxWidth())
+            com.retroforge.app.ui.DownloadBar(s.share)
         }
         is Loadable.Failed -> { StatusPill("Couldn't check", StatusTone.BAD); CardBody(s.reason); FocusChip("Try again", onClick = viewModel::findDuplicates) }
         is Loadable.Ready -> {
@@ -283,7 +283,7 @@ private fun CompressTab(viewModel: RomManagerViewModel) {
                     "Cartridge ROMs become .zip. This only reads your files until you confirm.",
             )
         }
-        is Loadable.Loading -> { CardBody("Looking for uncompressed games …"); LinearProgressIndicator(Modifier.fillMaxWidth()) }
+        is Loadable.Loading -> { CardBody("Looking for uncompressed games …"); com.retroforge.app.ui.DownloadBar(s.share) }
         is Loadable.Failed -> { StatusPill("Couldn't check", StatusTone.BAD); CardBody(s.reason); FocusChip("Try again", onClick = viewModel::findCompressible) }
         is Loadable.Ready -> {
             val report = s.value
@@ -361,7 +361,7 @@ private fun MultiDiscTab(viewModel: RomManagerViewModel) {
                     "so each plays as one game with disc swapping. This only reads your files.",
             )
         }
-        is Loadable.Loading -> { CardBody("Looking for multi-disc games …"); LinearProgressIndicator(Modifier.fillMaxWidth()) }
+        is Loadable.Loading -> { CardBody("Looking for multi-disc games …"); com.retroforge.app.ui.DownloadBar(s.share) }
         is Loadable.Failed -> { StatusPill("Couldn't check", StatusTone.BAD); CardBody(s.reason); FocusChip("Try again", onClick = viewModel::findMultiDisc) }
         is Loadable.Ready -> {
             val report = s.value

@@ -172,11 +172,16 @@ fun HackDetailScreen(viewModel: HacksViewModel, key: String, onOpenPatcher: () -
 
         entry.patchRepo?.let { repo ->
             var status by remember { mutableStateOf<String?>(null) }
+            var progress by remember { mutableStateOf<Float?>(null) }
+            var downloading by remember { mutableStateOf(false) }
             val scope = rememberCoroutineScope()
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
                 status = "Getting the latest patch…"
+                downloading = true
                 scope.launch {
-                    val result = withContext(Dispatchers.IO) { runCatching { HackDownloads.latestPatch(repo) } }
+                    val result = withContext(Dispatchers.IO) { runCatching { HackDownloads.latestPatch(repo) { progress = it } } }
+                    downloading = false
+                    progress = null
                     result.onSuccess { file ->
                         com.retroforge.app.ui.patcher.PendingPatch.file = file
                         status = null
@@ -187,6 +192,7 @@ fun HackDetailScreen(viewModel: HacksViewModel, key: String, onOpenPatcher: () -
                 CardTitle("Download and patch")
                 CardBody("Gets the latest patch from the hack's GitHub releases ($repo) and opens the patcher with it. Then pick your ${entry.baseGame} ROM.")
                 status?.let { CardBody(it) }
+                if (downloading) com.retroforge.app.ui.DownloadBar(progress)
             }
         }
 

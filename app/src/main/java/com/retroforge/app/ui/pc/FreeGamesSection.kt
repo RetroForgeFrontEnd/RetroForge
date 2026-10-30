@@ -1,0 +1,125 @@
+package com.retroforge.app.ui.pc
+
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import com.retroforge.app.ui.CardBody
+import com.retroforge.app.ui.CardTitle
+import com.retroforge.app.ui.ChipRow
+import com.retroforge.app.ui.DownloadBar
+import com.retroforge.core.ui.FocusCard
+import com.retroforge.core.ui.FocusChip
+import com.retroforge.core.ui.StatusPill
+import com.retroforge.core.ui.StatusTone
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+/**
+ * Free games: shareware, freeware and homebrew that anyone may share, downloaded from RetroArch's own content server
+ * into the user's game folder (in its system folder), then played in the built-in player like any other game.
+ */
+@Composable
+fun FreeGamesSection(library: com.retroforge.core.library.LibraryRepository) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val prefs = remember { context.getSharedPreferences("free_games", Context.MODE_PRIVATE) }
+    var changes by remember { mutableIntStateOf(0) }
+    val folder = remember(changes) { prefs.getString("folder", null)?.let(Uri::parse) }
+    val got = remember(changes) { prefs.getStringSet("got", emptySet()).orEmpty() }
+    var busy by remember { mutableStateOf<String?>(null) }
+    var progress by remember { mutableStateOf<Float?>(null) }
+    var status by remember { mutableStateOf<String?>(null) }
+
+    val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
+        uri ?: return@rememberLauncherForActivityResult
+        runCatching { context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION) }
+        prefs.edit().putString("folder", uri.toString()).putString("prefix", FreeGames.prefixFor(context.contentResolver, uri)).apply()
+        changes++
+        status = "Free games will go in that folder, each in its system's folder."
+    }
+
+    fun get(game: FreeGame) {
+        val target = folder ?: return
+        busy = game.title
+        status = "Downloading ${game.title}…"
+        scope.launch {
+            status = withContext(Dispatchers.IO) {
+                runCatching { FreeGames.install(game, context.contentResolver, target, prefs.getString("prefix", "").orEmpty()) { progress = it } }.fold(
+                    onSuccess = {
+                        prefs.edit().putStringSet("got", got + game.title).apply()
+                        // The game folder it went in is scanned again, so it shows up with the rest. A folder inside one
+                        // already in the library isn't added again (its games would show twice).
+                        val pickedId = android.provider.DocumentsContract.getTreeDocumentId(target)
+                        val holder = library.roots.first().firstOrNull { root ->
+                            val uri = Uri.parse(root.treeUri)
+                            uri.authority == target.authority && runCatching { android.provider.DocumentsContract.getTreeDocumentId(uri) }.getOrNull()
+                                ?.let { pickedId == it || pickedId.startsWith("$it/") } == true
+                        }
+                        if (holder != null) library.scan(holder.id) else library.addFolder(target)
+                        "${game.title} is in your library (${game.system} folder). Find it on the Retro tab."
+                    },
+                    onFailure = { "Couldn't get ${game.title}: ${it.message}" },
+                )
+            }
+            busy = null
+            progress = null
+            changes++
+        }
+    }
+
+    Text("Free games", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
+    FocusCard(modifier = Modifier.fillMaxWidth()) {
+        CardTitle("Free games to download") { StatusPill("${FreeGames.all.size} games", StatusTone.GOOD) }
+        CardBody(
+            "Games their makers let anyone share: shareware episodes (Doom, Wolfenstein 3D, Commander Keen), freeware and " +
+                "new homebrew for old consoles. They come from RetroArch's own download server and play in RetroForge's " +
+                "built-in player. Abandonware isn't offered: those games are still owned by someone.",
+        )
+        if (folder == null) {
+            CardBody("First, choose where they go: your roms folder (the one with snes, psx … inside) is best.")
+            FocusChip("Choose a folder", onClick = { pickFolder.launch(null) })
+        } else {
+            CardBody("Saving to: ${folder.lastPathSegment?.substringAfter(':')?.ifBlank { "the folder you chose" } ?: "the folder you chose"}")
+            FocusChip("Choose a different folder", onClick = { pickFolder.launch(null) })
+        }
+        if (busy != null) DownloadBar(progress)
+        status?.let { CardBody(it) }
+    }
+    FreeGames.all.groupBy { it.kind to it.system }.toList().groupBy { it.first.first }.forEach { (kind, groups) ->
+        FocusCard(modifier = Modifier.fillMaxWidth()) {
+            CardTitle(kind)
+            groups.forEach { (_, games) ->
+                games.forEach { game ->
+                    CardBody("${game.title}: ${game.about}")
+                }
+                ChipRow {
+                    games.forEach { game ->
+                        val have = game.title in got
+                        FocusChip(
+                            if (have) "✓ ${game.title}" else "Get ${game.title}",
+                            enabled = folder != null && busy == null,
+                            onClick = { get(game) },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}

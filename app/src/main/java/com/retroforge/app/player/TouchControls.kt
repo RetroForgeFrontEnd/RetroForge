@@ -184,12 +184,18 @@ data class PadLayout(
             )
         }
 
+        private val SHORT = mapOf("previous" to "Prev", "weapon" to "Wpn", "strafe" to "Strafe", "select" to "Sel", "option" to "Opt", "rotate" to "Turn", "inventory" to "Items")
+
         /** "Button 1" → "1", "Fire" stays, longer names cut to fit on a button. */
         private fun label(name: String): String {
             val plain = name.substringAfterLast(" / ").replace(Regex("""\(.*?\)"""), "").trim()
                 .replace(Regex("""^(Button|Fire Button|Joystick Button|Joypad)\s+""", RegexOption.IGNORE_CASE), "").trim()
                 .ifEmpty { name.trim() }.replaceFirstChar { it.uppercase() }
-            return if (plain.length <= 6) plain else plain.split(' ').let { w -> if (w.size > 1 && w.last().length <= 2) w.first().take(3) + " " + w.last() else plain.take(5) }
+            if (plain.length <= 6) return plain
+            val words = plain.split(' ')
+            // Common long words shortened as players know them; else the first word, cut to fit.
+            val first = SHORT[words.first().lowercase()] ?: words.first().take(5)
+            return if (words.size > 1 && words.last().length <= 2) first.take(3) + " " + words.last() else first
         }
     }
 }
@@ -450,7 +456,7 @@ private fun PadButton(
         if (label in PLAYSTATION_SYMBOLS) {
             Symbol(label, text, Modifier.fillMaxSize(0.42f))
         } else {
-            Text(label, color = text, fontSize = if (small) 12.sp else 20.sp, fontWeight = FontWeight.Bold)
+            Text(label, color = text, fontSize = if (small) 12.sp else if (label.length > 4) 15.sp else 20.sp, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = false)
         }
     }
 }

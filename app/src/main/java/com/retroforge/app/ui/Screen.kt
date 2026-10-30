@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.unit.dp
 import com.retroforge.core.ui.LocalCompactCards
 import com.retroforge.core.ui.ThemeBackdrop
@@ -147,4 +148,17 @@ fun CardBody(text: String) {
 @Composable
 fun ChipRow(content: @Composable FlowRowScope.() -> Unit) {
     FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp), content = content)
+}
+
+/**
+ * How far a download or scan has got: "42%" and a bar, or a moving bar while it isn't known yet ([progress] null or 0).
+ */
+@Composable
+fun DownloadBar(progress: Float?) {
+    if (progress != null && progress > 0f) {
+        CardBody("${(progress * 100).toInt()}%")
+        androidx.compose.material3.LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
+    } else {
+        androidx.compose.material3.LinearProgressIndicator(Modifier.fillMaxWidth())
+    }
 }

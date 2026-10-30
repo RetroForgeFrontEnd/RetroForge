@@ -73,6 +73,7 @@ fun HomeScreen(
     val chosen by library.chosenCovers.collectAsStateWithLifecycle()
 
     ScreenFrame(title = null) {
+        com.retroforge.app.ui.settings.UpdateBanner()
         if (LocalThemeSpec.current.banner == "key-art") {
             // RetroForge's key art already carries the logo and tagline, so it replaces the text wordmark.
             Image(

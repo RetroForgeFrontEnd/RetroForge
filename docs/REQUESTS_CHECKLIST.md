@@ -198,3 +198,7 @@ Requests that were never fully done, or only answered:
 
 | Retro tab tiles: game art with the console | ✅ fourth tile style "game art + console" (Tiles button cycles consoles → game art → game art + console → plain); tested on the S22 |
 | App wouldn't open after it was closed while a network-drive video played | ✅ fixed 2026-10-29: the network drives provider runs in its own process (":drives"), so a killed app no longer waits on its own file reads (a stuck "zombie" process that needed a phone restart). Tested: killed during video and during PS1 streaming, reopens at once |
+| Free games to download (PC tab) | ✅ 21 shareware/freeware/homebrew games from RetroArch's own content server (Doom, Wolfenstein 3D, Commander Keen, homebrew for NES/SNES/Mega Drive/GB/GBA, TIC-80), saved into the user's game folder; Doom downloaded and played with touch controls on the emulator. Abandonware not offered |
+| Percentages on downloads and scans | ✅ game and BIOS scans, bezels, free games, hack patches, ROM Manager scans, app updates; cover downloads are a single small file |
+| App updates | ✅ checked once a day from GitHub releases (betas included), offered on Home with a message at startup, and Settings → Help and about → Check for updates; Android's installer confirms |
+

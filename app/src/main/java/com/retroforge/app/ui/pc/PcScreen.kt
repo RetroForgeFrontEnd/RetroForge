@@ -38,6 +38,7 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
     ScreenFrame(title = "PC", subtitle = "Ports of your games, and Windows games through a PC game runtime (a separate app).") {
         PcGamesSection(library)
         PortsSection(library)
+        FreeGamesSection(library)
         Text("Windows games", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
         val loaded = status
         if (loaded == null) {

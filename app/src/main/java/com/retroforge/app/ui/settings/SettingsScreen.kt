@@ -66,7 +66,7 @@ fun SettingsScreen(
         "playing" to ("Playing" to "The built-in player, saves, backups and save syncing, emulator apps, dual screens, GPU drivers, netplay, RetroArch hotkeys."),
         "covers" to ("Covers and bezels" to "SteamGridDB and ScreenScraper accounts for box art, and Bezel Project bezels round the game."),
         "looks" to ("Looks and sounds" to "Themes, interface sounds, Android apps and the home screen."),
-        "help" to ("Help and about" to "How to use RetroForge, set up, check my setup, report a problem, about, licences."),
+        "help" to ("Help and about" to "How to use RetroForge, updates, set up, check my setup, report a problem, about, licences."),
     )
 
     ScreenFrame(title = groups.firstOrNull { it.first == group }?.second?.first ?: "Settings", compact = true) {
@@ -194,6 +194,8 @@ fun SettingsScreen(
                     CardBody("A short guide to every feature: playing, emulators, hotkeys, covers, playlists, the ROM Manager and more.")
                     CardBody("With a controller: D-pad to move, A to select, B to go back, L1/R1 to switch tabs.")
                 }
+
+                UpdateCard()
 
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenAbout) {
                     CardTitle("About RetroForge")
