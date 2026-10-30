@@ -57,6 +57,12 @@ private val notices = listOf(
             "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND.",
     ),
     Notice(
+        "Better xCloud userscript (PC tab → Xbox Cloud Gaming)", "MIT",
+        "Copyright (c) 2023 redphx, (c) 2020 Phosphor Icons. github.com/redphx/better-xcloud, bundled unchanged and added to " +
+            "Microsoft's xbox.com/play page. Not affiliated with Xbox.",
+        "licences/better-xcloud-MIT.txt",
+    ),
+    Notice(
         "Emulator cores (mGBA, Snes9x, Genesis Plus GX, FCEUmm, Gambatte, DeSmuME and others)", "Each core's own licence",
         "Not part of RetroForge: downloaded from libretro's build server (buildbot.libretro.com) when needed and loaded by the built-in player. " +
             "Some are licensed for non-commercial use only, one reason RetroForge is free.",

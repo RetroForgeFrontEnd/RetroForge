@@ -19,6 +19,8 @@ Licences below are the standard licences of these projects; versions are pinned 
 | AndroidX Collection, Annotation | 1.5.0, 1.9.1 | Apache-2.0 |
 | Winlator Cmod X server, renderer and natives (`pc-player/src/main/java/com/winlator/cmod`, `pc-player/src/main/cpp/winlator`), from github.com/coffincolors/winlator branch `cmod_bionic` @ 49bfb90 | 2025-08 | MIT, Copyright (c) 2023 BrunoSX. The MIT notice must be included with the app |
 
+| AndroidX WebKit | 1.14.0 | Apache-2.0 |
+| Better xCloud userscript (redphx, app/src/main/assets/xcloud) | 6.7.12 | MIT (text in core-ui assets/licences/better-xcloud-MIT.txt) |
 | Press Start 2P, Orbitron, Rajdhani, Exo 2 fonts (google/fonts) | 2026-10 | SIL Open Font License 1.1 (texts in core-ui assets/licences) |
 
 Test-only (not shipped): JUnit 4.13.2 (EPL-1.0), kotlinx-coroutines-test (Apache-2.0).

@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.SubcomposeAsyncImage
 import com.retroforge.app.ui.CardBody
-import com.retroforge.app.ui.CardTitle
 import com.retroforge.app.ui.ChipRow
 import com.retroforge.core.ui.ControllerTextField
 import com.retroforge.core.ui.FocusCard
@@ -136,16 +135,12 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     }
     androidx.compose.runtime.LaunchedEffect(roots) { if (roots != null) scanGameFolders(say = false) }
 
-    Text("Your PC games", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("PC games in RetroForge")
         CardBody(
-            "Steam, Epic, GOG and Amazon games start in GameNative (sign in and install them there first). Windows games " +
-                "start from Winlator Cmod or WinNative: export a game's shortcut for frontends in Winlator. Put the files in a " +
-                "\"windows\" or \"steam\" folder in your game folders, beside snes, psx and the rest (ES-DE's layout), and " +
-                "they're found by themselves: .steam, .epic, .gog, .amazon and .pcgame files hold a game's id, .desktop " +
-                "files are Winlator shortcuts. Or add a Windows game's folder to play it in RetroForge's own PC player " +
-                "(early test: it's copied into RetroForge, and the first game downloads the PC runtime, about 280 MB).",
+            "Install games in GameNative (Steam, Epic, GOG, Amazon) or export their shortcuts from Winlator Cmod or WinNative. " +
+                "Shortcut files (.steam, .epic, .gog, .amazon, .pcgame, .desktop) in a \"windows\" or \"steam\" folder " +
+                "beside snes, psx and the rest are found by themselves. Or add a Windows game's folder to play it in " +
+                "RetroForge's own PC player (early test: the first game downloads the PC runtime, about 280 MB).",
         )
         ChipRow {
             FocusChip("Add a Steam game", onClick = { searching = !searching; hits = null })

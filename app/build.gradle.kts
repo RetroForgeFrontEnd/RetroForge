@@ -80,6 +80,7 @@ dependencies {
     implementation(libs.zxing.core)
     implementation(libs.commons.compress)
     implementation(libs.xz)
+    implementation(libs.androidx.webkit)
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
     implementation(libs.media3.exoplayer)
