@@ -139,6 +139,8 @@ The same guide as Settings → How to use RetroForge in the app.
 - Prepare files copies your ROM where the port expects it. Your original stays where it is, so you can play both.
 
 ## PC: Windows games
+- Your PC games (PC tab): Steam, Epic, GOG and Amazon games start in GameNative (sign in and install them there first); Windows games start from Winlator Cmod or WinNative shortcuts.
+- Put the files in a "windows" or "steam" folder in your game folders, beside snes, psx and the rest (ES-DE's layout), and they're found by themselves: .steam, .epic, .gog, .amazon and .pcgame files hold the game's id, .desktop files are shortcuts exported from Winlator for frontends. Or use Add a Steam game to find it by name.
 
 - RetroForge doesn't run Windows games itself. A free PC game app does, installed separately: DroidDeck on Snapdragon devices, or GameNative and Winlator on others. The PC section checks your graphics chip and says which suit it.
 - GameNative: install it from PC → GameNative releases. Sign in to Steam, Epic, GOG or Amazon inside it, or tap Skip login, then + and choose a game folder you copied to the phone (allow All files access).

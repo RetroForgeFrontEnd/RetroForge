@@ -17,7 +17,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Themes, theme engine, import | ✅ (colours + system art); ✅ interface sounds (own synthesised sounds, switch in Settings; not heard on a device yet) |
 | Clear compatibility information | 🟡 docs; per-game compatibility not shown in the app |
 | Portable library (other frontends keep working) | ✅ read-only scan, own index; ✅ settings, favourites and playlists in the backup zip (tested: back up, restore, games matched by path) |
-| PC subsystem via a real runtime | 🟡 GameNative boots a game on the S22; ⛔ DroidDeck (needs Snapdragon); ❌ PC games in RetroForge's library |
+| PC subsystem via a real runtime | 🟡 GameNative boots a game on the S22; ⛔ DroidDeck (needs Snapdragon); ✅ PC games in RetroForge's library (PC tab → Your PC games): .steam/.epic/.gog/.amazon/.pcgame files start in GameNative, Winlator .desktop shortcuts in Winlator Cmod/WinNative (ES-DE's launch requests); found by themselves in a "windows"/"steam" game folder, or added by Steam search; Steam box art. Tested on the emulator up to the launch (GameNative not installed there) |
 | Documentation set | ✅ core docs and the 5 RetroBat audit docs ([architecture](retrobat-architecture-analysis.md), [workflows](retrobat-workflow-mapping.md), [ES-DE folders](retrobat-esde-folder-mapping.md), [Android parity](retrobat-android-parity-matrix.md), [recommendations](android-integration-recommendations.md)) |
 | Automated tests | ✅ unit tests; ❌ automated UI tests |
 

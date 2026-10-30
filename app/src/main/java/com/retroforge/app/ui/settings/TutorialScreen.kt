@@ -141,6 +141,7 @@ private val topics = listOf(
         "Prepare files copies your ROM where the port expects it. Your original stays where it is, so you can play both.",
     )),
     Topic("PC: Windows games", listOf(
+        "Your PC games (PC tab): Steam, Epic, GOG and Amazon games start in GameNative (sign in and install them there first); Windows games start from Winlator Cmod or WinNative shortcuts. Put the files in a \"windows\" or \"steam\" folder beside your other systems and they're found by themselves (.steam, .epic, .gog, .amazon and .pcgame files hold the game's id; .desktop files are shortcuts exported from Winlator). Or use Add a Steam game.",
         "RetroForge doesn't run Windows games itself. A free PC game app does, installed separately: DroidDeck on Snapdragon devices, or GameNative and Winlator on others. The PC section checks your graphics chip and says which suit it.",
         "GameNative: install it from PC → GameNative releases. Sign in to Steam, Epic, GOG or Amazon inside it, or tap Skip login, then + and choose a game folder you copied to the phone (allow All files access).",
         "If Play says the executable couldn't be chosen: Edit container → Executable Path → pick the game's .exe, save, and press Play again. The first start downloads Proton and takes a minute or two.",

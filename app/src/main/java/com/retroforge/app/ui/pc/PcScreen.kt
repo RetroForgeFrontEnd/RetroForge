@@ -36,6 +36,7 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
 
     ScreenFrame(title = "PC", subtitle = "Ports of your games, and Windows games through a PC game runtime (a separate app).") {
+        PcGamesSection(library)
         PortsSection(library)
         Text("Windows games", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
         val loaded = status
@@ -47,14 +48,6 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
         } else {
             DeviceCard(loaded)
             DroidDeckCard(loaded, bridge)
-            FocusCard(modifier = Modifier.fillMaxWidth()) {
-                CardTitle("Launching PC games from RetroForge") { StatusPill("Not built yet", StatusTone.NEUTRAL) }
-                CardBody(
-                    "Starting a specific Steam game from RetroForge will be added once a test on real hardware " +
-                        "confirms the runtime's launch request works. Only Steam games can be started this way; " +
-                        "GOG, Epic and Amazon games stay inside the runtime.",
-                )
-            }
         }
     }
 }
