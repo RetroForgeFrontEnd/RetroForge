@@ -1,12 +1,17 @@
 package com.retroforge.app.player
 
+import com.retroforge.app.EnglishStrings
 import org.junit.Assert.assertEquals
 import org.junit.Rule
+import org.junit.Before
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.File
 
 class PlaytimeTest {
+    @Before
+    fun englishTexts() = EnglishStrings.install()
+
     @get:Rule
     val tmp = TemporaryFolder()
 

@@ -25,6 +25,7 @@ fun countOf(count: Int, noun: String): String {
         "block" -> R.plurals.count_block
         "catalogue" -> R.plurals.count_catalogue
         "minute" -> R.plurals.count_minute
+        "copy" -> R.plurals.count_copy
         else -> return if (count == 1) "1 $noun" else "$count ${noun}s"
     }
     return pluralStr(id, count, count)

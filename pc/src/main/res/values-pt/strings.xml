@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gpu_drivers_unknown_gpu">GPU desconhecida</string>
+    <string name="gpu_drivers_custom_drivers_turnip_only_work_on">Os drivers personalizados (Turnip) só funcionam em GPU Qualcomm Adreno. Esta GPU usa o driver que veio com o telemóvel; as atualizações do sistema são a forma de ter um mais recente. Os emuladores continuam a funcionar com esse driver.</string>
+    <string name="gpu_drivers_adreno_turnip_support_for_8xx_gpus">Adreno %1$s: o suporte do Turnip para GPU 8xx é novo. Usa compilações marcadas a8xx e mantém o driver do telemóvel se um jogo correr pior.</string>
+    <string name="gpu_drivers_adreno_turnip_often_runs_switch_ps2">Adreno %1$s: o Turnip costuma correr jogos de Switch, PS2, GameCube e PC melhor do que o driver do telemóvel. Se um jogo falhar, volta ao driver do sistema nesse emulador.</string>
+    <string name="gpu_drivers_adreno_is_older_than_turnip_supports">A Adreno %1$s é mais antiga do que o Turnip suporta (Adreno 6xx e mais recentes).</string>
+    <string name="gpu_drivers_the_download_answered">a transferência respondeu %1$s</string>
+    <string name="gpu_drivers_couldn_t_save">não foi possível guardar %1$s</string>
+    <string name="gpu_drivers_github_answered">O GitHub respondeu %1$s</string>
+    <string name="gpu_support_the_gpu_model_could_not_be">Não foi possível ler o modelo da GPU neste dispositivo.</string>
+    <string name="gpu_support_droiddeck_needs_a_qualcomm_adreno_gpu">O DroidDeck precisa de uma GPU Qualcomm Adreno, e este dispositivo não tem.</string>
+    <string name="gpu_support_adreno_850_support_is_experimental">O suporte da Adreno 850 é experimental.</string>
+    <string name="gpu_support_adreno_8xx_is_supported">A Adreno 8xx é suportada.</string>
+    <string name="gpu_support_adreno_730_and_newer_are_supported">As Adreno 730 e mais recentes são suportadas.</string>
+    <string name="gpu_support_adreno_has_been_tested_but_is">A Adreno %1$s foi testada mas está abaixo do mínimo oficial de 730.</string>
+    <string name="gpu_support_adreno_only_has_test_drivers">A Adreno %1$s só tem drivers de teste.</string>
+    <string name="gpu_support_adreno_710_is_not_supported">A Adreno 710 não é suportada.</string>
+    <string name="gpu_support_adreno_6xx_is_experimental_directx_11">A Adreno 6xx é experimental: os jogos DirectX 11 podem correr, os DirectX 12 podem falhar.</string>
+    <string name="gpu_support_adreno_is_older_than_the_pc">A Adreno %1$s é mais antiga do que o ambiente de PC suporta.</string>
+</resources>

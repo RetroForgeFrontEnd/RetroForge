@@ -725,7 +725,6 @@
 
     <!-- MediaServers.kt -->
     <string name="media_servers_didn_t_answer">%1$s didn\'t answer</string>
-    <string name="media_servers_result">Result</string>
     <string name="media_servers_untitled">Untitled</string>
 
     <!-- NetworkDrives.kt -->
@@ -778,9 +777,7 @@
     <string name="player_friends_on_the_internet_can_join">Friends on the internet can join at %1$s (your router opened the port).</string>
     <string name="player_your_router_opened_the_port_for">Your router opened the port for friends on the internet.</string>
     <string name="player_for_friends_on_the_internet_your">For friends on the internet, your router needs port %1$s (TCP) sent to %2$s: it didn\'t allow RetroForge to do it. Players on the same Wi-Fi can join anyway.</string>
-    <string name="player_waiting">Waiting</string>
     <string name="player_getting_the_emulator_s_data_files">Getting the emulator\'s data files (first time only)…</string>
-    <string name="player_true">True</string>
     <string name="player_couldn_t_read_the_game">Couldn\'t read the game: %1$s</string>
     <string name="player_retroforge_no_longer_has_access_to">RetroForge no longer has access to this game\'s folder. Add the folder again in Settings.</string>
     <string name="player_couldn_t_start_this_game_the">%1$s couldn\'t start this game. The file may be damaged, or it may need BIOS files.</string>
@@ -1196,7 +1193,6 @@
     <string name="pc_games_found_new_pc_games_in_your">Found %1$s new PC games in your game folders.</string>
     <string name="pc_games_winlator_shortcuts_on_a_network_drive">" %1$s Winlator shortcuts on a network drive were skipped: Winlator needs them on this device."</string>
     <string name="pc_games_couldn_t_look_in_your_game">Couldn\'t look in your game folders: %1$s</string>
-    <string name="pc_games_found">Found</string>
     <string name="pc_games_hide_my_steam_library">Hide my Steam library</string>
     <string name="pc_games_my_steam_library">My Steam library</string>
     <string name="pc_games_sign_in_to_steam_first_steam">Sign in to Steam first (Steam sign-in on this tab).</string>

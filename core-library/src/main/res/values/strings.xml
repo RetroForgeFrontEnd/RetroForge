@@ -35,7 +35,7 @@
 
     <!-- LibraryRepository.kt -->
     <string name="library_retroforge_no_longer_has_access_to">RetroForge no longer has access to this folder. Remove it and add it again.</string>
-    <string name="library_scan_failed">Scan failed: %1$s</string>
+    <string name="library_scan_failed_reason">Scan failed: %1$s</string>
     <string name="library_folder">Folder</string>
 
     <!-- RomManagerRepository.kt -->
@@ -45,21 +45,21 @@
     <string name="rom_manager_is_already_in">%1$s is already in %2$s</string>
     <string name="rom_manager_games_sorted">Games sorted</string>
     <string name="rom_manager_undo_from_history_puts_them_back">%1$s. Undo from History puts them back.</string>
-    <string name="rom_manager_made_playlists">Made %1$s playlists</string>
+    <string name="rom_manager_made_n_playlists">Made %1$s playlists</string>
     <string name="rom_manager_making_playlists">Making playlists</string>
     <string name="rom_manager_multi_disc_games">%1$s multi-disc games</string>
-    <string name="rom_manager_playlists_made">Playlists made</string>
+    <string name="rom_manager_playlists_made_title">Playlists made</string>
     <string name="rom_manager_each_shows_as_one_game_change">%1$s. Each shows as one game; change discs from the emulator\'s menu.</string>
     <string name="rom_manager_moving_copies">Moving %1$s copies</string>
     <string name="rom_manager_tidying_duplicates">Tidying duplicates</string>
     <string name="rom_manager_moving_copies_to_duplicates">Moving copies to _duplicates …</string>
-    <string name="rom_manager_duplicates_tidied">Duplicates tidied</string>
+    <string name="rom_manager_duplicates_tidied_title">Duplicates tidied</string>
     <string name="rom_manager_compressing_games">Compressing %1$s games</string>
     <string name="rom_manager_compressing_of">Compressing %1$s of %2$s</string>
     <string name="rom_manager_compressed_of_games_saving_originals_are">Compressed %1$s of %2$s games, saving %3$s; originals are in _originals</string>
     <string name="rom_manager_compression_finished">Compression finished</string>
     <string name="rom_manager_compression_stopped">Compression stopped</string>
-    <string name="rom_manager_deleted">Deleted %1$s</string>
+    <string name="rom_manager_deleted_file">Deleted %1$s</string>
     <string name="rom_manager_deleting">Deleting</string>
     <string name="rom_manager_deleted_2">Deleted</string>
     <string name="rom_manager_is_in_the_folder_undo_it">%1$s is in the %2$s folder. Undo it from History, or use Free up space to delete it for good.</string>
@@ -68,7 +68,7 @@
     <string name="rom_manager_deleted_permanently">Deleted permanently</string>
     <string name="rom_manager_emptied">Emptied %1$s.</string>
     <string name="rom_manager_undoing">Undoing</string>
-    <string name="rom_manager_undone">Undone</string>
+    <string name="rom_manager_undone_title">Undone</string>
     <string name="rom_manager_put_back">Put back: %1$s.</string>
     <string name="rom_manager_stopped">Stopped</string>
     <string name="rom_manager_stopped_anything_already_done_can_be">Stopped. Anything already done can be undone from History.</string>

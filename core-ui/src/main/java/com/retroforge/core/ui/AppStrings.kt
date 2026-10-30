@@ -21,6 +21,10 @@ object AppStrings {
     /** Called once from Application.onCreate. */
     fun init(context: Context) { app = context.applicationContext }
 
+    /** Unit tests (no Android resources) answer lookups themselves: (id, count for plurals or null, args) → text. */
+    @androidx.annotation.VisibleForTesting
+    var testLookup: ((Int, Int?, Array<out Any?>) -> String)? = null
+
     /** Forgets the language, after it changes. */
     internal fun reset() { tag = null; localized = null }
 
@@ -36,7 +40,9 @@ object AppStrings {
 }
 
 /** [id] in RetroForge's language, with [args] filled in. */
-fun str(@StringRes id: Int, vararg args: Any?): String = AppStrings.context().getString(id, *args)
+fun str(@StringRes id: Int, vararg args: Any?): String =
+    AppStrings.testLookup?.invoke(id, null, args) ?: AppStrings.context().getString(id, *args)
 
 /** The form of [id] for [count], with [args] filled in. */
-fun pluralStr(@PluralsRes id: Int, count: Int, vararg args: Any?): String = AppStrings.context().resources.getQuantityString(id, count, *args)
+fun pluralStr(@PluralsRes id: Int, count: Int, vararg args: Any?): String =
+    AppStrings.testLookup?.invoke(id, count, args) ?: AppStrings.context().resources.getQuantityString(id, count, *args)

@@ -250,7 +250,7 @@ class LibraryRepository(
             } catch (_: ScanCancelled) {
                 return@launch
             } catch (e: Exception) {
-                setState(rootId, ScanState.Failed(str(R.string.library_scan_failed, e.message ?: e.javaClass.simpleName)))
+                setState(rootId, ScanState.Failed(str(R.string.library_scan_failed_reason, e.message ?: e.javaClass.simpleName)))
                 return@launch
             }
             dao.replaceIndex(

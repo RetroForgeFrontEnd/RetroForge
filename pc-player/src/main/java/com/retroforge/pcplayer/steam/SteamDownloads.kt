@@ -38,7 +38,7 @@ class SteamDownloads(private val account: SteamAccount) {
             var failure: Throwable? = null
             val listener = object : IDownloadListener {
                 override fun onStatusUpdate(message: String) {
-                    if (message.startsWith(str(R.string.steam_downloads_downloading_manifest))) onProgress(progress(done, total), str(R.string.steam_downloads_getting_the_file_list), total)
+                    if (message.startsWith("Downloading manifest")) onProgress(progress(done, total), str(R.string.steam_downloads_getting_the_file_list), total)
                 }
 
                 override fun onChunkCompleted(depotId: Int, depotPercentComplete: Float, compressedBytes: Long, uncompressedBytes: Long) {

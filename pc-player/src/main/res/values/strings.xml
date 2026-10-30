@@ -121,7 +121,6 @@
     <string name="steam_download_service_steam_downloads">Steam downloads</string>
 
     <!-- SteamDownloads.kt -->
-    <string name="steam_downloads_downloading_manifest">Downloading manifest</string>
     <string name="steam_downloads_getting_the_file_list">Getting the file list</string>
     <string name="steam_downloads_downloading">Downloading</string>
     <string name="steam_downloads_steam_has_no_app_info_for">Steam has no app info for %1$s</string>

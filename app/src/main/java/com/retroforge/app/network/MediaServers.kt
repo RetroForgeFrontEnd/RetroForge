@@ -143,7 +143,7 @@ object MediaServers {
 <Filter>*</Filter><StartingIndex>$start</StartingIndex><RequestedCount>200</RequestedCount><SortCriteria></SortCriteria></u:Browse></s:Body></s:Envelope>"""
             val answer = http(server.controlUrl, body, "\"$CONTENT_DIRECTORY#Browse\"") ?: error(str(R.string.media_servers_didn_t_answer, server.name))
             val doc = parse(answer)
-            val result = doc.getElementsByTagName(str(R.string.media_servers_result)).item(0)?.textContent ?: break
+            val result = doc.getElementsByTagName("Result").item(0)?.textContent ?: break
             val page = didl(result).map { it.copy(url = it.url?.let { u -> reachable(u, server) }, art = it.art?.let { u -> reachable(u, server) }) }
             entries += page
             val total = doc.getElementsByTagName("TotalMatches").item(0)?.textContent?.trim()?.toIntOrNull() ?: break

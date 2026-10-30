@@ -164,10 +164,12 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
         if (trees.isEmpty()) { if (say) status = str(R.string.pc_games_add_your_game_folders_first_retro); return }
         busy = true
         scope.launch {
+            var addedAny = false
             val note = withContext(Dispatchers.IO) {
                 runCatching {
                     val (found, unusable) = pc.scanGameFolders(trees)
                     val added = pc.add(found)
+                    addedAny = added > 0
                     when {
                         found.isEmpty() -> str(R.string.pc_games_no_pc_games_in_your_game)
                         added == 0 -> str(R.string.pc_games_your_game_folders_pc_games_are)
@@ -175,7 +177,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                     } + if (unusable > 0) str(R.string.pc_games_winlator_shortcuts_on_a_network_drive, unusable) else ""
                 }.getOrElse { str(R.string.pc_games_couldn_t_look_in_your_game, it.message) }
             }
-            if (say || note.startsWith(str(R.string.pc_games_found))) status = note
+            if (say || addedAny) status = note
             busy = false
             changes++
         }

@@ -331,7 +331,7 @@ class PlayerActivity : ComponentActivity() {
         netStatus = NativePlayer.netplayStatus()
         if (netState == 4 && !wasPlaying) netPlayingSince = android.os.SystemClock.elapsedRealtime()
         netShowStatus = netState != 0 && netStatus.isNotBlank() &&
-            (netState != 4 || netStatus.startsWith(str(R.string.player_waiting)) || android.os.SystemClock.elapsedRealtime() - netPlayingSince < 4000)
+            (netState != 4 || netStatus.startsWith("Waiting") || android.os.SystemClock.elapsedRealtime() - netPlayingSince < 4000)
         // Once someone has joined, nobody else needs to find this game.
         if (netState >= 3) { announcer?.stop(); announcer = null }
         if (netState != 0 && !isFinishing) window.decorView.postDelayed({ pollNetplay() }, 500)
@@ -469,9 +469,9 @@ class PlayerActivity : ComponentActivity() {
         val texturePacks = when {
             coreId.startsWith("mupen64plus") && File(systemDir, "Mupen64plus/cache").list().orEmpty().any { it.endsWith(".hts", true) } ->
                 // Downloaded packs are single .hts files (GLideN64's enhanced storage), with full alpha as their authors ask.
-                mapOf("mupen64plus-txHiresEnable" to str(R.string.player_true), "mupen64plus-EnableEnhancedHighResStorage" to str(R.string.player_true), "mupen64plus-txHiresFullAlphaChannel" to str(R.string.player_true))
+                mapOf("mupen64plus-txHiresEnable" to "True", "mupen64plus-EnableEnhancedHighResStorage" to "True", "mupen64plus-txHiresFullAlphaChannel" to "True")
             coreId.startsWith("mupen64plus") && File(systemDir, "Mupen64plus/hires_texture").list().orEmpty().isNotEmpty() ->
-                mapOf("mupen64plus-txHiresEnable" to str(R.string.player_true))
+                mapOf("mupen64plus-txHiresEnable" to "True")
             coreId == "ppsspp" && File(savesDir, "TEXTURES").list().orEmpty().isNotEmpty() -> mapOf("ppsspp_texture_replacement" to "enabled")
             else -> emptyMap()
         }

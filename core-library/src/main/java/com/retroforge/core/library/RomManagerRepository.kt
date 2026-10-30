@@ -180,13 +180,13 @@ class RomManagerRepository(
         ManagerRun.Done(str(R.string.rom_manager_games_sorted), str(R.string.rom_manager_undo_from_history_puts_them_back, summary), problems)
     }
 
-    fun makePlaylists(root: RootEntity, jobs: List<PlaylistJob>) = start(root, "playlists", str(R.string.rom_manager_made_playlists, jobs.size)) { files, journal ->
+    fun makePlaylists(root: RootEntity, jobs: List<PlaylistJob>) = start(root, "playlists", str(R.string.rom_manager_made_n_playlists, jobs.size)) { files, journal ->
         _run.value = ManagerRun.Running(str(R.string.rom_manager_making_playlists), str(R.string.rom_manager_multi_disc_games, jobs.size), null)
         val problems = PlaylistMaker(files).run(jobs, journal) { !isActive }
         val made = journal.log.steps.size
         val summary = pluralStr(R.plurals.rom_manager_made_playlists, made, made)
         journal.finish(summary)
-        ManagerRun.Done(str(R.string.rom_manager_playlists_made), str(R.string.rom_manager_each_shows_as_one_game_change, summary), problems)
+        ManagerRun.Done(str(R.string.rom_manager_playlists_made_title), str(R.string.rom_manager_each_shows_as_one_game_change, summary), problems)
     }
 
     fun moveDuplicates(root: RootEntity, selections: List<Pair<DuplicateSet, DuplicateCandidate>>) = start(root, "duplicates", str(R.string.rom_manager_moving_copies, selections.sumOf { it.first.files.size - 1 })) { files, journal ->
@@ -196,7 +196,7 @@ class RomManagerRepository(
         val summary = pluralStr(R.plurals.rom_manager_moved_copies, r.moved, r.moved) +
             if (r.gamelistsUpdated > 0) " and updated ${r.gamelistsUpdated} gamelist.xml" else ""
         journal.finish(summary)
-        ManagerRun.Done(str(R.string.rom_manager_duplicates_tidied), "$summary.", r.problems)
+        ManagerRun.Done(str(R.string.rom_manager_duplicates_tidied_title), "$summary.", r.problems)
     }
 
     fun compress(root: RootEntity, jobs: List<CompressJob>) = start(root, "compress", str(R.string.rom_manager_compressing_games, jobs.size)) { files, journal ->
@@ -219,10 +219,10 @@ class RomManagerRepository(
         GameFiles.of(SafCollectionFiles(resolver, Uri.parse(root.treeUri)), game.relativePath)
     }
 
-    fun deleteGame(root: RootEntity, game: GameEntity) = start(root, "delete", str(R.string.rom_manager_deleted, game.title)) { files, journal ->
+    fun deleteGame(root: RootEntity, game: GameEntity) = start(root, "delete", str(R.string.rom_manager_deleted_file, game.title)) { files, journal ->
         _run.value = ManagerRun.Running(str(R.string.rom_manager_deleting), game.title, null)
         val problems = GameDeleter(files).moveToDeleted(game.relativePath, systemFolder(root, game), journal)
-        journal.finish(str(R.string.rom_manager_deleted, game.title))
+        journal.finish(str(R.string.rom_manager_deleted_file, game.title))
         ManagerRun.Done(str(R.string.rom_manager_deleted_2), str(R.string.rom_manager_is_in_the_folder_undo_it, game.title, DELETED_FOLDER), problems)
     }
 
@@ -248,7 +248,7 @@ class RomManagerRepository(
             log.steps.filterIsInstance<Step.Relinked>().filter { it.reverseOnUndo }.asReversed().forEach { dao.relink(root.id, it.to, it.from) }
             save(log.copy(undoneAt = clock()))
             library.scan(root.id)
-            ManagerRun.Done(str(R.string.rom_manager_undone), str(R.string.rom_manager_put_back, log.summary.replaceFirstChar { it.lowercase() }), problems)
+            ManagerRun.Done(str(R.string.rom_manager_undone_title), str(R.string.rom_manager_put_back, log.summary.replaceFirstChar { it.lowercase() }), problems)
         }
     }
 
