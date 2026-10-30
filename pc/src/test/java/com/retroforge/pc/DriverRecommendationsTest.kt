@@ -81,5 +81,8 @@ class DriverRecommendationsTest {
         assertEquals("Turnip_v26_R2", DriverRecommendations.suggestedBuild(GpuFamily.ADRENO_7XX, files)?.release)
         assertEquals("Turnip_v26_a8xx", DriverRecommendations.suggestedBuild(GpuFamily.ADRENO_8XX, files)?.release)
         assertNull(DriverRecommendations.suggestedBuild(GpuFamily.MALI, files))
+        // Galaxy S22 (SM-S901B): Exynos 2200, Xclipse 920. No Turnip download is ever suggested there.
+        assertNull(DriverRecommendations.suggestedBuild(GpuFamily.XCLIPSE, files))
+        assertFalse(GpuFamily.XCLIPSE.canUseTurnip)
     }
 }
