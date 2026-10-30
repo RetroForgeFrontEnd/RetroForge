@@ -27,6 +27,20 @@ object RomNames {
     )
     private val goodToolsRegions = mapOf("U" to "USA", "E" to "Europe", "J" to "Japan", "W" to "World", "UE" to "USA, Europe", "JU" to "Japan, USA", "A" to "Australia")
     private val tagPattern = Regex("""[(\[]([^)\]]*)[)\]]""")
+    /**
+     * Bracket tags that aren't a patch's name: TOSEC and GoodTools dump flags with their details ([cr Elite], [t +2],
+     * [a2], [f NTSC], [tr Fre], [m], [h TSTH] is caught as a hack above), set names ([GoodMSX]), Switch title ids and
+     * versions ([0100C2700C252000], [v0]), disc and disk numbers, serials ([SLUS-01234]), years and notes like [CPM version].
+     */
+    private const val LANG = "en|fr|de|es|it|ja|nl|sv|pt|eng|fre|ger|spa|ita|jpn|por|dut|swe"
+    private val notPatch = Regex(
+        """(!.*|(cr|tr|[abcfhmoptuvx])(\d+[a-z]?)?([ +-].*)?|good\w*|[0-9a-f]{16}|v\d+(\.\d+)*.*|(disc|disk|side|cd|dvd) ?\w+.*|""" +
+            """[a-z]{2,5}-?\d{3,6}.*|\d{4}.*|.*\b(version|boot|bootfile|update|dlc|base|cracked|trained|docs?|manual|disks?|drive|req\.?|aka|original|""" +
+            """english|french|german|spanish|italian|translated|budget|monochrome|complete|proper|final|start|d88|dsk2rom|dcres|accel\d*)\b.*|""" +
+            """rev\w*.*|\d+(\.\d+)+|""" +
+            """($LANG)([ ,+-]+($LANG))*|unl|pd|public domain|alt.*|bios.*)""",
+        RegexOption.IGNORE_CASE,
+    )
     // "Legend of Zelda, The" and "Legend of Zelda, The - A Link to the Past".
     private val articleSuffix = Regex("""^(.+?),\s*(The|A|An)(\s+-\s+.*)?$""", RegexOption.IGNORE_CASE)
 
@@ -61,10 +75,9 @@ object RomNames {
                 Regex("""t\d*""").matches(lower) -> flags += RomFlag.TRAINED
             }
         }
-        // Square-bracket text that isn't a known dump flag ([!], [b1], [h2], [T+Eng] …) names a patch: a hack.
-        val known = setOf("!")
+        // Square-bracket text that isn't a dump or catalogue tag names a patch (RetroForge's patcher writes "[Hard Mode]"): a hack.
         val hackName = Regex("""\[([^\]]*)\]""").findAll(base.substring(firstTag)).map { it.groupValues[1].trim() }
-            .firstOrNull { tag -> tag.length >= 4 && tag !in known && !Regex("""([abfhopt]\d*[a-z]?|t[+-].*|hack.*)""", RegexOption.IGNORE_CASE).matches(tag) }
+            .firstOrNull { tag -> tag.length >= 4 && !notPatch.matches(tag) && tag.split(",").map { it.trim() }.any { it !in regionWords } }
         if (hackName != null) flags += RomFlag.HACK
         val title = articleSuffix.matchEntire(rawTitle)?.let { "${it.groupValues[2]} ${it.groupValues[1].trim()}${it.groupValues[3]}" } ?: rawTitle
         return RomName(title, sortKey(title), regions.distinct(), revision, flags, tags, hackName)

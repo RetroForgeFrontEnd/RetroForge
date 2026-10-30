@@ -57,4 +57,16 @@ class RomNamesTest {
         assertEquals(null, RomNames.parse("Game (USA) [b1].nes").hackName)
         assertEquals(null, RomNames.parse("Game (Japan) [T+Eng1.0].nes").hackName)
     }
+
+    @Test
+    fun catalogueTagsAreNotHacks() {
+        for (name in listOf(
+            "Xenon 2 (1989)(Image Works)[cr Elite].st", "Barbarian (1987)(Psygnosis)[cr Replicants][t +2].st",
+            "Aleste (1988)(Compile)(JP)[GoodMSX].rom", "Zork (1983)(Infocom)[CPM version].dsk",
+            "Blazing Chrome [0100C2700C252000][v0].nsp", "Game (1990)(Pub)[one disk].st", "Elite (1984)(Acornsoft)[bootfile].ssd",
+            "Game (Europe) [Disc 1].chd", "Game [SLUS-01234].chd", "Game (1986)(Pub)[aka Other Name].st", "Game (19xx)[req joystick].d88",
+            "Game (USA) [Europe].zip", "Game (1990)(Pub)[a2][f NTSC].st", "Game (1990)(Pub)[tr Fre].dsk",
+        )) assertEquals(name, null, RomNames.parse(name).hackName)
+        assertTrue(RomFlag.HACK in RomNames.parse("Game (1990)(Pub)[h TSTH].st").flags)
+    }
 }
