@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.winlator.cmod.math.Mathf;
 import com.winlator.cmod.math.XForm;
+import com.winlator.cmod.renderer.material.BackdropMaterial;
 import com.winlator.cmod.renderer.material.CursorMaterial;
 import com.winlator.cmod.renderer.material.ShaderMaterial;
 import com.winlator.cmod.renderer.material.WindowMaterial;
@@ -36,6 +37,9 @@ public class GLRenderer implements GLSurfaceView.Renderer, WindowManager.OnWindo
     private final float[] tmpXForm2 = XForm.getInstance();
     private final CursorMaterial cursorMaterial = new CursorMaterial();
     private final WindowMaterial windowMaterial = new WindowMaterial();
+    private final BackdropMaterial backdropMaterial = new BackdropMaterial();
+    private final float[] tmpXForm3 = XForm.getInstance();
+    private boolean blurredSides = true;
     public final ViewTransformation viewTransformation = new ViewTransformation();
     private final Drawable rootCursorDrawable;
     private final ArrayList<RenderableWindow> renderableWindows = new ArrayList<>();
@@ -234,6 +238,9 @@ public class GLRenderer implements GLSurfaceView.Renderer, WindowManager.OnWindo
                 short newWidth = (short)(((float)newHeight / drawable.height) * drawable.width);
                 float left = (xServer.screenInfo.width - newWidth) * 0.5f;
                 float top = (xServer.screenInfo.height - newHeight) * 0.5f;
+                if (blurredSides && material == windowMaterial && (left >= 1 || top >= 1)) {
+                    renderBackdrop(texture, drawable.width, drawable.height, left, top);
+                }
                 XForm.set(tmpXForm1, left, top, newWidth, newHeight);
                 if (material == windowMaterial) {
                     drawnStretch = new Stretch(x, y, drawable.width, drawable.height, left, top, (float)newHeight / drawable.height);
@@ -250,6 +257,51 @@ public class GLRenderer implements GLSurfaceView.Renderer, WindowManager.OnWindo
             GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, quadVertices.count());
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         }
+    }
+
+    /**
+     * RetroForge: fills the strips beside a stretched window narrower than the screen with its own picture, scaled
+     * up to cover the screen, blurred and darkened (see BackdropMaterial). Leaves the window material in use.
+     */
+    private void renderBackdrop(Texture texture, int width, int height, float sideWidth, float bandHeight) {
+        float screenW = xServer.screenInfo.width;
+        float screenH = xServer.screenInfo.height;
+        float scale = Math.max(screenW / width, screenH / height);
+        float backdropW = width * scale;
+        float backdropH = height * scale;
+
+        backdropMaterial.use();
+        GLES20.glUniform2f(backdropMaterial.getUniformLocation("viewSize"), screenW, screenH);
+        GLES20.glUniform4f(backdropMaterial.getUniformLocation("backdrop"),
+            (screenW - backdropW) * 0.5f, (screenH - backdropH) * 0.5f, backdropW, backdropH);
+        GLES20.glUniform2f(backdropMaterial.getUniformLocation("radius"), 0.06f, 0.06f * width / height);
+        quadVertices.bind(backdropMaterial.programId);
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture.getTextureId());
+        GLES20.glUniform1i(backdropMaterial.getUniformLocation("texture"), 0);
+        // The strips left and right of the window, then above and below it.
+        float[][] strips = {
+            {0, 0, sideWidth, screenH}, {screenW - sideWidth, 0, sideWidth, screenH},
+            {sideWidth, 0, screenW - 2 * sideWidth, bandHeight}, {sideWidth, screenH - bandHeight, screenW - 2 * sideWidth, bandHeight},
+        };
+        for (float[] strip : strips) {
+            if (strip[2] < 1 || strip[3] < 1) continue;
+            XForm.set(tmpXForm3, strip[0], strip[1], strip[2], strip[3]);
+            XForm.multiply(tmpXForm3, tmpXForm3, tmpXForm2);
+            GLES20.glUniform1fv(backdropMaterial.getUniformLocation("xform"), tmpXForm3.length, tmpXForm3, 0);
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, quadVertices.count());
+        }
+        quadVertices.disable();
+
+        windowMaterial.use();
+        GLES20.glUniform2f(windowMaterial.getUniformLocation("viewSize"), screenW, screenH);
+        quadVertices.bind(windowMaterial.programId);
+    }
+
+    /** RetroForge: whether the sides beside a narrower game are blurred (true) or black. */
+    public void setBlurredSides(boolean blurredSides) {
+        this.blurredSides = blurredSides;
+        xServerView.requestRender();
     }
 
     private void renderWindows(boolean forceFullscreen) {

@@ -51,6 +51,7 @@ static const char *(*p_SDL_GetError)(void);
 
 static volatile uint8_t *pad;
 static void *joystick;
+static int debug;  // PCPAD_DEBUG=1: log button changes as SDL reads them
 
 static void update(void *userdata) {
     (void)userdata;
@@ -62,8 +63,12 @@ static void update(void *userdata) {
         if (!connected && i >= 4) value = -32768;
         p_SDL_JoystickSetVirtualAxis(joystick, i, value);
     }
+    static uint8_t last[BUTTONS];
     for (int i = 0; i < BUTTONS; i++) {
-        p_SDL_JoystickSetVirtualButton(joystick, i, connected ? pad[16 + i] : 0);
+        uint8_t value = connected ? pad[16 + i] : 0;
+        p_SDL_JoystickSetVirtualButton(joystick, i, value);
+        if (debug && value != last[i]) __android_log_print(ANDROID_LOG_DEBUG, TAG, "button %d %s", i, value ? "down" : "up");
+        last[i] = value;
     }
 }
 
@@ -85,6 +90,7 @@ __attribute__((constructor))
 static void pcpad_init(void) {
     const char *path = getenv("PCPAD_FILE");
     if (!path || !*path || !is_controller_process()) return;
+    debug = getenv("PCPAD_DEBUG") != NULL;
 
     int fd = open(path, O_RDONLY);
     if (fd < 0) return;

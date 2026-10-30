@@ -102,6 +102,8 @@ class PcPlayerActivity : ComponentActivity() {
     // Both remembered per game.
     private var padShown by mutableStateOf(true)
     private var keyboardMode by mutableStateOf(false)
+    /** Beside a game narrower than the screen (4:3): its picture blurred, or black. For all games. */
+    private var blurredSides by mutableStateOf(true)
     private var exitMessage by mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -166,13 +168,15 @@ class PcPlayerActivity : ComponentActivity() {
 
     private fun startGame(exe: File) {
         phase = Phase.Loading("Starting Windows")
-        val newSession = PcSession(this, runtime, exe, ScreenInfo(SCREEN_WIDTH, SCREEN_HEIGHT))
+        val newSession = PcSession(this, runtime, exe, screenSize())
         val xView = XServerView(this, newSession.xServer)
         newSession.xServer.setRenderer(xView.renderer)
         // The game's own window fills the screen (Wine's desktop stays behind it), and the console window some games
         // open (text output, warnings) isn't shown.
         xView.renderer.setForceFullscreenWMClass(exe.name.lowercase())
         xView.renderer.setUnviewableWMClasses("conhost.exe", "wineconsole")
+        blurredSides = prefs().getBoolean("blurred_sides", true)
+        xView.renderer.setBlurredSides(blurredSides)
         xView.isFocusable = true
         xView.isFocusableInTouchMode = true
         xView.setOnTouchListener(TouchMouse(newSession, xView))
@@ -204,6 +208,18 @@ class PcPlayerActivity : ComponentActivity() {
             }
             if (phase is Phase.Loading) phase = Phase.Playing
         }
+    }
+
+    /**
+     * Windows' screen: 720 high and as wide as the phone's screen is in proportion (1560 × 720 on a 19.5:9 phone),
+     * so it fills the phone with nothing to letterbox, and games offer a resolution that fits it exactly.
+     */
+    private fun screenSize(): ScreenInfo {
+        val metrics = resources.displayMetrics
+        val long = maxOf(metrics.widthPixels, metrics.heightPixels).toFloat()
+        val short = minOf(metrics.widthPixels, metrics.heightPixels).toFloat()
+        val width = ((SCREEN_HEIGHT * long / short) / 8).toInt() * 8
+        return ScreenInfo(width.coerceIn(SCREEN_HEIGHT * 4 / 3, SCREEN_HEIGHT * 3), SCREEN_HEIGHT)
     }
 
     private fun gameWindowShown(session: PcSession, wmClass: String): Boolean = runCatching {
@@ -388,6 +404,11 @@ class PcPlayerActivity : ComponentActivity() {
                     MenuButton(onClick = { chooseControls(keyboard = !keyboardMode) }, modifier = wide) {
                         Text("Controller works as: ${if (keyboardMode) "Keyboard & mouse" else "Xbox controller"}")
                     }
+                    MenuButton(onClick = {
+                        blurredSides = !blurredSides
+                        prefs().edit().putBoolean("blurred_sides", blurredSides).apply()
+                        view?.renderer?.setBlurredSides(blurredSides)
+                    }, modifier = wide) { Text("Sides of 4:3 games: ${if (blurredSides) "Blurred" else "Black"}") }
                     if (keyboardMode) Text(
                         "For games without controller support. Sticks: move (WASD) and mouse. RT/LT: left/right click. " +
                             "A Space · B Ctrl · X R · Y E · LB Q · RB next weapon · Start Esc · Back Tab · L3 Shift.",
@@ -567,7 +588,6 @@ class PcPlayerActivity : ComponentActivity() {
         const val EXTRA_EXE = "exe"
         const val EXTRA_TITLE = "title"
         const val EXTRA_STEAM_APP_ID = "steam_app_id"
-        private const val SCREEN_WIDTH = 1280
         private const val SCREEN_HEIGHT = 720
         private const val LOADING_LIMIT_MS = 90_000L
 
