@@ -76,6 +76,14 @@ class AppContainer(application: Application) {
                 screenScraperUser = it.screenScraperUser?.let { name -> it.screenScraperPassword?.let { p -> ScreenScraperUser(name, p) } }
             }
         }
+        // Games indexed before the current name rules: relabelled once, in place (catalogue tags aren't hacks; Switch
+        // updates and DLC aren't games).
+        if (viewPrefs.getInt(NAME_RULES_KEY, 0) < NAME_RULES) {
+            appScope.launch {
+                library.relabel()
+                viewPrefs.edit().putInt(NAME_RULES_KEY, NAME_RULES).apply()
+            }
+        }
         // New games: when switched on in Settings, folders on the device are rescanned as the app starts. Off by default,
         // and network drives are never included: a big collection over Wi-Fi would slow every start.
         if (viewPrefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, false)) {
@@ -124,3 +132,7 @@ class RetroForgeApplication : Application(), coil3.SingletonImageLoader.Factory 
     // Created on first use, so the player process (which never touches it) doesn't open the library or settings.
     val container: AppContainer by lazy { AppContainer(this) }
 }
+
+/** Bumped when the game-name rules change, so libraries indexed before are relabelled once. */
+private const val NAME_RULES = 2
+private const val NAME_RULES_KEY = "name_rules"

@@ -36,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -82,7 +83,7 @@ fun RetroScreen(
     val pickArt = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::useArtFolder) }
 
     ScreenFrame(title = stringResource(R.string.home_retro), subtitle = stringResource(R.string.library_your_consoles_arcade_and_computer_games)) {
-        // Systems first, canvas style: canvas-es artwork (downloaded for the library's systems) or the user's own theme
+        // Systems, canvas style: canvas-es artwork (downloaded for the library's systems) or the user's own theme
         // folder, drawn in RetroForge's colours.
         if (systems.isNotEmpty()) {
             val style by viewModel.tileStyle.collectAsStateWithLifecycle()
@@ -99,6 +100,45 @@ fun RetroScreen(
                 if (ownArt != null) FocusChip(stringResource(R.string.library_back_to_built_in_artwork), onClick = viewModel::clearArtFolder)
             }
             if (indexingArt) LinearProgressIndicator(Modifier.fillMaxWidth())
+        }
+
+        // Find a system or a game by typing, rather than swiping through a hundred systems.
+        if (systems.isNotEmpty()) {
+            var systemQuery by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+            ControllerTextField(
+                value = systemQuery,
+                onValueChange = { systemQuery = it },
+                singleLine = true,
+                label = { Text(stringResource(R.string.library_find_a_system)) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            val wanted = systemQuery.trim()
+            if (wanted.isNotEmpty()) {
+                val matches = systems.filter { it.name.contains(wanted, ignoreCase = true) || it.id.contains(wanted, ignoreCase = true) }
+                if (matches.isEmpty()) CardBody(stringResource(R.string.library_no_systems_match, wanted))
+                androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    matches.take(12).forEach { s -> FocusChip("${s.name} · ${s.games}", onClick = { onOpenSystem(s.id) }) }
+                }
+            }
+            ControllerTextField(
+                value = query,
+                onValueChange = { viewModel.query.value = it },
+                singleLine = true,
+                label = { Text(stringResource(R.string.library_search_your_games)) },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            if (query.trim().length >= 2) {
+                if (results.isEmpty()) CardBody(stringResource(R.string.library_no_games_match, query.trim()))
+                results.take(30).forEach { game ->
+                    FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { onOpenGame(game.id) }) {
+                        Text(game.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+                        CardBody(listOfNotNull(viewModel.systemName(game.system), tagLine(game)).joinToString(" · "))
+                        // With several folders (e.g. internal storage and an SD card), show which one this copy is in.
+                        if (rootsById.size > 1) rootsById[game.rootId]?.let { CardBody(stringResource(R.string.library_in, it.name)) }
+                    }
+                }
+                if (results.size > 30) CardBody(stringResource(R.string.library_showing_30_of_matches_type_more, results.size))
+            }
         }
         val running = scans.values.filterIsInstance<ScanState.Running>().firstOrNull()
         when {
@@ -130,26 +170,6 @@ fun RetroScreen(
         if (systems.isNotEmpty()) PlayTogetherCard(viewModel, onOpenGame)
 
         if (systems.isNotEmpty()) {
-            ControllerTextField(
-                value = query,
-                onValueChange = { viewModel.query.value = it },
-                singleLine = true,
-                label = { Text(stringResource(R.string.library_search_your_games)) },
-                modifier = Modifier.fillMaxWidth(),
-            )
-            if (query.trim().length >= 2) {
-                if (results.isEmpty()) CardBody(stringResource(R.string.library_no_games_match, query.trim()))
-                results.take(30).forEach { game ->
-                    FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { onOpenGame(game.id) }) {
-                        Text(game.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-                        CardBody(listOfNotNull(viewModel.systemName(game.system), tagLine(game)).joinToString(" · "))
-                        // With several folders (e.g. internal storage and an SD card), show which one this copy is in.
-                        if (rootsById.size > 1) rootsById[game.rootId]?.let { CardBody(stringResource(R.string.library_in, it.name)) }
-                    }
-                }
-                if (results.size > 30) CardBody(stringResource(R.string.library_showing_30_of_matches_type_more, results.size))
-            }
-
             if (recent.isNotEmpty()) {
                 CardTitle(stringResource(R.string.library_recently_played))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -272,7 +292,11 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
     val box3dSeen by viewModel.covers.box3dChanges.collectAsStateWithLifecycle()
     // Bookshelf: whole shelves, as many boxes as fit across (at least three).
     val perShelf = maxOf(3, (androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp - 48) / 130)
+    // The system's name fades in over the games while they scroll, and away once they stop.
+    val gridState = androidx.compose.foundation.lazy.grid.rememberLazyGridState()
+    Box(Modifier.fillMaxSize()) {
     LazyVerticalGrid(
+        state = gridState,
         columns = if (asList) GridCells.Adaptive(360.dp) else GridCells.Adaptive(170.dp),
         modifier = Modifier.fillMaxSize(),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 24.dp, vertical = 20.dp),
@@ -309,6 +333,10 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
             if (asList) GameRow(game, viewModel.art(rootsById, chosen, game), onClick = { onOpenGame(game.id) })
             else GameTile(game, viewModel.art(rootsById, chosen, game), onClick = { onOpenGame(game.id) })
         }
+    }
+    if (gridState.firstVisibleItemIndex > 0) {
+        ScrollNamePopup(viewModel.systemName(system), gridState.firstVisibleItemIndex, gridState.isScrollInProgress, Modifier.align(Alignment.TopCenter).padding(top = 12.dp))
+    }
     }
 }
 

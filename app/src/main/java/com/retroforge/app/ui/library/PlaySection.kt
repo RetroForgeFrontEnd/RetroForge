@@ -61,13 +61,14 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
     var problem by remember(game.id) { mutableStateOf<LaunchProblem?>(null) }
     val choices by viewModel.emulatorChoices.collectAsStateWithLifecycle()
     val standalone = remember(game.system) { viewModel.standaloneOptions(game.system) }
+    val builtIn = remember(game.id, game.fileName) { viewModel.builtInCore(game) }?.takeIf { root != null }
     val chosen = (choices[game.system]?.let { id -> standalone.firstOrNull { it.second.id == id } }
         ?.takeIf { remember(it, resumes) { viewModel.installedComponent(it.second) } != null })
-        // Newer systems: an installed standalone app plays them better than the experimental built-in player.
-        ?: if (game.system in com.retroforge.player.PlayerCores.experimentalSystems && choices[game.system] == null)
-            standalone.firstOrNull { viewModel.installedComponent(it.second) != null } else null
-
-    val builtIn = remember(game.id, game.fileName) { viewModel.builtInCore(game) }?.takeIf { root != null }
+        // Newer systems: an installed standalone app plays them better than the experimental built-in player. And where
+        // nothing else can (Switch: no built-in player, RetroArch can't), an installed app is simply the Play button.
+        ?: if (choices[game.system] == null &&
+            (game.system in com.retroforge.player.PlayerCores.experimentalSystems || builtIn == null && plan is LaunchPlan.NotPossible)
+        ) standalone.firstOrNull { viewModel.installedComponent(it.second) != null } else null
     val retroArchChosen = choices[game.system] == RETROARCH_CHOICE
     // The built-in player is the main Play button wherever it can run the game, unless another emulator was chosen.
     val builtInMain = builtIn != null && chosen == null && !retroArchChosen
@@ -76,9 +77,27 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
     // The system's chosen standalone emulator comes first, as the main Play button.
     if (chosen != null) {
         val (option, emulator) = chosen
-        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { problem = viewModel.playStandalone(game, root, option, emulator) }) {
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.playStandalone(context, game, root, option, emulator) { problem = it } }) {
             CardTitle(stringResource(R.string.play_play))
-            CardBody(stringResource(R.string.play_in_your_choice_for, option.label, viewModel.systemName(game.system)))
+            CardBody(stringResource(
+                if (choices[game.system] == emulator.id) R.string.play_in_your_choice_for else R.string.play_in_app_installed_for,
+                option.label, viewModel.systemName(game.system),
+            ))
+        }
+    }
+
+    // Copy progress and problems right under the Play buttons, not below the long list of other emulators.
+    val copying by viewModel.copying.collectAsStateWithLifecycle()
+    copying?.takeIf { it.first == game.id }?.let { (_, percent) ->
+        FocusCard(modifier = Modifier.fillMaxWidth()) {
+            CardBody(stringResource(R.string.play_copying_from_network, percent))
+            androidx.compose.material3.LinearProgressIndicator(progress = { percent / 100f }, modifier = Modifier.fillMaxWidth())
+        }
+    }
+    problem?.let { p ->
+        FocusCard(modifier = Modifier.fillMaxWidth()) {
+            StatusPill(stringResource(R.string.play_problem), StatusTone.BAD)
+            CardBody(describe(p, viewModel))
         }
     }
 
@@ -126,12 +145,6 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
     }
     if (standalone.isNotEmpty()) StandaloneSection(viewModel, game, root, standalone, choices[game.system], resumes) { problem = it }
 
-    problem?.let { p ->
-        FocusCard(modifier = Modifier.fillMaxWidth()) {
-            StatusPill(stringResource(R.string.play_problem), StatusTone.BAD)
-            CardBody(describe(p, viewModel))
-        }
-    }
 }
 
 private const val RETROARCH_CHOICE = "RETROARCH"
@@ -220,6 +233,7 @@ private fun StandaloneSection(
     resumes: Int,
     onProblem: (LaunchProblem?) -> Unit,
 ) {
+    val context = LocalContext.current
     val multiFile = game.fileName.substringAfterLast('.').lowercase() in setOf("cue", "m3u", "gdi", "ccd", "toc")
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle(stringResource(R.string.play_other_emulators))
@@ -231,7 +245,7 @@ private fun StandaloneSection(
         val installed = remember(emulator.id, resumes) { viewModel.installedComponent(emulator) } != null
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (installed) {
-                FocusChip(stringResource(R.string.play_play_with, option.label), onClick = { onProblem(viewModel.playStandalone(game, root, option, emulator)) })
+                FocusChip(stringResource(R.string.play_play_with, option.label), onClick = { viewModel.playStandalone(context, game, root, option, emulator, onProblem) })
                 if (choice == emulator.id) FocusChip(stringResource(R.string.play_stop_using_by_default), onClick = { viewModel.setEmulatorChoice(game.system, null) })
                 else FocusChip(stringResource(R.string.play_use_by_default), onClick = { viewModel.setEmulatorChoice(game.system, emulator.id) })
             } else {

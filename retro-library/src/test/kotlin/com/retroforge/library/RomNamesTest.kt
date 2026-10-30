@@ -1,6 +1,7 @@
 package com.retroforge.library
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -56,6 +57,17 @@ class RomNamesTest {
         assertEquals(null, RomNames.parse("Super Mario Bros. (World) [!].nes").hackName)
         assertEquals(null, RomNames.parse("Game (USA) [b1].nes").hackName)
         assertEquals(null, RomNames.parse("Game (Japan) [T+Eng1.0].nes").hackName)
+    }
+
+    @Test
+    fun switchUpdatesAndDlcAreNotGames() {
+        assertTrue(isSwitchAddOn("switch", "Metroid Dread [010093801237C800][v327680].nsp"))
+        assertTrue(isSwitchAddOn("switch", "Luigi's Mansion 3 [Multiplayer Pack 1][0100DCA0064A7001][US][v131072].nsp"))
+        assertFalse(isSwitchAddOn("switch", "Blazing Chrome [0100C2700C252000][v0].nsp"))
+        assertFalse(isSwitchAddOn("switch", "Metroid Dread.xci"))
+        assertFalse(isSwitchAddOn("snes", "Game [0100C2700C252800].sfc"))
+        assertEquals(null, hackLabel("roms/switch/Blazing Chrome [0100C2700C252000][v0].nsp", RomNames.parse("Blazing Chrome [0100C2700C252000][v0].nsp")))
+        assertEquals("SMW HACKS", hackLabel("roms/snes/SMW HACKS/Kaizo.sfc", RomNames.parse("Kaizo.sfc")))
     }
 
     @Test

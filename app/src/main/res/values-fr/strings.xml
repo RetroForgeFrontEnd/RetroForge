@@ -708,4 +708,8 @@
     <string name="setup_copied">Copié : %1$s</string>
     <string name="setup_already_there_left_alone">Déjà présent, laissé tel quel : %1$s</string>
     <string name="setup_couldn_t_copy">Impossible de copier %1$s : %2$s</string>
+    <string name="play_copying_from_network">Copie du jeu depuis le lecteur réseau vers le téléphone… %1$d%%. Il démarre tout seul à la fin ; la prochaine fois, il démarre tout de suite.</string>
+    <string name="play_in_app_installed_for">Dans %1$s, l\'appli installée pour les jeux %2$s.</string>
+    <string name="library_find_a_system">Trouver un système (Switch, N64, PlayStation …)</string>
+    <string name="library_no_systems_match">Aucun système ne correspond à « %1$s ».</string>
 </resources>

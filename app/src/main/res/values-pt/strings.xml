@@ -708,4 +708,8 @@
     <string name="setup_copied">Copiado: %1$s</string>
     <string name="setup_already_there_left_alone">Já estava lá, não mexido: %1$s</string>
     <string name="setup_couldn_t_copy">Não foi possível copiar %1$s: %2$s</string>
+    <string name="play_copying_from_network">Copiando o jogo da unidade de rede para o telefone… %1$d%%. Ele começa sozinho ao terminar; da próxima vez, começa na hora.</string>
+    <string name="play_in_app_installed_for">No %1$s, o app instalado para jogos de %2$s.</string>
+    <string name="library_find_a_system">Encontrar um sistema (Switch, N64, PlayStation …)</string>
+    <string name="library_no_systems_match">Nenhum sistema corresponde a “%1$s”.</string>
 </resources>

@@ -189,7 +189,9 @@ class LibraryScanner(private val rules: SystemRules) {
                     else -> {
                         val ext = lower.substringAfterLast('.', "")
                         val system = LOOSE_EXTENSIONS[ext]?.let { rules.byId(it) }
-                        if (system != null) {
+                        if (system != null && isSwitchAddOn(system.id, child.name)) {
+                            Unit
+                        } else if (system != null) {
                             val name = RomNames.parse(child.name)
                             found += ScannedGame(
                                 system = system.id,
@@ -199,7 +201,7 @@ class LibraryScanner(private val rules: SystemRules) {
                                 size = child.size,
                                 lastModified = child.lastModified,
                                 name = name,
-                                hackFolder = hackFolderOf(childPath) ?: name.hackName ?: if (RomFlag.HACK in name.flags) "" else null,
+                                hackFolder = hackLabel(childPath, name),
                                 metadata = null,
                                 imageNodeId = null,
                                 duplicateKey = null,
@@ -276,7 +278,7 @@ class LibraryScanner(private val rules: SystemRules) {
         }.orEmpty()
 
         val hidden = referencedByPlaylists(romFiles, prefix, problems)
-        return romFiles.filter { it.path.lowercase() !in hidden }.map { entry ->
+        return romFiles.filter { it.path.lowercase() !in hidden && !isSwitchAddOn(rule.id, it.node.name) }.map { entry ->
             // Arcade romsets are named by short names ("sf2.zip"): shown by their full titles.
             val name = ArcadeNames.named(rule.id, entry.node.name, RomNames.parse(entry.node.name))
             // A playlist RetroForge (or the user) made has no gamelist entry of its own: borrow its first disc's.
@@ -291,7 +293,7 @@ class LibraryScanner(private val rules: SystemRules) {
                 size = if (entry.node.isDirectory) 0 else entry.node.size,
                 lastModified = entry.node.lastModified,
                 name = name,
-                hackFolder = hackFolderOf(entry.path) ?: name.hackName ?: if (RomFlag.HACK in name.flags) "" else null,
+                hackFolder = hackLabel(entry.path, name),
                 metadata = meta,
                 imageNodeId = image,
                 duplicateKey = null,
@@ -300,9 +302,6 @@ class LibraryScanner(private val rules: SystemRules) {
         }
     }
 
-    /** Folder segment containing "hack" (e.g. "SMW HACKS"); nested ones report the outermost. */
-    private fun hackFolderOf(path: String): String? =
-        path.split('/').dropLast(1).firstOrNull { it.contains("hack", ignoreCase = true) }
 
     /** Files listed inside .m3u/.cue/.gdi playlists in the same system, so multi-file games appear once. */
     private fun referencedByPlaylists(files: List<FileEntry>, prefix: String, problems: MutableList<ScanProblem>): Set<String> {
@@ -372,3 +371,20 @@ private val UNSURE_EXTENSIONS = setOf("zip", "7z", "rar", "iso", "chd", "cue", "
 
 /** Folders beside the system folders that hold no games: BIOS, saves and the like. */
 private val NON_GAME_FOLDERS = setOf("bios", "system", "saves", "states", "screenshots", "media", "images", "videos", "manuals", "cheats", "shaders", "overlays", "themes")
+
+/**
+ * What a game is labelled as a hack: the folder holding it ("SMW HACKS", the outermost when nested), else its patch tag,
+ * else "" for a [h] flag; null when it isn't one.
+ */
+fun hackLabel(path: String, name: RomName): String? =
+    path.split('/').dropLast(1).firstOrNull { it.contains("hack", ignoreCase = true) }
+        ?: name.hackName ?: if (RomFlag.HACK in name.flags) "" else null
+
+/**
+ * A Switch update or DLC rather than a game: its title id ([0100C2700C252800], [0100DCA0064A7001]) doesn't end in 000
+ * as a game's does. Emulators install these on top of the game; they don't start on their own.
+ */
+fun isSwitchAddOn(system: String, fileName: String): Boolean =
+    system == "switch" && switchTitleId.findAll(fileName).any { !it.groupValues[1].endsWith("000") }
+
+private val switchTitleId = Regex("""\[(0100[0-9a-fA-F]{12})]""")

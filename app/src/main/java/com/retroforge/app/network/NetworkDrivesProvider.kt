@@ -55,7 +55,7 @@ class NetworkDrivesProvider : DocumentsProvider() {
     override fun queryDocument(documentId: String, projection: Array<out String>?): Cursor {
         val cursor = MatrixCursor(projection ?: DOCUMENT_COLUMNS)
         val share = share(documentId)
-        val entry = runCatching { NetworkDrives.stat(share, path(documentId)) }.getOrElse { throw FileNotFoundException(it.message) }
+        val entry = runCatching { onNetwork { NetworkDrives.stat(share, path(documentId)) } }.getOrElse { throw notFound(it) }
         addRow(cursor, share.id, entry)
         return cursor
     }
@@ -63,7 +63,7 @@ class NetworkDrivesProvider : DocumentsProvider() {
     override fun queryChildDocuments(parentDocumentId: String, projection: Array<out String>?, sortOrder: String?): Cursor {
         val cursor = MatrixCursor(projection ?: DOCUMENT_COLUMNS)
         val share = share(parentDocumentId)
-        val entries = runCatching { NetworkDrives.list(share, path(parentDocumentId)) }
+        val entries = runCatching { onNetwork { NetworkDrives.list(share, path(parentDocumentId)) } }
             .getOrElse { throw FileNotFoundException("Couldn't open ${share.address}: ${it.message}") }
         entries.sortedWith(compareBy({ !it.isFolder }, { it.name.lowercase() })).forEach { addRow(cursor, share.id, it) }
         return cursor
@@ -79,6 +79,27 @@ class NetworkDrivesProvider : DocumentsProvider() {
             .add(Document.COLUMN_FLAGS, 0)
     }
 
+    /**
+     * Lets [block] use the network. A request from another app arrives with that app's thread rules: Eden asks from
+     * its main thread, which forbids network use, so every look-up failed (NetworkOnMainThreadException) and Eden said
+     * "No game found". The answer has to come from the share, so the network is allowed for this call.
+     */
+    private inline fun <T> onNetwork(block: () -> T): T {
+        val rules = android.os.StrictMode.getThreadPolicy()
+        android.os.StrictMode.setThreadPolicy(android.os.StrictMode.ThreadPolicy.Builder(rules).permitNetwork().build())
+        return try {
+            block()
+        } finally {
+            android.os.StrictMode.setThreadPolicy(rules)
+        }
+    }
+
+    /** The real reason, kept in the log and the message (an SMB error often has no message of its own). */
+    private fun notFound(e: Throwable) = FileNotFoundException(e.message ?: e.javaClass.simpleName).also {
+        it.initCause(e)
+        android.util.Log.w("NetworkDrives", "Couldn't read from the network drive", e)
+    }
+
     private fun mimeOf(name: String): String =
         MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substringAfterLast('.', "").lowercase()) ?: "application/octet-stream"
 
@@ -90,8 +111,8 @@ class NetworkDrivesProvider : DocumentsProvider() {
         if (mode != "r") throw FileNotFoundException("Network drives are read-only in RetroForge")
         val share = share(documentId)
         val path = path(documentId)
-        val size = runCatching { NetworkDrives.stat(share, path).size }.getOrElse { throw FileNotFoundException(it.message) }
-        val file = runCatching { NetworkDrives.openRead(share, path) }.getOrElse { throw FileNotFoundException(it.message) }
+        val size = runCatching { onNetwork { NetworkDrives.stat(share, path).size } }.getOrElse { throw notFound(it) }
+        val file = runCatching { onNetwork { NetworkDrives.openRead(share, path) } }.getOrElse { throw notFound(it) }
         val storage = context!!.getSystemService(StorageManager::class.java)
         return storage.openProxyFileDescriptor(ParcelFileDescriptor.MODE_READ_ONLY, object : ProxyFileDescriptorCallback() {
             // Android asks for small pieces (often 128 KB); each is a round trip to the PC. Reading ahead a whole

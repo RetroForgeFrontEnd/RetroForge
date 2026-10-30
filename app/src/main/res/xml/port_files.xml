@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Port APKs RetroForge downloaded, shared with Android's package installer. -->
+<!-- Port APKs RetroForge downloaded, shared with Android's package installer; and network-drive games copied to the
+     phone, shared with the emulator app that plays them (Eden). -->
 <paths>
     <cache-path name="ports" path="ports/" />
+    <external-cache-path name="games" path="games/" />
 </paths>

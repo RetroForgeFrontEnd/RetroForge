@@ -31,8 +31,11 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -99,6 +102,7 @@ fun CanvasSystemsView(systems: List<SystemSummary>, art: SystemArtIndex?, style:
                     Tiles(systems, art, style, pager, tile, tilesWidth, onOpenSystem)
                     Details(current, artwork, Modifier.weight(1f).padding(end = 24.dp), compact = true)
                 }
+                NamePopup(current.name, pager, Modifier.align(Alignment.CenterStart).width(tilesWidth))
             }
         } else {
             val tile = minOf(maxWidth * 0.58f, screenHeight - 370.dp).coerceIn(150.dp, 320.dp)
@@ -108,7 +112,49 @@ fun CanvasSystemsView(systems: List<SystemSummary>, art: SystemArtIndex?, style:
                     Tiles(systems, art, style, pager, tile, fullWidth, onOpenSystem)
                     Details(current, artwork, Modifier.fillMaxWidth().padding(top = 18.dp), compact = false)
                 }
+                NamePopup(current.name, pager, Modifier.align(Alignment.TopCenter).padding(top = 16.dp + tile / 2 - 32.dp))
             }
+        }
+    }
+}
+
+/**
+ * The system's name popping up over the tiles while they're swiped, fading out a moment after they stop, so a fast
+ * swipe through a hundred systems still shows where it is. Not shown when the page first opens.
+ */
+@Composable
+private fun NamePopup(name: String, pager: androidx.compose.foundation.pager.PagerState, modifier: Modifier) =
+    ScrollNamePopup(name, pager.currentPage, pager.isScrollInProgress, modifier)
+
+/** A name shown while something scrolls ([position] changing or [scrolling]), fading out a moment after it stops. */
+@Composable
+internal fun ScrollNamePopup(name: String, position: Any, scrolling: Boolean, modifier: Modifier) {
+    var shown by remember { mutableStateOf(false) }
+    var first by remember { mutableStateOf(true) }
+    LaunchedEffect(position, scrolling) {
+        if (first) {
+            first = false
+            return@LaunchedEffect
+        }
+        shown = true
+        if (!scrolling) {
+            kotlinx.coroutines.delay(900)
+            shown = false
+        }
+    }
+    Box(modifier, contentAlignment = Alignment.Center) {
+        androidx.compose.animation.AnimatedVisibility(
+            visible = shown,
+            enter = androidx.compose.animation.fadeIn(),
+            exit = androidx.compose.animation.fadeOut(),
+        ) {
+            Text(
+                name,
+                color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Black, textAlign = TextAlign.Center, maxLines = 2,
+                modifier = Modifier
+                    .background(Color.Black.copy(alpha = 0.72f), androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
+                    .padding(horizontal = 22.dp, vertical = 10.dp),
+            )
         }
     }
 }

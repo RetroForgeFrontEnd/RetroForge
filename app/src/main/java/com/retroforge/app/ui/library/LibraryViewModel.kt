@@ -37,6 +37,9 @@ import com.retroforge.player.PlayerCores
 import android.provider.DocumentsContract
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import com.retroforge.app.player.GameFiles
 import com.retroforge.core.library.RootEntity
 import com.retroforge.core.library.ScanState
 import kotlinx.coroutines.FlowPreview
@@ -54,6 +57,9 @@ import kotlinx.coroutines.flow.stateIn
 data class SystemSummary(val id: String, val name: String, val games: Int, val hacks: Int)
 
 @OptIn(FlowPreview::class, kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+/** Systems whose emulator app needs the game as a real file: on a network drive it's copied to the phone first. */
+private val COPY_FROM_NETWORK = setOf("switch")
+
 class LibraryViewModel(
     private val repository: LibraryRepository,
     private val retroArch: RetroArchLauncher,
@@ -141,23 +147,61 @@ class LibraryViewModel(
 
     fun getEmulator(emulator: StandaloneEmulator) = standalone.openDownload(emulator)
 
-    /** Starts [game] in a standalone emulator; history is recorded only when it opened. */
-    fun playStandalone(game: GameEntity, root: RootEntity?, option: StandaloneOption, emulator: StandaloneEmulator): LaunchProblem? {
-        if (root == null) return LaunchProblem.LocationNotSupported
-        val component = standalone.installed(emulator) ?: return LaunchProblem.StartFailed("${emulator.name} isn't installed.")
-        val romPath = StoragePaths.filePath(root.treeUri, game.documentId)
-        val vars = LaunchVars(
-            romUri = repository.documentUri(root, game.documentId).toString(),
-            romPath = romPath,
-            gameDirPath = romPath?.substringBeforeLast('/'),
-            romsPath = StoragePaths.filePath(root.treeUri, DocumentsContract.getTreeDocumentId(Uri.parse(root.treeUri))),
-        )
-        val spec = try {
-            LaunchCommand.parse(option.command, vars)
-        } catch (e: UnsupportedCommandException) {
-            return LaunchProblem.StartFailed("${emulator.name} can't open this game: ${e.message}.")
+    /** A network-drive game being copied to the phone before its emulator app starts: (game id, percent). */
+    private val _copying = MutableStateFlow<Pair<Long, Int>?>(null)
+    val copying: StateFlow<Pair<Long, Int>?> = _copying
+
+    /**
+     * Starts [game] in a standalone emulator; history is recorded only when it opened. Switch games on a network drive
+     * are copied to the phone first (with [copying] showing the percentage): Eden maps the game file into memory, which
+     * a file streamed from a network drive can't do, so the game froze on a black screen.
+     */
+    fun playStandalone(
+        context: Context, game: GameEntity, root: RootEntity?, option: StandaloneOption, emulator: StandaloneEmulator,
+        onProblem: (LaunchProblem?) -> Unit,
+    ) {
+        if (root == null) return onProblem(LaunchProblem.LocationNotSupported)
+        val component = standalone.installed(emulator) ?: return onProblem(LaunchProblem.StartFailed("${emulator.name} isn't installed."))
+        val romUri = repository.documentUri(root, game.documentId)
+        fun launch(uri: Uri, romPath: String?): LaunchProblem? {
+            val vars = LaunchVars(
+                romUri = uri.toString(),
+                romPath = romPath,
+                gameDirPath = romPath?.substringBeforeLast('/'),
+                romsPath = StoragePaths.filePath(root.treeUri, DocumentsContract.getTreeDocumentId(Uri.parse(root.treeUri))),
+            )
+            val spec = try {
+                LaunchCommand.parse(option.command, vars)
+            } catch (e: UnsupportedCommandException) {
+                return LaunchProblem.StartFailed("${emulator.name} can't open this game: ${e.message}.")
+            }
+            return standalone.launch(component, spec).also { if (it == null) repository.recordPlay(game, emulator.id) }
         }
-        return standalone.launch(component, spec).also { if (it == null) repository.recordPlay(game, emulator.id) }
+        if (romUri.authority?.endsWith(".network") != true || game.system !in COPY_FROM_NETWORK) {
+            return onProblem(launch(romUri, StoragePaths.filePath(root.treeUri, game.documentId)))
+        }
+        if (_copying.value != null) return
+        onProblem(null)
+        _copying.value = game.id to 0
+        viewModelScope.launch {
+            val local = withContext(Dispatchers.IO) {
+                runCatching {
+                    // The built-in player's game cache: copied once, reused next time, the two most recent games kept.
+                    val cache = File(context.externalCacheDir ?: context.cacheDir, "games")
+                    val dir = File(cache, Integer.toHexString(romUri.toString().hashCode()))
+                    GameFiles.prune(cache, keep = 2, current = dir)
+                    File(GameFiles(resolver, dir).expose(romUri, game.fileName) { _copying.value = game.id to it })
+                }
+            }
+            _copying.value = null
+            local.fold(
+                onSuccess = { file ->
+                    val uri = androidx.core.content.FileProvider.getUriForFile(context, "${context.packageName}.ports", file)
+                    onProblem(launch(uri, null))
+                },
+                onFailure = { onProblem(LaunchProblem.StartFailed("Couldn't copy ${game.fileName} from the network drive: ${it.message}")) },
+            )
+        }
     }
 
     /** Chosen covers by (folder, path); these take priority over gamelist artwork. */

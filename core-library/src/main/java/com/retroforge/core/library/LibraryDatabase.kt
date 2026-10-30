@@ -273,6 +273,12 @@ interface LibraryDao {
     @Query("DELETE FROM games WHERE rootId = :rootId")
     suspend fun deleteGames(rootId: Long)
 
+    @Query("DELETE FROM games WHERE id IN (:ids)")
+    suspend fun deleteGameIds(ids: List<Long>)
+
+    @Query("SELECT * FROM games")
+    suspend fun allGames(): List<GameEntity>
+
     @Query("DELETE FROM scan_problems WHERE rootId = :rootId")
     suspend fun deleteProblems(rootId: Long)
 
@@ -386,6 +392,9 @@ interface LibraryDao {
 
     @Update
     suspend fun updateGame(game: GameEntity)
+
+    @Update
+    suspend fun updateGames(games: List<GameEntity>)
 
     /** Saves an edit and shows it at once; the first edit remembers what the scan had found. */
     @Transaction

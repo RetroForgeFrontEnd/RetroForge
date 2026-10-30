@@ -709,4 +709,8 @@
     <string name="setup_copied">Copied: %1$s</string>
     <string name="setup_already_there_left_alone">Already there, left alone: %1$s</string>
     <string name="setup_couldn_t_copy">Couldn\'t copy %1$s: %2$s</string>
+    <string name="play_copying_from_network">Copying the game from the network drive to the phone… %1$d%%. It starts by itself when it\'s done; next time it starts at once.</string>
+    <string name="play_in_app_installed_for">In %1$s, the app installed for %2$s games.</string>
+    <string name="library_find_a_system">Find a system (Switch, N64, PlayStation …)</string>
+    <string name="library_no_systems_match">No systems match “%1$s”.</string>
 </resources>

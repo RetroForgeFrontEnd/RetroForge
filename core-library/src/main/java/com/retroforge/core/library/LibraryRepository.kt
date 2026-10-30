@@ -10,6 +10,8 @@ import com.retroforge.library.ScanCancelled
 import com.retroforge.library.ScanProgress
 import com.retroforge.library.ScannedGame
 import com.retroforge.library.SystemRules
+import com.retroforge.library.hackLabel
+import com.retroforge.library.isSwitchAddOn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -252,6 +254,12 @@ class LibraryRepository(
                 setState(rootId, ScanState.Failed("Scan failed: ${e.message ?: e.javaClass.simpleName}"))
                 return@launch
             }
+            // The folder couldn't be opened at all (a network drive whose PC is off): keep its games rather than
+            // replacing them with nothing.
+            result.problems.singleOrNull { result.games.isEmpty() && it.message.startsWith("Can't open this folder") }?.let {
+                setState(rootId, ScanState.Failed(it.message))
+                return@launch
+            }
             dao.replaceIndex(
                 root,
                 games = result.games.map { it.toEntity(rootId) },
@@ -262,6 +270,21 @@ class LibraryRepository(
             )
             setState(rootId, ScanState.Finished(result.games.size, result.problems.size))
         }
+    }
+
+    /**
+     * Games indexed by an older version, brought up to the current name rules without a rescan (so a network drive whose
+     * PC is off is fixed too): hack labels redone, Switch updates and DLC taken out of the game lists.
+     */
+    suspend fun relabel() {
+        val games = dao.allGames()
+        val addOns = games.filter { isSwitchAddOn(it.system, it.fileName) }
+        if (addOns.isNotEmpty()) dao.deleteGameIds(addOns.map { it.id })
+        val relabelled = (games - addOns.toSet()).mapNotNull { game ->
+            val label = hackLabel(game.relativePath, RomNames.parse(game.fileName))
+            if (label != game.hackFolder) game.copy(hackFolder = label, isHack = label != null) else null
+        }
+        if (relabelled.isNotEmpty()) dao.updateGames(relabelled)
     }
 
     fun documentUri(root: RootEntity, documentId: String): Uri = SafScanNode.documentUri(root.treeUri, documentId)

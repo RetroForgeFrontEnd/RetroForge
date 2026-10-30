@@ -124,17 +124,28 @@ object NetworkDrives {
     @Synchronized
     fun connect(share: NetworkShare): DiskShare {
         open[share.id]?.let { if (it.isConnected) return it else runCatching { it.close() } }
+        // Just found switched off: say so at once instead of searching the network again for every file asked for.
+        if (System.currentTimeMillis() < (offUntil[share.id] ?: 0)) throw PcUnreachable(share)
         return try {
             openDisk(share)
         } catch (e: Exception) {
             if (!unreachable(e)) throw e
-            val moved = relocate(share) ?: throw java.io.IOException(
-                "Can't reach ${share.address}. Is the PC switched on and on the same network as this device?", e,
-            )
+            val moved = relocate(share) ?: run {
+                offUntil[share.id] = System.currentTimeMillis() + 30_000
+                throw PcUnreachable(share, e)
+            }
+            offUntil.remove(share.id)
             // relocate() opened it while checking.
             open[share.id]?.takeIf { it.isConnected } ?: openDisk(moved)
         }
     }
+
+    private val offUntil = mutableMapOf<Any, Long>()
+
+    /** The share's PC didn't answer at its address and wasn't found elsewhere on the network. */
+    class PcUnreachable(share: NetworkShare, cause: Throwable? = null) : java.io.IOException(
+        "Can't reach ${share.address}. Is the PC switched on and on the same network as this device?", cause,
+    )
 
     private fun unreachable(e: Throwable): Boolean = generateSequence(e) { it.cause }.any {
         it is java.net.ConnectException || it is java.net.SocketTimeoutException || it is java.net.NoRouteToHostException ||
@@ -225,8 +236,23 @@ object NetworkDrives {
     private fun smbPath(share: NetworkShare, path: String) =
         listOf(share.base, path).filter { it.isNotEmpty() }.joinToString("/").replace('/', '\\')
 
+    /**
+     * Runs [block] on [share]'s connection, once more on a fresh one when it fails: a connection kept from earlier can
+     * look open after the PC's network changed and then fail every request (seen as Eden's "No game found").
+     * A file that really isn't there fails both times, so its error still comes through.
+     */
+    private fun <T> withDisk(share: NetworkShare, block: (DiskShare) -> T): T = try {
+        block(connect(share))
+    } catch (e: PcUnreachable) {
+        throw e
+    } catch (e: Exception) {
+        android.util.Log.w("NetworkDrives", "${share.name}: ${e.javaClass.simpleName}: ${e.message}; trying a new connection", e)
+        synchronized(this) { open.remove(share.id)?.let { runCatching { it.close() } } }
+        block(connect(share))
+    }
+
     fun list(share: NetworkShare, path: String): List<NetworkEntry> =
-        connect(share).list(smbPath(share, path)).filter { it.fileName != "." && it.fileName != ".." }.map {
+        withDisk(share) { it.list(smbPath(share, path)) }.filter { it.fileName != "." && it.fileName != ".." }.map {
             val folder = it.fileAttributes and FileAttributes.FILE_ATTRIBUTE_DIRECTORY.value != 0L
             NetworkEntry(listOf(path, it.fileName).filter { p -> p.isNotEmpty() }.joinToString("/"), it.fileName, folder,
                 it.endOfFile, it.lastWriteTime.toEpochMillis())
@@ -234,14 +260,14 @@ object NetworkDrives {
 
     fun stat(share: NetworkShare, path: String): NetworkEntry {
         if (path.isEmpty()) return NetworkEntry("", share.name, true, 0, 0)
-        val info = connect(share).getFileInformation(smbPath(share, path))
+        val info = withDisk(share) { it.getFileInformation(smbPath(share, path)) }
         return NetworkEntry(path, path.substringAfterLast('/'), info.standardInformation.isDirectory,
             info.standardInformation.endOfFile, info.basicInformation.lastWriteTime.toEpochMillis())
     }
 
-    fun openRead(share: NetworkShare, path: String): File = connect(share).openFile(
-        smbPath(share, path), EnumSet.of(AccessMask.GENERIC_READ), null, SMB2ShareAccess.ALL, SMB2CreateDisposition.FILE_OPEN, null,
-    )
+    fun openRead(share: NetworkShare, path: String): File = withDisk(share) {
+        it.openFile(smbPath(share, path), EnumSet.of(AccessMask.GENERIC_READ), null, SMB2ShareAccess.ALL, SMB2CreateDisposition.FILE_OPEN, null)
+    }
 
     /** Every file under [path] (in all its folders); empty when the folder isn't there yet. */
     fun listAll(share: NetworkShare, path: String): List<NetworkEntry> {
