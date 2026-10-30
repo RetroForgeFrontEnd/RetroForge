@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -22,6 +23,10 @@ android {
             version = "3.22.1"
         }
     }
+    buildFeatures {
+        // The in-game menu matches the retro player's (Compose).
+        compose = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -32,9 +37,14 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.collection)
     implementation(libs.androidx.annotation)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.material3)
     implementation(libs.commons.compress)
     implementation(libs.xz)
     implementation(libs.javasteam)
+    implementation(libs.javasteam.depotdownloader)
     implementation(libs.spongycastle)
     implementation(libs.okhttp)
     implementation(libs.protobuf.java)

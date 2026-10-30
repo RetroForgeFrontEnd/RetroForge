@@ -31,10 +31,11 @@ class SteamGameSetup(private val runtimeRoot: File, private val account: SteamAc
     }
 
     /**
-     * Sets the game up for [appId]. Throws with a message for the user when it can't (not signed in, Steam gave no
+     * Sets the game up for [appId], with Steam lobbies between players on the same (or RetroForge's virtual) network
+     * when [lobbies] is set ("Play together" in the player's menu). Throws with a message for the user when it can't (not signed in, Steam gave no
      * ticket for this account, the emulator DLLs couldn't be downloaded).
      */
-    suspend fun prepare(gameDir: File, appId: Int) {
+    suspend fun prepare(gameDir: File, appId: Int, lobbies: Boolean = false) {
         val dlls = steamDlls(gameDir)
         if (dlls.isEmpty()) return
         if (!account.signedIn) throw IOException("This is a Steam game: sign in to Steam on RetroForge's PC tab first.")
@@ -50,7 +51,7 @@ class SteamGameSetup(private val runtimeRoot: File, private val account: SteamAc
                 dll.copyTo(original)
             }
             ours.copyTo(dll, overwrite = true)
-            writeSettings(dll.parentFile!!, appId, ticket)
+            writeSettings(dll.parentFile!!, appId, ticket, lobbies)
         }
     }
 
@@ -62,14 +63,17 @@ class SteamGameSetup(private val runtimeRoot: File, private val account: SteamAc
         }
     }
 
-    private fun writeSettings(dir: File, appId: Int, ticket: String?) {
+    private fun writeSettings(dir: File, appId: Int, ticket: String?, lobbies: Boolean) {
         File(dir, "steam_appid.txt").takeIf { !it.exists() }?.writeText(appId.toString())
         val settings = File(dir, "steam_settings").apply { mkdirs() }
         File(settings, "steam_appid.txt").writeText(appId.toString())
-        // gbe's LAN emulation (Steam lobbies on the local network) asks Windows for the network interfaces, which
-        // hangs under Wine on Android (Android blocks the netlink query behind it), so the game never gets past
-        // SteamAPI_Init. Single-player doesn't need it.
-        File(settings, "configs.main.ini").writeText("[main::connectivity]\ndisable_lan_only=1\ndisable_networking=1\n")
+        // gbe's networking: Steam lobbies and the game's Steam networking between players on the same network (or
+        // RetroForge's virtual LAN). On only for "Play together"; single-player doesn't need it. (It used to hang
+        // SteamAPI_Init: Windows' adapter list was broken under Wine on Android, which libpcexec.so now fixes.)
+        // disable_lan_only=1: gbe leaves Windows' own networking calls alone.
+        File(settings, "configs.main.ini").writeText(
+            "[main::connectivity]\ndisable_lan_only=1\ndisable_networking=${if (lobbies) 0 else 1}\n",
+        )
         val steamId = account.steamId64
         val accountId = steamId and 0xFFFFFFFFL
         File(settings, "configs.user.ini").writeText(

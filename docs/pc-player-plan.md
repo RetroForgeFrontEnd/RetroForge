@@ -217,13 +217,13 @@ Authorized Devices lists RetroForge's sign-in under the phone's name.
    doesn't bypass DRM). The alternative that needs no swap is running Valve's own Windows Steam client in the
    player (heavy; its built-in browser often struggles under Wine on ARM).
 2. **DXVK and VKD3D-Proton in the prefix** (GameNative's `dxvk-2.x` / `vkd3d` packages, a few MB each). Needed by
-   nearly every Direct3D game: Godot's default path, Max Payne 2 (D3D9), Snooker 19 (D3D11).
+   nearly every Direct3D game: Godot's default path, Max Payne 2 (D3D9), most newer games (D3D11).
 3. **A non-.NET game next** to prove frames reach the screen end to end: Max Payne 2 (32-bit D3D9, also tests FEX's
    32-bit path) once DXVK is in.
 4. Sound: Winlator's ALSA server (Java) or PulseAudio from the image.
 5. Then stages 4–8 above.
 
-Test games the user suggested and owns: Max Payne 2 and Snooker 19 (on the PC, not yet copied to the phone). A
+Test games the user suggested and owns: Max Payne 2 (on the PC, not yet copied to the phone). A
 small set covering each API is in the session notes: Cave Story (DirectDraw), Max Payne (D3D8), Plants vs.
 Zombies (D3D9), Terraria (D3D9/XNA), Undertale (D3D11), Hollow Knight (D3D11/Unity), Super Hexagon or FTL
 (OpenGL), Warside with `--rendering-driver d3d12` (D3D12), Warside (Vulkan).

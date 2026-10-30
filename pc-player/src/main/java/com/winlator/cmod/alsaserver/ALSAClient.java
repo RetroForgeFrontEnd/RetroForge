@@ -31,28 +31,37 @@ public class ALSAClient {
         System.loadLibrary("winlator");
     }
 
-    public void release() {
+    // RetroForge: the stream methods are synchronized. When a game disconnects, its connection's thread and the
+    // server shutting down can both release the client, or one release while the other writes; the AAudio stream
+    // was then freed twice (or written after closing) and the process crashed.
+    public synchronized void release() {
         if (sharedBuffer != null) {
             SysVSharedMemory.unmapSHMSegment(sharedBuffer, sharedBuffer.capacity());
             sharedBuffer = null;
         }
 
-        if (reflectorMode) {
-            simulatedStop(streamPtr);
-            stop(mirrorStreamPtr);
-            simulatedClose(streamPtr);
-            close(mirrorStreamPtr);
-        } else {
-            stop(streamPtr);
-            close(streamPtr);
-        }
-
-        playing = false;
+        long stream = streamPtr;
+        long mirror = mirrorStreamPtr;
         streamPtr = 0;
         mirrorStreamPtr = 0;
+        playing = false;
+
+        if (reflectorMode) {
+            if (stream != 0) {
+                simulatedStop(stream);
+                simulatedClose(stream);
+            }
+            if (mirror != 0) {
+                stop(mirror);
+                close(mirror);
+            }
+        } else if (stream != 0) {
+            stop(stream);
+            close(stream);
+        }
     }
 
-    public void prepare() {
+    public synchronized void prepare() {
         position = 0;
         frameBytes = channelCount * dataType.byteCount;
         release();
@@ -72,7 +81,7 @@ public class ALSAClient {
         if (streamPtr != 0) start();
     }
 
-    public void start() {
+    public synchronized void start() {
         if (streamPtr != 0 && !playing) {
             if (reflectorMode) {
                 simulatedStart(streamPtr);
@@ -84,7 +93,7 @@ public class ALSAClient {
         }
     }
 
-    public void stop() {
+    public synchronized void stop() {
         if (streamPtr != 0 && playing) {
             if (reflectorMode) {
                 simulatedStop(streamPtr);
@@ -96,7 +105,7 @@ public class ALSAClient {
         }
     }
 
-    public void pause() {
+    public synchronized void pause() {
         if (streamPtr != 0) {
             if (reflectorMode) {
                 simulatedPause(streamPtr);
@@ -108,7 +117,7 @@ public class ALSAClient {
         }
     }
 
-    public void drain() {
+    public synchronized void drain() {
         if (streamPtr != 0) {
             if (reflectorMode) {
                 simulatedFlush(streamPtr);
@@ -119,7 +128,7 @@ public class ALSAClient {
         }
     }
 
-    public void writeDataToStream(ByteBuffer data) {
+    public synchronized void writeDataToStream(ByteBuffer data) {
         ByteBuffer mirrorData = data.duplicate();
 
         if (dataType == DataType.S16LE || dataType == DataType.FLOATLE) {
