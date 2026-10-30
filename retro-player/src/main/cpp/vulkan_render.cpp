@@ -14,6 +14,9 @@
 #include <vector>
 
 #include "libretro_vulkan.h"
+#ifdef RF_ADRENOTOOLS
+#include <adrenotools/driver.h>
+#endif
 
 #define LOG_TAG "RetroForgePlayer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
@@ -381,9 +384,32 @@ bool negotiationSupport(retro_hw_render_context_negotiation_interface *support) 
     return true;
 }
 
+std::string driverHookDir, driverDir, driverName;
+
+void setDriver(const std::string &hookDir, const std::string &dir, const std::string &name) {
+    driverHookDir = hookDir;
+    driverDir = dir;
+    driverName = name;
+}
+
+/** The custom driver chosen in Settings (through adrenotools), else the device's own libvulkan. */
+static void *openVulkan() {
+#ifdef RF_ADRENOTOOLS
+    if (!driverName.empty() && !driverDir.empty() && !driverHookDir.empty()) {
+        std::string dir = driverDir.back() == '/' ? driverDir : driverDir + "/";
+        std::string hooks = driverHookDir.back() == '/' ? driverHookDir : driverHookDir + "/";
+        void *custom = adrenotools_open_libvulkan(RTLD_NOW | RTLD_LOCAL, ADRENOTOOLS_DRIVER_CUSTOM, nullptr, hooks.c_str(),
+                                                  dir.c_str(), driverName.c_str(), nullptr, nullptr);
+        LOGI("custom Vulkan driver %s: %s", driverName.c_str(), custom ? "loaded" : "failed, using the device's");
+        if (custom) return custom;
+    }
+#endif
+    return dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
+}
+
 bool init(std::string &error) {
     if (ready) return true;
-    library = dlopen("libvulkan.so", RTLD_NOW | RTLD_LOCAL);
+    library = openVulkan();
     if (!library) return error = "This device has no Vulkan driver", false;
     getInstanceProc = reinterpret_cast<PFN_vkGetInstanceProcAddr>(dlsym(library, "vkGetInstanceProcAddr"));
     if (!getInstanceProc) return error = "Vulkan driver is incomplete", false;

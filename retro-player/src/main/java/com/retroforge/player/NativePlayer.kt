@@ -46,6 +46,12 @@ object NativePlayer {
     external fun setFastForward(on: Boolean)
     external fun setSurface(surface: Surface?)
 
+    /**
+     * A custom Vulkan driver (Turnip) for Vulkan cores instead of the device's: adrenotools' hook libraries' folder, the
+     * driver's folder and its library's file name; empty strings for the device's own. Set before [openCore].
+     */
+    external fun setGpuDriver(hookDir: String, driverDir: String, driverName: String)
+
     /** A second display's surface (dual-screen devices): the picture's bottom half goes there. Null to stop. */
     external fun setSecondSurface(surface: Surface?)
 
