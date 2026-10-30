@@ -1848,7 +1848,7 @@
     <string name="switch_settings_title">Réglages Switch</string>
     <string name="switch_settings_setup_body">Les jeux Switch ont besoin des clés et du firmware de ta propre Switch. Sélectionne pour les installer dans RetroForge Switch Player. RetroForge ne les fournit pas.</string>
     <string name="switch_settings_body">Clés, firmware, indicateur de performances et pilote graphique de RetroForge Switch Player.</string>
-    <string name="switch_settings_install_player_first">Installe d\'abord RetroForge Switch Player : RetroForge-Switch-Player.apk sur la page des versions GitHub.</string>
+    <string name="switch_settings_install_player_first">Installe d\'abord RetroForge Switch Player : le dernier APK sur github.com/RetroForgeFrontEnd/RetroForge-Switch-Player/releases.</string>
     <string name="switch_settings_keys_missing">Clés manquantes</string>
     <string name="switch_settings_firmware_missing">Firmware manquant</string>
     <string name="switch_settings_firmware_version">Firmware %1$s</string>

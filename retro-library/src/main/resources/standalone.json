@@ -93,7 +93,7 @@
   {
    "id": "RETROFORGE_SWITCH",
    "name": "RetroForge Switch Player",
-   "page": "https://github.com/RetroForgeFrontEnd/RetroForge/releases",
+   "page": "https://github.com/RetroForgeFrontEnd/RetroForge-Switch-Player/releases",
    "obtainium": null,
    "packages": [
     {
