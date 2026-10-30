@@ -19,10 +19,12 @@
             android:process=":pcplayer"
             android:screenOrientation="sensorLandscape"
             android:theme="@android:style/Theme.DeviceDefault.NoActionBar.Fullscreen" />
-        <!-- In the app's main process, so the PC tab sees its progress. -->
+        <!-- Its own process: a big download needs the memory, and can't take the rest of the app down with it. The PC
+             tab follows it through a small status file. -->
         <service
             android:name="com.retroforge.pcplayer.steam.SteamDownloadService"
             android:exported="false"
+            android:process=":steamdownload"
             android:foregroundServiceType="dataSync" />
     </application>
 </manifest>

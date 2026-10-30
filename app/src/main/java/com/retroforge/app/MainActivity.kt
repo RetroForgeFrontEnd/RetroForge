@@ -18,13 +18,22 @@ class MainActivity : ComponentActivity() {
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
 
+    /** A section to open, asked for by an intent (a download notification opens the PC tab, say). */
+    private val openSection = MutableSharedFlow<String>(replay = 1, extraBufferCapacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        intent?.getStringExtra(EXTRA_OPEN_SECTION)?.let { openSection.tryEmit(it) }
         enableEdgeToEdge()
         val container = (application as RetroForgeApplication).container
         com.retroforge.core.ui.UiSounds.init(this)
         com.retroforge.core.ui.UiSounds.enabled = container.viewPrefs.getBoolean(UI_SOUNDS, true)
-        setContent { RetroForgeRoot(container, sectionCommands) }
+        setContent { RetroForgeRoot(container, sectionCommands, openSection) }
+    }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        intent.getStringExtra(EXTRA_OPEN_SECTION)?.let { openSection.tryEmit(it) }
     }
 
     override fun onResume() {
@@ -71,6 +80,11 @@ class MainActivity : ComponentActivity() {
         downTime, eventTime, action, KeyEvent.KEYCODE_DPAD_CENTER,
         repeatCount, metaState, deviceId, scanCode, flags, source,
     )
+
+    companion object {
+        /** An intent extra: the route of a section to open ("pc"). */
+        const val EXTRA_OPEN_SECTION = "open_section"
+    }
 }
 
 /** View preference: interface sounds on or off. */

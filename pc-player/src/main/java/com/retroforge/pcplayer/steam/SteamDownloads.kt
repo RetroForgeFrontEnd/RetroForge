@@ -25,10 +25,10 @@ class SteamDownloads(private val account: SteamAccount) {
     suspend fun size(appId: Int): Long? = account.withSignIn { client, _ -> windowsDepotsSize(client, appId) }
 
     /**
-     * Downloads [appId] into [folder]. [onProgress] gets 0–1 and what's happening. Throws when Steam refuses or the
+     * Downloads [appId] into [folder]. [onProgress] gets 0–1, what's happening and the game's size in bytes. Throws when Steam refuses or the
      * download fails; null when not signed in.
      */
-    suspend fun download(appId: Int, folder: File, onProgress: (Float, String) -> Unit): Unit? =
+    suspend fun download(appId: Int, folder: File, onProgress: (Float, String, Long) -> Unit): Unit? =
         account.withLicenses { client, licenses ->
             val total = windowsDepotsSize(client, appId).coerceAtLeast(1)
             folder.mkdirs()
@@ -36,12 +36,12 @@ class SteamDownloads(private val account: SteamAccount) {
             var failure: Throwable? = null
             val listener = object : IDownloadListener {
                 override fun onStatusUpdate(message: String) {
-                    if (message.startsWith("Downloading manifest")) onProgress(progress(done, total), "Getting the file list")
+                    if (message.startsWith("Downloading manifest")) onProgress(progress(done, total), "Getting the file list", total)
                 }
 
                 override fun onChunkCompleted(depotId: Int, depotPercentComplete: Float, compressedBytes: Long, uncompressedBytes: Long) {
                     done[depotId] = uncompressedBytes
-                    onProgress(progress(done, total), "Downloading")
+                    onProgress(progress(done, total), "Downloading", total)
                 }
 
                 override fun onDepotCompleted(depotId: Int, compressedBytes: Long, uncompressedBytes: Long) {
@@ -52,7 +52,7 @@ class SteamDownloads(private val account: SteamAccount) {
                     failure = error
                 }
             }
-            DepotDownloader(client, licenses, maxDownloads = 8, maxFileWrites = 2).use { downloader ->
+            DepotDownloader(client, licenses, maxDownloads = 4, maxFileWrites = 1).use { downloader ->
                 downloader.addListener(listener)
                 downloader.add(
                     AppItem(

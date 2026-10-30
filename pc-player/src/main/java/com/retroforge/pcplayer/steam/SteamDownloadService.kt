@@ -16,19 +16,30 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.io.File
 
 /**
  * Downloads a Steam game in the background (a foreground service with a progress notification, so Android lets
- * it run for the hour or more a big game takes), one game at a time. [state] says how it's going; [onFinished]
- * hears when a game is ready.
+ * it run for the hour or more a big game takes), one game at a time. It runs in its own process (a big download
+ * needs the memory), so how it's going is kept in a small status file the PC tab reads with [read].
  */
 class SteamDownloadService : Service() {
 
-    data class State(val appId: Int, val name: String, val progress: Float, val step: String, val error: String? = null, val finished: Boolean = false)
+    data class State(
+        val appId: Int,
+        val name: String,
+        val folder: String,
+        val progress: Float,
+        val step: String,
+        val error: String? = null,
+        val finished: Boolean = false,
+        /** When this was written; a running download that stopped writing died with its process. */
+        val updated: Long = System.currentTimeMillis(),
+    ) {
+        val running get() = !finished && error == null && System.currentTimeMillis() - updated < STALE_MS
+    }
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var wakeLock: PowerManager.WakeLock? = null
@@ -38,35 +49,45 @@ class SteamDownloadService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // The notification's Cancel button: stop the download (what's downloaded stays, to carry on from later).
+        if (intent?.action == ACTION_CANCEL) {
+            job?.cancel()
+            return START_NOT_STICKY
+        }
         val appId = intent?.getIntExtra(EXTRA_APP_ID, 0) ?: 0
         val name = intent?.getStringExtra(EXTRA_NAME).orEmpty()
         val folder = intent?.getStringExtra(EXTRA_FOLDER)?.let(::File)
-        if (appId == 0 || folder == null || state.value?.let { !it.finished && it.error == null } == true) return START_NOT_STICKY
+        if (appId == 0 || folder == null || downloading) return START_NOT_STICKY
+        downloading = true
 
         createChannel()
-        val first = State(appId, name, 0f, "Starting")
-        mutableState.value = first
+        val first = State(appId, name, folder.path, 0f, "Starting")
+        save(first)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(NOTIFICATION_ID, notification(first), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
         } else {
             startForeground(NOTIFICATION_ID, notification(first))
         }
         holdLocks()
-        scope.launch {
+        job = scope.launch {
             val result = runCatching {
-                SteamDownloads(SteamAccount(this@SteamDownloadService)).download(appId, folder) { progress, step ->
-                    update(State(appId, name, progress, step))
+                SteamDownloads(SteamAccount(this@SteamDownloadService)).download(appId, folder) { progress, step, total ->
+                    totalBytes = total
+                    update(State(appId, name, folder.path, progress, step))
                 } ?: throw IllegalStateException("Sign in to Steam first")
             }
             val end = result.fold(
-                onSuccess = { State(appId, name, 1f, "Ready to play", finished = true) },
+                onSuccess = { State(appId, name, folder.path, 1f, "Ready to play", finished = true) },
                 onFailure = {
+                    if (it is kotlinx.coroutines.CancellationException) {
+                        return@fold State(appId, name, folder.path, lastProgress, "Stopped", error = "Cancelled. Select the game to carry on.")
+                    }
                     Log.w(TAG, "Download of $appId failed", it)
-                    State(appId, name, mutableState.value?.progress ?: 0f, "Stopped", error = it.message ?: "The download failed")
+                    State(appId, name, folder.path, lastProgress, "Stopped", error = it.message ?: "The download failed")
                 },
             )
-            mutableState.value = end
-            if (end.finished) onFinished?.invoke(appId, name, folder)
+            save(end)
+            downloading = false
             releaseLocks()
             stopForeground(STOP_FOREGROUND_DETACH)
             getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification(end))
@@ -75,13 +96,33 @@ class SteamDownloadService : Service() {
         return START_NOT_STICKY
     }
 
+    private var lastProgress = 0f
+    private var totalBytes = 0L
+    private var job: kotlinx.coroutines.Job? = null
+    private var lastSaved = 0L
+
+    /** Progress: the notification on each new percent, the status file every couple of seconds. */
     private fun update(next: State) {
-        mutableState.value = next
+        lastProgress = next.progress
         val percent = (next.progress * 100).toInt()
         if (percent != lastNotified) {
             lastNotified = percent
             getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification(next))
         }
+        if (next.updated - lastSaved > 2_000) save(next)
+    }
+
+    private fun save(state: State) {
+        lastSaved = state.updated
+        val file = statusFile(this)
+        file.parentFile?.mkdirs()
+        val part = File(file.path + ".part")
+        part.writeText(
+            JSONObject().put("appId", state.appId).put("name", state.name).put("folder", state.folder)
+                .put("progress", state.progress.toDouble()).put("step", state.step).put("error", state.error ?: "")
+                .put("finished", state.finished).put("updated", state.updated).toString(),
+        )
+        part.renameTo(file)
     }
 
     private fun notification(s: State): Notification {
@@ -90,12 +131,33 @@ class SteamDownloadService : Service() {
         return builder
             .setSmallIcon(if (s.finished || s.error != null) android.R.drawable.stat_sys_download_done else android.R.drawable.stat_sys_download)
             .setContentTitle(s.name)
-            .setContentText(s.error?.let { "Download stopped: $it" } ?: if (s.finished) "Downloaded from Steam. Ready to play." else "${s.step} · $percent%")
+            .setContentText(
+                s.error?.let { "Download stopped: $it" } ?: if (s.finished) "Downloaded from Steam. Ready to play."
+                else "${s.step} · $percent%" + (totalBytes.takeIf { it > 0 }?.let { " of %.1f GB".format(it / 1_000_000_000.0) } ?: ""),
+            )
             .setOnlyAlertOnce(true)
             .setOngoing(!s.finished && s.error == null)
             .apply { if (!s.finished && s.error == null) setProgress(100, percent, percent == 0) }
+            .apply {
+                if (!s.finished && s.error == null) {
+                    val cancel = Intent(this@SteamDownloadService, SteamDownloadService::class.java).setAction(ACTION_CANCEL)
+                    addAction(
+                        Notification.Action.Builder(
+                            null, "Cancel",
+                            android.app.PendingIntent.getService(this@SteamDownloadService, 1, cancel, android.app.PendingIntent.FLAG_IMMUTABLE),
+                        ).build(),
+                    )
+                }
+            }
+            // Tapping it opens RetroForge's PC tab, where the game is.
             .apply { packageManager.getLaunchIntentForPackage(packageName)?.let { launch ->
-                setContentIntent(android.app.PendingIntent.getActivity(this@SteamDownloadService, 0, launch, android.app.PendingIntent.FLAG_IMMUTABLE))
+                launch.putExtra(EXTRA_OPEN_SECTION, "pc").addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                setContentIntent(
+                    android.app.PendingIntent.getActivity(
+                        this@SteamDownloadService, 0, launch,
+                        android.app.PendingIntent.FLAG_IMMUTABLE or android.app.PendingIntent.FLAG_UPDATE_CURRENT,
+                    ),
+                )
             } }
             .build()
     }
@@ -133,12 +195,25 @@ class SteamDownloadService : Service() {
         private const val EXTRA_NAME = "name"
         private const val EXTRA_FOLDER = "folder"
 
-        private val mutableState = MutableStateFlow<State?>(null)
-        val state: StateFlow<State?> = mutableState
+        private const val STALE_MS = 2 * 60 * 1000L
+        private const val ACTION_CANCEL = "com.retroforge.pcplayer.steam.CANCEL"
+        /** RetroForge's main screen opens the section named by this extra (MainActivity.EXTRA_OPEN_SECTION). */
+        private const val EXTRA_OPEN_SECTION = "open_section"
 
-        /** Called (on a background thread) when a game has finished downloading. */
+        /** Whether this process is downloading (one game at a time). */
         @Volatile
-        var onFinished: ((appId: Int, name: String, folder: File) -> Unit)? = null
+        private var downloading = false
+
+        private fun statusFile(context: Context) = File(context.filesDir, "pc/steam_download.json")
+
+        /** The latest download's status (from any process), or null if there's never been one. */
+        fun read(context: Context): State? = runCatching {
+            val o = JSONObject(statusFile(context).readText())
+            State(
+                o.getInt("appId"), o.getString("name"), o.getString("folder"), o.getDouble("progress").toFloat(), o.getString("step"),
+                o.optString("error").ifEmpty { null }, o.optBoolean("finished"), o.getLong("updated"),
+            )
+        }.getOrNull()
 
         fun start(context: Context, appId: Int, name: String, folder: File) {
             val intent = Intent(context, SteamDownloadService::class.java)

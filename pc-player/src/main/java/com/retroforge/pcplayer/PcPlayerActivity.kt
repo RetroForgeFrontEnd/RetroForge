@@ -100,6 +100,9 @@ class PcPlayerActivity : ComponentActivity() {
     private var view: XServerView? = null
     private var controlsView: PcControlsView? = null
     private var quitting = false
+    /** When the game's window first showed (null until it does); and whether this run is in the history yet. */
+    private var shownAt: Long? = null
+    private var recorded = false
     /** Steam Cloud saves for a Steam game (null for other games). */
     private var cloud: SteamCloudSync? = null
 
@@ -139,8 +142,11 @@ class PcPlayerActivity : ComponentActivity() {
         }
         scope.launch {
             padShown = prefs().getBoolean("pad_shown:${exe.path}", true)
-            keyboardMode = if (prefs().contains("keyboard_mode:${exe.path}")) prefs().getBoolean("keyboard_mode:${exe.path}", false)
-            else withContext(Dispatchers.IO) { !usesXInput(exe) }
+            // Keyboard & mouse unless the player chose the Xbox controller: games don't yet receive the virtual
+            // Xbox pad's input through Wine's XInput (the pad reaches Wine's controller driver, and stops there).
+            // usesXInput() picks the default again once that works.
+            keyboardMode = if (prefs().contains("keyboard_mode:${exe.path}")) prefs().getBoolean("keyboard_mode:${exe.path}", true)
+            else XINPUT_PAD_WORKS.not() || withContext(Dispatchers.IO) { !usesXInput(exe) }
             launch {
                 runtime.state.collectLatest { state ->
                     if (state is RuntimeState.Working) phase = Phase.Loading("${state.step}… ${state.percent}%")
@@ -215,7 +221,10 @@ class PcPlayerActivity : ComponentActivity() {
         scope.launch {
             val started = System.currentTimeMillis()
             while (phase is Phase.Loading && System.currentTimeMillis() - started < LOADING_LIMIT_MS) {
-                if (gameWindowShown(newSession, newSession.program.name.lowercase())) break
+                if (gameWindowShown(newSession, newSession.program.name.lowercase())) {
+                    shownAt = System.currentTimeMillis()
+                    break
+                }
                 phase = Phase.Loading("Starting $title")
                 delay(300)
             }
@@ -450,8 +459,19 @@ class PcPlayerActivity : ComponentActivity() {
         OutlinedButton(onClick = onClick, modifier = modifier, border = BorderStroke(1.dp, Color(0xFF55555F)), content = content)
     }
 
+    /** Notes this run in the game's history on this device (once): whether the game showed, and for how long. */
+    private fun recordRun() {
+        if (recorded) return
+        recorded = true
+        val exe = intent.getStringExtra(EXTRA_EXE)?.let(::File) ?: return
+        val shown = shownAt
+        val seconds = if (shown == null) 0L else (System.currentTimeMillis() - shown) / 1000
+        Thread { runCatching { PcHistory.record(applicationContext, exe, shown != null, seconds) } }.start()
+    }
+
     private fun onWineExit(code: Int, ended: PcSession) {
         if (quitting || isFinishing) return
+        recordRun()
         // The game quit by itself: back to RetroForge (saving to Steam Cloud first). Anything else shows Wine's last
         // lines, which say what went wrong.
         if (code == 0) {
@@ -467,6 +487,7 @@ class PcPlayerActivity : ComponentActivity() {
     private fun quit() {
         if (quitting) return
         quitting = true
+        if (session != null) recordRun()
         val ending = session
         session = null
         val sync = cloud
@@ -639,6 +660,8 @@ class PcPlayerActivity : ComponentActivity() {
         private const val LOADING_LIMIT_MS = 90_000L
         private const val CLOUD_TIMEOUT_MS = 90_000L
         private const val STOP_WAIT_MS = 8_000L
+        /** Whether games receive the virtual Xbox pad yet (see where keyboardMode is chosen). */
+        private const val XINPUT_PAD_WORKS = false
         private const val TAG = "PcPlayer"
 
         fun intent(context: Context, exe: File, title: String, steamAppId: Int? = null): Intent =

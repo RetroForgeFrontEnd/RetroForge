@@ -58,6 +58,10 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     val roots by library.roots.collectAsStateWithLifecycle(initialValue = null)
     var changes by remember { mutableIntStateOf(0) }
     val games = remember(changes) { pc.all() }
+    // Coming back to the tab (from a game, say) reloads the games and their history.
+    androidx.lifecycle.compose.LifecycleEventEffect(androidx.lifecycle.Lifecycle.Event.ON_RESUME) { changes++ }
+    // How each Windows game has gone on this device (the PC player keeps it), for the tiles' labels.
+    val history = remember(changes) { com.retroforge.pcplayer.PcHistory.all(context) }
     // The signed-in account's Steam library (shown on request; the last list shows at once, then Steam is asked again).
     val steamAccount = remember { com.retroforge.pcplayer.steam.SteamAccount(context) }
     val steamLibrary = remember {
@@ -68,18 +72,27 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     var libraryBusy by remember { mutableStateOf(false) }
     // Downloading a Steam game into RetroForge's PC games: the game asked about, its size, and the running download.
     var downloadFor by remember { mutableStateOf<com.retroforge.pcplayer.steam.SteamOwnedGame?>(null) }
-    val download by com.retroforge.pcplayer.steam.SteamDownloadService.state.collectAsState()
+    // The download runs in its own process; its status file is read every second while it runs (less often otherwise).
+    var download by remember { mutableStateOf<com.retroforge.pcplayer.steam.SteamDownloadService.State?>(null) }
     val askNotifications = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
-    androidx.compose.runtime.DisposableEffect(Unit) {
-        // A finished download joins the PC games, started by the .exe RetroForge picks (changeable as usual).
-        com.retroforge.pcplayer.steam.SteamDownloadService.onFinished = { appId, name, folder ->
-            com.retroforge.pcplayer.GameExe.best(folder)?.let { exe ->
-                pc.add(listOf(PcGame(name, PcSource.WINDOWS, appId = appId.toString(), shortcutPath = exe.path)))
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        while (true) {
+            val now = withContext(Dispatchers.IO) {
+                com.retroforge.pcplayer.steam.SteamDownloadService.read(context)?.also { state ->
+                    // A finished download joins the PC games, started by the .exe RetroForge picks (changeable as usual).
+                    val known = pc.all().any { it.source == PcSource.WINDOWS && it.appId == state.appId.toString() }
+                    if (state.finished && !known) {
+                        com.retroforge.pcplayer.GameExe.best(java.io.File(state.folder))?.let { exe ->
+                            pc.add(listOf(PcGame(state.name, PcSource.WINDOWS, appId = state.appId.toString(), shortcutPath = exe.path)))
+                        }
+                    }
+                }
             }
+            if (now?.finished == true && download?.finished != true) changes++
+            download = now
+            kotlinx.coroutines.delay(if (now?.running == true) 1_000 else 5_000)
         }
-        onDispose { }
     }
-    androidx.compose.runtime.LaunchedEffect(download?.finished) { if (download?.finished == true) changes++ }
     var editing by remember { mutableStateOf(false) }
     // Choosing which .exe starts a Windows game: the mode, then the game whose .exe files are listed.
     var choosingExe by remember { mutableStateOf(false) }
@@ -246,12 +259,12 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
         CoverGrid(list) { owned, tileModifier ->
                 val installed = onDevice[owned.appId]
                 val active = download?.takeIf { it.appId == owned.appId }
-                val downloading = active != null && !active.finished && active.error == null
+                val downloading = active?.running == true
                 val hint = when {
-                    installed != null -> "On this device"
                     active?.error != null -> "Download stopped"
                     downloading -> "Downloading"
-                    else -> "Get"
+                    else -> PcCompatibility.tested(owned.name, owned.appId.toString())?.rating?.label
+                        ?: if (installed != null) "On this device" else "Get"
                 }
                 val badge = when {
                     installed != null -> "✓"
@@ -270,6 +283,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                 val hint = when {
                     editing -> "Select to remove"
                     choosingExe && game.source == PcSource.WINDOWS -> "Select to choose its .exe"
+                    game.source == PcSource.WINDOWS -> PcCompatibility.label(game.title, game.appId, history[game.shortcutPath])
                     else -> null
                 }
                 PcGameTile(game, pc, hint, tileModifier, onClick = {
@@ -295,6 +309,12 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
         val free = remember(owned.appId) { folder.parentFile!!.apply { mkdirs() }.usableSpace }
         val where = if (pc.onSdCard(folder)) "the SD card" else "this device"
         val active = download?.takeIf { it.appId == owned.appId }
+        // Notifications show a download's progress. Android is asked once, explained here first; a no is left alone.
+        val tabPrefs = remember { context.getSharedPreferences("pc_tab", android.content.Context.MODE_PRIVATE) }
+        val askNotificationsFirst = remember(owned.appId) {
+            android.os.Build.VERSION.SDK_INT >= 33 && !tabPrefs.getBoolean("asked_notifications", false) &&
+                context.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED
+        }
         fun gb(bytes: Long) = "%.1f GB".format(bytes / 1_000_000_000.0)
         // Room for the game plus a little to spare (saves, shader caches).
         val fits = size?.let { it in 1..(free - 1_000_000_000L) } == true
@@ -304,20 +324,24 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
             text = {
                 Text(
                     when {
-                        active != null && !active.finished && active.error == null ->
+                        active?.running == true ->
                             "Downloading from Steam: ${(active.progress * 100).toInt()}% (${active.step}). It carries on in the background; the notification shows how it's going."
                         size == null -> "Asking Steam how big it is…"
                         size == -1L -> "Steam didn't say how big this game is. Try again in a moment."
                         !fits -> "It needs ${gb(size!!)} and $where has ${gb(free)} free. Free up some space first."
                         else -> "Download it from Steam to play in RetroForge's PC player: ${gb(size!!)}, to $where (${gb(free)} free). " +
                             "It carries on in the background, and a game you've part-downloaded carries on from where it stopped." +
-                            (active?.error?.let { "\n\nLast try stopped: $it" } ?: "")
+                            (active?.error?.let { "\n\nLast try stopped: $it" } ?: "") +
+                            if (askNotificationsFirst) "\n\nRetroForge will ask once to show the download's progress in your notifications (you can say no)." else ""
                     },
                 )
             },
             confirmButton = {
-                if (fits && (active == null || active.finished || active.error != null)) androidx.compose.material3.TextButton(onClick = {
-                    if (android.os.Build.VERSION.SDK_INT >= 33) askNotifications.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                if (fits && active?.running != true) androidx.compose.material3.TextButton(onClick = {
+                    if (askNotificationsFirst) {
+                        tabPrefs.edit().putBoolean("asked_notifications", true).apply()
+                        askNotifications.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                    }
                     com.retroforge.pcplayer.steam.SteamDownloadService.start(context, owned.appId, owned.name, folder)
                     downloadFor = null
                 }) { Text("Download ${gb(size!!)}") }

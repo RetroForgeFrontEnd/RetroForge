@@ -133,7 +133,7 @@ private const val PLAYLIST_ROUTE = "retro/playlist/{id}"
 private const val MANAGER_DELETE_ROUTE = "retro/manager/delete/{id}"
 
 @Composable
-fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
+fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, openSection: Flow<String> = kotlinx.coroutines.flow.emptyFlow()) {
     val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.factory(container.settings))
     val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
     val dark = when (settings.themeMode) {
@@ -159,16 +159,24 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
             return@RetroForgeTheme
         }
         val nav = rememberNavController()
-        // Back on Home asks before closing RetroForge, so a stray Back (or B on a controller) doesn't drop out of the app.
+        // Back on Home (B on a controller) offers to close RetroForge, so a stray Back doesn't drop out of the app.
+        // Close has the focus, so A closes; B again (or Stay) stays.
         val atHome = nav.currentBackStackEntryAsState().value?.destination?.route == Section.HOME.route
         var askClose by remember { mutableStateOf(false) }
         androidx.activity.compose.BackHandler(enabled = atHome && nav.previousBackStackEntry == null) { askClose = true }
         if (askClose) {
             val activity = androidx.activity.compose.LocalActivity.current
+            val closeFocus = remember { androidx.compose.ui.focus.FocusRequester() }
+            LaunchedEffect(Unit) { runCatching { closeFocus.requestFocus() } }
             androidx.compose.material3.AlertDialog(
                 onDismissRequest = { askClose = false },
                 title = { androidx.compose.material3.Text("Close RetroForge?") },
-                confirmButton = { androidx.compose.material3.TextButton(onClick = { askClose = false; activity?.finish() }) { androidx.compose.material3.Text("Close") } },
+                confirmButton = {
+                    androidx.compose.material3.TextButton(
+                        onClick = { askClose = false; activity?.finish() },
+                        modifier = Modifier.focusRequester(closeFocus),
+                    ) { androidx.compose.material3.Text("Close") }
+                },
                 dismissButton = { androidx.compose.material3.TextButton(onClick = { askClose = false }) { androidx.compose.material3.Text("Stay") } },
             )
         }
@@ -206,6 +214,10 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>) {
                 }
                 nav.goTo(latestSections[(index + step + latestSections.size) % latestSections.size])
             }
+        }
+        // A section an intent asked for (a download notification opens the PC tab).
+        LaunchedEffect(openSection) {
+            openSection.collect { wanted -> latestSections.firstOrNull { it.route == wanted }?.let { nav.goTo(it) } }
         }
         LaunchedEffect(settings.showPcSection) {
             if (!settings.showPcSection && latestCurrent == Section.PC) nav.goTo(Section.HOME)
