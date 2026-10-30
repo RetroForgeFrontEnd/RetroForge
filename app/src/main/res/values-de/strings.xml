@@ -596,7 +596,7 @@
     <string name="setup_missing">Fehlt</string>
     <string name="setup_games_for_these_won_t_start">Spiele für diese Systeme starten im eingebauten Player erst, wenn das BIOS in deinem BIOS-Ordner ist:</string>
     <string name="setup_three_steps_from_your_game_folder">Drei Schritte von deinem Spieleordner bis zum Spielen; das meiste passiert von selbst. Du kannst jederzeit über die Einstellungen hierher zurückkommen.</string>
-    <string name="setup_4_bezels_optional">4. Rahmen (optional)</string>
+    <string name="setup_4_bezels_optional">5. Rahmen (optional)</string>
     <string name="vr_how_it_works">So funktioniert\'s</string>
     <string name="vr_any_game_can_be_shown_once">Jedes Spiel kann einmal pro Auge gezeigt werden: Pausiere es (oder wisch vom Rand) und schalte Cardboard VR ein. Das Handy dreht sich quer und die Touch-Tasten verschwinden, also spielst du am besten mit einem Bluetooth-Controller. Die meisten Spiele wirken wie ein großer schwebender Bildschirm; Virtual-Boy-Spiele sind echtes 3D.</string>
     <string name="vr_start_every_game_in_cardboard_vr">Jedes Spiel in Cardboard VR starten</string>
@@ -1811,4 +1811,12 @@
     <string name="tutorial_away_speed">Die Geschwindigkeit unterwegs hängt von der Upload-Geschwindigkeit deines Internets zu Hause ab. Modulspiele starten sofort; große CD- und Switch-Spiele werden zuerst aufs Handy kopiert, was lange dauern kann. Kopiere die gewünschten, bevor du losgehst.</string>
     <string name="tutorial_away_data">Über mobile Daten verbraucht jedes Spiel Datenvolumen. Ein Switch-Spiel hat mehrere Gigabyte.</string>
     <string name="tutorial_away_trouble">Wenn keine Verbindung zustande kommt: Prüfe, ob Tailscale am Handy eingeschaltet ist und der PC an und wach ist (nicht im Ruhezustand). Windows kann die Dateifreigabe im Tailscale-Netzwerk blockieren: Öffne am PC PowerShell als Administrator und führe Set-NetConnectionProfile -InterfaceAlias Tailscale -NetworkCategory Private aus.</string>
+    <string name="setup_4_switch_keys_and_firmware">4. Switch-Schlüssel und Firmware</string>
+    <string name="switch_settings_title">Switch-Einstellungen</string>
+    <string name="switch_settings_setup_body">Switch-Spiele brauchen Schlüssel und Firmware von deiner eigenen Switch. Wähle dies, um sie im RetroForge Switch Player zu installieren. RetroForge enthält sie nicht.</string>
+    <string name="switch_settings_body">Schlüssel, Firmware, Leistungsanzeige und Grafiktreiber für den RetroForge Switch Player.</string>
+    <string name="switch_settings_install_player_first">Installiere zuerst den RetroForge Switch Player: RetroForge-Switch-Player.apk auf der GitHub-Release-Seite.</string>
+    <string name="switch_settings_keys_missing">Schlüssel fehlen</string>
+    <string name="switch_settings_firmware_missing">Firmware fehlt</string>
+    <string name="switch_settings_firmware_version">Firmware %1$s</string>
 </resources>

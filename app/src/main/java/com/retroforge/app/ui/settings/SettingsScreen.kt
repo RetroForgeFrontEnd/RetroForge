@@ -152,6 +152,8 @@ fun SettingsScreen(
                     CardBody(stringResource(R.string.settings_shows_which_graphics_chip_this_device))
                 }
 
+                if (SwitchPlayer.installed(LocalContext.current)) SwitchSettingsCard(stringResource(R.string.switch_settings_title), setup = false)
+
                 NetplayCard()
 
                 HotkeysCard(settings.retroArchHotkeys, HotkeyCombo.of(settings.menuCombo), HotkeyCombo.of(settings.quitCombo), viewModel::setRetroArchHotkeys, onOpenHotkeys)

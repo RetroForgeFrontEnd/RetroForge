@@ -17,6 +17,9 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent>
+        <!-- RetroForge's own players have no app icon, so the launcher query above doesn't see them. -->
+        <package android:name="com.retroforge.switchplayer" />
+        <package android:name="com.retroforge.ps3player" />
     </queries>
 
     <application

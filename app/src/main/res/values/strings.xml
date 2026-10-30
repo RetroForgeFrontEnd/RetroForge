@@ -597,7 +597,7 @@
     <string name="setup_missing">Missing</string>
     <string name="setup_games_for_these_won_t_start">Games for these won\'t start in the built-in player until the BIOS is in your BIOS folder:</string>
     <string name="setup_three_steps_from_your_game_folder">Three steps from your game folder to playing; most of it happens by itself. You can come back here any time from Settings.</string>
-    <string name="setup_4_bezels_optional">4. Bezels (optional)</string>
+    <string name="setup_4_bezels_optional">5. Bezels (optional)</string>
     <string name="vr_how_it_works">How it works</string>
     <string name="vr_any_game_can_be_shown_once">Any game can be shown once per eye: pause it (or swipe in from an edge) and switch on Cardboard VR. The phone turns sideways and the touch buttons hide, so a Bluetooth controller is the way to play. Most games look like a big floating screen; Virtual Boy games are real 3D.</string>
     <string name="vr_start_every_game_in_cardboard_vr">Start every game in Cardboard VR</string>
@@ -1971,4 +1971,12 @@
     <string name="tutorial_away_speed">Speed away from home depends on your home broadband\'s upload speed. Cartridge games start straight away; big CD and Switch games are copied to the phone first, which can take a long time. Copy the ones you want before you leave.</string>
     <string name="tutorial_away_data">On mobile data every game you play uses data. A Switch game is several gigabytes.</string>
     <string name="tutorial_away_trouble">If it can\'t connect: check Tailscale is switched on on the phone and the PC is on and awake (not asleep). Windows can block file sharing on Tailscale\'s network: on the PC open PowerShell as administrator and run Set-NetConnectionProfile -InterfaceAlias Tailscale -NetworkCategory Private.</string>
+    <string name="setup_4_switch_keys_and_firmware">4. Switch keys and firmware</string>
+    <string name="switch_settings_title">Switch settings</string>
+    <string name="switch_settings_setup_body">Switch games need keys and firmware from your own Switch. Select to install them in the RetroForge Switch Player. RetroForge doesn\'t include them.</string>
+    <string name="switch_settings_body">Keys, firmware, the performance overlay and the graphics driver for the RetroForge Switch Player.</string>
+    <string name="switch_settings_install_player_first">Install the RetroForge Switch Player first: RetroForge-Switch-Player.apk on the GitHub release page.</string>
+    <string name="switch_settings_keys_missing">Keys missing</string>
+    <string name="switch_settings_firmware_missing">Firmware missing</string>
+    <string name="switch_settings_firmware_version">Firmware %1$s</string>
 </resources>
