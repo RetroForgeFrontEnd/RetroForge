@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The parts of Moonlight's manifest RetroForge uses: the full-screen stream, its settings and help pages, and the
+     USB controller driver. Moonlight's own PC and app lists are replaced by RetroForge's PC tab. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!-- Lets a physical keyboard's system keys (Alt+Tab, Windows key) reach the PC while streaming. -->
+    <uses-permission android:name="android.permission.CAPTURE_KEYBOARD" />
+    <!-- mDNS discovery before Android 14 (jmDNS needs a multicast lock). -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+
+    <uses-feature android:name="android.hardware.wifi" android:required="false" />
+    <uses-feature android:name="android.hardware.usb.host" android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" />
+
+    <application>
+        <activity
+            android:name=".Game"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize|layoutDirection"
+            android:noHistory="true"
+            android:supportsPictureInPicture="true"
+            android:resizeableActivity="true"
+            android:enableOnBackInvokedCallback="false"
+            android:launchMode="singleTask"
+            android:excludeFromRecents="true"
+            android:theme="@style/StreamTheme"
+            android:preferMinimalPostProcessing="true">
+            <meta-data android:name="com.nvidia.immediateInput" android:value="true" />
+            <meta-data android:name="com.nvidia.rawCursorInput" android:value="true" />
+        </activity>
+        <activity
+            android:name=".preferences.StreamSettings"
+            android:resizeableActivity="true"
+            android:theme="@style/AppTheme"
+            android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize|layoutDirection"
+            android:label="Streaming settings" />
+        <activity
+            android:name=".HelpActivity"
+            android:resizeableActivity="true"
+            android:theme="@style/AppTheme"
+            android:configChanges="mcc|mnc|touchscreen|keyboard|keyboardHidden|navigation|screenLayout|fontScale|uiMode|orientation|screenSize|smallestScreenSize|layoutDirection" />
+        <service
+            android:name=".binding.input.driver.UsbDriverService"
+            android:label="USB controller driver" />
+    </application>
+</manifest>

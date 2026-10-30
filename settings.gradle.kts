@@ -14,4 +14,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "RetroForge"
-include(":app", ":core-ui", ":theme-engine", ":core-settings", ":pc", ":retro-patch", ":retro-hacks", ":retro-library", ":core-library", ":retro", ":retro-artwork", ":retro-player", ":pc-player")
+include(":app", ":core-ui", ":theme-engine", ":core-settings", ":pc", ":retro-patch", ":retro-hacks", ":retro-library", ":core-library", ":retro", ":retro-artwork", ":retro-player", ":pc-player", ":pc-stream")

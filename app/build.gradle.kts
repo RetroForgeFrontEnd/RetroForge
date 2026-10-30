@@ -56,6 +56,12 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+    packaging {
+        resources {
+            // BouncyCastle (PC streaming's pairing) ships the same licence files in each of its jars.
+            excludes += "/META-INF/*.md"
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -78,6 +84,7 @@ dependencies {
     implementation(project(":retro-player"))
     implementation(project(":pc-player"))
     implementation(libs.zxing.core)
+    implementation(project(":pc-stream"))
     implementation(libs.commons.compress)
     implementation(libs.xz)
     implementation(libs.androidx.webkit)

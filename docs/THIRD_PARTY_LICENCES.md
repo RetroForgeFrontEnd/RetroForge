@@ -18,6 +18,10 @@ Licences below are the standard licences of these projects; versions are pinned 
 | zstd-jni (zstd for the PC runtime's .tzst/.wcp files) | 1.5.7-5 | BSD-2-Clause (bundles zstd, BSD) |
 | AndroidX Collection, Annotation | 1.5.0, 1.9.1 | Apache-2.0 |
 | Winlator Cmod X server, renderer and natives (`pc-player/src/main/java/com/winlator/cmod`, `pc-player/src/main/cpp/winlator`), from github.com/coffincolors/winlator branch `cmod_bionic` @ 49bfb90 | 2025-08 | MIT, Copyright (c) 2023 BrunoSX. The MIT notice must be included with the app |
+| Moonlight for Android (PC streaming, `pc-stream` module, source included) | b48494c (2026-09-12) | GPL-3.0 |
+| moonlight-common-c, with ENet and nanors (PC streaming core) | 874ac95 | GPL-3.0; ENet MIT; nanors MIT |
+| OpenSSL libcrypto, libopus (Moonlight's prebuilt static libraries) | 4.0.2; Moonlight's build | Apache-2.0; BSD-3-Clause |
+| Bouncy Castle bcprov/bcpkix, OkHttp, jmDNS, JCodec (PC streaming) | 1.86; 5.5.1; 3.6.4; 0.2.5 | MIT; Apache-2.0; Apache-2.0; BSD-2-Clause |
 
 | AndroidX WebKit | 1.14.0 | Apache-2.0 |
 | Better xCloud userscript (redphx, app/src/main/assets/xcloud) | 6.7.12 | MIT (text in core-ui assets/licences/better-xcloud-MIT.txt) |
@@ -26,6 +30,7 @@ Licences below are the standard licences of these projects; versions are pinned 
 Test-only (not shipped): JUnit 4.13.2 (EPL-1.0), kotlinx-coroutines-test (Apache-2.0).
 
 Downloaded on first use of the PC player, not in the APK (from GameNative's server, see [pc-player-plan.md](pc-player-plan.md)): Proton 11 / Wine for Android arm64ec (LGPL-2.1-or-later, Proton components their own licences), FEX-Emu DLLs (MIT), a Termux-based Linux userland for Android (each package its own licence), Mesa's Vulkan wrapper driver (MIT), libadrenotools (BSD-2-Clause). Their source must be pointed to from the app before a public release.
+PC streaming details: [pc-streaming.md](pc-streaming.md).
 
 Not shipped, interacted with as separate apps: DroidDeck (GPL-3.0) — see [pc-runtime-licences.md](pc-runtime-licences.md).
 

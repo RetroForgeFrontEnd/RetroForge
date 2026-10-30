@@ -40,6 +40,9 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
             PcGamesSection(library)
             SteamSignInSection()
         }
+        PcFold("Stream from your PC", "Play the games on your own PC from this device, with Moonlight and Sunshine.") {
+            PcStreamSection()
+        }
         Text("Cloud gaming", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
         XboxCloudCard()
         CloudAppsCard()
