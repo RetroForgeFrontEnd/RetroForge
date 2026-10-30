@@ -32,7 +32,14 @@ import kotlin.concurrent.thread
  * `/system/bin/linker64 wine ...` and libpcexec.so (preloaded into each Wine process) does the same for every
  * program Wine starts. The game's folder is Windows drive D: (see [gameFolder]).
  */
-class PcSession(private val context: Context, private val runtime: PcRuntime, val exe: File, screen: ScreenInfo) {
+/** [extraArgs] go after the game's own arguments (Steam's client gets -applaunch <game> this way). */
+class PcSession(
+    private val context: Context,
+    private val runtime: PcRuntime,
+    val exe: File,
+    screen: ScreenInfo,
+    private val extraArgs: List<String> = emptyList(),
+) {
 
     val xServer = XServer(screen).apply { winHandler = com.winlator.cmod.winhandler.WinHandler() }
     private var xConnector: XConnectorEpoll? = null
@@ -245,7 +252,7 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
         val command = listOf(
             "/system/bin/linker64", "${runtime.wineDir.path}/bin/wine",
             "explorer", "/desktop=RetroForge,$screen", "D:\\" + program.relativeTo(folder).path.replace('/', '\\'),
-        ) + gameArguments(program)
+        ) + gameArguments(program) + extraArgs
         log.delete()
         val builder = ProcessBuilder(command)
             .directory(program.parentFile)
@@ -424,6 +431,10 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
         /** DXVK's message when the Vulkan driver gives it no GPU it can use. */
         fun dxvkFoundNoGpu(log: File) = runCatching { log.readText().contains("DXVK: No adapters found") }.getOrDefault(false)
 
+        /** Whether Steam's own client remembers an account (signed in once in its window, with Remember me). */
+        fun steamClientSignedIn(exe: File) =
+            File(exe.parentFile, "config/loginusers.vdf").let { it.isFile && it.readText().contains("\"AccountName\"") }
+
         /** Steam's own client: steam.exe beside the package folder its files came from. */
         fun isSteamClient(exe: File) = exe.name.equals("steam.exe", true) && File(exe.parentFile, "package").isDirectory
 
@@ -431,7 +442,9 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             File(exe.parentFile, exe.nameWithoutExtension + ".pck").isFile ->
                 listOf("--rendering-driver", "vulkan", "--rendering-method", "mobile")
             isSteamClient(exe) ->
-                listOf("-inhibitbootstrap", "-no-cef-sandbox", "-cef-disable-gpu", "-cef-disable-gpu-compositing", "-silent")
+                listOf("-inhibitbootstrap", "-no-cef-sandbox", "-cef-disable-gpu", "-cef-disable-gpu-compositing") +
+                    // Quietly once signed in; the first time its sign-in window has to show.
+                    if (steamClientSignedIn(exe)) listOf("-silent") else emptyList()
             else -> emptyList()
         }
     }

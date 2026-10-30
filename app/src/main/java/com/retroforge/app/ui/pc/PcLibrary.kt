@@ -333,8 +333,16 @@ class PcLibrary(private val context: Context) {
             if (!com.retroforge.pcplayer.PcRuntime.deviceSupported) return "RetroForge's PC player needs a 64-bit ARM device (most phones and handhelds); this one is ${android.os.Build.SUPPORTED_ABIS.firstOrNull()}."
             val exe = File(game.shortcutPath ?: return "This game has no .exe set.")
             if (!exe.isFile) return "${exe.name} isn't in RetroForge's PC games folder any more. Add the game's folder again."
+            // Steam method 2 for this game: it starts through Valve's own Steam client, once that's set up.
+            val appId = game.appId?.toIntOrNull()
+            val throughClient = appId != null && com.retroforge.pcplayer.steam.SteamMethod.usesClient(context, appId)
+            if (throughClient) {
+                val client = com.retroforge.pcplayer.steam.WindowsSteamClient(context)
+                if (!client.installed) return "${game.title} needs the Steam client: set it up on the PC tab (Steam method 2), then sign in once."
+                if (!client.signedIn) return "Sign in to the Steam client first (PC tab → Steam method 2 → Open Steam to sign in)."
+            }
             context.startActivity(
-                com.retroforge.pcplayer.PcPlayerActivity.intent(context, exe, game.title, game.appId?.toIntOrNull())
+                com.retroforge.pcplayer.PcPlayerActivity.intent(context, exe, game.title, appId, steamClient = throughClient)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
             )
             return null

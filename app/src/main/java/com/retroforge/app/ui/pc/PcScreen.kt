@@ -39,6 +39,7 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
         PcFold("Your PC games", "Steam, Epic, GOG and Amazon games through GameNative; Windows games through Winlator.", startOpen = true) {
             PcGamesSection(library)
             SteamSignInSection()
+            SteamClientSection()
         }
         PcFold("Stream from your PC", "Play the games on your own PC from this device, with Moonlight and Sunshine.") {
             PcStreamSection()
