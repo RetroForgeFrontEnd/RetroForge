@@ -175,7 +175,12 @@ On the S22, in RetroForge's own player: signed in to Steam (QR), ownership confi
 steam_api64.dll with its LAN networking off, .NET 8 through FEX, Godot's Vulkan renderer on the Xclipse wrapper.
 The fixes that got it there, in order: `DOTNET_EnableWriteXorExecute=0` (FEX and .NET's JIT), gbe
 `disable_networking=1` (its LAN interface query hangs under Wine on Android), `DOTNET_SYSTEM_GLOBALIZATION_USENLS=1`
-(Wine's ICU is incomplete; invariant mode broke the game's "en" culture). No sound yet: no audio server.
+(Wine's ICU is incomplete; invariant mode broke the game's "en" culture).
+
+**Sound works** (confirmed by ear on the S22, 04:25): Winlator Cmod's ALSA server played through AAudio, with three
+fixes for the plugin in GameNative's image: it sends samples on the socket (not in the shared memory it's given),
+it asks MIN_BUFFER_SIZE (code 8) before preparing, and AAudio stream pointers on Android 14+ carry a tag in the top
+byte, so they're negative as a Java long (`streamPtr != 0`, not `> 0`).
 
 ### Steam games (2026-10-30, later)
 
@@ -200,6 +205,10 @@ Authorized Devices lists RetroForge's sign-in under the phone's name.
 0. **Steam library with artwork** from the signed-in account (owned games + Steam's 600x900 covers), then downloads
    from Steam (JavaSteam's depot downloader, as GameNative).
 0. **On-screen controls overlay** for PC games (the user asked for it; stage 4).
+0. **Streamline the PC tab** (the user asked): it now holds PC games, Steam sign-in, PC streaming, Xbox Cloud Gaming,
+   ports and free games in one long page.
+0. **When GameNative can go:** once RetroForge downloads Steam games, has DXVK, Epic/GOG/Amazon and controllers in PC
+   games; until then it stays as a fallback.
 1. **Steam games** need a signed-in Steam (now built, see above). How GameNative does it: sign-in in the app with JavaSteam (QR code
    approved in the Steam app, or email/password + Steam Guard), library and downloads through JavaSteam's depot
    downloader; at launch it **replaces the game's `steam_api64.dll` with the Goldberg Steam emulator** (ColdClient
