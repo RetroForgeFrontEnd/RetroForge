@@ -11,6 +11,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
@@ -146,12 +147,35 @@ private fun ShelfBox(game: GameEntity, image: Any?, onClick: () -> Unit, modifie
             .clickable(interactionSource = interaction, indication = null, onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(
-            Modifier.fillMaxWidth().aspectRatio(0.71f)
-                .shadow(if (focused) 14.dp else 6.dp, RoundedCornerShape(4.dp))
-                .clip(RoundedCornerShape(4.dp))
-                .then(if (focused) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)) else Modifier),
-        ) { GameArt(game, image, Modifier.fillMaxSize()) }
+        // A game case in 3D: turned a little to show its spine, square on when chosen.
+        val turn = 22f * (1f - lift)
+        Row(
+            Modifier.fillMaxWidth().aspectRatio(0.78f)
+                .graphicsLayer { rotationY = turn; cameraDistance = 14f * density }
+                .shadow(if (focused) 14.dp else 6.dp, RoundedCornerShape(3.dp)),
+        ) {
+            // The spine: the case's own edge, darker, catching less light.
+            Box(
+                Modifier.fillMaxHeight().weight(0.09f)
+                    .background(androidx.compose.ui.graphics.Brush.horizontalGradient(listOf(androidx.compose.ui.graphics.Color(0xFF15151B), androidx.compose.ui.graphics.Color(0xFF3A3A46)))),
+            )
+            Box(
+                Modifier.fillMaxHeight().weight(0.91f).clip(RoundedCornerShape(topEnd = 3.dp, bottomEnd = 3.dp))
+                    .background(androidx.compose.ui.graphics.Color(0xFF101014))
+                    .then(if (focused) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(topEnd = 3.dp, bottomEnd = 3.dp)) else Modifier),
+            ) {
+                GameArt(game, image, Modifier.fillMaxSize())
+                // The plastic sleeve's shine.
+                Box(
+                    Modifier.fillMaxSize().background(
+                        androidx.compose.ui.graphics.Brush.linearGradient(
+                            0f to androidx.compose.ui.graphics.Color(0x40FFFFFF), 0.35f to androidx.compose.ui.graphics.Color.Transparent,
+                            0.8f to androidx.compose.ui.graphics.Color.Transparent, 1f to androidx.compose.ui.graphics.Color(0x22FFFFFF),
+                        ),
+                    ),
+                )
+            }
+        }
         Text(
             game.title,
             style = MaterialTheme.typography.labelSmall,
