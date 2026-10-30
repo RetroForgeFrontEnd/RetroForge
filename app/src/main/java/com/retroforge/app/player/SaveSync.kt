@@ -125,7 +125,7 @@ class SaveSync(
         val remote = target.list().filterKeys { wanted(it, only) }
         val local = folders.flatMap { (name, root) ->
             root.walkTopDown().onEnter { it == root || it.name !in SKIP_FOLDERS }
-                .filter { it.isFile && !it.name.endsWith(".part") && !it.name.endsWith(".tmp") && it.length() <= MAX_BYTES }
+                .filter { it.isFile && it.extension !in SKIP_EXTENSIONS && it.length() <= MAX_BYTES }
                 .map { "$name/" + it.relativeTo(root).invariantSeparatorsPath to it }.toList()
         }.toMap().filterKeys { wanted(it, only) }
         var pulled = 0
@@ -184,7 +184,7 @@ class SaveSync(
 
     private fun wanted(path: String, only: List<String>) =
         folders.keys.any { path.startsWith("$it/") } && (only.isEmpty() || only.any { path.startsWith(it) }) &&
-            path.split('/').none { it in SKIP_FOLDERS }
+            path.split('/').none { it in SKIP_FOLDERS } && path.substringAfterLast('.', "") !in SKIP_EXTENSIONS
 
     /** Where a synced path lives on this device (null if it would fall outside the save folders). */
     private fun fileFor(path: String): File? = folders[path.substringBefore('/')]?.let { root ->
@@ -212,7 +212,9 @@ class SaveSync(
 
     companion object {
         /** Emulators' working folders inside saves (unpacked games, texture packs): never synced. */
-        val SKIP_FOLDERS = setOf("TEMP", "TEXTURES", "cache", "Cache")
+        val SKIP_FOLDERS = setOf("TEMP", "TEXTURES", "cache", "Cache", "shaders", "ShaderCache", "Logs", "logs")
+        /** Half-written files and emulators' logs. */
+        private val SKIP_EXTENSIONS = setOf("part", "tmp", "log")
         private const val MAX_BYTES = 64L * 1024 * 1024
 
         /** Settings: on or off, where to sync, and whether save states go too. */
