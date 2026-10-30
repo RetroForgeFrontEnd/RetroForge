@@ -6,7 +6,7 @@ A free Android frontend for retro games and PC games, all in one place.
 
 Made by Darren Glancy, built with a lot of help from AI (Claude). Tested on a Samsung Galaxy S22 as it went.
 
-**Status: beta (0.6.0).** It works well for most systems, but it's still being tested on more devices.
+**Status: beta (0.7.0).** It works well for most systems, but it's still being tested on more devices.
 Feedback and bug reports are very welcome: [open an issue](../../issues).
 
 ## What it does
@@ -24,6 +24,14 @@ Feedback and bug reports are very welcome: [open an issue](../../issues).
   computers, dual-screen handhelds and Cardboard VR. Optional bezels in landscape from
   [The Bezel Project](https://github.com/thebezelproject), downloaded per system from their GitHub
   (not included in RetroForge; thanks to The Bezel Project for the artwork).
+- **PC games, built in (new, early):** RetroForge's own PC player runs Windows games itself (Wine, FEX
+  and DXVK, downloaded on first use), with Steam sign-in, Steam downloads, Steam Cloud saves, on-screen
+  controls and LAN play. Plus streaming from your own PC (Moonlight/Sunshine built in) and Xbox Cloud Gaming.
+- **Looks:** Bezel Project bezels round the game in landscape, and game lists as a list, a grid or a
+  bookshelf of 3D game cases.
+- **Saves everywhere:** save syncing through your PC's shared folder or a cloud app's folder.
+- **Free games:** shareware, freeware and homebrew to download in one tap (Doom, Wolfenstein 3D, Commander
+  Keen and new games for old consoles).
 - **More ways to play:** RetroArch and 21 standalone emulators (Dolphin, NetherSX2, Azahar, Eden and
   more) through Obtainium, PC ports of games you own, and Windows games through GameNative,
   Winlator or DroidDeck.
