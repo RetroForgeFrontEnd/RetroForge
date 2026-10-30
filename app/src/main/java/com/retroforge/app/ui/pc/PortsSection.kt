@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import com.retroforge.app.ui.ChipRow
 import android.content.Context
 import android.content.Intent
@@ -76,17 +80,17 @@ fun PortsSection(library: LibraryRepository) {
     val tabPorts = ports.filter { it.isWindows == windowsTab }
     val mine = tabPorts.filter { it.id in owned }
     if (mine.isEmpty()) {
-        CardBody("None of your games has a port in this list yet.")
+        CardBody(stringResource(R.string.ports_none_of_your_games_has_a))
     } else {
-        Text("For games you own", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+        Text(stringResource(R.string.ports_for_games_you_own), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
         mine.forEach { PortCard(it, owned[it.id], library) }
     }
     val rest = tabPorts.filter { it.id !in owned }
     if (showAll) {
-        Text("All ports", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+        Text(stringResource(R.string.ports_all_ports), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
         rest.forEach { PortCard(it, null, library) }
     } else {
-        if (rest.isNotEmpty()) FocusChip("Show all ${rest.size} other ports", onClick = { showAll = true })
+        if (rest.isNotEmpty()) FocusChip(stringResource(R.string.ports_show_all_other_ports, rest.size), onClick = { showAll = true })
     }
 }
 
@@ -101,19 +105,18 @@ private fun PortCard(port: GamePort, owned: GameEntity?, library: LibraryReposit
         CardTitle(port.name)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             StatusPill(port.kindLabel, StatusTone.NEUTRAL)
-            if (port.status == "experimental") StatusPill("Experimental", StatusTone.CAUTION)
-            if (owned != null) StatusPill("You have ${owned.title}", StatusTone.GOOD)
+            if (port.status == "experimental") StatusPill(stringResource(R.string.ports_experimental), StatusTone.CAUTION)
+            if (owned != null) StatusPill(stringResource(R.string.ports_you_have, owned.title), StatusTone.GOOD)
         }
-        CardBody("Needs: ${port.needs}")
+        CardBody(stringResource(R.string.ports_needs, port.needs))
         if (port.isWindows) {
             CardBody(
-                "How: download the Windows version from its releases page and unzip it into Download/RetroForge/Ports. " +
-                    "Then in GameNative (or Winlator) add it as a custom game and pick its .exe.",
+                stringResource(R.string.ports_how_download_the_windows_version_from),
             )
         }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (port.isWindows) {
-                FocusChip("Download Windows version", onClick = {
+                FocusChip(stringResource(R.string.ports_download_windows_version), onClick = {
                     prepared = "Looking for the Windows version…"
                     scope.launch {
                         prepared = withContext(Dispatchers.IO) {
@@ -130,7 +133,7 @@ private fun PortCard(port: GamePort, owned: GameEntity?, library: LibraryReposit
                     if (runner != null) runCatching { context.startActivity(runner) } else open(context, GAMENATIVE_PAGE)
                 })
             } else {
-                if (launch != null) FocusChip("Open", onClick = { runCatching { context.startActivity(launch) } })
+                if (launch != null) FocusChip(stringResource(R.string.home_layouts_open), onClick = { runCatching { context.startActivity(launch) } })
                 FocusChip(if (launch != null) "Update" else "Download and install", onClick = {
                     prepared = "Looking for the latest version…"
                     scope.launch {
@@ -143,9 +146,9 @@ private fun PortCard(port: GamePort, owned: GameEntity?, library: LibraryReposit
                         }
                     }
                 })
-                FocusChip("Get with Obtainium", onClick = { get(context, port) })
+                FocusChip(stringResource(R.string.ports_get_with_obtainium), onClick = { get(context, port) })
             }
-            if (owned != null) FocusChip("Prepare files", onClick = {
+            if (owned != null) FocusChip(stringResource(R.string.ports_prepare_files), onClick = {
                 prepared = "Copying…"
                 scope.launch {
                     prepared = withContext(Dispatchers.IO) {
@@ -153,7 +156,7 @@ private fun PortCard(port: GamePort, owned: GameEntity?, library: LibraryReposit
                     }
                 }
             })
-            FocusChip("Project page", onClick = { open(context, port.repo) })
+            FocusChip(stringResource(R.string.ports_project_page), onClick = { open(context, port.repo) })
         }
         prepared?.let { CardBody(it) }
     }

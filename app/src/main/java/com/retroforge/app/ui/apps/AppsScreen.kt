@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.apps
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -90,11 +94,11 @@ fun AppsScreen() {
             Text(DateFormat.getDateInstance(DateFormat.FULL).format(now), style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        ControllerTextField(value = query, onValueChange = { query = it }, singleLine = true, label = { Text("Search apps") },
+        ControllerTextField(value = query, onValueChange = { query = it }, singleLine = true, label = { Text(stringResource(R.string.apps_search_apps)) },
             modifier = Modifier.fillMaxWidth())
         val list = apps
         if (list == null) {
-            CardBody("Loading your apps…")
+            CardBody(stringResource(R.string.apps_loading_your_apps))
             return@ScreenFrame
         }
         if (query.isNotBlank()) {
@@ -109,17 +113,17 @@ fun AppsScreen() {
                     dock.forEach { AppIcon(it, showLabel = false, onOpen = ::open, onLongPress = ::togglePin) }
                 }
             }
-            Text("Long-press an app to pin it here (or unpin it).", style = MaterialTheme.typography.bodySmall,
+            Text(stringResource(R.string.apps_long_press_an_app_to_pin), style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
         }
         AppGrid(list, ::open, ::togglePin)
-        Text("Android", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+        Text(stringResource(R.string.apps_android), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            FocusChip("Android settings", onClick = { start(context, Intent(Settings.ACTION_SETTINGS)) })
-            FocusChip("Wi-Fi", onClick = { start(context, Intent(Settings.ACTION_WIFI_SETTINGS)) })
-            FocusChip("Bluetooth (controllers)", onClick = { start(context, Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) })
-            FocusChip("Display", onClick = { start(context, Intent(Settings.ACTION_DISPLAY_SETTINGS)) })
-            FocusChip("Sound", onClick = { start(context, Intent(Settings.ACTION_SOUND_SETTINGS)) })
+            FocusChip(stringResource(R.string.apps_android_settings), onClick = { start(context, Intent(Settings.ACTION_SETTINGS)) })
+            FocusChip(stringResource(R.string.apps_wi_fi), onClick = { start(context, Intent(Settings.ACTION_WIFI_SETTINGS)) })
+            FocusChip(stringResource(R.string.apps_bluetooth_controllers), onClick = { start(context, Intent(Settings.ACTION_BLUETOOTH_SETTINGS)) })
+            FocusChip(stringResource(R.string.apps_display), onClick = { start(context, Intent(Settings.ACTION_DISPLAY_SETTINGS)) })
+            FocusChip(stringResource(R.string.apps_sound), onClick = { start(context, Intent(Settings.ACTION_SOUND_SETTINGS)) })
         }
         LauncherModeCard()
     }
@@ -209,10 +213,9 @@ private fun LauncherModeCard() {
         // Android decides the home app; this opens its choice so the user can pick RetroForge (or go back).
         start(context, Intent(Settings.ACTION_HOME_SETTINGS))
     }) {
-        CardTitle("Use RetroForge as the home screen") { StatusPill(if (on) "Offered to Android" else "Off", if (on) StatusTone.GOOD else StatusTone.NEUTRAL) }
+        CardTitle(stringResource(R.string.apps_use_retroforge_as_the_home_screen)) { StatusPill(if (on) "Offered to Android" else "Off", if (on) StatusTone.GOOD else StatusTone.NEUTRAL) }
         CardBody(
-            "For handhelds and TV boxes: the device starts in RetroForge and the home button comes back here. Select to switch, " +
-                "then choose the home app in Android's list. To undo, select again and pick your old home app.",
+            stringResource(R.string.apps_for_handhelds_and_tv_boxes_the),
         )
     }
 }

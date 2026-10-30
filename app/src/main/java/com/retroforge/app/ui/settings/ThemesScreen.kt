@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import com.retroforge.app.ui.ChipRow
 import com.retroforge.core.ui.ThemeBackdrop
 import androidx.compose.runtime.rememberCoroutineScope
@@ -156,22 +160,22 @@ fun ThemesScreen(viewModel: ThemesViewModel) {
     val mode = current?.themeMode ?: ThemeMode.DARK
     val dark = mode != ThemeMode.LIGHT
 
-    ScreenFrame(title = "Themes", subtitle = "Each preview below is drawn in that theme. Themes change colours, shapes, type and how game lists look.") {
+    ScreenFrame(title = stringResource(R.string.settings_themes), subtitle = stringResource(R.string.themes_each_preview_below_is_drawn_in)) {
         message?.let { (text, isError) ->
             StatusPill(if (isError) "Problem" else "Done", if (isError) StatusTone.BAD else StatusTone.GOOD)
             CardBody(text)
         }
 
-        CardTitle("Brightness")
+        CardTitle(stringResource(R.string.themes_brightness))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             ThemeMode.entries.forEach { m ->
                 FocusChip((if (m == mode) "● " else "") + m.name.lowercase().replaceFirstChar { it.uppercase() }, onClick = { viewModel.setMode(m) })
             }
         }
-        CardBody("Some themes are dark-only or light-only and keep their look either way.")
+        CardBody(stringResource(R.string.themes_some_themes_are_dark_only_or))
 
         pending?.let { p -> PendingCard(p, dark, viewModel) }
-        if (working) CardBody("Reading the theme's colours …")
+        if (working) CardBody(stringResource(R.string.themes_reading_the_theme_s_colours))
 
         // Swipe (or press left/right) through every theme; each page is drawn in its own theme.
         val all = viewModel.builtIn + user
@@ -192,23 +196,22 @@ fun ThemesScreen(viewModel: ThemesViewModel) {
             if (shown.description.isNotEmpty()) CardBody(shown.description)
             CardBody(listOfNotNull(shown.author.ifEmpty { null }, shown.license, shown.importedFrom).joinToString(" · "))
             com.retroforge.app.ui.ChipRow {
-                if (shown.id == current?.themeId) StatusPill("In use", StatusTone.GOOD)
-                else FocusChip("Use this theme", onClick = { viewModel.use(shown) })
-                if (shown in user) FocusChip("Delete", onClick = { viewModel.delete(shown) })
+                if (shown.id == current?.themeId) StatusPill(stringResource(R.string.themes_in_use), StatusTone.GOOD)
+                else FocusChip(stringResource(R.string.themes_use_this_theme), onClick = { viewModel.use(shown) })
+                if (shown in user) FocusChip(stringResource(R.string.memory_cards_delete), onClick = { viewModel.delete(shown) })
             }
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Add a theme")
-            CardBody("A RetroForge theme is one small .json file (format in docs/retroforge-theme-format.md). Themes are only data: nothing in them runs.")
+            CardTitle(stringResource(R.string.themes_add_a_theme))
+            CardBody(stringResource(R.string.themes_a_retroforge_theme_is_one_small))
             CardBody(
-                "From another frontend: choose a theme folder from another frontend (EmulationStation-style themes). RetroForge reads its colours only " +
-                    "(layouts, carousels and artwork don't carry over) and never changes the folder. Check the theme's licence before sharing.",
+                stringResource(R.string.themes_from_another_frontend_choose_a_theme),
             )
         }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            FocusChip("Import a theme file", onClick = { pickFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) })
-            FocusChip("Colours from another frontend's theme", onClick = { pickFolder.launch(null) })
+            FocusChip(stringResource(R.string.themes_import_a_theme_file), onClick = { pickFile.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) })
+            FocusChip(stringResource(R.string.themes_colours_from_another_frontend_s_theme), onClick = { pickFolder.launch(null) })
         }
     }
 }
@@ -216,10 +219,10 @@ fun ThemesScreen(viewModel: ThemesViewModel) {
 @Composable
 private fun PendingCard(p: PendingImport, dark: Boolean, viewModel: ThemesViewModel) {
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("From \"${p.source}\"")
+        CardTitle(stringResource(R.string.themes_from, p.source))
         if (p.theme == null) {
-            StatusPill("No colours found", StatusTone.CAUTION)
-            CardBody("This theme doesn't define its colours as variables RetroForge can read.")
+            StatusPill(stringResource(R.string.themes_no_colours_found), StatusTone.CAUTION)
+            CardBody(stringResource(R.string.themes_this_theme_doesn_t_define_its))
         } else {
             CardBody("Imported: " + p.report.used.joinToString { (role, from) -> "$role ← $from" })
         }
@@ -228,7 +231,7 @@ private fun PendingCard(p: PendingImport, dark: Boolean, viewModel: ThemesViewMo
     }
     p.theme?.let { ThemePreview(it, dark) }
     ChipRow {
-        if (p.theme != null) FocusChip("Save and use", onClick = viewModel::savePending)
+        if (p.theme != null) FocusChip(stringResource(R.string.themes_save_and_use), onClick = viewModel::savePending)
         FocusChip(if (p.theme != null) "Cancel" else "OK", onClick = viewModel::cancelPending)
     }
 }
@@ -248,8 +251,8 @@ fun ThemePreview(theme: ThemeSpec, dark: Boolean) {
                             .background(Brush.linearGradient(listOf(colors.primary.copy(alpha = 0.55f), colors.secondary.copy(alpha = 0.35f), colors.surface))),
                     ) {
                         Column(Modifier.padding(14.dp)) {
-                            Text("JUMP BACK IN", style = MaterialTheme.typography.labelMedium, color = colors.primary)
-                            Text("Super Game", style = MaterialTheme.typography.headlineSmall, color = colors.onBackground, maxLines = 1)
+                            Text(stringResource(R.string.themes_jump_back_in), style = MaterialTheme.typography.labelMedium, color = colors.primary)
+                            Text(stringResource(R.string.themes_super_game), style = MaterialTheme.typography.headlineSmall, color = colors.onBackground, maxLines = 1)
                         }
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -261,9 +264,9 @@ fun ThemePreview(theme: ThemeSpec, dark: Boolean) {
                         }
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        StatusPill("Ready", StatusTone.GOOD)
+                        StatusPill(stringResource(R.string.pc_stream_ready), StatusTone.GOOD)
                         Box(Modifier.background(colors.primary, MaterialTheme.shapes.small).padding(horizontal = 12.dp, vertical = 5.dp)) {
-                            Text("Play", style = MaterialTheme.typography.labelLarge, color = colors.onPrimary)
+                            Text(stringResource(R.string.play_play), style = MaterialTheme.typography.labelLarge, color = colors.onPrimary)
                         }
                     }
                 }

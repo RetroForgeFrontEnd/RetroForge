@@ -27,6 +27,10 @@ import androidx.media3.ui.PlayerView
  */
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class) // PlayerView's shutter, subtitle button and surface view
 class VideoActivity : ComponentActivity() {
+
+    // The language picked in Settings, on Android 12 and older (newer versions apply it themselves).
+    override fun attachBaseContext(newBase: android.content.Context) = super.attachBaseContext(com.retroforge.core.ui.AppLanguage.wrap(newBase))
+
     private var player: ExoPlayer? = null
     private var renderer: StereoRenderer? = null
     private lateinit var gl: GLSurfaceView

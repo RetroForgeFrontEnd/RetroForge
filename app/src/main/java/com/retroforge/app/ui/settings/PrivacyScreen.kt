@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -11,22 +15,22 @@ import com.retroforge.core.ui.FocusCard
 /** Mirrors docs/PRIVACY_POLICY.md. */
 @Composable
 fun PrivacyScreen() {
-    ScreenFrame(title = "Privacy", subtitle = "RetroForge collects nothing about you: no accounts, no analytics, no ads, no tracking.") {
+    ScreenFrame(title = stringResource(R.string.settings_privacy), subtitle = stringResource(R.string.privacy_retroforge_collects_nothing_about_you_no)) {
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("On your device only")
-            CardBody("Your library, play history, favourites, playlists, covers, settings, themes, ROM Manager history and any keys or logins you add stay in RetroForge's private storage. Uninstalling deletes them.")
+            CardTitle(stringResource(R.string.privacy_on_your_device_only))
+            CardBody(stringResource(R.string.privacy_your_library_play_history_favourites_playlists))
         }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Internet, only when you ask")
-            CardBody("• libretro thumbnails, for box art: system and game names.")
-            CardBody("• SteamGridDB, when you search covers: your search and your own API key.")
-            CardBody("• ScreenScraper, when you look a game up: its file name, size and checksum, RetroForge's developer ID and your login if you added one.")
-            CardBody("• Hack catalogues you added, when you refresh them.")
-            CardBody("Links you open (emulator pages, hack pages, videos) go to your browser.")
+            CardTitle(stringResource(R.string.privacy_internet_only_when_you_ask))
+            CardBody(stringResource(R.string.privacy_libretro_thumbnails_for_box_art_system))
+            CardBody(stringResource(R.string.privacy_steamgriddb_when_you_search_covers_your))
+            CardBody(stringResource(R.string.privacy_screenscraper_when_you_look_a_game))
+            CardBody(stringResource(R.string.privacy_hack_catalogues_you_added_when_you))
+            CardBody(stringResource(R.string.privacy_links_you_open_emulator_pages_hack))
         }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Your files")
-            CardBody("RetroForge reads the folders you choose and changes files only when you confirm a ROM Manager action. Nothing is uploaded.")
+            CardTitle(stringResource(R.string.privacy_your_files))
+            CardBody(stringResource(R.string.privacy_retroforge_reads_the_folders_you_choose))
         }
     }
 }

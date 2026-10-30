@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.Color as AndroidColor
@@ -116,7 +120,7 @@ fun ManualViewer(uri: Uri, title: String, onClose: () -> Unit) {
         Box(Modifier.fillMaxSize().background(Color(0xFF111114))) {
             val renderer = opened?.first
             if (renderer == null) {
-                CardBody("Opening the manual of $title…")
+                CardBody(stringResource(R.string.game_extras_opening_the_manual_of, title))
             } else {
                 BoxWithConstraints(Modifier.fillMaxSize()) {
                     val widthPx = with(LocalDensity.current) { maxWidth.toPx().toInt() }
@@ -143,7 +147,7 @@ fun ManualViewer(uri: Uri, title: String, onClose: () -> Unit) {
                     }
                 }
             }
-            Box(Modifier.align(Alignment.TopEnd).padding(12.dp)) { FocusChip("Close manual", onClick = onClose) }
+            Box(Modifier.align(Alignment.TopEnd).padding(12.dp)) { FocusChip(stringResource(R.string.game_extras_close_manual), onClick = onClose) }
         }
     }
 }

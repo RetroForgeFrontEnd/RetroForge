@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -54,10 +58,7 @@ fun BezelsCard(systems: List<Pair<String, String>>, title: String = "Bezels (The
     }) {
         CardTitle(title) { StatusPill(if (on) "On" else "Off", if (on) StatusTone.GOOD else StatusTone.NEUTRAL) }
         CardBody(
-            "Artwork round the game in landscape, like RetroArch and RetroBat bezels: a frame for each system, and for most games " +
-                "their own. Made by The Bezel Project (github.com/thebezelproject) and downloaded from their GitHub, not included " +
-                "in RetroForge. Download a system below; each game's own bezel (about 150 KB) is fetched the first time it starts. " +
-                "Bezels match No-Intro file names. Select this card to switch them on or off; Picture in the game's menu switches a system.",
+            stringResource(R.string.bezels_artwork_round_the_game_in_landscape),
         )
         CardBody(if (downloaded.isEmpty()) "No systems downloaded yet." else "Downloaded: " + downloaded.joinToString { it.second })
         // Above the buttons, so it stays in view however many systems there are.
@@ -70,7 +71,7 @@ fun BezelsCard(systems: List<Pair<String, String>>, title: String = "Bezels (The
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             // Every system in the library at once, so every scanned game gets its bezel.
             val missing = offered.filter { it.first !in downloaded.map { d -> d.first } }
-            if (missing.size > 1) FocusChip("Download all (${missing.size} systems)", enabled = !busy, onClick = {
+            if (missing.size > 1) FocusChip(stringResource(R.string.bezels_download_all_systems, missing.size), enabled = !busy, onClick = {
                 busy = true
                 progress = 0f
                 scope.launch {
@@ -106,6 +107,6 @@ fun BezelsCard(systems: List<Pair<String, String>>, title: String = "Bezels (The
                 })
             }
         }
-        if (offered.isEmpty()) CardBody("None of the systems in your library have Bezel Project bezels.")
+        if (offered.isEmpty()) CardBody(stringResource(R.string.bezels_none_of_the_systems_in_your))
     }
 }

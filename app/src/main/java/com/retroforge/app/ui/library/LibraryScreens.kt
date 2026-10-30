@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.text.format.Formatter
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -77,7 +81,7 @@ fun RetroScreen(
     val indexingArt by viewModel.indexingArt.collectAsStateWithLifecycle()
     val pickArt = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::useArtFolder) }
 
-    ScreenFrame(title = "Retro", subtitle = "Your consoles, arcade and computer games.") {
+    ScreenFrame(title = stringResource(R.string.home_retro), subtitle = stringResource(R.string.library_your_consoles_arcade_and_computer_games)) {
         // Systems first, canvas style: canvas-es artwork (downloaded for the library's systems) or the user's own theme
         // folder, drawn in RetroForge's colours.
         if (systems.isNotEmpty()) {
@@ -85,14 +89,14 @@ fun RetroScreen(
             val ownArt by viewModel.ownArt.collectAsStateWithLifecycle()
             CanvasSystemsView(systems.map { SystemSummary(it.id, it.name, it.games, it.hacks) }, systemArt, style, onOpenSystem)
             androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FocusChip("Tiles: ${style.label}", onClick = viewModel::nextTileStyle)
+                FocusChip(stringResource(R.string.library_tiles, style.label), onClick = viewModel::nextTileStyle)
                 val layout by viewModel.gameLayout.collectAsStateWithLifecycle()
-                FocusChip("Games: ${layout.label}", onClick = viewModel::nextGameLayout)
+                FocusChip(stringResource(R.string.library_games, layout.label), onClick = viewModel::nextGameLayout)
                 FocusChip(
                     if (ownArt == null) "Use my own theme folder" else "Artwork: ${ownArt!!.themeName.ifBlank { "your theme" }} · change",
                     onClick = { pickArt.launch(null) },
                 )
-                if (ownArt != null) FocusChip("Back to built-in artwork", onClick = viewModel::clearArtFolder)
+                if (ownArt != null) FocusChip(stringResource(R.string.library_back_to_built_in_artwork), onClick = viewModel::clearArtFolder)
             }
             if (indexingArt) LinearProgressIndicator(Modifier.fillMaxWidth())
         }
@@ -100,14 +104,13 @@ fun RetroScreen(
         when {
             roots == null -> LinearProgressIndicator(Modifier.fillMaxWidth())
             roots!!.isEmpty() -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { pickFolder.launch(null) }) {
-                CardTitle("Add your game folder")
+                CardTitle(stringResource(R.string.library_add_your_game_folder))
                 CardBody(
-                    "Select to choose the folder that holds your system folders, such as an existing \"roms\" folder from another frontend " +
-                        "(with snes, nes, psx … inside), or a single system folder. RetroForge only reads it: nothing is renamed, moved or written unless you use the ROM Manager and allow it.",
+                    stringResource(R.string.library_select_to_choose_the_folder_that),
                 )
             }
             else -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenFolders) {
-                CardTitle("Game folders")
+                CardTitle(stringResource(R.string.library_game_folders))
                 CardBody("${plural(systems.sumOf { it.games }, "game")} in ${plural(systems.size, "system")} from ${plural(roots!!.size, "folder")}.")
                 if (running != null) {
                     val percent = if (running.progress.systemsTotal > 0) " · ${running.progress.systemsDone * 100 / running.progress.systemsTotal}%" else ""
@@ -119,7 +122,7 @@ fun RetroScreen(
                         )
                     }
                 } else {
-                    CardBody("Select to add folders, rescan or see problems.")
+                    CardBody(stringResource(R.string.library_select_to_add_folders_rescan_or))
                 }
             }
         }
@@ -131,24 +134,24 @@ fun RetroScreen(
                 value = query,
                 onValueChange = { viewModel.query.value = it },
                 singleLine = true,
-                label = { Text("Search your games") },
+                label = { Text(stringResource(R.string.library_search_your_games)) },
                 modifier = Modifier.fillMaxWidth(),
             )
             if (query.trim().length >= 2) {
-                if (results.isEmpty()) CardBody("No games match \"${query.trim()}\".")
+                if (results.isEmpty()) CardBody(stringResource(R.string.library_no_games_match, query.trim()))
                 results.take(30).forEach { game ->
                     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { onOpenGame(game.id) }) {
                         Text(game.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                         CardBody(listOfNotNull(viewModel.systemName(game.system), tagLine(game)).joinToString(" · "))
                         // With several folders (e.g. internal storage and an SD card), show which one this copy is in.
-                        if (rootsById.size > 1) rootsById[game.rootId]?.let { CardBody("In ${it.name}") }
+                        if (rootsById.size > 1) rootsById[game.rootId]?.let { CardBody(stringResource(R.string.library_in, it.name)) }
                     }
                 }
-                if (results.size > 30) CardBody("Showing 30 of ${results.size}+ matches. Type more to narrow it down.")
+                if (results.size > 30) CardBody(stringResource(R.string.library_showing_30_of_matches_type_more, results.size))
             }
 
             if (recent.isNotEmpty()) {
-                CardTitle("Recently played")
+                CardTitle(stringResource(R.string.library_recently_played))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                     rowItems(recent, key = { it.id }) { game ->
                         GameTile(game, viewModel.art(rootsById, chosen, game), onClick = { onOpenGame(game.id) }, modifier = Modifier.width(190.dp))
@@ -161,14 +164,14 @@ fun RetroScreen(
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenPatcher) {
-            CardTitle("ROM Patcher")
-            CardBody("Apply IPS, BPS or UPS patches (ROM hacks, translations) to make a new copy. Originals are never changed.")
+            CardTitle(stringResource(R.string.library_rom_patcher))
+            CardBody(stringResource(R.string.library_apply_ips_bps_or_ups_patches))
         }
 
         if (!roots.isNullOrEmpty()) {
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenManager) {
-                CardTitle("ROM Manager")
-                CardBody("Tidy duplicate copies and compress games (CHD for discs, .zip for cartridges). Shows every change first and can undo it; files are set aside, not deleted.")
+                CardTitle(stringResource(R.string.library_rom_manager))
+                CardBody(stringResource(R.string.library_tidy_duplicate_copies_and_compress_games))
             }
         }
 
@@ -181,7 +184,7 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
     val scans by viewModel.scans.collectAsStateWithLifecycle()
     val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::addFolder) }
 
-    ScreenFrame(title = "Game folders", subtitle = "RetroForge keeps its own index of these folders. Your files are only read, unless you allow the ROM Manager to change them.") {
+    ScreenFrame(title = stringResource(R.string.library_game_folders), subtitle = stringResource(R.string.library_retroforge_keeps_its_own_index_of)) {
         roots.orEmpty().forEach { root ->
             val state = scans[root.id]
             val problems by remember(root.id) { viewModel.problems(root.id) }.collectAsState(initial = emptyList())
@@ -189,11 +192,11 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
                 CardTitle(root.name)
                 when {
-                    !access -> StatusPill("Access lost", StatusTone.BAD)
-                    state is ScanState.Running -> StatusPill("Scanning", StatusTone.CAUTION)
-                    state is ScanState.Failed -> StatusPill("Scan failed", StatusTone.BAD)
+                    !access -> StatusPill(stringResource(R.string.library_access_lost), StatusTone.BAD)
+                    state is ScanState.Running -> StatusPill(stringResource(R.string.library_scanning), StatusTone.CAUTION)
+                    state is ScanState.Failed -> StatusPill(stringResource(R.string.library_scan_failed), StatusTone.BAD)
                     root.lastScanAt != null -> StatusPill(plural(root.gameCount, "game"), StatusTone.GOOD)
-                    else -> StatusPill("Not scanned yet", StatusTone.NEUTRAL)
+                    else -> StatusPill(stringResource(R.string.library_not_scanned_yet), StatusTone.NEUTRAL)
                 }
                 when (state) {
                     is ScanState.Running -> {
@@ -205,9 +208,9 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
                     is ScanState.Failed -> CardBody(state.reason)
                     else -> Unit
                 }
-                if (!access) CardBody("Android no longer lets RetroForge read this folder (the drive may have been removed, or access was withdrawn). Forget it and add it again.")
-                root.lastScanAt?.let { CardBody("Last scanned ${DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(it))}") }
-                if (root.layout == "UNRECOGNISED") CardBody("No system folders were found here. Choose the folder that contains snes, nes, psx …, or a single system folder.")
+                if (!access) CardBody(stringResource(R.string.library_android_no_longer_lets_retroforge_read))
+                root.lastScanAt?.let { CardBody(stringResource(R.string.library_last_scanned, DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(it)))) }
+                if (root.layout == "UNRECOGNISED") CardBody(stringResource(R.string.library_no_system_folders_were_found_here))
                 val unrecognised = root.unrecognisedFolders.lines().filter { it.isNotBlank() }
                 if (unrecognised.isNotEmpty()) {
                     CardBody("${plural(unrecognised.size, "folder")} with no games RetroForge recognises (not named after a system, nothing playable inside): ${unrecognised.take(12).joinToString()}${if (unrecognised.size > 12) " …" else ""}")
@@ -219,22 +222,22 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
             }
             var renaming by remember(root.id) { mutableStateOf<String?>(null) }
             renaming?.let { draft ->
-                ControllerTextField(draft, { renaming = it.take(60) }, Modifier.fillMaxWidth(), label = { Text("Name shown in RetroForge") })
+                ControllerTextField(draft, { renaming = it.take(60) }, Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.library_name_shown_in_retroforge)) })
             }
             com.retroforge.app.ui.ChipRow {
                 if (renaming == null) {
-                    FocusChip("Scan for new games", onClick = { viewModel.rescan(root) }, enabled = access && state !is ScanState.Running)
-                    FocusChip("Rename", onClick = { renaming = root.name })
-                    FocusChip("Forget folder", onClick = { viewModel.forget(root) })
+                    FocusChip(stringResource(R.string.library_scan_for_new_games), onClick = { viewModel.rescan(root) }, enabled = access && state !is ScanState.Running)
+                    FocusChip(stringResource(R.string.library_rename), onClick = { renaming = root.name })
+                    FocusChip(stringResource(R.string.library_forget_folder), onClick = { viewModel.forget(root) })
                 } else {
-                    FocusChip("Save name", enabled = !renaming.isNullOrBlank(), onClick = { viewModel.renameFolder(root, renaming.orEmpty()); renaming = null })
-                    FocusChip("Cancel", onClick = { renaming = null })
+                    FocusChip(stringResource(R.string.library_save_name), enabled = !renaming.isNullOrBlank(), onClick = { viewModel.renameFolder(root, renaming.orEmpty()); renaming = null })
+                    FocusChip(stringResource(R.string.network_drives_cancel), onClick = { renaming = null })
                 }
             }
         }
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { pickFolder.launch(null) }) {
-            CardTitle("Add a folder")
-            CardBody("A \"roms\" folder from another frontend, a single system folder, or a folder on an SD card or USB drive. \"Forget folder\" removes only RetroForge's index.")
+            CardTitle(stringResource(R.string.library_add_a_folder))
+            CardBody(stringResource(R.string.library_a_roms_folder_from_another_frontend))
         }
     }
 }
@@ -291,7 +294,7 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
                     viewModel.setGameLayout(if (layout == GameLayout.SHELF) GameLayout.LIST else if (asList) GameLayout.GRID else GameLayout.SHELF)
                 })
                 if (layout == GameLayout.SHELF) Box3dBatch(viewModel, shown)
-                ControllerTextField(value = filter, onValueChange = { filter = it }, singleLine = true, label = { Text("Filter") }, modifier = Modifier.fillMaxWidth())
+                ControllerTextField(value = filter, onValueChange = { filter = it }, singleLine = true, label = { Text(stringResource(R.string.library_filter)) }, modifier = Modifier.fillMaxWidth())
                 SystemCoverBatch(viewModel, system, games.orEmpty(), chosen)
                 if (games.orEmpty().any { it.duplicateKey != null }) {
                     FocusChip(if (hideCopies) "• Showing one copy of each game" else "Show one copy of each game", onClick = { hideCopies = !hideCopies })
@@ -327,7 +330,7 @@ fun GameDetailScreen(
     val context = LocalContext.current
 
     val g = game ?: run {
-        ScreenFrame(title = "Game") { CardBody("Loading…") }
+        ScreenFrame(title = stringResource(R.string.library_game)) { CardBody(stringResource(R.string.cover_picker_loading)) }
         return
     }
     // Dual-screen devices: the second screen shows this game while its page is open.
@@ -343,14 +346,14 @@ fun GameDetailScreen(
         val media by androidx.compose.runtime.produceState(GameMedia(null, null), g.id) { value = findGameMedia(context.contentResolver, rootsById[g.rootId], g) }
         var manualOpen by remember { mutableStateOf(false) }
         media.manual?.let { manual ->
-            FocusChip("Read the manual", onClick = { manualOpen = true })
+            FocusChip(stringResource(R.string.library_read_the_manual), onClick = { manualOpen = true })
             if (manualOpen) ManualViewer(manual, g.title, onClose = { manualOpen = false })
         }
         media.video?.let { GameVideo(it) }
         CoverControls(g, viewModel, onChangeCover = { onChangeCover(g.id) })
-        FocusChip("Edit details", onClick = { onEditDetails(g.id) })
+        FocusChip(stringResource(R.string.edit_details_edit_details), onClick = { onEditDetails(g.id) })
         FavouriteAndPlaylists(g, viewModel)
-        FocusChip("Delete this game…", onClick = { onDelete(g.id) })
+        FocusChip(stringResource(R.string.library_delete_this_game), onClick = { onDelete(g.id) })
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             g.description?.let { CardBody(it) }
             listOfNotNull(
@@ -364,24 +367,24 @@ fun GameDetailScreen(
                 g.discs?.let { "Discs: $it" },
                 g.tags.lines().filter { it.isNotBlank() && it != g.regions }.ifEmpty { null }?.let { "Tags: ${it.joinToString()}" },
             ).forEach { CardBody(it) }
-            if (g.description == null && g.developer == null) CardBody("No gamelist.xml details for this game; the title comes from its file name.")
+            if (g.description == null && g.developer == null) CardBody(stringResource(R.string.library_no_gamelist_xml_details_for_this))
         }
         if (g.isHack) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                StatusPill("ROM hack", StatusTone.CAUTION)
+                StatusPill(stringResource(R.string.library_rom_hack), StatusTone.CAUTION)
                 CardBody(g.hackFolder?.let { "From your \"$it\" folder." } ?: "Marked as a hack in its file name.")
             }
         }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("File")
+            CardTitle(stringResource(R.string.library_file))
             CardBody(g.fileName)
             CardBody("In ${rootsById[g.rootId]?.name ?: "your folder"}: ${g.relativePath}")
             if (g.sizeBytes > 0) CardBody(Formatter.formatFileSize(context, g.sizeBytes))
         }
         if (duplicates.isNotEmpty()) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                CardTitle("Other copies in your library")
-                CardBody("Same game and tags, different file. RetroForge doesn't delete anything; this is for your information.")
+                CardTitle(stringResource(R.string.library_other_copies_in_your_library))
+                CardBody(stringResource(R.string.library_same_game_and_tags_different_file))
             }
             duplicates.forEach { other -> FocusChip(other.relativePath, onClick = { onOpenGame(other.id) }) }
         }
@@ -404,7 +407,7 @@ private fun SystemCoverBatch(viewModel: LibraryViewModel, system: String, games:
         is CoverBatch.Running -> {
             CardBody("Downloading box art: ${b.done} of ${b.total} · ${plural(b.found, "cover")} found")
             LinearProgressIndicator(progress = { if (b.total == 0) 0f else b.done.toFloat() / b.total }, modifier = Modifier.fillMaxWidth())
-            FocusChip("Stop", onClick = viewModel.covers::cancelBatch)
+            FocusChip(stringResource(R.string.library_stop), onClick = viewModel.covers::cancelBatch)
         }
         is CoverBatch.Finished -> CardBody(
             "Box art: ${plural(b.found, "cover")} added" +
@@ -427,10 +430,9 @@ private fun PlayTogetherCard(viewModel: LibraryViewModel, onOpenGame: (Long) -> 
     var looking by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf<String?>(null) }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Play together (netplay)")
+        CardTitle(stringResource(R.string.settings_play_together_netplay))
         CardBody(
-            "Two players, two devices, the same game. To host: open a game and choose Play together → Host. To join a friend " +
-                "on this Wi-Fi, find their game below; over the internet, open the game and choose Play together → Join.",
+            stringResource(R.string.library_two_players_two_devices_the_same),
         )
         FocusChip(if (looking) "Looking…" else "Find games on this Wi-Fi", enabled = !looking, onClick = {
             looking = true
@@ -441,7 +443,7 @@ private fun PlayTogetherCard(viewModel: LibraryViewModel, onOpenGame: (Long) -> 
             }
         })
         hosts?.let { found ->
-            if (found.isEmpty()) CardBody("Nobody's hosting on this Wi-Fi right now.")
+            if (found.isEmpty()) CardBody(stringResource(R.string.library_nobody_s_hosting_on_this_wi))
             found.forEach { host ->
                 FocusChip("${host.player}: ${host.title}", onClick = {
                     scope.launch {
@@ -455,7 +457,7 @@ private fun PlayTogetherCard(viewModel: LibraryViewModel, onOpenGame: (Long) -> 
                     }
                 })
             }
-            if (found.isNotEmpty()) CardBody("Pick one to open your copy, then choose Play together → Join.")
+            if (found.isNotEmpty()) CardBody(stringResource(R.string.library_pick_one_to_open_your_copy))
         }
         message?.let { CardBody(it) }
     }
@@ -486,7 +488,7 @@ private fun Box3dBatch(viewModel: LibraryViewModel, games: List<GameEntity>) {
     })
     done?.let { n ->
         val p = if (games.isEmpty()) 1f else n.toFloat() / games.size
-        CardBody("${(p * 100).toInt()}% (${n} of ${games.size} games)")
+        CardBody(stringResource(R.string.library_of_games, (p * 100).toInt(), n, games.size))
         LinearProgressIndicator(progress = { p }, modifier = Modifier.fillMaxWidth())
     }
     result?.let { CardBody(it) }

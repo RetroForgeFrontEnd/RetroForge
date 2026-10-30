@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.links
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -53,7 +57,7 @@ val usefulLinks = listOf(
 fun LinksScreen() {
     val context = LocalContext.current
     var error by remember { mutableStateOf<String?>(null) }
-    ScreenFrame(title = "Retro games, handhelds and PC gaming", subtitle = "Channels and sites worth following. Links open in YouTube or your browser.") {
+    ScreenFrame(title = stringResource(R.string.links_retro_games_handhelds_and_pc_gaming), subtitle = stringResource(R.string.links_channels_and_sites_worth_following_links)) {
         usefulLinks.forEach { group ->
             Text(group.title, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
             // A to Z, ignoring a leading "The" (The Gaming Historian goes under G).

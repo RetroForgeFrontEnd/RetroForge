@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.home
 
+import androidx.compose.ui.res.stringResource
+
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -85,22 +87,22 @@ fun HomeScreen(
             Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
                 Wordmark(fontSize = 28.sp)
                 Text(
-                    "Merging the past, building the future",
+                    stringResource(R.string.home_merging_the_past_building_the_future),
                     style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center,
                 )
                 Text(
-                    "The ultimate hybrid gaming experience",
+                    stringResource(R.string.home_the_ultimate_hybrid_gaming_experience),
                     style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
                 )
             }
         } else {
             Wordmark(fontSize = 32.sp)
         }
-        StatusPill("Preview ${BuildConfig.VERSION_NAME}", StatusTone.CAUTION)
+        StatusPill(stringResource(R.string.home_preview, BuildConfig.VERSION_NAME), StatusTone.CAUTION)
         if (systems.isNotEmpty()) {
             // A random game from the whole collection: a way back into games you forgot you had.
             val scope = androidx.compose.runtime.rememberCoroutineScope()
-            com.retroforge.core.ui.FocusChip("🎲 Surprise me", onClick = {
+            com.retroforge.core.ui.FocusChip(stringResource(R.string.home_surprise_me), onClick = {
                 scope.launch { library.randomGameId()?.let(onOpenGame) }
             })
         }
@@ -114,8 +116,8 @@ fun HomeScreen(
             )
         } else if (systems.isEmpty()) {
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { onOpen(Section.RETRO) }) {
-                CardTitle("Welcome to RetroForge")
-                CardBody("Add your games folder in Retro (or run Settings → Set up RetroForge), and your collection shows up here.")
+                CardTitle(stringResource(R.string.home_welcome_to_retroforge))
+                CardBody(stringResource(R.string.home_add_your_games_folder_in_retro))
             }
         }
 
@@ -123,25 +125,25 @@ fun HomeScreen(
         GameRow("Favourites", favourites, library, rootsById, chosen, onOpenGame)
 
         if (systems.isNotEmpty()) {
-            CardTitle("Your systems")
+            CardTitle(stringResource(R.string.home_your_systems))
             SystemsView(systems, onOpenSystem)
         }
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             FocusCard(modifier = Modifier.weight(1f), onClick = { onOpen(Section.RETRO) }) {
-                CardTitle("Retro")
-                CardBody("Search, systems, playlists, ROM tools.")
+                CardTitle(stringResource(R.string.home_retro))
+                CardBody(stringResource(R.string.home_search_systems_playlists_rom_tools))
             }
             if (showPc) {
                 FocusCard(modifier = Modifier.weight(1f), onClick = { onOpen(Section.PC) }) {
-                    CardTitle("PC")
-                    CardBody("Ports of your games, and Windows games on supported devices.")
+                    CardTitle(stringResource(R.string.home_pc))
+                    CardBody(stringResource(R.string.home_ports_of_your_games_and_windows))
                 }
             }
         }
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenApps) {
-            CardTitle("Android apps")
-            CardBody("Your other apps and Android's settings. Also where RetroForge can become the home screen.")
+            CardTitle(stringResource(R.string.home_android_apps))
+            CardBody(stringResource(R.string.home_your_other_apps_and_android_s))
         }
     }
 }

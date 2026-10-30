@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,10 +39,9 @@ fun CloudAppsCard() {
     var resumed by remember { mutableIntStateOf(0) }
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { resumed++ } // an app installed meanwhile changes Get to Open
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("More cloud gaming")
+        CardTitle(stringResource(R.string.cloud_apps_more_cloud_gaming))
         CardBody(
-            "GeForce NOW and Boosteroid stream PC games you own on Steam, Epic and other stores; Amazon Luna plays in your " +
-                "browser. Each is a separate service with its own sign-in and plans, in its official app or site.",
+            stringResource(R.string.cloud_apps_geforce_now_and_boosteroid_stream_pc),
         )
         ChipRow {
             services.forEach { service ->

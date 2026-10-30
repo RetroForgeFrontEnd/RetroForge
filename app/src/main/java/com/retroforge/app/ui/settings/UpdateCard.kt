@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,10 +50,10 @@ fun UpdateCard() {
     var result by remember { mutableStateOf<String?>(null) }
     var found by remember { mutableStateOf<AppUpdate.Available?>(null) }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Updates") { StatusPill(BuildConfig.VERSION_NAME, StatusTone.NEUTRAL) }
-        CardBody("New versions come from RetroForge's GitHub releases. Android asks you to confirm before anything is installed.")
+        CardTitle(stringResource(R.string.update_updates)) { StatusPill(BuildConfig.VERSION_NAME, StatusTone.NEUTRAL) }
+        CardBody(stringResource(R.string.update_new_versions_come_from_retroforge_s))
         ChipRow {
-            FocusChip("Check for updates", enabled = !checking, onClick = {
+            FocusChip(stringResource(R.string.update_check_for_updates), enabled = !checking, onClick = {
                 checking = true
                 result = null
                 scope.launch {
@@ -78,7 +82,7 @@ private fun UpdateOffer(update: AppUpdate.Available, onDismiss: () -> Unit) {
     var downloading by remember { mutableStateOf(false) }
     var problem by remember { mutableStateOf<String?>(null) }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("RetroForge ${update.version} is out") { StatusPill("Update", StatusTone.GOOD) }
+        CardTitle(stringResource(R.string.update_retroforge_is_out, update.version)) { StatusPill(stringResource(R.string.hacks_update), StatusTone.GOOD) }
         if (update.notes.isNotBlank()) CardBody(update.notes)
         ChipRow {
             FocusChip(if (downloading) "Downloading…" else "Download and install", enabled = !downloading, onClick = {
@@ -91,8 +95,8 @@ private fun UpdateOffer(update: AppUpdate.Available, onDismiss: () -> Unit) {
                 }
             })
             if (!downloading) {
-                FocusChip("Not now", onClick = onDismiss)
-                FocusChip("Skip this version", onClick = {
+                FocusChip(stringResource(R.string.pc_games_not_now), onClick = onDismiss)
+                FocusChip(stringResource(R.string.update_skip_this_version), onClick = {
                     AppUpdate.prefs(context).edit().putString("skipped", update.version).apply()
                     onDismiss()
                 })

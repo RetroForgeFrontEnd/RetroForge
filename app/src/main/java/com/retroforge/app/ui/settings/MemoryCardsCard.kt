@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -69,32 +73,29 @@ fun MemoryCardsCard() {
     }
 
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("PlayStation memory cards")
+        CardTitle(stringResource(R.string.memory_cards_playstation_memory_cards))
         CardBody(
-            "Each PlayStation game in the built-in player has its own memory card. Pick one to see its saves, then copy a save " +
-                "to another game's card (handy for sequels that read the first game's save) or delete it. You can also open a " +
-                "card file from another emulator (.mcr, .mcd, .mc, .gme) and copy its saves across. Quit the game first: a " +
-                "game that's running writes its own card back. A game gets its card the first time it's played.",
+            stringResource(R.string.memory_cards_each_playstation_game_in_the_built),
         )
-        if (cards.isEmpty()) CardBody("No memory cards yet.")
+        if (cards.isEmpty()) CardBody(stringResource(R.string.memory_cards_no_memory_cards_yet))
         ChipRow {
             cards.forEach { file ->
                 FocusChip((if (file == shown && opened == null) "▸ " else "") + file.nameWithoutExtension, onClick = {
                     shown = file; opened = null; copying = null; status = null
                 })
             }
-            FocusChip("Open a card file", onClick = { openFile.launch(arrayOf("*/*")) })
+            FocusChip(stringResource(R.string.memory_cards_open_a_card_file), onClick = { openFile.launch(arrayOf("*/*")) })
         }
         if (source != null && sourceName != null) {
             CardBody("$sourceName: ${source.saves.size} save${if (source.saves.size == 1) "" else "s"}, ${source.freeBlocks} of 15 blocks free.")
             source.saves.forEach { save ->
                 CardBody("• ${save.title} (${save.blocks.size} block${if (save.blocks.size == 1) "" else "s"})")
                 ChipRow {
-                    FocusChip("Copy to another game", onClick = { copying = save; status = null })
-                    if (opened == null) FocusChip("Delete", onClick = { deleting = save })
+                    FocusChip(stringResource(R.string.memory_cards_copy_to_another_game), onClick = { copying = save; status = null })
+                    if (opened == null) FocusChip(stringResource(R.string.memory_cards_delete), onClick = { deleting = save })
                 }
             }
-            if (opened == null) FocusChip("Save this card as a file (.mcr)", onClick = { saveFile.launch("$sourceName.mcr") })
+            if (opened == null) FocusChip(stringResource(R.string.memory_cards_save_this_card_as_a_file), onClick = { saveFile.launch("$sourceName.mcr") })
         }
         copying?.let { save ->
             val targets = cards.filter { it != shown }
@@ -115,7 +116,7 @@ fun MemoryCardsCard() {
                         changes++
                     })
                 }
-                FocusChip("Cancel", onClick = { copying = null })
+                FocusChip(stringResource(R.string.network_drives_cancel), onClick = { copying = null })
             }
         }
         status?.let { CardBody(it) }
@@ -124,8 +125,8 @@ fun MemoryCardsCard() {
     deleting?.let { save ->
         AlertDialog(
             onDismissRequest = { deleting = null },
-            title = { Text("Delete this save?") },
-            text = { Text("\"${save.title}\" will be removed from ${shown?.nameWithoutExtension}'s memory card. This can't be undone (unless you have a backup).") },
+            title = { Text(stringResource(R.string.memory_cards_delete_this_save)) },
+            text = { Text(stringResource(R.string.memory_cards_will_be_removed_from_s_memory, save.title, shown?.nameWithoutExtension.toString())) },
             confirmButton = {
                 TextButton(onClick = {
                     val file = shown
@@ -137,9 +138,9 @@ fun MemoryCardsCard() {
                     }.getOrElse { "That didn't work: ${it.message}" }
                     deleting = null
                     changes++
-                }) { Text("Delete") }
+                }) { Text(stringResource(R.string.memory_cards_delete)) }
             },
-            dismissButton = { TextButton(onClick = { deleting = null }) { Text("Keep it") } },
+            dismissButton = { TextButton(onClick = { deleting = null }) { Text(stringResource(R.string.memory_cards_keep_it)) } },
         )
     }
 }

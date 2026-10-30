@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,16 +46,14 @@ import java.time.LocalDate
 fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices, resume: Boolean, onResume: (Boolean) -> Unit, library: LibraryRepository? = null) {
     var changes by remember { mutableIntStateOf(0) }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Built-in player")
+        CardTitle(stringResource(R.string.built_in_player_built_in_player))
         CardBody(
-            "RetroForge has its own emulators for most systems, from Game Boy to PS2 and GameCube, downloaded in the background. " +
-                "In a game, swipe in from the left or right edge for the menu: save states, screen shape, filters, buttons, " +
-                "cheats, widescreen, Cardboard VR and switching emulator.",
+            stringResource(R.string.built_in_player_retroforge_has_its_own_emulators_for),
         )
     }
     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { onResume(!resume) }) {
-        CardTitle("Carry on where you left off") { StatusPill(if (resume) "On" else "Off", if (resume) StatusTone.GOOD else StatusTone.NEUTRAL) }
-        CardBody("When you quit a game, your place is saved, and the game starts from there next time. In the built-in player and in RetroArch.")
+        CardTitle(stringResource(R.string.built_in_player_carry_on_where_you_left_off)) { StatusPill(if (resume) "On" else "Off", if (resume) StatusTone.GOOD else StatusTone.NEUTRAL) }
+        CardBody(stringResource(R.string.built_in_player_when_you_quit_a_game_your))
     }
     CopyFirstCard()
     SaveBackupCard(library)
@@ -59,7 +61,7 @@ fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices,
     VideoChoicesCard(systems, choices)
     val switchable = systems.filter { (id, _) -> PlayerCores.choices(id).size > 1 }
     if (switchable.isEmpty()) return
-    CardBody("The emulator each system uses (tap to change):")
+    CardBody(stringResource(R.string.built_in_player_the_emulator_each_system_uses_tap))
     // Read again after each change, so the chips show the new choice.
     val chosen = remember(changes) { choices.all() }
     FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -95,11 +97,9 @@ private fun VideoChoicesCard(systems: List<Pair<String, String>>, choices: CoreC
     if (rows.isEmpty()) return
     val saved = remember(changes) { video.all() }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Graphics and resolution")
+        CardTitle(stringResource(R.string.built_in_player_graphics_and_resolution))
         CardBody(
-            "Resolution makes 3D games sharper than the console did: 2× looks like 720p, 3× like 1080p, up to 10× for PSP, but " +
-                "higher needs a faster phone. Graphics: GameCube, Wii and PS2 use Vulkan; other systems use OpenGL, with Vulkan " +
-                "(experimental) as an option that can be faster (switch back if a game goes black). Both can be changed in a game's menu too.",
+            stringResource(R.string.built_in_player_resolution_makes_3d_games_sharper_than),
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             rows.forEach { (id, name, coreId) ->
@@ -133,11 +133,9 @@ private fun CopyFirstCard() {
         copyFirst = !copyFirst
         prefs.edit().putBoolean(com.retroforge.app.player.PlayerActivity.COPY_FIRST_PREF, copyFirst).apply()
     }) {
-        CardTitle("Disc games: play straight away or copy first") { StatusPill(if (copyFirst) "Copy first" else "Play straight away", if (copyFirst) StatusTone.NEUTRAL else StatusTone.GOOD) }
+        CardTitle(stringResource(R.string.built_in_player_disc_games_play_straight_away_or)) { StatusPill(if (copyFirst) "Copy first" else "Play straight away", if (copyFirst) StatusTone.NEUTRAL else StatusTone.GOOD) }
         CardBody(
-            "Big disc games (PlayStation, Dreamcast, Saturn …) and arcade games start straight away from your folder or network " +
-                "drive, without copying. If they stutter on slow Wi-Fi, choose Copy first: the game is copied to the phone before " +
-                "it starts, and the last two are kept so they start faster next time. Some emulators always copy.",
+            stringResource(R.string.built_in_player_big_disc_games_playstation_dreamcast_saturn),
         )
     }
 }
@@ -204,18 +202,16 @@ private fun SaveBackupCard(library: LibraryRepository?) {
         }
     }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Back up saves and settings")
+        CardTitle(stringResource(R.string.built_in_player_back_up_saves_and_settings))
         CardBody(
-            "Puts your game saves, save states, cheats, settings, favourites and playlists into one zip file. Keep it somewhere " +
-                "safe, or restore it on a new phone (add your game folders first, so favourites and playlists find their games). " +
-                "Restoring replaces files with the same name and keeps the rest.",
+            stringResource(R.string.built_in_player_puts_your_game_saves_save_states),
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            FocusChip("Back up to a file", onClick = { export.launch("RetroForge-backup-${LocalDate.now()}.zip") })
-            FocusChip("Restore from a backup", onClick = { import.launch(arrayOf("application/zip", "application/octet-stream")) })
+            FocusChip(stringResource(R.string.built_in_player_back_up_to_a_file), onClick = { export.launch("RetroForge-backup-${LocalDate.now()}.zip") })
+            FocusChip(stringResource(R.string.built_in_player_restore_from_a_backup), onClick = { import.launch(arrayOf("application/zip", "application/octet-stream")) })
         }
         status?.let { CardBody(it) }
-        if (restartNeeded) FocusChip("Restart RetroForge now", onClick = { restart(context) })
+        if (restartNeeded) FocusChip(stringResource(R.string.built_in_player_restart_retroforge_now), onClick = { restart(context) })
     }
     StorageCard()
 }
@@ -236,12 +232,12 @@ private fun StorageCard() {
         sizes = withContext(Dispatchers.IO) { File(context.filesDir, "cores").size() to copies.size() }
     }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Storage")
+        CardTitle(stringResource(R.string.built_in_player_storage))
         CardBody(
             sizes?.let { (cores, games) -> "Emulators: ${cores.mb()}. Copied games: ${games.mb()} (the last two disc or arcade games copied to the phone)." }
                 ?: "Working out sizes…",
         )
-        FocusChip("Clear copied games", onClick = {
+        FocusChip(stringResource(R.string.built_in_player_clear_copied_games), onClick = {
             scope.launch {
                 withContext(Dispatchers.IO) { copies.deleteRecursively() }
                 changes++

@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.Intent
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -30,6 +34,7 @@ private val topics = listOf(
         "Play together shows on the games it suits: NES, SNES, Mega Drive, Master System, PC Engine, PlayStation, Atari, arcade (FinalBurn Neo, MAME, Neo Geo, CPS) and the two-player Game Boy. Handhelds, computers and 3D systems like N64, GameCube and PS2 don't have it: their emulators drift apart between devices.",
     )),
     Topic("Getting started", listOf(
+        "RESET COMBO (use with care): hold Start + Select + L1 + R1 + L2 + R2 together for two seconds on a controller. A box offers \"Use the phone's language\" (safe: only the language changes, handy if you picked one you can't read) or \"Factory reset\". WARNING: Factory reset erases ALL of RetroForge's settings (language, theme, emulator choices, remapped buttons, hotkeys, chosen covers, save syncing, accounts and network drive sign-ins) and can't be undone. It asks twice first. Your game folders, library, games, saves and save states are kept.",
         "Settings → Set up RetroForge walks you through it: pick your games folder, check your BIOS files and choose emulators. The built-in player's emulators download by themselves.",
         "Your games folder can be a \"roms\" folder from another frontend (RetroBat, ES-DE: snes, nes, psx … inside), a single system folder, or just a folder of games: RetroForge recognises loose games by their file type (.gba, .nds, .sfc, .z64 …).",
         "It can be on the phone, an SD card or a USB drive. RetroForge only reads it; nothing is changed unless you use the ROM Manager.",
@@ -195,7 +200,7 @@ fun TutorialScreen() {
     fun open(url: String) { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) } }
     var openTopic by remember { mutableStateOf<String?>(null) }
 
-    ScreenFrame(title = "How to use RetroForge", subtitle = "Grab a drink and a snack (as Russ from Retro Game Corps would say), and pick a topic.") {
+    ScreenFrame(title = stringResource(R.string.settings_how_to_use_retroforge), subtitle = stringResource(R.string.tutorial_grab_a_drink_and_a_snack)) {
         topics.forEach { topic ->
             val expanded = openTopic == topic.title
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { openTopic = if (expanded) null else topic.title }) {
@@ -205,15 +210,14 @@ fun TutorialScreen() {
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Learn more about Android emulation")
+            CardTitle(stringResource(R.string.tutorial_learn_more_about_android_emulation))
             CardBody(
-                "Retro Game Corps (Russ) writes some of the best guides around. They're his own work, so they open on his site. " +
-                    "More channels are in the Links tab.",
+                stringResource(R.string.tutorial_retro_game_corps_russ_writes_some),
             )
         }
-        FocusChip("Android Emulation Starter Guide", onClick = { open(STARTER_GUIDE) })
-        FocusChip("Dual-Screen Android Handheld Guide", onClick = { open(DUAL_SCREEN_GUIDE) })
-        FocusChip("All Retro Game Corps guides", onClick = { open(ALL_GUIDES) })
+        FocusChip(stringResource(R.string.tutorial_android_emulation_starter_guide), onClick = { open(STARTER_GUIDE) })
+        FocusChip(stringResource(R.string.tutorial_dual_screen_android_handheld_guide), onClick = { open(DUAL_SCREEN_GUIDE) })
+        FocusChip(stringResource(R.string.tutorial_all_retro_game_corps_guides), onClick = { open(ALL_GUIDES) })
     }
 }
 

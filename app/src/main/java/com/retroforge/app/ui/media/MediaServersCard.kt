@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.media
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -81,15 +85,14 @@ fun MediaServersCard(prefs: SharedPreferences) {
     com.retroforge.app.ui.CloseStep(enabled = server != null, takeOverClose = false) { back() }
 
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Plex and other media servers")
+        CardTitle(stringResource(R.string.media_servers_plex_and_other_media_servers))
         val current = server
         if (current == null) {
             CardBody(
-                "Watch films from Plex, Jellyfin, Emby or a NAS on your home network, with no sign-in: RetroForge finds them the " +
-                    "way smart TVs and Bigscreen do (DLNA). In Plex: Settings → DLNA → Enable the DLNA server (on by default).",
+                stringResource(R.string.media_servers_watch_films_from_plex_jellyfin_emby),
             )
             ChipRow {
-                FocusChip("Find media servers", onClick = {
+                FocusChip(stringResource(R.string.media_servers_find_media_servers), onClick = {
                     status = "Looking on your network (a few seconds)…"
                     scope.launch {
                         val found = MediaServers.find(context)
@@ -104,13 +107,13 @@ fun MediaServersCard(prefs: SharedPreferences) {
                     }
                 })
                 servers.forEach { s -> FocusChip(s.name, onClick = { path.clear(); open(s, "0", s.name) }) }
-                if (servers.isNotEmpty()) FocusChip("Forget these", onClick = { servers = emptyList(); saveServers(prefs, emptyList()) })
+                if (servers.isNotEmpty()) FocusChip(stringResource(R.string.media_servers_forget_these), onClick = { servers = emptyList(); saveServers(prefs, emptyList()) })
             }
         } else {
             CardBody(path.joinToString(" › ") { it.second })
             ChipRow {
-                FocusChip("‹ Back", onClick = { back() })
-                if (path.size > 1) FocusChip("Servers", onClick = { path.clear(); server = null; entries = null; status = null })
+                FocusChip(stringResource(R.string.player_back), onClick = { back() })
+                if (path.size > 1) FocusChip(stringResource(R.string.media_servers_servers), onClick = { path.clear(); server = null; entries = null; status = null })
             }
             entries?.let { list ->
                 val (folders, videos) = list.partition { it.isFolder }
@@ -120,7 +123,7 @@ fun MediaServersCard(prefs: SharedPreferences) {
                 if (videos.isNotEmpty()) {
                     // A folder called "3D Films" (or with SBS or 3D in its name) holds 3D films, whatever their titles say.
                     val folder3d = path.any { (_, title) -> Films.parse("", "$title.mkv", 0).is3d }
-                    CardBody("${videos.size} to watch:")
+                    CardBody(stringResource(R.string.media_servers_to_watch, videos.size))
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         videos.forEach { v -> ServerFilm(v, folder3d) { play(context, v, it) } }
                     }

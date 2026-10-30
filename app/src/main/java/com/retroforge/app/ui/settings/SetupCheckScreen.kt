@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -68,7 +72,7 @@ fun SetupCheckScreen(library: LibraryRepository, cores: CoreManager, biosDir: Fi
         }
     }.sortedWith(compareBy({ it.tone != StatusTone.BAD }, { it.tone != StatusTone.CAUTION }, { it.name }))
 
-    ScreenFrame(title = "Check my setup", subtitle = "Every system you have games for: its emulator, its BIOS and its games.") {
+    ScreenFrame(title = stringResource(R.string.settings_check_my_setup), subtitle = stringResource(R.string.setup_check_every_system_you_have_games_for)) {
         val problems = lines.count { it.tone == StatusTone.BAD || it.tone == StatusTone.CAUTION }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle(if (problems == 0) "All set" else "$problems ${if (problems == 1) "system needs" else "systems need"} a look")
@@ -79,9 +83,9 @@ fun SetupCheckScreen(library: LibraryRepository, cores: CoreManager, biosDir: Fi
                 CardTitle(line.name) { StatusPill(line.verdict, line.tone) }
                 CardBody("${line.games} ${if (line.games == 1) "game" else "games"}. ${line.detail}")
                 line.coreId?.let { id ->
-                    FocusChip("Download now", onClick = { scope.launch { cores.ensure(id); refresh++ } })
+                    FocusChip(stringResource(R.string.setup_check_download_now), onClick = { scope.launch { cores.ensure(id); refresh++ } })
                 }
-                if (line.verdict == "BIOS missing") FocusChip("Set up RetroForge", onClick = onOpenSetup)
+                if (line.verdict == "BIOS missing") FocusChip(stringResource(R.string.settings_set_up_retroforge), onClick = onOpenSetup)
             }
         }
     }

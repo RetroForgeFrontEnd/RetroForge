@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import com.retroforge.app.ui.ChipRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -31,7 +35,7 @@ import kotlinx.coroutines.launch
 fun EditDetailsScreen(viewModel: LibraryViewModel, gameId: Long, onDone: () -> Unit) {
     val game by remember(gameId) { viewModel.game(gameId) }.collectAsStateWithLifecycle(initialValue = null)
     val g = game ?: run {
-        ScreenFrame(title = "Edit details") { CardBody("Loading…") }
+        ScreenFrame(title = stringResource(R.string.edit_details_edit_details)) { CardBody(stringResource(R.string.cover_picker_loading)) }
         return
     }
     val edit by remember(g.rootId, g.relativePath) { viewModel.editFor(g) }.collectAsStateWithLifecycle(initialValue = null)
@@ -45,18 +49,18 @@ fun EditDetailsScreen(viewModel: LibraryViewModel, gameId: Long, onDone: () -> U
     var players by remember(g.id) { mutableStateOf(start.players.orEmpty()) }
     val scope = rememberCoroutineScope()
 
-    ScreenFrame(title = "Edit details", subtitle = g.fileName) {
-        CardBody("Changes are saved in RetroForge only. The game file and any gamelist.xml stay as they are, and rescans keep your changes.")
+    ScreenFrame(title = stringResource(R.string.edit_details_edit_details), subtitle = g.fileName) {
+        CardBody(stringResource(R.string.edit_details_changes_are_saved_in_retroforge_only))
         val wide = Modifier.fillMaxWidth()
-        ControllerTextField(title, { title = it.take(200) }, wide, label = { Text("Title") })
-        ControllerTextField(description, { description = it.take(4000) }, wide, label = { Text("Description") }, singleLine = false)
-        ControllerTextField(released, { released = it.take(40) }, wide, label = { Text("Release date (e.g. 1994 or 1994-11-21)") })
-        ControllerTextField(developer, { developer = it.take(120) }, wide, label = { Text("Developer") })
-        ControllerTextField(publisher, { publisher = it.take(120) }, wide, label = { Text("Publisher") })
-        ControllerTextField(genre, { genre = it.take(120) }, wide, label = { Text("Genre") })
-        ControllerTextField(players, { players = it.take(20) }, wide, label = { Text("Players") })
+        ControllerTextField(title, { title = it.take(200) }, wide, label = { Text(stringResource(R.string.edit_details_title)) })
+        ControllerTextField(description, { description = it.take(4000) }, wide, label = { Text(stringResource(R.string.edit_details_description)) }, singleLine = false)
+        ControllerTextField(released, { released = it.take(40) }, wide, label = { Text(stringResource(R.string.edit_details_release_date_e_g_1994_or)) })
+        ControllerTextField(developer, { developer = it.take(120) }, wide, label = { Text(stringResource(R.string.edit_details_developer)) })
+        ControllerTextField(publisher, { publisher = it.take(120) }, wide, label = { Text(stringResource(R.string.edit_details_publisher)) })
+        ControllerTextField(genre, { genre = it.take(120) }, wide, label = { Text(stringResource(R.string.edit_details_genre)) })
+        ControllerTextField(players, { players = it.take(20) }, wide, label = { Text(stringResource(R.string.edit_details_players)) })
         ChipRow {
-            FocusChip("Save", enabled = title.isNotBlank(), onClick = {
+            FocusChip(stringResource(R.string.settings_save), enabled = title.isNotBlank(), onClick = {
                 val details = GameDetails(
                     title = title.trim(),
                     description = description.trim().ifEmpty { null },
@@ -71,11 +75,11 @@ fun EditDetailsScreen(viewModel: LibraryViewModel, gameId: Long, onDone: () -> U
                     onDone()
                 }
             })
-            FocusChip("Cancel", onClick = onDone)
+            FocusChip(stringResource(R.string.network_drives_cancel), onClick = onDone)
         }
         edit?.let { e ->
-            CardBody("Scanned title: ${e.scanned.title}")
-            FocusChip("Reset to the scanned details", onClick = {
+            CardBody(stringResource(R.string.edit_details_scanned_title, e.scanned.title))
+            FocusChip(stringResource(R.string.edit_details_reset_to_the_scanned_details), onClick = {
                 scope.launch {
                     viewModel.resetDetails(g)
                     onDone()

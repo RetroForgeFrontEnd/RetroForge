@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.Context
 import android.net.Uri
 import android.provider.DocumentsContract
@@ -37,7 +41,7 @@ import java.io.File
 @Composable
 fun TexturePacksScreen() {
     val context = LocalContext.current
-    com.retroforge.app.ui.ScreenFrame(title = "Texture packs", subtitle = "High-resolution textures for games in the built-in player.") {
+    com.retroforge.app.ui.ScreenFrame(title = stringResource(R.string.settings_texture_packs), subtitle = stringResource(R.string.texture_packs_high_resolution_textures_for_games_in)) {
         TexturePacksCard(context.getExternalFilesDir(null) ?: context.filesDir)
     }
 }
@@ -87,9 +91,9 @@ private fun TexturePacks(title: String, body: String, packs: File) {
         CardBody(body)
         CardBody(if (installed.isEmpty()) "No packs installed." else "Installed: ${installed.joinToString()}")
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            FocusChip("Add a texture pack folder", onClick = { pick.launch(null) })
+            FocusChip(stringResource(R.string.texture_packs_add_a_texture_pack_folder), onClick = { pick.launch(null) })
             installed.forEach { name ->
-                FocusChip("Remove $name", onClick = {
+                FocusChip(stringResource(R.string.network_drives_remove, name), onClick = {
                     scope.launch { withContext(Dispatchers.IO) { File(packs, name).deleteRecursively() }; changes++ }
                 })
             }
@@ -109,16 +113,14 @@ private fun DownloadPacks(cacheDir: File) {
     var busy by remember { mutableStateOf(false) }
     val installed = remember(changes) { cacheDir.listFiles()?.filter { it.name.endsWith(".hts", true) }?.sortedBy { it.name }.orEmpty() }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Download N64 texture packs")
+        CardTitle(stringResource(R.string.texture_packs_download_n64_texture_packs))
         CardBody(
-            "Free HD packs by GhostlyDark, downloaded from their official GitHub releases. Downloads are 150 MB to over 1 GB, so use " +
-                "Wi-Fi, and unpacked they take several times that space (Smash Bros. is about 1.2 GB). " +
-                "Made for the USA versions of the games. They're switched on automatically.",
+            stringResource(R.string.texture_packs_free_hd_packs_by_ghostlydark_downloaded),
         )
         CardBody(if (installed.isEmpty()) "None downloaded yet." else "Downloaded: " + installed.joinToString { "${it.name.removeSuffix(".hts").removeSuffix("_HIRESTEXTURES")} (${it.length() / 1_000_000} MB)" })
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             TexturePackDownloads.packs.forEach { pack ->
-                FocusChip("Download ${pack.game}", enabled = !busy, onClick = {
+                FocusChip(stringResource(R.string.pc_games_download, pack.game), enabled = !busy, onClick = {
                     busy = true
                     status = "Finding ${pack.game}'s latest release…"
                     scope.launch {

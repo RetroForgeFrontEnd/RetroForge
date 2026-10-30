@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.graphics.Bitmap
 import android.graphics.Color
 import androidx.compose.foundation.Image
@@ -115,20 +119,18 @@ fun SteamSignInSection() {
                 "insist on Valve's own Steam use Steam method 2 below.",
         )
         if (signedInAs != null) {
-            CardBody("Signed in as $signedInAs. Steam games you own start in RetroForge's PC player with your account's ticket from Steam.")
+            CardBody(stringResource(R.string.steam_sign_in_signed_in_as_steam_games_you, signedInAs.toString()))
             ChipRow {
-                FocusChip("Sign out", onClick = { account.signOut(); signedInAs = null })
+                FocusChip(stringResource(R.string.settings_sign_out), onClick = { account.signOut(); signedInAs = null })
             }
             return@FocusCard
         }
         CardBody(
-            "Steam games check that Steam is running and that you own them. Sign in so RetroForge can get each game's " +
-                "ticket from Steam, as GameNative does. Your password goes to Steam only; RetroForge keeps just the " +
-                "sign-in token Steam gives it.",
+            stringResource(R.string.steam_sign_in_steam_games_check_that_steam_is),
         )
         ChipRow {
-            FocusChip("Sign in with password", enabled = job == null, onClick = { askPassword = !askPassword })
-            FocusChip("Show a QR code", enabled = job == null, onClick = {
+            FocusChip(stringResource(R.string.steam_sign_in_sign_in_with_password), enabled = job == null, onClick = { askPassword = !askPassword })
+            FocusChip(stringResource(R.string.steam_sign_in_show_a_qr_code), enabled = job == null, onClick = {
                 run {
                     account.signInWithQr(object : SteamAccount.SignInPrompts by prompts {
                         override fun qrLink(url: String) {
@@ -141,14 +143,14 @@ fun SteamSignInSection() {
                     })
                 }
             })
-            if (job != null) FocusChip("Cancel", onClick = { job?.cancel(); job = null; message = null; qr = null; codeFor = null })
+            if (job != null) FocusChip(stringResource(R.string.network_drives_cancel), onClick = { job?.cancel(); job = null; message = null; qr = null; codeFor = null })
         }
         if (askPassword && job == null) {
             ControllerTextField(value = name, onValueChange = { name = it }, singleLine = true,
-                label = { Text("Steam account name") }, modifier = Modifier.fillMaxWidth())
+                label = { Text(stringResource(R.string.steam_sign_in_steam_account_name)) }, modifier = Modifier.fillMaxWidth())
             ControllerTextField(value = password, onValueChange = { password = it }, singleLine = true,
-                label = { Text("Password") }, visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
-            FocusChip("Sign in", enabled = name.isNotBlank() && password.isNotEmpty(), onClick = {
+                label = { Text(stringResource(R.string.settings_password)) }, visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth())
+            FocusChip(stringResource(R.string.steam_sign_in_sign_in), enabled = name.isNotBlank() && password.isNotEmpty(), onClick = {
                 val n = name
                 val p = password
                 run { account.signInWithPassword(n, p, prompts) }
@@ -156,8 +158,8 @@ fun SteamSignInSection() {
         }
         codeFor?.let { (_, answer) ->
             ControllerTextField(value = code, onValueChange = { code = it.trim().uppercase() }, singleLine = true,
-                label = { Text("Steam Guard code") }, modifier = Modifier.fillMaxWidth())
-            FocusChip("Send code", enabled = code.length >= 5, onClick = { answer.complete(code) })
+                label = { Text(stringResource(R.string.steam_sign_in_steam_guard_code)) }, modifier = Modifier.fillMaxWidth())
+            FocusChip(stringResource(R.string.steam_sign_in_send_code), enabled = code.length >= 5, onClick = { answer.complete(code) })
         }
         if (job != null) LinearProgressIndicator(Modifier.fillMaxWidth())
         message?.let { CardBody(it) }

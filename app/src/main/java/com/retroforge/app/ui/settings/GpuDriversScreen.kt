@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.ContentValues
 import android.content.Context
 import android.os.Build
@@ -51,12 +55,12 @@ fun GpuDriversScreen() {
     var inPlayers by remember { mutableStateOf(com.retroforge.player.GpuDriver.current(context)?.second) }
     LaunchedEffect(Unit) { advice = withContext(Dispatchers.IO) { GpuDrivers.advice(GpuProbe.probe()) } }
 
-    ScreenFrame(title = "GPU and drivers", subtitle = "What graphics chip this device has, and custom drivers for emulators that can use them.") {
+    ScreenFrame(title = stringResource(R.string.gpu_drivers_gpu_and_drivers), subtitle = stringResource(R.string.gpu_drivers_what_graphics_chip_this_device_has)) {
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Your GPU")
+            CardTitle(stringResource(R.string.gpu_drivers_your_gpu))
             val a = advice
             if (a == null) {
-                CardBody("Checking…")
+                CardBody(stringResource(R.string.pc_stream_checking))
             } else {
                 CardBody(a.gpuName)
                 StatusPill(if (a.canUseCustomDrivers) "Custom drivers can be used" else "Custom drivers can't be used", if (a.canUseCustomDrivers) StatusTone.GOOD else StatusTone.NEUTRAL)
@@ -65,25 +69,22 @@ fun GpuDriversScreen() {
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Using a driver")
+            CardTitle(stringResource(R.string.gpu_drivers_using_a_driver))
             CardBody(
-                "Download a driver below; it's saved to Download/$FOLDER. Then, in an emulator with a GPU driver manager " +
-                    "(Eden, Dolphin, NetherSX2 and others), open its graphics settings, choose to install a driver and pick the zip. " +
-                    "Winlator and GameNative come with Turnip and choose it in each container's settings.",
+                stringResource(R.string.gpu_drivers_download_a_driver_below_it_s, FOLDER),
             )
-            CardBody("Try one driver at a time. If a game gets worse, switch that emulator back to the system driver.")
+            CardBody(stringResource(R.string.gpu_drivers_try_one_driver_at_a_time))
         }
 
         if (advice?.canUseCustomDrivers == true) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                CardTitle("RetroForge's own players")
+                CardTitle(stringResource(R.string.gpu_drivers_retroforge_s_own_players))
                 CardBody(
-                    "The built-in player's Vulkan cores (Dolphin, PS2, PSP on Vulkan) and the PC player can use a Turnip driver instead " +
-                        "of the phone's own: often faster, and it lets older Adrenos run the PC player's fast Direct3D (DXVK).",
+                    stringResource(R.string.gpu_drivers_the_built_in_player_s_vulkan),
                 )
                 StatusPill(inPlayers?.let { "Using $it" } ?: "Using the phone's own driver", if (inPlayers != null) StatusTone.GOOD else StatusTone.NEUTRAL)
                 CardBody(if (inPlayers == null) "Choose Use in RetroForge on a driver below." else "If games get worse, go back to the phone's driver.")
-                if (inPlayers != null) FocusChip("Use the phone's own driver", onClick = {
+                if (inPlayers != null) FocusChip(stringResource(R.string.gpu_drivers_use_the_phone_s_own_driver), onClick = {
                     stopUsingInPlayers(context)
                     inPlayers = null
                 })
@@ -92,7 +93,7 @@ fun GpuDriversScreen() {
 
         val canUse = advice?.canUseCustomDrivers == true
         if (advice != null && !canUse && !showAnyway) {
-            FocusChip("Show drivers anyway (for another device)", onClick = { showAnyway = true })
+            FocusChip(stringResource(R.string.gpu_drivers_show_drivers_anyway_for_another_device), onClick = { showAnyway = true })
         }
         if (canUse || showAnyway) {
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
@@ -113,7 +114,7 @@ fun GpuDriversScreen() {
             if (files.orEmpty().isNotEmpty()) {
                 com.retroforge.core.ui.ControllerTextField(
                     value = query, onValueChange = { query = it }, singleLine = true,
-                    label = { androidx.compose.material3.Text("Search drivers (e.g. 26.0, R8, a8xx, Gmem)") },
+                    label = { androidx.compose.material3.Text(stringResource(R.string.gpu_drivers_search_drivers_e_g_26_0)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -138,7 +139,7 @@ fun GpuDriversScreen() {
                         CardBody("${file.release} · ${file.source} · ${file.published} · ${"%.1f".format(file.size / 1_000_000.0)} MB")
                         CardBody(progress[file.url]?.let { if (it.endsWith("%")) "Downloading… $it" else it } ?: "Select to download.")
                     }
-                    if (canUse) FocusChip("Use ${file.release} in RetroForge", onClick = {
+                    if (canUse) FocusChip(stringResource(R.string.gpu_drivers_use_in_retroforge, file.release), onClick = {
                         if (progress[file.url]?.endsWith("%") == true) return@FocusChip
                         progress[file.url] = "0%"
                         scope.launch {

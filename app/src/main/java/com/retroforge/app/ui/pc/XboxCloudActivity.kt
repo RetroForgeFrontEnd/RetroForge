@@ -29,6 +29,10 @@ import androidx.webkit.WebViewFeature
  * goes to the page as it would in a browser.
  */
 class XboxCloudActivity : ComponentActivity() {
+
+    // The language picked in Settings, on Android 12 and older (newer versions apply it themselves).
+    override fun attachBaseContext(newBase: android.content.Context) = super.attachBaseContext(com.retroforge.core.ui.AppLanguage.wrap(newBase))
+
     private lateinit var web: WebView
 
     @SuppressLint("SetJavaScriptEnabled")

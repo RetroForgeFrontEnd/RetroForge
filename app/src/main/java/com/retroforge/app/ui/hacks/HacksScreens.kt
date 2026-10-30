@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.hacks
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import com.retroforge.app.ui.ChipRow
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -61,15 +65,15 @@ fun HacksScreen(
     val roots by library.roots.collectAsStateWithLifecycle()
     val rootsById = remember(roots) { roots.orEmpty().associateBy { it.id } }
     val chosen by library.chosenCovers.collectAsStateWithLifecycle()
-    ScreenFrame(title = "ROM hacks", subtitle = "ROM hacks you already have, and more to discover from your catalogues.") {
+    ScreenFrame(title = stringResource(R.string.hacks_rom_hacks), subtitle = stringResource(R.string.hacks_rom_hacks_you_already_have_and)) {
         if (state.loading) LinearProgressIndicator(Modifier.fillMaxWidth())
 
-        Text("Your hack ROMs", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
+        Text(stringResource(R.string.hacks_your_hack_roms), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
         when {
             roots.isNullOrEmpty() -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenRetro) {
-                CardBody("Add your game folder in Retro and the hacks you already have (folders such as \"SMW HACKS\") will appear here.")
+                CardBody(stringResource(R.string.hacks_add_your_game_folder_in_retro))
             }
-            ownHacks.isEmpty() -> CardBody("No hacks found in your folders. Folders with \"hack\" in their name, and files tagged (Hack) or [h], are listed here.")
+            ownHacks.isEmpty() -> CardBody(stringResource(R.string.hacks_no_hacks_found_in_your_folders))
             else -> ownHacks.groupBy { it.system }.forEach { (system, games) ->
                 CardTitle("${library.systemName(system)} · ${games.size}")
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -85,7 +89,7 @@ fun HacksScreen(
             }
         }
 
-        Text("Discover", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.padding(top = 12.dp))
+        Text(stringResource(R.string.hacks_discover), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.padding(top = 12.dp))
 
         if (state.systems.size > 1) {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -103,18 +107,18 @@ fun HacksScreen(
             }
         }
         if (!state.loading && state.hacks.isEmpty()) {
-            CardBody("No hacks yet. Add a catalogue below.")
+            CardBody(stringResource(R.string.hacks_no_hacks_yet_add_a_catalogue))
         }
 
         state.problems.forEach { problem ->
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                StatusPill("Catalogue problem", StatusTone.BAD)
+                StatusPill(stringResource(R.string.hacks_catalogue_problem), StatusTone.BAD)
                 CardBody(problem)
             }
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSources) {
-            CardTitle("Catalogue sources")
+            CardTitle(stringResource(R.string.hacks_catalogue_sources))
             CardBody("${state.catalogues.size} catalogue${if (state.catalogues.size == 1) "" else "s"} · ${state.hacks.size} hacks. Select to add or remove catalogues.")
         }
     }
@@ -132,7 +136,7 @@ private fun HackCard(hack: ListedHack, onClick: () -> Unit) {
         Text(entry.title, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis)
         Text(entry.baseGame, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
         if (entry.authors.isNotEmpty()) {
-            Text("by ${entry.authors.joinToString()}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(stringResource(R.string.hacks_by, entry.authors.joinToString()), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         Text(
             entry.summary,
@@ -150,7 +154,7 @@ fun HackDetailScreen(viewModel: HacksViewModel, key: String, onOpenPatcher: () -
     val state by viewModel.state.collectAsStateWithLifecycle()
     val hack = state.find(key)
     if (hack == null) {
-        ScreenFrame(title = "Hack") { CardBody(if (state.loading) "Loading…" else "This hack is no longer in your catalogues.") }
+        ScreenFrame(title = stringResource(R.string.hacks_hack)) { CardBody(if (state.loading) "Loading…" else "This hack is no longer in your catalogues.") }
         return
     }
     val entry = hack.entry
@@ -189,22 +193,22 @@ fun HackDetailScreen(viewModel: HacksViewModel, key: String, onOpenPatcher: () -
                     }.onFailure { status = "Couldn't download it: ${it.message}" }
                 }
             }) {
-                CardTitle("Download and patch")
-                CardBody("Gets the latest patch from the hack's GitHub releases ($repo) and opens the patcher with it. Then pick your ${entry.baseGame} ROM.")
+                CardTitle(stringResource(R.string.hacks_download_and_patch))
+                CardBody(stringResource(R.string.hacks_gets_the_latest_patch_from_the, repo, entry.baseGame))
                 status?.let { CardBody(it) }
                 if (downloading) com.retroforge.app.ui.DownloadBar(progress)
             }
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { openError = openPage(context, entry.pageUrl) }) {
-            CardTitle("Open official page")
-            CardBody("Read the full description, check which ROM version it needs, and download the patch there. ${entry.pageUrl}")
+            CardTitle(stringResource(R.string.hacks_open_official_page))
+            CardBody(stringResource(R.string.hacks_read_the_full_description_check_which, entry.pageUrl))
             openError?.let { CardBody(it) }
         }
 
         if (entry.requires.isNotEmpty()) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                CardTitle("Needs these patches first, in this order")
+                CardTitle(stringResource(R.string.hacks_needs_these_patches_first_in_this))
             }
             entry.requires.forEach { requiredId ->
                 val required = state.findRequirement(hack.sourceId, requiredId)
@@ -214,7 +218,7 @@ fun HackDetailScreen(viewModel: HacksViewModel, key: String, onOpenPatcher: () -
 
         entry.baseRom?.let { rom ->
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                CardTitle("Base ROM")
+                CardTitle(stringResource(R.string.hacks_base_rom))
                 listOfNotNull(
                     rom.name, rom.crc32?.let { "CRC32 ${it.uppercase()}" }, rom.sha1?.let { "SHA-1 ${it.lowercase()}" },
                     rom.size?.let { "$it bytes" }, rom.note,
@@ -223,7 +227,7 @@ fun HackDetailScreen(viewModel: HacksViewModel, key: String, onOpenPatcher: () -
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenPatcher) {
-            CardTitle("Patch it")
+            CardTitle(stringResource(R.string.hacks_patch_it))
             CardBody(
                 "Once you've downloaded the patch from the official page, open the ROM Patcher, pick your ROM and add the patch" +
                     (if (entry.requires.isNotEmpty()) " after the ones listed above." else ".") +
@@ -248,15 +252,15 @@ fun CatalogueSourcesScreen(viewModel: HacksViewModel) {
     var confirming by remember { mutableStateOf(false) }
 
     ScreenFrame(
-        title = "Catalogue sources",
-        subtitle = "Catalogues list hacks and link to their pages. They never contain ROMs or patches. Format: docs/hack-catalogue-format.md",
+        title = stringResource(R.string.hacks_catalogue_sources),
+        subtitle = stringResource(R.string.hacks_catalogues_list_hacks_and_link_to),
     ) {
         if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
 
         state.catalogues.forEach { loaded ->
             FocusCard(modifier = Modifier.fillMaxWidth()) {
                 CardTitle(loaded.catalogue.name)
-                if (loaded.builtIn) StatusPill("Built in", StatusTone.NEUTRAL)
+                if (loaded.builtIn) StatusPill(stringResource(R.string.hacks_built_in), StatusTone.NEUTRAL)
                 CardBody("${loaded.catalogue.hacks.size} hacks" + (loaded.catalogue.maintainer?.let { " · maintained by $it" } ?: ""))
                 loaded.catalogue.description?.let { CardBody(it.take(300)) }
                 loaded.source?.let { source ->
@@ -269,36 +273,36 @@ fun CatalogueSourcesScreen(viewModel: HacksViewModel) {
             }
             loaded.source?.let { source ->
                 ChipRow {
-                    if (source.url != null) FocusChip("Update", onClick = { viewModel.refresh(source.id) }, enabled = !state.busy)
-                    FocusChip("Remove", onClick = { viewModel.remove(source.id) }, enabled = !state.busy)
+                    if (source.url != null) FocusChip(stringResource(R.string.hacks_update), onClick = { viewModel.refresh(source.id) }, enabled = !state.busy)
+                    FocusChip(stringResource(R.string.hacks_remove), onClick = { viewModel.remove(source.id) }, enabled = !state.busy)
                 }
             }
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { pickFile.launch(arrayOf("application/json", "text/plain", "*/*")) }) {
-            CardTitle("Add from a file")
-            CardBody("Choose a catalogue .json file on this device.")
+            CardTitle(stringResource(R.string.hacks_add_from_a_file))
+            CardBody(stringResource(R.string.hacks_choose_a_catalogue_json_file_on))
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Add from a link")
-            CardBody("Paste the https:// address of a catalogue .json file. RetroForge downloads only that file, and only when you confirm.")
+            CardTitle(stringResource(R.string.hacks_add_from_a_link))
+            CardBody(stringResource(R.string.hacks_paste_the_https_address_of_a))
             ControllerTextField(
                 value = url,
                 onValueChange = { url = it; confirming = false },
                 singleLine = true,
-                label = { Text("https://…") },
+                label = { Text(stringResource(R.string.hacks_https)) },
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             )
         }
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (!confirming) {
-                FocusChip("Download catalogue…", onClick = { confirming = true }, enabled = url.isNotBlank() && !state.busy)
+                FocusChip(stringResource(R.string.hacks_download_catalogue), onClick = { confirming = true }, enabled = url.isNotBlank() && !state.busy)
             } else {
-                CardBody("Download the catalogue from ${url.trim()}? (up to 2 MB)")
+                CardBody(stringResource(R.string.hacks_download_the_catalogue_from_up_to, url.trim()))
                 ChipRow {
-                    FocusChip("Yes, download", onClick = { viewModel.addFromUrl(url); confirming = false; url = "" })
-                    FocusChip("Cancel", onClick = { confirming = false })
+                    FocusChip(stringResource(R.string.hacks_yes_download), onClick = { viewModel.addFromUrl(url); confirming = false; url = "" })
+                    FocusChip(stringResource(R.string.network_drives_cancel), onClick = { confirming = false })
                 }
             }
         }

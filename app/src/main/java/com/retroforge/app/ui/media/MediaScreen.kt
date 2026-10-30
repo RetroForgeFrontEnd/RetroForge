@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.media
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -83,29 +87,26 @@ fun MediaScreen(prefs: SharedPreferences) {
         value = folder?.let { tree -> withContext(Dispatchers.IO) { runCatching { scan(context, tree.toUri()) }.getOrDefault(emptyList()) } }
     }
 
-    ScreenFrame(title = "Media", subtitle = "Your films, with artwork, played right here.") {
+    ScreenFrame(title = stringResource(R.string.media_media), subtitle = stringResource(R.string.media_your_films_with_artwork_played_right)) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            FocusChip("Use RetroForge's film folders", onClick = { pick.launch(makeFilmFolders()) })
+            FocusChip(stringResource(R.string.media_use_retroforge_s_film_folders), onClick = { pick.launch(makeFilmFolders()) })
             FocusChip(if (folder == null) "Choose another folder" else "Change folder", onClick = { pick.launch(null) })
-            if (folder != null) FocusChip("Look again", onClick = { refresh++ })
+            if (folder != null) FocusChip(stringResource(R.string.player_look_again), onClick = { refresh++ })
         }
         if (folder == null) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                CardTitle("Watch your films in RetroForge")
+                CardTitle(stringResource(R.string.media_watch_your_films_in_retroforge))
                 CardBody(
-                    "\"Use RetroForge's film folders\" makes Movies/RetroForge on your phone, with a Films folder and a 3D Films " +
-                        "folder inside. Choose \"Use this folder\" when Android asks, then copy films into them (USB cable or a file " +
-                        "manager) and press Look again. Or choose any folder you already keep films in, on the phone, an SD card or a " +
-                        "USB drive. RetroForge only reads it.",
+                    stringResource(R.string.media_use_retroforge_s_film_folders_makes),
                 )
-                CardBody("3D films (side by side or top and bottom) get a 3D badge and play in Cardboard modes. How to watch: Settings → How to use RetroForge → Media.")
+                CardBody(stringResource(R.string.media_3d_films_side_by_side_or))
             }
         }
         val list = films
         when {
             folder == null -> Unit
-            list == null -> CardBody("Looking for films…")
-            list.isEmpty() -> CardBody("No films found in that folder (mp4, mkv, avi, mov and others).")
+            list == null -> CardBody(stringResource(R.string.media_looking_for_films))
+            list.isEmpty() -> CardBody(stringResource(R.string.media_no_films_found_in_that_folder))
             else -> {
                 // All films, or just the 3D ones (for watching in a Cardboard viewer).
                 com.retroforge.app.ui.ChipRow {
@@ -113,7 +114,7 @@ fun MediaScreen(prefs: SharedPreferences) {
                     FocusChip((if (only3d) "● " else "") + "3D films (${list.count { it.is3d }})", onClick = { only3d = true })
                 }
                 if (only3d && list.none { it.is3d }) {
-                    CardBody("No 3D films yet. Films with 3D, SBS, HSBS, TAB or HOU in their name (or in a \"3D Films\" folder) show here.")
+                    CardBody(stringResource(R.string.media_no_3d_films_yet_films_with))
                 }
                 // 3D films first, in their own row, then the rest.
                 list.partition { it.is3d }.toList().zip(listOf("3D films", "Films")).filter { !only3d || it.second == "3D films" }.forEach { (group, title) ->
@@ -152,7 +153,7 @@ fun ThreeDFilms(prefs: SharedPreferences) {
     }
     val list = films
     if (folder == null || list?.isEmpty() == true) {
-        CardBody("No 3D films yet. Put them in Movies/RetroForge/3D Films (Media → Use RetroForge's film folders) or name them with 3D, SBS or TAB, and they show here.")
+        CardBody(stringResource(R.string.media_no_3d_films_yet_put_them))
         return
     }
     if (list == null) return
@@ -211,19 +212,19 @@ private fun FilmDetails(film: Film, art: File?, onPlay: () -> Unit, onClose: () 
                         info?.rating?.takeIf { it > 0 }?.let { "★ %.1f".format(it) },
                     )
                     if (facts.isNotEmpty()) Text(facts.joinToString(" · "), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    if (film.is3d) StatusPill("3D side by side", StatusTone.GOOD)
+                    if (film.is3d) StatusPill(stringResource(R.string.media_3d_side_by_side), StatusTone.GOOD)
                 }
             }
             CardBody(info?.overview?.takeIf { it.isNotBlank() } ?: "No description. Save a .nfo file next to the film (Media Companion or tinyMediaManager make them) for its story and rating.")
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FocusChip("Play", onClick = onPlay)
+                FocusChip(stringResource(R.string.play_play), onClick = onPlay)
                 // A link to the film's IMDb page (from TMDB's record); nothing is read from IMDb itself.
                 info?.imdb?.let { id ->
-                    FocusChip("Open on IMDb", onClick = {
+                    FocusChip(stringResource(R.string.media_open_on_imdb), onClick = {
                         runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, "https://www.imdb.com/title/$id/".toUri()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
                     })
                 }
-                FocusChip("Close", onClick = onClose)
+                FocusChip(stringResource(R.string.retro_forge_root_close), onClick = onClose)
             }
         }
     }
@@ -235,29 +236,25 @@ private fun TmdbCard(saved: String?, onSave: (String?) -> Unit) {
     var show by remember { mutableStateOf(false) }
     val context = LocalContext.current
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Film posters and stories") { StatusPill(if (saved.isNullOrBlank()) "Using frames from the films" else "TMDB key saved", if (saved.isNullOrBlank()) StatusTone.NEUTRAL else StatusTone.GOOD) }
+        CardTitle(stringResource(R.string.media_film_posters_and_stories)) { StatusPill(if (saved.isNullOrBlank()) "Using frames from the films" else "TMDB key saved", if (saved.isNullOrBlank()) StatusTone.NEUTRAL else StatusTone.GOOD) }
         CardBody(
-            "RetroForge uses the poster and .nfo file saved next to each film, as Kodi, Plex and Jellyfin do (Film-poster.jpg or " +
-                "Film.jpg, poster.jpg in a film's own folder, Film.nfo or movie.nfo). Media Companion or tinyMediaManager on a PC " +
-                "make them for a whole collection. Films without them show a frame from the film.",
+            stringResource(R.string.media_retroforge_uses_the_poster_and_nfo),
         )
         CardBody(
-            "Optional, for your own use: a free TMDB key (create an account at themoviedb.org, copy your API key v3, paste it " +
-                "here) fills in films that have no poster of their own. It stays on this device and is sent only to TMDB. This " +
-                "product uses the TMDB API but is not endorsed or certified by TMDB.",
+            stringResource(R.string.media_optional_for_your_own_use_a),
         )
         ControllerTextField(
-            value = draft, onValueChange = { draft = it.trim() }, singleLine = true, label = { Text("TMDB API key") },
+            value = draft, onValueChange = { draft = it.trim() }, singleLine = true, label = { Text(stringResource(R.string.media_tmdb_api_key)) },
             visualTransformation = if (show) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             FocusChip(if (show) "Hide key" else "Show key", onClick = { show = !show })
-            FocusChip("Save key", onClick = { onSave(draft.ifBlank { null }); draft = "" }, enabled = draft.length >= 16)
-            FocusChip("Get a free key", onClick = {
+            FocusChip(stringResource(R.string.settings_save_key), onClick = { onSave(draft.ifBlank { null }); draft = "" }, enabled = draft.length >= 16)
+            FocusChip(stringResource(R.string.settings_get_a_free_key), onClick = {
                 runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, "https://www.themoviedb.org/settings/api".toUri()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
             })
-            if (!saved.isNullOrBlank()) FocusChip("Remove key", onClick = { onSave(null) })
+            if (!saved.isNullOrBlank()) FocusChip(stringResource(R.string.settings_remove_key), onClick = { onSave(null) })
         }
     }
 }

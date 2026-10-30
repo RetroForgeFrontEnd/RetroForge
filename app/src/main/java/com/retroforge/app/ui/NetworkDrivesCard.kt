@@ -1,5 +1,9 @@
 package com.retroforge.app.ui
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -78,18 +82,16 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
         folder.trim(), user.trim(), password)
 
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("$what on a network drive")
+        CardTitle(stringResource(R.string.network_drives_on_a_network_drive, what))
         CardBody(
-            "Play ${what.lowercase()} kept in a shared folder on your PC or NAS, over Wi-Fi, without copying them to the phone. " +
-                "Tap Add a network drive, then Find on my network, pick your computer and one of its shared folders, then Add. " +
-                "How to share a folder on the PC: Settings → Help and about → How to use RetroForge.",
+            stringResource(R.string.network_drives_play_kept_in_a_shared_folder, what.lowercase()),
         )
         if (shares.isNotEmpty()) CardBody("Added: " + shares.joinToString { "${it.name} (${it.address})" })
         if (!adding) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FocusChip("Add a network drive", onClick = { adding = true; status = null })
+                FocusChip(stringResource(R.string.network_drives_add_a_network_drive), onClick = { adding = true; status = null })
                 shares.forEach { share ->
-                    FocusChip("Remove ${share.name}", onClick = { NetworkDrives.remove(context, share.id); changes++ })
+                    FocusChip(stringResource(R.string.network_drives_remove, share.name), onClick = { NetworkDrives.remove(context, share.id); changes++ })
                 }
             }
         } else {
@@ -107,32 +109,32 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
                         onClick = { host = computer.address; if (name.isBlank()) name = computer.name ?: ""; listFolders() })
                 }
             }
-            if (found?.isEmpty() == true) CardBody("Nothing sharing files found on this Wi-Fi. Check the PC is on, on the same network, and has a shared folder.")
+            if (found?.isEmpty() == true) CardBody(stringResource(R.string.network_drives_nothing_sharing_files_found_on_this))
             ControllerTextField(value = host, onValueChange = { host = it }, singleLine = true,
-                label = { Text("PC or NAS name or address (e.g. 192.168.1.20)") }, modifier = Modifier.fillMaxWidth())
+                label = { Text(stringResource(R.string.network_drives_pc_or_nas_name_or_address)) }, modifier = Modifier.fillMaxWidth())
             if (host.isNotBlank()) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FocusChip("Show shared folders", onClick = { listFolders() })
+                    FocusChip(stringResource(R.string.network_drives_show_shared_folders), onClick = { listFolders() })
                     folders.orEmpty().forEach { f ->
                         FocusChip((if (folder == f) "● " else "") + f, onClick = { folder = f; if (name.isBlank()) name = f })
                     }
                 }
                 if (onUse != null && folders?.isNotEmpty() == true) {
-                    CardBody("Pick a shared folder above, then add it. For a folder inside a share, type it after a slash (Retrobat/roms).")
+                    CardBody(stringResource(R.string.network_drives_pick_a_shared_folder_above_then))
                     androidx.compose.foundation.layout.Spacer(Modifier.height(8.dp))
                 }
                 folderStatus?.let { CardBody(it) }
             }
             ControllerTextField(value = folder, onValueChange = { folder = it }, singleLine = true,
-                label = { Text("Shared folder (e.g. Games, or Media/Films)") }, modifier = Modifier.fillMaxWidth())
+                label = { Text(stringResource(R.string.network_drives_shared_folder_e_g_games_or)) }, modifier = Modifier.fillMaxWidth())
             ControllerTextField(value = user, onValueChange = { user = it }, singleLine = true,
-                label = { Text("Username (blank for a guest share)") }, modifier = Modifier.fillMaxWidth())
-            ControllerTextField(value = password, onValueChange = { password = it }, singleLine = true, label = { Text("Password") },
+                label = { Text(stringResource(R.string.network_drives_username_blank_for_a_guest_share)) }, modifier = Modifier.fillMaxWidth())
+            ControllerTextField(value = password, onValueChange = { password = it }, singleLine = true, label = { Text(stringResource(R.string.settings_password)) },
                 visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth())
             ControllerTextField(value = name, onValueChange = { name = it }, singleLine = true,
-                label = { Text("Name to show (optional)") }, modifier = Modifier.fillMaxWidth())
-            CardBody("The password stays on this device and is only sent to that PC or NAS.")
+                label = { Text(stringResource(R.string.network_drives_name_to_show_optional)) }, modifier = Modifier.fillMaxWidth())
+            CardBody(stringResource(R.string.network_drives_the_password_stays_on_this_device))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 FocusChip(if (showPassword) "Hide password" else "Show password", onClick = { showPassword = !showPassword })
                 FocusChip(if (onUse != null) "Add to my ${what.lowercase()}" else "Test and save", enabled = host.isNotBlank() && folder.isNotBlank(), onClick = {
@@ -166,7 +168,7 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
                         }
                     }
                 })
-                FocusChip("Cancel", onClick = { adding = false; status = null })
+                FocusChip(stringResource(R.string.network_drives_cancel), onClick = { adding = false; status = null })
             }
         }
         status?.let { CardBody(it) }
@@ -174,7 +176,7 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
     popup?.let { (text, fraction, left) ->
         androidx.compose.material3.AlertDialog(
             onDismissRequest = {},
-            title = { Text("Adding your ${what.lowercase()}") },
+            title = { Text(stringResource(R.string.network_drives_adding_your, what.lowercase())) },
             text = {
                 androidx.compose.foundation.layout.Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(text)
@@ -184,7 +186,7 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
                 }
             },
             // It carries on in the background; the result shows on the card when it's done.
-            confirmButton = { androidx.compose.material3.TextButton(onClick = { popup = null; popupHidden = true }) { Text("Hide") } },
+            confirmButton = { androidx.compose.material3.TextButton(onClick = { popup = null; popupHidden = true }) { Text(stringResource(R.string.network_drives_hide)) } },
         )
     }
 }

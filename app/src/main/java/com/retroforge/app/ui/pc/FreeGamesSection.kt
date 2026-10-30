@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -85,18 +89,16 @@ fun FreeGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     }
 
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Free games to download") { StatusPill("${FreeGames.all.size} games", StatusTone.GOOD) }
+        CardTitle(stringResource(R.string.free_games_free_games_to_download)) { StatusPill(stringResource(R.string.free_games_games, FreeGames.all.size), StatusTone.GOOD) }
         CardBody(
-            "Games their makers let anyone share: shareware episodes (Doom, Wolfenstein 3D, Commander Keen), freeware and " +
-                "new homebrew for old consoles. They come from RetroArch's own download server and play in RetroForge's " +
-                "built-in player. Abandonware isn't offered: those games are still owned by someone.",
+            stringResource(R.string.free_games_games_their_makers_let_anyone_share),
         )
         if (folder == null) {
-            CardBody("First, choose where they go: your roms folder (the one with snes, psx … inside) is best.")
-            FocusChip("Choose a folder", onClick = { pickFolder.launch(null) })
+            CardBody(stringResource(R.string.free_games_first_choose_where_they_go_your))
+            FocusChip(stringResource(R.string.free_games_choose_a_folder), onClick = { pickFolder.launch(null) })
         } else {
             CardBody("Saving to: ${folder.lastPathSegment?.substringAfter(':')?.ifBlank { "the folder you chose" } ?: "the folder you chose"}")
-            FocusChip("Choose a different folder", onClick = { pickFolder.launch(null) })
+            FocusChip(stringResource(R.string.free_games_choose_a_different_folder), onClick = { pickFolder.launch(null) })
         }
         if (busy != null) DownloadBar(progress)
         status?.let { CardBody(it) }

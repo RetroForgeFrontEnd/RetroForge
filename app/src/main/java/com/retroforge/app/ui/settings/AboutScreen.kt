@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,67 +18,61 @@ import com.retroforge.core.ui.Wordmark
 fun AboutScreen() {
     ScreenFrame(title = null) {
         Wordmark()
-        CardBody("Version ${BuildConfig.VERSION_NAME}")
+        CardBody(stringResource(R.string.about_version, BuildConfig.VERSION_NAME))
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Who made it")
-            CardBody("Made by Darren Glancy.")
+            CardTitle(stringResource(R.string.about_who_made_it))
+            CardBody(stringResource(R.string.about_made_by_darren_glancy))
             CardBody(
-                "Built with AI: the code, the built-in player and the guides were written with Claude, Anthropic's AI, " +
-                    "working to Darren's ideas, tested on real phones and checked by him. No secret about it.",
+                stringResource(R.string.about_built_with_ai_the_code_the),
             )
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("RetroForge stands for…")
-            CardBody("…don't forget to like and subscribe!")
-            CardBody("…sorry, wrong YouTube channel. (A nod to Mr Sujano. Go and subscribe to him.)")
+            CardTitle(stringResource(R.string.about_retroforge_stands_for))
+            CardBody(stringResource(R.string.about_don_t_forget_to_like_and))
+            CardBody(stringResource(R.string.about_sorry_wrong_youtube_channel_a_nod))
             CardBody(
-                "RetroForge doesn't stand for anything. It's what it does: it forges all of retro gaming into one place, " +
-                    "so you set it up once and then just play.",
+                stringResource(R.string.about_retroforge_doesn_t_stand_for_anything),
             )
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("What it does")
-            CardBody("• Finds the games you already have, on your phone or SD card, and shows them with box art, by system, or on a bookshelf.")
-            CardBody("• Plays them in its own built-in player, with nothing to set up, or in RetroArch and standalone emulators. Bezels, filters, cheats, save states, and netplay with friends on the same Wi-Fi or over the internet.")
-            CardBody("• Plays Windows PC games itself, in its own PC player: your Steam library with artwork, downloads and Steam Cloud saves, an on-screen Xbox controller (or your own), and Play together for LAN games.")
-            CardBody("• Streams the games on your own PC (Moonlight and Sunshine), and opens cloud gaming like Xbox Cloud Gaming.")
-            CardBody("• On Snapdragon devices, can use the open-source Turnip driver in its own players for faster GPU games.")
-            CardBody("• Keeps your saves in step between devices, and has free games to download and play.")
-            CardBody("• Patches ROM hacks and translations, and helps you discover more from catalogues you choose.")
-            CardBody("• Tidies your collection: removes duplicates, compresses discs to CHD and cartridges to .zip, and makes multi-disc playlists. Every change is shown first and can be undone.")
-            CardBody("• Works with a controller from the sofa as well as with touch.")
+            CardTitle(stringResource(R.string.about_what_it_does))
+            CardBody(stringResource(R.string.about_finds_the_games_you_already_have))
+            CardBody(stringResource(R.string.about_plays_them_in_its_own_built))
+            CardBody(stringResource(R.string.about_plays_windows_pc_games_itself_in))
+            CardBody(stringResource(R.string.about_streams_the_games_on_your_own))
+            CardBody(stringResource(R.string.about_on_snapdragon_devices_can_use_the))
+            CardBody(stringResource(R.string.about_keeps_your_saves_in_step_between))
+            CardBody(stringResource(R.string.about_patches_rom_hacks_and_translations_and))
+            CardBody(stringResource(R.string.about_tidies_your_collection_removes_duplicates_compresses))
+            CardBody(stringResource(R.string.about_works_with_a_controller_from_the))
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("One app instead of ten")
+            CardTitle(stringResource(R.string.about_one_app_instead_of_ten))
             CardBody(
-                "Retro gaming on Android usually means a frontend, an emulator per system, a scraper, a patcher, a file manager and a pile of " +
-                    "forum threads. RetroForge's aim is to bring all of that together: easy first setup, sensible defaults, and the power " +
-                    "tools there when you want them.",
+                stringResource(R.string.about_retro_gaming_on_android_usually_means),
             )
             CardBody(
-                "It works alongside what you already have. Your folders stay where they are, other frontends keep working, " +
-                    "and nothing changes on disk unless you confirm it.",
+                stringResource(R.string.about_it_works_alongside_what_you_already),
             )
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Thanks")
-            CardBody("Bezels in the built-in player are by The Bezel Project (github.com/thebezelproject), downloaded from their GitHub when you ask.")
+            CardTitle(stringResource(R.string.about_thanks))
+            CardBody(stringResource(R.string.about_bezels_in_the_built_in_player))
             CardBody(
-                "The PC player stands on Wine, Proton, FEX, DXVK and Mesa, with the builds GameNative and Winlator Cmod made for Android. " +
-                    "Turnip drivers are built by K11MCH1 and MrPurple from Mesa's code, and loaded with libadrenotools by Billy Laws.",
+                stringResource(R.string.about_the_pc_player_stands_on_wine),
             )
         }
 
         SupportCard()
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Your games, your BIOS")
-            CardBody("RetroForge comes with no games and no BIOS files. Use your own copies of games and BIOS you own.")
+            CardTitle(stringResource(R.string.about_your_games_your_bios))
+            CardBody(stringResource(R.string.about_retroforge_comes_with_no_games_and))
         }
     }
 }

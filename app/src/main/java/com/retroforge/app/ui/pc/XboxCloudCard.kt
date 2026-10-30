@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.Intent
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -17,10 +21,9 @@ fun XboxCloudCard() {
         modifier = Modifier.fillMaxWidth(),
         onClick = { context.startActivity(Intent(context, XboxCloudActivity::class.java)) },
     ) {
-        CardTitle("Xbox Cloud Gaming")
+        CardTitle(stringResource(R.string.xbox_cloud_xbox_cloud_gaming))
         CardBody(
-            "Stream Xbox games from xbox.com/play, improved by Better xCloud. Most games need Game Pass Premium or Ultimate; " +
-                "some free-to-play games such as Fortnite don't. You sign in on Microsoft's own page. Not made or endorsed by Microsoft.",
+            stringResource(R.string.xbox_cloud_stream_xbox_games_from_xbox_com),
         )
     }
 }
