@@ -36,6 +36,7 @@ dependencies {
     implementation(libs.xz)
     implementation(libs.javasteam)
     implementation(libs.spongycastle)
+    implementation(libs.okhttp)
     implementation(libs.protobuf.java)
     implementation(libs.zstd.jni) { artifact { type = "aar" } }
     testImplementation(libs.junit)

@@ -3,6 +3,7 @@ package com.retroforge.pcplayer.steam
 import android.content.Context
 import android.provider.Settings
 import android.util.Base64
+import android.util.Log
 import `in`.dragonbra.javasteam.enums.EOSType
 import `in`.dragonbra.javasteam.enums.EResult
 import `in`.dragonbra.javasteam.steam.authentication.AuthPollResult
@@ -27,7 +28,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 import java.io.Closeable
 import java.io.IOException
 import java.util.concurrent.CompletableFuture
@@ -75,11 +76,14 @@ class SteamAccount(private val context: Context) {
     /** Signs in by approving a link in the Steam app (on this phone, or by scanning its QR code). */
     suspend fun signInWithQr(prompts: SignInPrompts): String = session { client, scope ->
         val auth: QrAuthSession = client.authentication.beginAuthSessionViaQR(details(prompts, scope)).await()
+        Log.i(TAG, "QR sign-in started; waiting for approval")
         prompts.qrLink(auth.challengeUrl)
         auth.challengeUrlChanged = object : IChallengeUrlChanged {
             override fun onChanged(qrAuthSession: QrAuthSession?) { qrAuthSession?.challengeUrl?.let(prompts::qrLink) }
         }
-        finish(client, auth.pollingWaitForResult().await())
+        val result = auth.pollingWaitForResult().await()
+        Log.i(TAG, "QR sign-in approved")
+        finish(client, result)
     }
 
     /** The game's encrypted app ticket (base64), which proves this account owns [appId]; null if Steam gives none. */
@@ -88,7 +92,9 @@ class SteamAccount(private val context: Context) {
         return session { client, _ ->
             logOn(client, accountName.orEmpty(), token)
             val apps = client.getHandler(SteamApps::class.java) ?: throw IOException("Steam's app handler is missing")
-            val reply = withTimeout(15_000) { apps.requestEncryptedAppTicket(appId, null).await() }
+            val reply = withTimeoutOrNull(15_000) { apps.requestEncryptedAppTicket(appId, null).await() }
+                ?: throw IOException("Steam didn't send the game's ticket in time")
+            Log.i(TAG, "Ticket for $appId: ${reply.result}")
             if (reply.result != EResult.OK || reply.encryptedAppTicket == null) null
             else Base64.encodeToString(reply.encryptedAppTicket!!.toByteArray(), Base64.NO_WRAP)
         }
@@ -115,7 +121,9 @@ class SteamAccount(private val context: Context) {
 
     /** Signs in with the new token to check it and learn the SteamID, then keeps the token. */
     private suspend fun finish(client: SteamClient, result: AuthPollResult): String {
+        Log.i(TAG, "Signing in with the new token")
         val steamId = logOn(client, result.accountName, result.refreshToken)
+        Log.i(TAG, "Signed in")
         prefs.edit()
             .putString(KEY_NAME, result.accountName)
             .putString(KEY_TOKEN, result.refreshToken)
@@ -138,7 +146,9 @@ class SteamAccount(private val context: Context) {
                     machineName = deviceName(),
                 ),
             )
-            val result = withTimeout(30_000) { loggedOn.await() }
+            val result = withTimeoutOrNull(30_000) { loggedOn.await() }
+                ?: throw IOException("Steam didn't answer the sign-in in time")
+            Log.i(TAG, "Logon result ${result.result}")
             if (result.result != EResult.OK) {
                 if (result.result == EResult.AccessDenied || result.result == EResult.Expired || result.result == EResult.InvalidPassword) signOut()
                 throw IOException("Steam refused the sign-in (${result.result})")
@@ -155,7 +165,7 @@ class SteamAccount(private val context: Context) {
     private suspend fun <T> session(block: suspend (SteamClient, CoroutineScope) -> T): T = withContext(Dispatchers.IO) {
         ensureCrypto()
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-        val client = SteamClient(SteamConfiguration.createDefault(), scope)
+        val client = SteamClient(CONFIGURATION, scope)
         val callbacks = CallbackManager(client)
         manager = callbacks
         val connected = CompletableDeferred<Unit>()
@@ -171,7 +181,8 @@ class SteamAccount(private val context: Context) {
         }
         try {
             client.connect()
-            withTimeout(30_000) { connected.await() }
+            withTimeoutOrNull(30_000) { connected.await() } ?: throw IOException("Couldn't reach Steam's servers")
+            Log.i(TAG, "Connected to Steam")
             block(client, scope)
         } finally {
             running = false
@@ -189,6 +200,25 @@ class SteamAccount(private val context: Context) {
     private fun loginId(): Int = (Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "retroforge").hashCode()
 
     companion object {
+        private const val TAG = "PcSteam"
+
+        /**
+         * Steam's servers close a quiet connection after about a minute, which would end a sign-in while the user
+         * is still approving it; a ping every 15 seconds keeps it open (GameNative does the same).
+         */
+        private val CONFIGURATION: SteamConfiguration by lazy {
+            SteamConfiguration.create {
+                it.withConnectionTimeout(60_000L)
+                it.withHttpClient(
+                    okhttp3.OkHttpClient.Builder()
+                        .connectTimeout(10, java.util.concurrent.TimeUnit.SECONDS)
+                        .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+                        .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                        .pingInterval(15, java.util.concurrent.TimeUnit.SECONDS)
+                        .build(),
+                )
+            }
+        }
         private const val KEY_NAME = "account_name"
         private const val KEY_TOKEN = "refresh_token"
         private const val KEY_STEAM_ID = "steam_id"

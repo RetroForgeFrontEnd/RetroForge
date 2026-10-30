@@ -23,6 +23,7 @@ dcerpc = "0.12.13"
 androidx-collection = { group = "androidx.collection", name = "collection", version = "1.5.0" }
 javasteam = { group = "in.dragonbra", name = "javasteam", version = "1.8.0" }
 protobuf-java = { group = "com.google.protobuf", name = "protobuf-java", version = "4.31.1" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version = "5.3.2" }
 spongycastle = { group = "com.madgag.spongycastle", name = "prov", version = "1.58.0.0" }
 zxing-core = { group = "com.google.zxing", name = "core", version = "3.5.3" }
 zstd-jni = { group = "com.github.luben", name = "zstd-jni", version = "1.5.7-5" }
