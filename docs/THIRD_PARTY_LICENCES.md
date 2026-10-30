@@ -15,10 +15,15 @@ Licences below are the standard licences of these projects; versions are pinned 
 | Apache Commons Compress (7z reading) | 1.28.0 | Apache-2.0 |
 | kotlinx.serialization (JSON) | 1.12.0 | Apache-2.0 |
 | XZ for Java (LZMA for 7z) | 1.12 | 0BSD / public domain (verify the exact statement in the artifact before release) |
+| zstd-jni (zstd for the PC runtime's .tzst/.wcp files) | 1.5.7-5 | BSD-2-Clause (bundles zstd, BSD) |
+| AndroidX Collection, Annotation | 1.5.0, 1.9.1 | Apache-2.0 |
+| Winlator Cmod X server, renderer and natives (`pc-player/src/main/java/com/winlator/cmod`, `pc-player/src/main/cpp/winlator`), from github.com/coffincolors/winlator branch `cmod_bionic` @ 49bfb90 | 2025-08 | MIT, Copyright (c) 2023 BrunoSX. The MIT notice must be included with the app |
 
 | Press Start 2P, Orbitron, Rajdhani, Exo 2 fonts (google/fonts) | 2026-10 | SIL Open Font License 1.1 (texts in core-ui assets/licences) |
 
 Test-only (not shipped): JUnit 4.13.2 (EPL-1.0), kotlinx-coroutines-test (Apache-2.0).
+
+Downloaded on first use of the PC player, not in the APK (from GameNative's server, see [pc-player-plan.md](pc-player-plan.md)): Proton 11 / Wine for Android arm64ec (LGPL-2.1-or-later, Proton components their own licences), FEX-Emu DLLs (MIT), a Termux-based Linux userland for Android (each package its own licence), Mesa's Vulkan wrapper driver (MIT), libadrenotools (BSD-2-Clause). Their source must be pointed to from the app before a public release.
 
 Not shipped, interacted with as separate apps: DroidDeck (GPL-3.0) — see [pc-runtime-licences.md](pc-runtime-licences.md).
 

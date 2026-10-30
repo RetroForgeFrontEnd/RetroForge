@@ -20,6 +20,9 @@ smbj = "0.14.0"
 dcerpc = "0.12.13"
 
 [libraries]
+androidx-collection = { group = "androidx.collection", name = "collection", version = "1.5.0" }
+zstd-jni = { group = "com.github.luben", name = "zstd-jni", version = "1.5.7-5" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version = "1.9.1" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
