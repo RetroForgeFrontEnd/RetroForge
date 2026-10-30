@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.retroforge.pcplayer.net.PcLan
+import com.retroforge.pcplayer.net.PlayTogetherService
 import com.retroforge.pcplayer.net.Upnp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,20 +41,35 @@ import java.net.NetworkInterface
  * - **Over the internet:** one device hosts a virtual LAN ([PcLan]) and opens its router's port with UPnP, as the
  *   retro player's netplay does; the others type its address. The game sees the others at 10.77.0.x.
  *
+ * While it's on, the game keeps running with the menu open or another app in front ([PlayTogetherService]):
+ * pausing it would hold up (or drop) the other players. [onActive] tells the player when that starts and stops.
+ *
  * [restart] restarts the game (same player, same virtual LAN) with Steam lobbies on or off.
  */
 class PlayTogether(
     private val context: Context,
     private val scope: CoroutineScope,
     private val runtimeRoot: File,
+    private val title: String,
     private val restart: (lobbies: Boolean) -> Unit,
+    private val onActive: (Boolean) -> Unit,
 ) {
     private enum class Mode { Off, SameWifi, Internet }
 
     /** Whether the game uses Steam, and whether it was started with Steam lobbies on. */
     var steamGame = false
     var lobbies by mutableStateOf(false)
-    private var mode by mutableStateOf(Mode.Off)
+    private var modeState by mutableStateOf(Mode.Off)
+    private var mode: Mode
+        get() = modeState
+        set(value) {
+            val was = modeState != Mode.Off
+            modeState = value
+            val now = value != Mode.Off
+            if (was == now) return
+            if (now) PlayTogetherService.start(context, title) else PlayTogetherService.stop(context)
+            onActive(now)
+        }
     private var status by mutableStateOf("")
     private var routerNote by mutableStateOf<String?>(null)
     private var busy by mutableStateOf(false)

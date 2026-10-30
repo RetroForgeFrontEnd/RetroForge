@@ -3,7 +3,7 @@
 // while broadcasts "hello" on UDP 47777 every second, prints every hello it hears, connects over TCP to each new
 // sender's port 47778 and swaps a line, printing the addresses each side sees.
 // Build: zig cc -target x86_64-windows-gnu -O2 lantest.c -o lantest.exe -lws2_32 -liphlpapi
-// Run:   lantest.exe [seconds]   (default 30)
+// Run:   lantest.exe [seconds]   (default 180, time to set up Play together when it runs as the game)
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <iphlpapi.h>
@@ -72,7 +72,7 @@ static char *addr(const struct sockaddr_in *in) {
 }
 
 int main(int argc, char **argv) {
-    int seconds = argc > 1 ? atoi(argv[1]) : 30;
+    int seconds = argc > 1 ? atoi(argv[1]) : 180;
     WSADATA wsa;
     WSAStartup(MAKEWORD(2, 2), &wsa);
     setvbuf(stdout, NULL, _IONBF, 0);

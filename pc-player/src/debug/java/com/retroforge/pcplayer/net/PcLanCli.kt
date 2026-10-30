@@ -15,17 +15,17 @@ import kotlin.concurrent.thread
  *   com.retroforge.pcplayer.net.PcLanCli join <host> <config file>`, then run a game or tools/lantest in Wine with
  *   PCNET_FILE=<config file>.
  * - On a PC (java with the module's classes, Kotlin's and coroutines' jars): `PcLanCli host <config file> answer`.
- *   "answer" adds a stand-in for tools/lantest on 10.77.0.1, speaking the relay's protocol: it answers hellos on
- *   UDP 47777 and TCP connections on 47778, printing the addresses it sees.
+ *   "answer" (hosting or joining) adds a stand-in for tools/lantest on this end's 10.77.0.x, speaking the relay's
+ *   protocol: it answers hellos on UDP 47777 and TCP connections on 47778, printing the addresses it sees.
  */
 object PcLanCli {
     @JvmStatic
     fun main(args: Array<String>) {
         val lan = when (args.getOrNull(0)) {
-            "host" -> PcLan.host(File(args[1]), "PC test")
-            "join" -> PcLan.join(File(args[2]), "Phone test", args[1])
+            "host" -> PcLan.host(File(args[1]), "Test host")
+            "join" -> PcLan.join(File(args[2]), "Test player", args[1])
             else -> {
-                println("usage: host <config> [answer] | join <host> <config>")
+                println("usage: host <config> [answer] | join <host> <config> [answer]")
                 return
             }
         }
@@ -38,7 +38,7 @@ object PcLanCli {
                 Thread.sleep(200)
             }
         }
-        if (args.getOrNull(2) == "answer") answer(lan.relayPort)
+        if (args.last() == "answer") answer(lan.relayPort)
         Runtime.getRuntime().addShutdownHook(Thread { lan.close() })
         Thread.sleep(Long.MAX_VALUE)
     }

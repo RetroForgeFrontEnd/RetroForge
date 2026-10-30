@@ -95,6 +95,22 @@ class PcLanTest {
     }
 
     @Test
+    fun aDroppedConnectionComesBackWithTheSameAddress() {
+        // What a Wi-Fi drop looks like to the player: its connection to the host breaks.
+        val field = PcLan::class.java.getDeclaredField("hostLink").apply { isAccessible = true }
+        val link = field.get(guest)!!
+        (link.javaClass.getDeclaredMethod("getSocket").invoke(link) as Socket).close()
+        waitFor { field.get(guest) !== link && (guest.status.value as? PcLan.Status.Up)?.members?.size == 2 }
+        assertEquals("10.77.0.2", (guest.status.value as PcLan.Status.Up).address)
+        // And the game's traffic flows again.
+        val hostGame = DatagramSocket(InetSocketAddress(loopback, 0))
+        val guestGame = DatagramSocket(InetSocketAddress(loopback, 0))
+        val hello = header('D', "10.77.0.1", hostGame.localPort, "back".toByteArray())
+        guestGame.send(DatagramPacket(hello, hello.size, loopback, guest.relayPort))
+        assertEquals("10.77.0.2:${guestGame.localPort}" to "back", receive(hostGame))
+    }
+
+    @Test
     fun tcpConnectionThroughTheRelay() {
         val hostGame = ServerSocket(0, 5, loopback)
         val client = Socket()

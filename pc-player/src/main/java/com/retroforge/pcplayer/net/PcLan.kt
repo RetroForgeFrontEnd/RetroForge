@@ -140,13 +140,23 @@ class PcLan private constructor(private val configFile: File, private val myName
             socket.tcpNoDelay = true
             socket.soTimeout = 8000
             val hello = link.read()
-            if (hello.type != 'H' || !String(hello.body).startsWith(VERSION)) return
+            val lines = String(hello.body).lines()
+            if (hello.type != 'H' || lines.firstOrNull() != VERSION) return
             socket.soTimeout = 0
+            // A player coming back after its connection dropped gets its old address again. If the old connection
+            // still looks open here (a dropped Wi-Fi isn't noticed at this end), the same device takes its place.
+            val want = lines.getOrNull(2)?.toIntOrNull() ?: 0
             val index = synchronized(links) {
-                ((HOST + 1)..MAX_MEMBER).firstOrNull { !links.containsKey(it) }?.also { links[it] = link }
+                val old = links[want]
+                val free = want in (HOST + 1)..MAX_MEMBER && (old == null || old.socket.inetAddress == socket.inetAddress)
+                if (free) {
+                    old?.close()
+                    dropStreams(want)
+                }
+                (if (free) want else ((HOST + 1)..MAX_MEMBER).firstOrNull { !links.containsKey(it) })?.also { links[it] = link }
             } ?: return
             link.index = index
-            names[index] = String(hello.body).removePrefix(VERSION).removePrefix("\n").take(40).ifBlank { "Player $index" }
+            names[index] = lines.getOrNull(1).orEmpty().take(40).ifBlank { "Player $index" }
             link.send('W', HOST, index, ByteArray(0))
             publish()
             readLink(link)
@@ -154,8 +164,8 @@ class PcLan private constructor(private val configFile: File, private val myName
             // The player left (or never said hello).
         } finally {
             link.close()
-            if (link.index != 0) {
-                links.remove(link.index)
+            // (Unless the same player has already come back on a new connection.)
+            if (link.index != 0 && links.remove(link.index, link)) {
                 names.remove(link.index)
                 playerUdp.remove(link.index)
                 dropStreams(link.index)
@@ -164,18 +174,28 @@ class PcLan private constructor(private val configFile: File, private val myName
         }
     }
 
-    private fun startJoin(address: String, port: Int) {
-        val host = InetAddress.getByName(address)
+    /** Connects to the host and says hello (asking for [want] back after a dropped connection). Returns the link. */
+    private fun connectToHost(host: InetAddress, port: Int, want: Int): Link {
         val socket = Socket()
         socket.connect(InetSocketAddress(host, port), 8000)
         socket.tcpNoDelay = true
         socket.soTimeout = 8000
         val link = Link(socket)
-        link.send('H', 0, HOST, "$VERSION\n$myName".toByteArray())
+        link.send('H', 0, HOST, "$VERSION\n$myName\n$want".toByteArray())
         val welcome = link.read()
-        if (welcome.type != 'W' || welcome.to !in (HOST + 1)..MAX_MEMBER) throw EOFException("The host didn't let this device in")
+        if (welcome.type != 'W' || welcome.to !in (HOST + 1)..MAX_MEMBER) {
+            link.close()
+            throw EOFException("The host didn't let this device in")
+        }
         socket.soTimeout = 0
-        me = welcome.to
+        link.index = welcome.to
+        return link
+    }
+
+    private fun startJoin(address: String, port: Int) {
+        val host = InetAddress.getByName(address)
+        val link = connectToHost(host, port, 0)
+        me = link.index
         hostLink = link
         hostUdp = InetSocketAddress(host, port)
         tunnel.bind(InetSocketAddress(0))
@@ -190,12 +210,34 @@ class PcLan private constructor(private val configFile: File, private val myName
             }
         }
         thread(name = "pclan-host", isDaemon = true) {
-            try {
-                readLink(link)
-            } catch (_: Exception) {
+            var current = link
+            while (!closed) {
+                try {
+                    readLink(current)
+                } catch (_: Exception) {
+                }
+                current.close()
+                dropStreams(HOST)
+                if (closed) break
+                // Wi-Fi dropped, the router restarted, the host's phone was busy: keep trying for a while, as the same
+                // player (the game keeps its address, so it can carry on once the link is back).
+                hostUdpWorks = false
+                _status.value = Status.Starting("Connection lost. Reconnecting")
+                val giveUp = System.currentTimeMillis() + RECONNECT_MS
+                var back: Link? = null
+                while (!closed && back == null && System.currentTimeMillis() < giveUp) {
+                    back = runCatching { connectToHost(host, port, me) }.getOrNull()
+                    if (back == null) Thread.sleep(2000)
+                }
+                if (back == null || back.index != me) {
+                    back?.close()
+                    if (!closed) _status.value = Status.Failed("The connection to the host was lost")
+                    break
+                }
+                current = back
+                hostLink = back
+                publish()
             }
-            if (!closed) _status.value = Status.Failed("The host ended the game or the connection was lost")
-            dropStreams(HOST)
         }
     }
 
@@ -482,6 +524,8 @@ class PcLan private constructor(private val configFile: File, private val myName
         const val PORT = 55460
         const val HOST = 1
         private const val MAX_MEMBER = 9
+        /** How long a player keeps trying to get back to the host after the connection drops. */
+        private const val RECONNECT_MS = 3 * 60_000L
         private const val BROADCAST = 255
         private const val VERSION = "RFLAN1"
         private const val HEADER = 12

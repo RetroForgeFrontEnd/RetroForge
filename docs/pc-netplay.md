@@ -26,6 +26,16 @@ nsiproxy (`update_if_table`) walks that NULL without checking, so its service di
 - `SIOCGIFHWADDR` (refused for apps) with a made-up, stable, per-device MAC (`PCNET_MACSEED` = ANDROID_ID), so Wi-Fi
   shows as Ethernet/Wi-Fi rather than "other".
 
+## Staying connected
+
+- While Play together is on, the game never pauses: not with the menu open, not with another app in front (pausing
+  would hold up or drop the others). A foreground service (`PlayTogetherService`, notification "Playing <game>
+  together", tap to go back) keeps Android from freezing the player in the background, and holds a Wi-Fi lock so the
+  phone doesn't put Wi-Fi to sleep.
+- A player whose connection drops (Wi-Fi gone, router restarting, the phone leaving a Wi-Fi with no internet, which
+  Android does) keeps trying for 3 minutes, as the same player: the host gives it its old 10.77.0.x back, even before
+  it has noticed the old connection is dead. The game's TCP connections across the drop end; UDP carries on.
+
 ## The virtual LAN (no VPN)
 
 `PcLan.kt` (in the player's process) plus socket hooks in `pcnet.c`, switched on while `files/pc/pcnet.cfg` exists:
@@ -53,10 +63,17 @@ mobile data or networks without UPnP can't host (joining works); the host's rout
 | S22, Wine, new `libpcexec.so`: adapter list | `wlan0 192.168.0.14/24` (Ethernet), `rmnet*`, `lo`; `GetAdaptersInfo` and `gethostbyname(own name)` work; route table made from `getifaddrs` |
 | S22 (Wine) ↔ PC (native), same Wi-Fi: `tools/lantest` on both | **Works both ways:** each hears the other's UDP broadcast on 47777, connects to the other over TCP 47778 and gets its reply |
 | S22 (Wine, virtual LAN, joined) ↔ PC (`PcLanCli host … answer`, a stand-in game on 10.77.0.1), over Wi-Fi to the PC's address | **Works:** Windows on the phone sees only `rf0 10.77.0.2/24` (and loopback), `gethostbyname` gives 10.77.0.2; its broadcasts reach the PC from 10.77.0.2, the PC's reply arrives from 10.77.0.1, TCP to 10.77.0.1:47778 goes through the relay with both sides seeing virtual addresses |
-| The Play together menu in the installed app; a real internet connection (two networks, UPnP); a phone accepting TCP from the other side through the virtual LAN; two RetroForge phones | Not yet tested |
+| The app: **Host over the internet** from the pause menu (S22) | Works: the virtual LAN starts, the router opened port 55460 by UPnP and gave its public address; the PC joined (through the phone's Wi-Fi address: the router doesn't loop its public address back inside) and the menu showed "Playing together: you (10.77.0.1), Test player (10.77.0.2)" |
+| The app: **Join over the internet** from the pause menu, `tools/lantest` run by RetroForge as the game, PC hosting with a stand-in | **Works, with RetroForge in the background** (phone on its home screen): the game kept running, the PC got its broadcasts from 10.77.0.2 (43 in a minute) and its TCP connection through the virtual LAN |
+| A player's connection dropping and coming back | `PcLanTest`: it reconnects as the same player (same 10.77.0.x) and traffic flows again. Not yet tried with a real Wi-Fi drop |
+| Two different networks (e.g. one player on mobile data); two RetroForge phones | Not yet tested |
 
 Known quirk: Wine reports some adapters (`rf0`, `epdg5`) with type 0 in `GetAdaptersAddresses`, although the
 `SIOCGIFHWADDR` answer is Ethernet; LAN games rarely look at it.
+
+Testing note: a program started from adb (`run-as`) can't join the game's running Wine session: Android's security
+labels differ, so the file handles Wine's server passes it are dropped and its sends fail (`STATUS_TOO_MANY_OPENED_FILES`).
+Run test programs as the game (add their folder in the PC tab), or in a Wine session of their own.
 
 How to repeat the device tests (debug build, as the app's user, nothing installed):
 `run-as com.retroforge.app app_process -cp /data/local/tmp/<app-debug.apk> /system/bin com.retroforge.pcplayer.net.PcLanCli join <host> <config>`

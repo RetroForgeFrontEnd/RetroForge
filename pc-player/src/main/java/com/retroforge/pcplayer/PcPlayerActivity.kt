@@ -157,7 +157,13 @@ class PcPlayerActivity : ComponentActivity() {
                 phase = Phase.Failed((runtime.state.value as? RuntimeState.Failed)?.reason ?: "The PC runtime couldn't be installed")
                 return@launch
             }
-            together = PlayTogether(this@PcPlayerActivity, scope, runtime.root) { lobbies -> restartGame(exe, lobbies) }
+            together = PlayTogether(
+                this@PcPlayerActivity, scope, runtime.root, title,
+                restart = { lobbies -> restartGame(exe, lobbies) },
+                // Playing together the game never pauses (the others would be held up or dropped): resumed now if the
+                // menu had paused it, paused again when Play together ends with the menu still open.
+                onActive = { on -> if (menuOpen) session?.setPaused(!on) },
+            )
             prepareAndStart(exe, lobbies = false)
         }
     }
@@ -342,7 +348,7 @@ class PcPlayerActivity : ComponentActivity() {
     private fun openMenu() {
         if (phase != Phase.Playing || menuOpen) return
         controlsView?.releaseAll()
-        session?.setPaused(true)
+        if (together?.active != true) session?.setPaused(true)
         menuOpen = true
     }
 
