@@ -65,6 +65,18 @@
    "obtainiumApp": "{\"id\":\"org.azahar_emu.azahar\",\"url\":\"https://github.com/azahar-emu/azahar\",\"author\":\"azahar-emu\",\"name\":\"Azahar\",\"preferredApkIndex\":0,\"additionalSettings\":\"{\\\"includePrereleases\\\":false,\\\"fallbackToOlderReleases\\\":true,\\\"filterReleaseTitlesByRegEx\\\":\\\"\\\",\\\"filterReleaseNotesByRegEx\\\":\\\"\\\",\\\"verifyLatestTag\\\":false,\\\"sortMethodChoice\\\":\\\"date\\\",\\\"useLatestAssetDateAsReleaseDate\\\":false,\\\"releaseTitleAsVersion\\\":false,\\\"github-creds\\\":\\\"\\\",\\\"GHReqPrefix\\\":\\\"\\\",\\\"trackOnly\\\":false,\\\"versionExtractionRegEx\\\":\\\"(.+)\\\",\\\"matchGroupToUse\\\":\\\"$1-vanilla\\\",\\\"versionDetection\\\":false,\\\"releaseDateAsVersion\\\":false,\\\"useVersionCodeAsOSVersion\\\":false,\\\"apkFilterRegEx\\\":\\\"vanilla\\\",\\\"invertAPKFilter\\\":false,\\\"autoApkFilterByArch\\\":true,\\\"appName\\\":\\\"\\\",\\\"appAuthor\\\":\\\"\\\",\\\"shizukuPretendToBeGooglePlay\\\":false,\\\"allowInsecure\\\":false,\\\"exemptFromBackgroundUpdates\\\":false,\\\"skipUpdateNotifications\\\":false,\\\"about\\\":\\\"Nintendo 3DS emulator\\\",\\\"refreshBeforeDownload\\\":false,\\\"includeZips\\\":false,\\\"zippedApkFilterRegEx\\\":\\\"\\\"}\",\"overrideSource\":\"GitHub\"}"
   },
   {
+   "id": "CITRAVR",
+   "name": "CitraVR",
+   "page": "https://github.com/amwatson/CitraVR/releases",
+   "obtainium": "https://github.com/amwatson/CitraVR",
+   "packages": [
+    {
+     "package": "org.citra.citra_emu",
+     "activity": "org.citra.citra_emu.vr.VrActivity"
+    }
+   ]
+  },
+  {
    "id": "DOLPHIN",
    "name": "Dolphin",
    "page": "https://dolphin-emu.org/download/",
@@ -712,6 +724,11 @@
    {
     "emulator": "AZAHAR",
     "label": "Azahar",
+    "command": "%ACTIVITY_CLEAR_TASK% %ACTIVITY_CLEAR_TOP% %DATA%=%ROMSAF%"
+   },
+   {
+    "emulator": "CITRAVR",
+    "label": "CitraVR (Meta Quest)",
     "command": "%ACTIVITY_CLEAR_TASK% %ACTIVITY_CLEAR_TOP% %DATA%=%ROMSAF%"
    }
   ],
