@@ -40,7 +40,7 @@ import com.retroforge.core.ui.FocusCard
  * [image] is a chosen cover file, a content:// URI of the gamelist artwork, or null.
  */
 @Composable
-fun GameArt(game: GameEntity, image: Any?, modifier: Modifier = Modifier) {
+fun GameArt(game: GameEntity, image: Any?, modifier: Modifier = Modifier, fill: Boolean = false) {
     val placeholder: @Composable () -> Unit = {
         Box(
             Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant).padding(8.dp),
@@ -63,7 +63,7 @@ fun GameArt(game: GameEntity, image: Any?, modifier: Modifier = Modifier) {
             SubcomposeAsyncImage(
                 model = image,
                 contentDescription = null,
-                contentScale = ContentScale.Fit,
+                contentScale = if (fill) ContentScale.Crop else ContentScale.Fit,
                 loading = { placeholder() },
                 error = { placeholder() },
                 modifier = Modifier.fillMaxSize(),
@@ -116,14 +116,14 @@ fun tagLine(game: GameEntity): String? = listOfNotNull(
  * like a console dashboard's game library. The chosen box lifts a little; [columns] keeps a short last shelf in step.
  */
 @Composable
-fun GameShelf(games: List<Pair<GameEntity, Any?>>, columns: Int, onOpen: (GameEntity) -> Unit) {
+fun GameShelf(games: List<Triple<GameEntity, Any?, java.io.File?>>, columns: Int, onOpen: (GameEntity) -> Unit) {
     Column(Modifier.fillMaxWidth()) {
         Row(
             Modifier.fillMaxWidth().padding(horizontal = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.Bottom,
         ) {
-            games.forEach { (game, image) -> ShelfBox(game, image, { onOpen(game) }, Modifier.weight(1f)) }
+            games.forEach { (game, image, box3d) -> ShelfBox(game, image, box3d, { onOpen(game) }, Modifier.weight(1f)) }
             repeat(columns - games.size) { androidx.compose.foundation.layout.Spacer(Modifier.weight(1f)) }
         }
         val edge = MaterialTheme.colorScheme.primary
@@ -136,7 +136,7 @@ fun GameShelf(games: List<Pair<GameEntity, Any?>>, columns: Int, onOpen: (GameEn
 }
 
 @Composable
-private fun ShelfBox(game: GameEntity, image: Any?, onClick: () -> Unit, modifier: Modifier) {
+private fun ShelfBox(game: GameEntity, image: Any?, box3d: java.io.File?, onClick: () -> Unit, modifier: Modifier) {
     val interaction = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
     val pressed by interaction.collectIsPressedAsState()
@@ -147,35 +147,18 @@ private fun ShelfBox(game: GameEntity, image: Any?, onClick: () -> Unit, modifie
             .clickable(interactionSource = interaction, indication = null, onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // A game case in 3D: turned a little to show its spine, square on when chosen.
-        val turn = 22f * (1f - lift)
-        Row(
-            Modifier.fillMaxWidth().aspectRatio(0.78f)
-                .graphicsLayer { rotationY = turn; cameraDistance = 14f * density }
-                .shadow(if (focused) 14.dp else 6.dp, RoundedCornerShape(3.dp)),
-        ) {
-            // The spine: the case's own edge, darker, catching less light.
-            Box(
-                Modifier.fillMaxHeight().weight(0.09f)
-                    .background(androidx.compose.ui.graphics.Brush.horizontalGradient(listOf(androidx.compose.ui.graphics.Color(0xFF15151B), androidx.compose.ui.graphics.Color(0xFF3A3A46)))),
-            )
-            Box(
-                Modifier.fillMaxHeight().weight(0.91f).clip(RoundedCornerShape(topEnd = 3.dp, bottomEnd = 3.dp))
-                    .background(androidx.compose.ui.graphics.Color(0xFF101014))
-                    .then(if (focused) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(topEnd = 3.dp, bottomEnd = 3.dp)) else Modifier),
-            ) {
-                GameArt(game, image, Modifier.fillMaxSize())
-                // The plastic sleeve's shine.
-                Box(
-                    Modifier.fillMaxSize().background(
-                        androidx.compose.ui.graphics.Brush.linearGradient(
-                            0f to androidx.compose.ui.graphics.Color(0x40FFFFFF), 0.35f to androidx.compose.ui.graphics.Color.Transparent,
-                            0.8f to androidx.compose.ui.graphics.Color.Transparent, 1f to androidx.compose.ui.graphics.Color(0x22FFFFFF),
-                        ),
-                    ),
+        // A 3D box render (ScreenScraper) already is a case: shown as it is, standing on the shelf.
+        if (box3d != null) {
+            Box(Modifier.fillMaxWidth().aspectRatio(0.78f), contentAlignment = Alignment.BottomCenter) {
+                coil3.compose.AsyncImage(
+                    model = box3d,
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxSize()
+                        .then(if (focused) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)) else Modifier),
                 )
             }
-        }
+        } else ShelfCase(game, image, focused, lift)
         Text(
             game.title,
             style = MaterialTheme.typography.labelSmall,
@@ -185,5 +168,38 @@ private fun ShelfBox(game: GameEntity, image: Any?, onClick: () -> Unit, modifie
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 6.dp, bottom = 4.dp),
         )
+    }
+}
+
+/** A game case in 3D, drawn round the flat cover: turned a little to show its spine, square on when chosen. */
+@Composable
+private fun ShelfCase(game: GameEntity, image: Any?, focused: Boolean, lift: Float) {
+    val turn = 22f * (1f - lift)
+    Row(
+        Modifier.fillMaxWidth().aspectRatio(0.78f)
+            .graphicsLayer { rotationY = turn; cameraDistance = 14f * density }
+            .shadow(if (focused) 14.dp else 6.dp, RoundedCornerShape(3.dp)),
+    ) {
+        // The spine: the case's own edge, darker, catching less light.
+        Box(
+            Modifier.fillMaxHeight().weight(0.09f)
+                .background(androidx.compose.ui.graphics.Brush.horizontalGradient(listOf(androidx.compose.ui.graphics.Color(0xFF15151B), androidx.compose.ui.graphics.Color(0xFF3A3A46)))),
+        )
+        Box(
+            Modifier.fillMaxHeight().weight(0.91f).clip(RoundedCornerShape(topEnd = 3.dp, bottomEnd = 3.dp))
+                .background(androidx.compose.ui.graphics.Color(0xFF101014))
+                .then(if (focused) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(topEnd = 3.dp, bottomEnd = 3.dp)) else Modifier),
+        ) {
+            GameArt(game, image, Modifier.fillMaxSize(), fill = true)  // a printed sleeve: the cover fills the front
+            // The plastic sleeve's shine.
+            Box(
+                Modifier.fillMaxSize().background(
+                    androidx.compose.ui.graphics.Brush.linearGradient(
+                        0f to androidx.compose.ui.graphics.Color(0x40FFFFFF), 0.35f to androidx.compose.ui.graphics.Color.Transparent,
+                        0.8f to androidx.compose.ui.graphics.Color.Transparent, 1f to androidx.compose.ui.graphics.Color(0x22FFFFFF),
+                    ),
+                ),
+            )
+        }
     }
 }

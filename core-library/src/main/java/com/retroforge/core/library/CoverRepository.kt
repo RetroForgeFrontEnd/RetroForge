@@ -201,6 +201,45 @@ class CoverRepository(
         _batch.value = null
     }
 
+    /**
+     * 3D box art (ScreenScraper's "box-3D" renders), kept beside the covers. The bookshelf view shows it as it is
+     * instead of drawing a case round the flat cover. SteamGridDB has no 3D boxes, so ScreenScraper is the source.
+     */
+    fun box3d(game: GameEntity): File? = box3dFile(game).takeIf { it.isFile }
+
+    private fun box3dFile(game: GameEntity) = File(coversDir, "box3d/" + sha1("${game.rootId}/${game.relativePath}") + ".img")
+
+    /** Goes up by one whenever 3D boxes are added, so views showing them look again. */
+    private val _box3dChanges = MutableStateFlow(0)
+    val box3dChanges: StateFlow<Int> = _box3dChanges.asStateFlow()
+
+    /**
+     * Looks each of [games] up on ScreenScraper and saves its 3D box, skipping games that have one. [onProgress] gets
+     * how many are done. Returns how many 3D boxes were added; fails when ScreenScraper can't be used at all.
+     */
+    suspend fun fetchBox3d(games: List<GameEntity>, onProgress: (Int) -> Unit): Result<Int> = withContext(Dispatchers.IO) {
+        runCatching {
+            var added = 0
+            games.forEachIndexed { i, game ->
+                val file = box3dFile(game)
+                if (!file.isFile) {
+                    val media = screenScraperCovers(game).getOrThrow().firstOrNull { it.type == "box-3D" }
+                    if (media != null) {
+                        val response = http.get(media.url, emptyMap(), JvmHttpGet.MAX_IMAGE_BYTES)
+                        if (response.code == 200 && looksLikeImage(response.body)) {
+                            file.parentFile?.mkdirs()
+                            File(file.path + ".tmp").apply { writeBytes(response.body) }.renameTo(file)
+                            added++
+                            _box3dChanges.value++
+                        }
+                    }
+                }
+                onProgress(i + 1)
+            }
+            added
+        }
+    }
+
     private suspend fun store(game: GameEntity, bytes: ByteArray, url: String, source: String, author: String?) {
         coversDir.mkdirs()
         val name = sha1("${game.rootId}/${game.relativePath}") + ".img"

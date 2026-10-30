@@ -265,6 +265,8 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
         GameLayout.GRID, GameLayout.SHELF -> false
         GameLayout.THEME -> LocalThemeSpec.current.gameView == GameView.LIST
     }
+    // 3D box renders for the bookshelf (ScreenScraper), looked for again whenever more arrive.
+    val box3dSeen by viewModel.covers.box3dChanges.collectAsStateWithLifecycle()
     // Bookshelf: whole shelves, as many boxes as fit across (at least three).
     val perShelf = maxOf(3, (androidx.compose.ui.platform.LocalConfiguration.current.screenWidthDp - 48) / 130)
     LazyVerticalGrid(
@@ -288,6 +290,7 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
                 FocusChip("Show as: ${if (layout == GameLayout.SHELF) "bookshelf" else if (asList) "list" else "grid"}", onClick = {
                     viewModel.setGameLayout(if (layout == GameLayout.SHELF) GameLayout.LIST else if (asList) GameLayout.GRID else GameLayout.SHELF)
                 })
+                if (layout == GameLayout.SHELF) Box3dBatch(viewModel, shown)
                 ControllerTextField(value = filter, onValueChange = { filter = it }, singleLine = true, label = { Text("Filter") }, modifier = Modifier.fillMaxWidth())
                 SystemCoverBatch(viewModel, system, games.orEmpty(), chosen)
                 if (games.orEmpty().any { it.duplicateKey != null }) {
@@ -297,7 +300,7 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
         }
         if (layout == GameLayout.SHELF) {
             items(shown.chunked(perShelf), key = { "shelf-" + it.first().id }, span = { GridItemSpan(maxLineSpan) }) { shelf ->
-                GameShelf(shelf.map { it to viewModel.art(rootsById, chosen, it) }, perShelf) { onOpenGame(it.id) }
+                GameShelf(shelf.map { Triple(it, viewModel.art(rootsById, chosen, it), box3dSeen.let { _ -> viewModel.covers.box3d(it) }) }, perShelf) { onOpenGame(it.id) }
             }
         } else items(shown, key = { it.id }) { game ->
             if (asList) GameRow(game, viewModel.art(rootsById, chosen, game), onClick = { onOpenGame(game.id) })
@@ -456,4 +459,35 @@ private fun PlayTogetherCard(viewModel: LibraryViewModel, onOpenGame: (Long) -> 
         }
         message?.let { CardBody(it) }
     }
+}
+
+/** Bookshelf view: fetches ScreenScraper's 3D box renders for these games, with how far it has got. */
+@Composable
+private fun Box3dBatch(viewModel: LibraryViewModel, games: List<GameEntity>) {
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    var done by remember { mutableStateOf<Int?>(null) }
+    var result by remember { mutableStateOf<String?>(null) }
+    val running = done != null
+    FocusChip(if (running) "Getting 3D boxes…" else "3D boxes from ScreenScraper", enabled = !running, onClick = {
+        if (!viewModel.covers.screenScraper.available) {
+            result = "3D boxes come from ScreenScraper, which needs RetroForge's developer ID from ScreenScraper. It isn't in this " +
+                "version yet. Until then, the shelf draws a case round each cover. (SteamGridDB has no 3D boxes.)"
+            return@FocusChip
+        }
+        done = 0
+        result = null
+        scope.launch {
+            result = viewModel.covers.fetchBox3d(games) { n -> done = n }.fold(
+                onSuccess = { if (it == 0) "ScreenScraper had no new 3D boxes for these games." else "Added ${plural(it, "3D box")}." },
+                onFailure = { "Couldn't get 3D boxes: ${it.message}" },
+            )
+            done = null
+        }
+    })
+    done?.let { n ->
+        val p = if (games.isEmpty()) 1f else n.toFloat() / games.size
+        CardBody("${(p * 100).toInt()}% (${n} of ${games.size} games)")
+        LinearProgressIndicator(progress = { p }, modifier = Modifier.fillMaxWidth())
+    }
+    result?.let { CardBody(it) }
 }
