@@ -26,6 +26,7 @@ class Z3dsTest {
         "NCSD".toByteArray().copyInto(cart, 0x100)
         b.putInt(0x120, 0x4000 / 0x200)
         "NCCH".toByteArray().copyInto(cart, 0x4100)
+        cart[0x418F] = 4 // NoCrypto: decrypted
         b.putInt(0x4104, 0x400).putShort(0x4112, 3).putLong(0x4118, 0x0004000000055D00L)
         Random(5).nextBytes(cart, 0x4200, 0x30000)
         cart.fill(0xFF.toByte(), 0x60000, cart.size)
@@ -59,14 +60,17 @@ class Z3dsTest {
         File(root, "3ds").mkdirs()
         File(root, "3ds/Game.3ds").writeBytes(cartridge())
         File(root, "3ds/Odd.3ds").writeBytes(ByteArray(0x1000))
+        File(root, "3ds/Locked.3ds").writeBytes(cartridge().also { it[0x418F] = 0 })
         val files = JvmCollectionFiles(root)
         val games = listOf(
             CompressCandidate("3ds", "3ds/Game.3ds", "3ds", "Game", 0x9_3210),
             CompressCandidate("3ds", "3ds/Odd.3ds", "3ds", "Odd", 0x1000),
+            CompressCandidate("3ds", "3ds/Locked.3ds", "3ds", "Locked", 0x9_3210),
         )
         val (jobs, skipped) = CompressPlanner.plan(games, files, SystemRules.bundled())
         assertEquals(listOf("3ds/Game.zcci"), jobs.map { it.output })
-        assertEquals(listOf("3ds/Odd.3ds"), skipped.map { it.path })
+        assertEquals(listOf("3ds/Odd.3ds", "3ds/Locked.3ds"), skipped.map { it.path })
+        assertTrue(skipped[1].reason.startsWith("Encrypted"))
         val result = Compressor(files).run(jobs, Journal(OperationLog("1", "compress", 1, 0, "t")) {})
         assertEquals(emptyList<String>(), result.problems)
         assertTrue(File(root, "3ds/Game.zcci").exists())

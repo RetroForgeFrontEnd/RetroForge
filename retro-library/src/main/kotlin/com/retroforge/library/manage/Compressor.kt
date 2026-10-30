@@ -139,8 +139,10 @@ object CompressPlanner {
     }
 
     private fun z3dsJob(game: CompressCandidate, files: CollectionFiles): Result<CompressJob> {
-        val header = runCatching { files.openRead(game.relativePath).use { Rvz.read(it, 0, 0x200) } }.getOrNull()
-        val kind = header?.let(Z3ds::kindOf) ?: return Result.failure(IOException("Not a 3DS cartridge, NCCH or 3DSX file Azahar can compress."))
+        val (kind, encrypted) = runCatching {
+            files.openRead(game.relativePath).use { ch -> Z3ds.kindOf(Rvz.read(ch, 0, 0x200))?.let { it to Z3ds.isEncrypted(ch, it) } }
+        }.getOrNull() ?: return Result.failure(IOException("Not a 3DS cartridge, NCCH or 3DSX file Azahar can compress."))
+        if (encrypted) return Result.failure(IOException("Encrypted: Azahar only plays and compresses decrypted 3DS games."))
         val output = replaceExtension(game.relativePath, kind.extension)
         if (files.exists(output)) return Result.failure(IOException("${nameOf(output)} already exists."))
         return Result.success(CompressJob(game.system, game.title, CompressFormat.Z3DS, game.relativePath, game.systemFolder, listOf(game.relativePath), game.size, output))

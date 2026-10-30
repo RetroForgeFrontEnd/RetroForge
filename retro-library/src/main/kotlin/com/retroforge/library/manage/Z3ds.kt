@@ -41,6 +41,20 @@ object Z3ds {
     }
 
     /**
+     * True when the first NCCH of a cartridge or NCCH image is still encrypted (the NoCrypto flag, bit 2 of flags[7],
+     * is clear). Azahar plays and compresses only decrypted games.
+     */
+    fun isEncrypted(input: SeekableByteChannel, kind: Kind): Boolean {
+        val ncchAt = when (kind) {
+            Kind.NCSD -> (ByteBuffer.wrap(Rvz.read(input, 0x120, 4)).order(ByteOrder.LITTLE_ENDIAN).int.toLong() and 0xFFFFFFFFL) * 0x200
+            Kind.NCCH -> 0L
+            Kind.THREEDSX -> return false
+        }
+        val ncch = Rvz.read(input, ncchAt, 0x200)
+        return String(ncch, 0x100, 4, Charsets.ISO_8859_1) == "NCCH" && (ncch[0x18F].toInt() and 4) == 0
+    }
+
+    /**
      * Writes [input] ([bytes] long, of [kind]) as Z3DS to [out] (positioned at 0, empty). Frames are compressed on all
      * cores; [onProgress] gets bytes consumed. Returns the size of the file.
      */
