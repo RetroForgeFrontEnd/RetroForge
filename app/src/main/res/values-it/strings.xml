@@ -595,7 +595,7 @@
     <string name="setup_all_found">Tutti trovati</string>
     <string name="setup_missing">Mancante</string>
     <string name="setup_games_for_these_won_t_start">I giochi di questi sistemi non partiranno nel player integrato finché il BIOS non sarà nella tua cartella BIOS:</string>
-    <string name="setup_three_steps_from_your_game_folder">Tre passaggi dalla cartella dei giochi al gioco; quasi tutto avviene da solo. Puoi tornare qui quando vuoi dalle Impostazioni.</string>
+    <string name="setup_three_steps_from_your_game_folder">Pochi passaggi dalla cartella dei giochi al gioco; quasi tutto avviene da solo. Puoi tornare qui quando vuoi dalle Impostazioni.</string>
     <string name="setup_4_bezels_optional">5. Cornici (facoltativo)</string>
     <string name="vr_how_it_works">Come funziona</string>
     <string name="vr_any_game_can_be_shown_once">Qualsiasi gioco può essere mostrato una volta per occhio: mettilo in pausa (o scorri da un bordo) e attiva Cardboard VR. Il telefono si gira in orizzontale e i tasti touch si nascondono, quindi conviene giocare con un controller Bluetooth. La maggior parte dei giochi sembra un grande schermo sospeso; i giochi Virtual Boy sono in vero 3D.</string>
@@ -1534,7 +1534,7 @@
     <string name="tutorial_a_game_s_page_also_offers">La pagina di un gioco offre anche RetroArch, con il core giusto, per chi lo conosce bene, ed emulatori a sé gratuiti: NetherSX2 (PS2), Dolphin (GameCube, Wii), Azahar (3DS), RetroForge Switch Player o Eden (Switch), DuckStation, PPSSPP, Flycast e altri.</string>
     <string name="tutorial_get_opens_obtainium_already_set_up">\"Ottieni\" apre Obtainium già impostato per quell\'app, così si installa dalla release ufficiale e resta aggiornata. Impostazioni → App di emulazione rimanda anche all\'Obtainium Emulation Pack.</string>
     <string name="tutorial_once_installed_play_with_starts_the">Una volta installato: \"Gioca con …\" avvia il gioco lì, e \"Usa come predefinito\" fa sì che Gioca lo usi per quel sistema.</string>
-    <string name="tutorial_ps2_gamecube_wii_3ds_and_switch">PS2, GameCube, Wii, 3DS e Switch richiedono la configurazione della loro app la prima volta (BIOS PS2 in NetherSX2, chiavi e firmware in Eden). I giochi in più file (.cue, .m3u) possono anche richiedere di aggiungere la cartella dei giochi dentro l\'app.</string>
+    <string name="tutorial_ps2_gamecube_wii_3ds_and_switch">PS2, GameCube, Wii, 3DS e Switch richiedono la configurazione della loro app la prima volta (BIOS PS2 in NetherSX2, chiavi e firmware Switch al passaggio 4 di Configura RetroForge per RetroForge Switch Player, o in Eden). I giochi in più file (.cue, .m3u) possono anche richiedere di aggiungere la cartella dei giochi dentro l\'app.</string>
     <string name="tutorial_retroarch_hotkeys_start_select_quits_back">Scorciatoie di RetroArch: Start + Select esce e torna a RetroForge; Giù + Select apre il menu di RetroArch. Cambiale in Impostazioni → Scorciatoie di RetroArch. RetroArch ha un suo menu, non il menu a scorrimento di RetroForge.</string>
     <string name="tutorial_graphics_drivers_and_texture_packs">Driver grafici e pacchetti di texture</string>
     <string name="tutorial_settings_gpu_and_drivers_shows_your">Impostazioni → GPU e driver mostra il tuo chip grafico. Sui telefoni Snapdragon (Adreno) elenca i driver Turnip, con ricerca, da scaricare per gli emulatori con gestore driver (Eden, Dolphin, NetherSX2 …): carica il file in quell\'app.</string>

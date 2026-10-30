@@ -118,7 +118,7 @@ A rough guide only: the same chip runs some games of a system perfectly and stru
 - A game's page also offers RetroArch, with the right core, for people who know their way around it, and free standalone emulators: NetherSX2 (PS2), Dolphin (GameCube, Wii), Azahar (3DS), RetroForge Switch Player or Eden (Switch), DuckStation, PPSSPP, Flycast and more.
 - "Get" opens Obtainium already set up for that app, so it installs from the official release and stays updated. Settings → Emulator apps also links the Obtainium Emulation Pack.
 - Once installed: "Play with …" starts the game in it, and "Use by default" makes Play use it for that system.
-- PS2, GameCube, Wii, 3DS and Switch need their app's own setup the first time (PS2 BIOS in NetherSX2, keys and firmware in Eden). Games made of several files (.cue, .m3u) may also need your games folder added inside the app.
+- PS2, GameCube, Wii, 3DS and Switch need their app's own setup the first time (PS2 BIOS in NetherSX2, Switch keys and firmware in step 4 of Set up RetroForge for the RetroForge Switch Player, or in Eden). Games made of several files (.cue, .m3u) may also need your games folder added inside the app.
 - RetroArch hotkeys: Start + Select quits back to RetroForge; Down + Select opens RetroArch's menu. Change them in Settings → RetroArch hotkeys. RetroArch has its own menu, not RetroForge's swipe menu.
 
 ## Graphics drivers and texture packs
