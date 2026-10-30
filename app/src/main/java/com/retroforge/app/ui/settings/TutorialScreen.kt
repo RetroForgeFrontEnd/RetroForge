@@ -42,6 +42,15 @@ private val topics = listOf(
         "Settings → Check my setup shows every system at once: its emulator, BIOS and games, and what's missing.",
         "RetroForge comes with no games and no BIOS. Use your own.",
     )),
+    Topic("What will my device run? (a rough guide)", listOf(
+        "A rough guide only: the same chip runs some games of a system perfectly and struggles with others, and cooling, Android version and drivers matter too. Settings → GPU and drivers shows your chip.",
+        "LOW END (Unisoc T610/T618, MediaTek Helio G85, Snapdragon 680, Exynos 850; 3-4 GB of RAM): everything up to PlayStation runs well: Game Boy to GBA, NES, SNES, Mega Drive, Master System, PC Engine, arcade (FinalBurn Neo, CPS1-3), PlayStation and the home computers. DS and lighter N64 and PSP games mostly play. GameCube, PS2, 3DS and Switch are out of reach.",
+        "MID RANGE (Unisoc T820, Helio G99, Dimensity 900-1200, Snapdragon 720G to 778G or 7 Gen 1; 4-6 GB): add N64, DS, PSP at 2× resolution, Dreamcast and most Saturn. Lighter GameCube and 3DS games play; PS2 only for simpler games.",
+        "HIGH END (Snapdragon 865, 888, 8 Gen 1, Dimensity 8100-9000, Exynos 2200, Google Tensor; 8 GB): GameCube, Wii and most PS2 at 2×, most 3DS, and lighter Switch games (Blazing Chrome runs at full speed on a Galaxy S22).",
+        "FLAGSHIP (Snapdragon 8 Gen 2, 8 Gen 3, 8 Elite, Dimensity 9200 and newer; 8-16 GB): PS2 and GameCube at 3× and more, many Switch games, and older or lighter Windows games in the PC player.",
+        "Snapdragon chips (Adreno graphics) are the best for emulation: they can use Turnip drivers, which many GameCube, PS2, Switch and PC games need. Exynos, Xclipse and Mali chips run fewer of these heavy systems for the same speed.",
+        "Switch and Windows games want 8 GB of RAM or more. If a game is slow: lower the resolution (in-game menu → Picture), try the other graphics option (OpenGL or Vulkan), and keep the device cool and charged.",
+    )),
     Topic("Games and films on a network drive (PC or NAS)", listOf(
         "What it does: plays games and films kept on a computer or NAS at home, over Wi-Fi, without copying them to the phone. Nothing extra to install on the phone. The phone and the computer must be on the same network.",
         "STEP 1, on a Windows PC: share the folder. Right-click the folder (for example your roms folder) → Properties → Sharing tab → Advanced Sharing… → tick Share this folder. Note the share name (you can keep the folder's name). Click Permissions, make sure Everyone has Read ticked, then OK, OK.",
@@ -97,7 +106,7 @@ private val topics = listOf(
         "BIOS: some of these need the real machine's ROMs (Kickstart for the Amiga, TOS for the Atari ST, the 3DO and Neo Geo CD BIOS …). Put the ones you own in your BIOS folder, then Settings → Help and about → Set up RetroForge → BIOS files: RetroForge recognises them by their contents, whatever they're called, and copies them where each emulator looks.",
     )),
     Topic("Other emulators (RetroArch and standalone apps)", listOf(
-        "A game's page also offers RetroArch, with the right core, for people who know their way around it, and free standalone emulators: NetherSX2 (PS2), Dolphin (GameCube, Wii), Azahar (3DS), Eden (Switch), DuckStation, PPSSPP, Flycast and more.",
+        "A game's page also offers RetroArch, with the right core, for people who know their way around it, and free standalone emulators: NetherSX2 (PS2), Dolphin (GameCube, Wii), Azahar (3DS), RetroForge Switch Player or Eden (Switch), DuckStation, PPSSPP, Flycast and more.",
         "\"Get\" opens Obtainium already set up for that app, so it installs from the official release and stays updated. Settings → Emulator apps also links the Obtainium Emulation Pack.",
         "Once installed: \"Play with …\" starts the game in it, and \"Use by default\" makes Play use it for that system.",
         "PS2, GameCube, Wii, 3DS and Switch need their app's own setup the first time (PS2 BIOS in NetherSX2, keys and firmware in Eden). Games made of several files (.cue, .m3u) may also need your games folder added inside the app.",

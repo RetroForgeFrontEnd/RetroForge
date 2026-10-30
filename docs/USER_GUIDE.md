@@ -14,6 +14,17 @@ The same guide as Settings → How to use RetroForge in the app.
 - Settings → Check my setup shows every system at once: its emulator, BIOS and games, and what's missing.
 - RetroForge comes with no games and no BIOS. Use your own.
 
+## What will my device run? (a rough guide)
+
+A rough guide only: the same chip runs some games of a system perfectly and struggles with others, and cooling, Android version and drivers matter too. Settings → GPU and drivers shows your chip.
+
+- **Low end** (Unisoc T610/T618, MediaTek Helio G85, Snapdragon 680, Exynos 850; 3–4 GB of RAM): everything up to PlayStation runs well: Game Boy to GBA, NES, SNES, Mega Drive, Master System, PC Engine, arcade (FinalBurn Neo, CPS1–3), PlayStation and the home computers. DS and lighter N64 and PSP games mostly play. GameCube, PS2, 3DS and Switch are out of reach.
+- **Mid range** (Unisoc T820, Helio G99, Dimensity 900–1200, Snapdragon 720G to 778G or 7 Gen 1; 4–6 GB): add N64, DS, PSP at 2× resolution, Dreamcast and most Saturn. Lighter GameCube and 3DS games play; PS2 only for simpler games.
+- **High end** (Snapdragon 865, 888, 8 Gen 1, Dimensity 8100–9000, Exynos 2200, Google Tensor; 8 GB): GameCube, Wii and most PS2 at 2×, most 3DS, and lighter Switch games (Blazing Chrome runs at full speed on a Galaxy S22).
+- **Flagship** (Snapdragon 8 Gen 2, 8 Gen 3, 8 Elite, Dimensity 9200 and newer; 8–16 GB): PS2 and GameCube at 3× and more, many Switch games, and older or lighter Windows games in the PC player.
+- Snapdragon chips (Adreno graphics) are the best for emulation: they can use Turnip drivers, which many GameCube, PS2, Switch and PC games need. Exynos, Xclipse and Mali chips run fewer of these heavy systems for the same speed.
+- Switch and Windows games want 8 GB of RAM or more. If a game is slow: lower the resolution (in-game menu → Picture), try the other graphics option (OpenGL or Vulkan), and keep the device cool and charged.
+
 ## USB drives and SD cards
 
 - A folder on a USB drive (through an OTG adapter or USB-C) or an SD card is added like any other: Retro tab → Game folders → Add a folder, then pick it in Android's folder picker.
@@ -91,7 +102,7 @@ The same guide as Settings → How to use RetroForge in the app.
 
 ## Other emulators (RetroArch and standalone apps)
 
-- A game's page also offers RetroArch, with the right core, for people who know their way around it, and free standalone emulators: NetherSX2 (PS2), Dolphin (GameCube, Wii), Azahar (3DS), Eden (Switch), DuckStation, PPSSPP, Flycast and more.
+- A game's page also offers RetroArch, with the right core, for people who know their way around it, and free standalone emulators: NetherSX2 (PS2), Dolphin (GameCube, Wii), Azahar (3DS), RetroForge Switch Player or Eden (Switch), DuckStation, PPSSPP, Flycast and more.
 - "Get" opens Obtainium already set up for that app, so it installs from the official release and stays updated. Settings → Emulator apps also links the Obtainium Emulation Pack.
 - Once installed: "Play with …" starts the game in it, and "Use by default" makes Play use it for that system.
 - PS2, GameCube, Wii, 3DS and Switch need their app's own setup the first time (PS2 BIOS in NetherSX2, keys and firmware in Eden). Games made of several files (.cue, .m3u) may also need your games folder added inside the app.
