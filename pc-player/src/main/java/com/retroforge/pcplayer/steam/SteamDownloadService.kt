@@ -16,6 +16,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.File
@@ -57,6 +59,7 @@ class SteamDownloadService : Service() {
         val appId = intent?.getIntExtra(EXTRA_APP_ID, 0) ?: 0
         val name = intent?.getStringExtra(EXTRA_NAME).orEmpty()
         val folder = intent?.getStringExtra(EXTRA_FOLDER)?.let(::File)
+        val allowMobile = intent?.getBooleanExtra(EXTRA_ALLOW_MOBILE, false) == true
         if (appId == 0 || folder == null || downloading) return START_NOT_STICKY
         downloading = true
 
@@ -71,10 +74,36 @@ class SteamDownloadService : Service() {
         holdLocks()
         job = scope.launch {
             val result = runCatching {
-                SteamDownloads(SteamAccount(this@SteamDownloadService)).download(appId, folder) { progress, step, total ->
-                    totalBytes = total
-                    update(State(appId, name, folder.path, progress, step))
-                } ?: throw IllegalStateException("Sign in to Steam first")
+                // Wi-Fi only unless the player allowed mobile data: without Wi-Fi the download waits, and when Wi-Fi
+                // drops mid-way it stops and waits, then carries on from where it was once Wi-Fi is back.
+                while (true) {
+                    while (!allowMobile && !onWifi()) {
+                        update(State(appId, name, folder.path, lastProgress, "Waiting for Wi-Fi"))
+                        delay(NETWORK_CHECK_MS)
+                    }
+                    var wifiLost = false
+                    coroutineScope {
+                        val download = launch {
+                            SteamDownloads(SteamAccount(this@SteamDownloadService)).download(appId, folder) { progress, step, total ->
+                                totalBytes = total
+                                update(State(appId, name, folder.path, progress, step))
+                            } ?: throw IllegalStateException("Sign in to Steam first")
+                        }
+                        val watcher = if (allowMobile) null else launch {
+                            while (true) {
+                                delay(NETWORK_CHECK_MS)
+                                if (!onWifi()) {
+                                    wifiLost = true
+                                    download.cancel()
+                                    break
+                                }
+                            }
+                        }
+                        download.join()
+                        watcher?.cancel()
+                    }
+                    if (!wifiLost) break
+                }
             }
             val end = result.fold(
                 onSuccess = { State(appId, name, folder.path, 1f, "Ready to play", finished = true) },
@@ -101,12 +130,22 @@ class SteamDownloadService : Service() {
     private var job: kotlinx.coroutines.Job? = null
     private var lastSaved = 0L
 
-    /** Progress: the notification on each new percent, the status file every couple of seconds. */
+    /** Whether the phone is on Wi-Fi (or another network that isn't charged by the byte, like Ethernet). */
+    private fun onWifi(): Boolean {
+        val connectivity = getSystemService(android.net.ConnectivityManager::class.java)
+        val capabilities = connectivity.getNetworkCapabilities(connectivity.activeNetwork) ?: return false
+        return capabilities.hasCapability(android.net.NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+    }
+
+    private var lastStep = ""
+
+    /** Progress: the notification on each new percent or step, the status file every couple of seconds. */
     private fun update(next: State) {
         lastProgress = next.progress
         val percent = (next.progress * 100).toInt()
-        if (percent != lastNotified) {
+        if (percent != lastNotified || next.step != lastStep) {
             lastNotified = percent
+            lastStep = next.step
             getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification(next))
         }
         if (next.updated - lastSaved > 2_000) save(next)
@@ -194,6 +233,8 @@ class SteamDownloadService : Service() {
         private const val EXTRA_APP_ID = "app_id"
         private const val EXTRA_NAME = "name"
         private const val EXTRA_FOLDER = "folder"
+        private const val EXTRA_ALLOW_MOBILE = "allow_mobile"
+        private const val NETWORK_CHECK_MS = 3_000L
 
         private const val STALE_MS = 2 * 60 * 1000L
         private const val ACTION_CANCEL = "com.retroforge.pcplayer.steam.CANCEL"
@@ -215,9 +256,11 @@ class SteamDownloadService : Service() {
             )
         }.getOrNull()
 
-        fun start(context: Context, appId: Int, name: String, folder: File) {
+        /** Downloads a game; [allowMobile] lets it use mobile data when there's no Wi-Fi (otherwise it waits for Wi-Fi). */
+        fun start(context: Context, appId: Int, name: String, folder: File, allowMobile: Boolean = false) {
             val intent = Intent(context, SteamDownloadService::class.java)
                 .putExtra(EXTRA_APP_ID, appId).putExtra(EXTRA_NAME, name).putExtra(EXTRA_FOLDER, folder.path)
+                .putExtra(EXTRA_ALLOW_MOBILE, allowMobile)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) context.startForegroundService(intent) else context.startService(intent)
         }
     }
