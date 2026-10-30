@@ -37,8 +37,12 @@ fun AboutScreen() {
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("What it does")
-            CardBody("• Finds the games you already have, on your phone or SD card, and shows them with box art, by system.")
-            CardBody("• Plays them in its own built-in player, with nothing to set up, or in RetroArch and standalone emulators. PC games go through a separately installed PC game runtime.")
+            CardBody("• Finds the games you already have, on your phone or SD card, and shows them with box art, by system, or on a bookshelf.")
+            CardBody("• Plays them in its own built-in player, with nothing to set up, or in RetroArch and standalone emulators. Bezels, filters, cheats, save states, and netplay with friends on the same Wi-Fi or over the internet.")
+            CardBody("• Plays Windows PC games itself, in its own PC player: your Steam library with artwork, downloads and Steam Cloud saves, an on-screen Xbox controller (or your own), and Play together for LAN games.")
+            CardBody("• Streams the games on your own PC (Moonlight and Sunshine), and opens cloud gaming like Xbox Cloud Gaming.")
+            CardBody("• On Snapdragon devices, can use the open-source Turnip driver in its own players for faster GPU games.")
+            CardBody("• Keeps your saves in step between devices, and has free games to download and play.")
             CardBody("• Patches ROM hacks and translations, and helps you discover more from catalogues you choose.")
             CardBody("• Tidies your collection: removes duplicates, compresses discs to CHD and cartridges to .zip, and makes multi-disc playlists. Every change is shown first and can be undone.")
             CardBody("• Works with a controller from the sofa as well as with touch.")
@@ -60,6 +64,10 @@ fun AboutScreen() {
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle("Thanks")
             CardBody("Bezels in the built-in player are by The Bezel Project (github.com/thebezelproject), downloaded from their GitHub when you ask.")
+            CardBody(
+                "The PC player stands on Wine, Proton, FEX, DXVK and Mesa, with the builds GameNative and Winlator Cmod made for Android. " +
+                    "Turnip drivers are built by K11MCH1 and MrPurple from Mesa's code, and loaded with libadrenotools by Billy Laws.",
+            )
         }
 
         SupportCard()
