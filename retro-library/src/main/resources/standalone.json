@@ -91,6 +91,18 @@
    "obtainiumApp": "{\"id\":\"com.github.stenzek.duckstation\",\"url\":\"https://duckstation-mirror.rmacias.workers.dev\",\"author\":\"duckstation-mirror.rmacias.workers.dev\",\"name\":\"DuckStation\",\"preferredApkIndex\":0,\"additionalSettings\":\"{\\\"intermediateLink\\\":[],\\\"customLinkFilterRegex\\\":\\\"\\\",\\\"filterByLinkText\\\":false,\\\"matchLinksOutsideATags\\\":false,\\\"skipSort\\\":false,\\\"reverseSort\\\":false,\\\"sortByLastLinkSegment\\\":false,\\\"versionExtractWholePage\\\":true,\\\"requestHeader\\\":[{\\\"requestHeader\\\":\\\"User-Agent: Obtainium/1.0\\\"}],\\\"defaultPseudoVersioningMethod\\\":\\\"partialAPKHash\\\",\\\"trackOnly\\\":false,\\\"versionExtractionRegEx\\\":\\\"Version:.*?>([\\\\\\\\d][\\\\\\\\w.-]+)\\\",\\\"matchGroupToUse\\\":\\\"$1\\\",\\\"versionDetection\\\":false,\\\"releaseDateAsVersion\\\":false,\\\"useVersionCodeAsOSVersion\\\":false,\\\"apkFilterRegEx\\\":\\\"\\\",\\\"invertAPKFilter\\\":false,\\\"autoApkFilterByArch\\\":true,\\\"appName\\\":\\\"Duckstation \\\",\\\"appAuthor\\\":\\\"stenzek \\\",\\\"shizukuPretendToBeGooglePlay\\\":false,\\\"allowInsecure\\\":false,\\\"exemptFromBackgroundUpdates\\\":false,\\\"skipUpdateNotifications\\\":false,\\\"about\\\":\\\"PlayStation 1 emulator\\\",\\\"refreshBeforeDownload\\\":false,\\\"includeZips\\\":false,\\\"zippedApkFilterRegEx\\\":\\\"\\\"}\",\"overrideSource\":\"HTML\"}"
   },
   {
+   "id": "RETROFORGE_SWITCH",
+   "name": "RetroForge Switch Player",
+   "page": "https://github.com/RetroForgeFrontEnd/RetroForge/releases",
+   "obtainium": null,
+   "packages": [
+    {
+     "package": "com.retroforge.switchplayer",
+     "activity": "org.yuzu.yuzu_emu.activities.EmulationActivity"
+    }
+   ]
+  },
+  {
    "id": "EDEN",
    "name": "Eden",
    "page": "https://eden-emu.dev",
@@ -507,6 +519,11 @@
    }
   ],
   "switch": [
+   {
+    "emulator": "RETROFORGE_SWITCH",
+    "label": "RetroForge Switch Player",
+    "command": "%ACTION%=android.nfc.action.TECH_DISCOVERED %DATA%=%ROMPROVIDER%"
+   },
    {
     "emulator": "EDEN",
     "label": "Eden",
