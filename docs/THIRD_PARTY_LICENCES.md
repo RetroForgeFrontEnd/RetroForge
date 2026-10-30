@@ -15,10 +15,16 @@ Licences below are the standard licences of these projects; versions are pinned 
 | Apache Commons Compress (7z reading) | 1.28.0 | Apache-2.0 |
 | kotlinx.serialization (JSON) | 1.12.0 | Apache-2.0 |
 | XZ for Java (LZMA for 7z) | 1.12 | 0BSD / public domain (verify the exact statement in the artifact before release) |
+| Moonlight for Android (PC streaming, `pc-stream` module, source included) | b48494c (2026-09-12) | GPL-3.0 |
+| moonlight-common-c, with ENet and nanors (PC streaming core) | 874ac95 | GPL-3.0; ENet MIT; nanors MIT |
+| OpenSSL libcrypto, libopus (Moonlight's prebuilt static libraries) | 4.0.2; Moonlight's build | Apache-2.0; BSD-3-Clause |
+| Bouncy Castle bcprov/bcpkix, OkHttp, jmDNS, JCodec (PC streaming) | 1.86; 5.5.1; 3.6.4; 0.2.5 | MIT; Apache-2.0; Apache-2.0; BSD-2-Clause |
 
 | Press Start 2P, Orbitron, Rajdhani, Exo 2 fonts (google/fonts) | 2026-10 | SIL Open Font License 1.1 (texts in core-ui assets/licences) |
 
 Test-only (not shipped): JUnit 4.13.2 (EPL-1.0), kotlinx-coroutines-test (Apache-2.0).
+
+PC streaming details: [pc-streaming.md](pc-streaming.md).
 
 Not shipped, interacted with as separate apps: DroidDeck (GPL-3.0) — see [pc-runtime-licences.md](pc-runtime-licences.md).
 

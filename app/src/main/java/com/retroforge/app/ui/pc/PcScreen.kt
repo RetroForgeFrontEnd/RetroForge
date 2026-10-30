@@ -35,8 +35,9 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
     val status by viewModel.status.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
 
-    ScreenFrame(title = "PC", subtitle = "Ports of your games, and Windows games through a PC game runtime (a separate app).") {
+    ScreenFrame(title = "PC", subtitle = "Ports of your games, Windows games through a PC game runtime (a separate app), and streaming from your own PC.") {
         PcGamesSection(library)
+        PcStreamSection()
         PortsSection(library)
         FreeGamesSection(library)
         Text("Windows games", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
