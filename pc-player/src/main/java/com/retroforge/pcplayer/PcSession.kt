@@ -332,11 +332,14 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
         /**
          * Steam's own client (steam.exe beside its package folder) starts without its updater: under Wine the updater
          * can't check free space (Wine refuses its \\?\D:\. path) and gives up; the client files are put in place whole.
+         * Its Chromium-based browser (the sign-in and library screens) runs without Chromium's own sandbox, which
+         * can't work under Wine; Android's app sandbox still holds everything the player runs.
          */
         fun gameArguments(exe: File): List<String> = when {
             File(exe.parentFile, exe.nameWithoutExtension + ".pck").isFile ->
                 listOf("--rendering-driver", "vulkan", "--rendering-method", "mobile")
-            exe.name.equals("steam.exe", true) && File(exe.parentFile, "package").isDirectory -> listOf("-inhibitbootstrap")
+            exe.name.equals("steam.exe", true) && File(exe.parentFile, "package").isDirectory ->
+                listOf("-inhibitbootstrap", "-no-cef-sandbox")
             else -> emptyList()
         }
     }
