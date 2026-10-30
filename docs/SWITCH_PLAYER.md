@@ -4,7 +4,9 @@ A separate Android app, built from Eden's open-source code, that RetroForge hand
 of the RetroForge app. It never ships, downloads or links to keys, firmware or games: the player owns those files
 only after the user has copied them from their own console.
 
-Status (2026-10-30): Eden v0.2.1 builds from source on this PC; first renamed debug APK in progress (see "Build").
+Status (2026-10-30): Eden v0.2.1 builds from source on this PC. First renamed APK built:
+`F:\SwitchPlayer\RetroForge-Switch-Player-debug.apk` (35 MB, arm64, `com.retroforge.switchplayer`, "RetroForge Switch
+Player"). Not yet installed or tested on any device.
 Source lives outside this repo at `F:\SwitchPlayer\eden` (branch `switchplayer`, based on tag `v0.2.1`).
 
 ## Why a separate app
@@ -178,7 +180,8 @@ phone (the S22, with the user's OK).
 Source: `F:\SwitchPlayer\eden`, branch `switchplayer` (local only, not pushed), on top of Eden tag `v0.2.1`.
 Build: `bash F:/SwitchPlayer/build.sh assembleMainlineRelWithDebInfo` (sets GRADLE_USER_HOME=F:\GradleHome,
 JAVA_HOME = Adoptium JDK 25, NDK 28.2.13676358). APK: `src/android/app/build/outputs/apk/mainline/relWithDebInfo/`.
-1778 C++ files; dependencies (Boost, OpenSSL, FFmpeg, …) are downloaded by CPM into `eden/.cache/cpm` on first build.
+1778 C++ files: the full build took about 15 min of compiling (plus ~6 min of first-time dependency downloads)
+and gives a 35 MB APK (debuggable, signed with Eden's bundled debug key). Dependencies (Boost, OpenSSL, FFmpeg, …) are downloaded by CPM into `eden/.cache/cpm` on first build.
 
 What had to be fixed to build on this PC:
 
