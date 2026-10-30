@@ -296,6 +296,8 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
                 if (layout == GameLayout.SHELF) Box3dBatch(viewModel, shown)
                 ControllerTextField(value = filter, onValueChange = { filter = it }, singleLine = true, label = { Text(stringResource(R.string.library_filter)) }, modifier = Modifier.fillMaxWidth())
                 SystemCoverBatch(viewModel, system, games.orEmpty(), chosen)
+                val apps = remember(system) { viewModel.standaloneOptions(system).map { (_, app) -> app.id to app.name } }
+                com.retroforge.app.ui.settings.SystemDriverCard(system, remember(system) { viewModel.systemCore(system) }, apps)
                 if (games.orEmpty().any { it.duplicateKey != null }) {
                     FocusChip(if (hideCopies) "• Showing one copy of each game" else "Show one copy of each game", onClick = { hideCopies = !hideCopies })
                 }

@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.retroforge.app.BuildConfig
 import com.retroforge.app.ui.CardBody
 import com.retroforge.app.ui.CardTitle
+import com.retroforge.app.ui.ChipRow
 import com.retroforge.app.ui.ScreenFrame
 import com.retroforge.core.ui.FocusCard
 import com.retroforge.core.ui.FocusChip
@@ -30,6 +31,10 @@ import com.retroforge.core.ui.StatusPill
 import com.retroforge.core.ui.StatusTone
 import com.retroforge.pc.DriverAdvice
 import com.retroforge.pc.DriverFile
+import com.retroforge.pc.DriverPick
+import com.retroforge.pc.DriverRecommendations
+import com.retroforge.pc.DriverTarget
+import com.retroforge.pc.GpuFamily
 import com.retroforge.pc.GpuDrivers
 import com.retroforge.pc.GpuProbe
 import kotlinx.coroutines.Dispatchers
@@ -67,6 +72,8 @@ fun GpuDriversScreen() {
                 CardBody(a.advice)
             }
         }
+
+        RecommendedCard(agent, onInstalled = { inPlayers = com.retroforge.player.GpuDriver.current(context)?.second })
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle(stringResource(R.string.gpu_drivers_using_a_driver))
@@ -151,6 +158,71 @@ fun GpuDriversScreen() {
                         }
                     })
                 }
+        }
+    }
+}
+
+/**
+ * The best driver on this device for each emulator RetroForge knows, with Use recommended (every system back to its
+ * recommendation) and, when RetroForge's players would use Turnip but none is installed, the suggested build to
+ * download: only when tapped.
+ */
+@Composable
+private fun RecommendedCard(agent: String, onInstalled: () -> Unit) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var family by remember { mutableStateOf<GpuFamily?>(null) }
+    var status by remember { mutableStateOf<String?>(null) }
+    var busy by remember { mutableStateOf(false) }
+    var installed by remember { mutableStateOf(com.retroforge.player.GpuDriver.current(context) != null) }
+    val res = androidx.compose.ui.platform.LocalResources.current
+    LaunchedEffect(Unit) { family = withContext(Dispatchers.IO) { DeviceGpu.family(context) } }
+    val f = family ?: return
+    FocusCard(modifier = Modifier.fillMaxWidth()) {
+        CardTitle(stringResource(R.string.gpu_rec_title))
+        if (!f.canUseTurnip) {
+            CardBody(reasonText(DriverRecommendations.recommend(f, DriverTarget.EDEN).reason))
+            return@FocusCard
+        }
+        CardBody(stringResource(R.string.gpu_rec_intro))
+        val players = listOf(
+            stringResource(R.string.gpu_rec_built_in, "PPSSPP") to DriverTarget.BUILT_IN_PPSSPP,
+            stringResource(R.string.gpu_rec_built_in, "LRPS2") to DriverTarget.BUILT_IN_PCSX2,
+            stringResource(R.string.gpu_rec_built_in, "Dolphin") to DriverTarget.BUILT_IN_DOLPHIN,
+            stringResource(R.string.gpu_rec_pc_player) to DriverTarget.PC_PLAYER,
+        )
+        val apps = listOf("Eden" to DriverTarget.EDEN, "Dolphin" to DriverTarget.DOLPHIN_APP, "NetherSX2" to DriverTarget.NETHERSX2,
+            "ARMSX2" to DriverTarget.ARMSX2, "Azahar" to DriverTarget.AZAHAR, "PPSSPP" to DriverTarget.PPSSPP_APP)
+        var why by remember { mutableStateOf(false) }
+        RecommendationSummary(f, players + apps, why)
+        // The built-in player chooses per system (on each system's page); the PC player has its one choice here.
+        CardBody(stringResource(R.string.gpu_rec_pc_player) + ":")
+        BuiltInDriverChoice(DriverRecommendations.PC_SYSTEM, f, DriverTarget.PC_PLAYER, whereToGet = false)
+        status?.let { CardBody(it) }
+        ChipRow {
+            WhyChip(why) { why = !why }
+            FocusChip(stringResource(R.string.gpu_rec_use_recommended_everywhere), onClick = {
+                val video = videoChoices(context)
+                video.all().keys.filter { it.startsWith("driver.") }.forEach { video.set(it, null) }
+                status = res.getString(R.string.gpu_rec_done_everywhere)
+            })
+            val wantsTurnip = players.any { (_, t) -> DriverRecommendations.recommend(f, t).pick == DriverPick.TURNIP }
+            if (wantsTurnip && !installed) FocusChip(stringResource(R.string.gpu_rec_get_suggested), onClick = {
+                if (busy) return@FocusChip
+                busy = true
+                status = res.getString(R.string.gpu_rec_finding)
+                scope.launch {
+                    status = withContext(Dispatchers.IO) {
+                        val file = DriverRecommendations.suggestedBuild(f, GpuDrivers.fetch(agent))
+                            ?: return@withContext res.getString(R.string.gpu_rec_none_found)
+                        runCatching { useInPlayers(context, file, agent) { p -> status = "${file.release}: $p%" } }
+                            .fold({ res.getString(R.string.gpu_rec_installed, file.release) }, { res.getString(R.string.gpu_rec_failed, it.message.orEmpty()) })
+                    }
+                    installed = com.retroforge.player.GpuDriver.current(context) != null
+                    busy = false
+                    onInstalled()
+                }
+            })
         }
     }
 }

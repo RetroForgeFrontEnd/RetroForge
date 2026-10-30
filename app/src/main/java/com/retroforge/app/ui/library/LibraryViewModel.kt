@@ -239,6 +239,9 @@ class LibraryViewModel(
     /** The built-in player's core for this game, or null when the game needs RetroArch or a standalone app. */
     fun builtInCore(game: GameEntity) = PlayerCores.forGame(game.system, game.fileName, coreChoices.get(game.system))
 
+    /** The built-in player's core for [system]: the chosen one, else the default. */
+    fun systemCore(system: String) = PlayerCores.choices(system).let { list -> list.firstOrNull { it.id == coreChoices.get(system) } ?: list.firstOrNull() }
+
     val coreStates: StateFlow<Map<String, CoreState>> = cores.states
 
     fun coreState(id: String) = cores.state(id)

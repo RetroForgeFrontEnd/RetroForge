@@ -422,6 +422,11 @@ class PcSession(
          */
         fun customDriver(runtimeRoot: File): Pair<String, String>? {
             if (!Build.HARDWARE.startsWith("qcom", true) && !(Build.VERSION.SDK_INT >= 31 && Build.SOC_MANUFACTURER.equals("QTI", true))) return null
+            // "Phone's own driver" picked for the PC player (driver.windows in the player's settings, as
+            // DriverRecommendations keeps it); otherwise Turnip, which is what's recommended for Wine on every Adreno it runs on.
+            val choices = File(runtimeRoot.parentFile, "player/video.properties")
+            val choice = runCatching { java.util.Properties().apply { choices.inputStream().use(::load) }.getProperty("driver.windows") }.getOrNull()
+            if (choice == "phone") return null
             val dir = File(runtimeRoot.parentFile, "gpu-driver")
             val meta = File(dir, "meta.json").takeIf { it.isFile }?.readText() ?: return null
             val library = Regex("\"libraryName\"\\s*:\\s*\"([^\"]+)\"").find(meta)?.groupValues?.get(1) ?: return null
