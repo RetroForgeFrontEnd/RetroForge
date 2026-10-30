@@ -169,6 +169,14 @@ lines for Wine's environment, e.g. `WINEDEBUG=+seh`), and Godot's own log in the
 (`drive_c/users/xuser/AppData/Roaming/Godot/app_userdata/<game>/logs`). The runtime and a Warside copy are still on
 the S22 (2.3 GB + 383 MB in RetroForge's storage).
 
+### Warside reached its title screen (2026-10-30, 03:43)
+
+On the S22, in RetroForge's own player: signed in to Steam (QR), ownership confirmed, gbe_fork in place of
+steam_api64.dll with its LAN networking off, .NET 8 through FEX, Godot's Vulkan renderer on the Xclipse wrapper.
+The fixes that got it there, in order: `DOTNET_EnableWriteXorExecute=0` (FEX and .NET's JIT), gbe
+`disable_networking=1` (its LAN interface query hangs under Wine on Android), `DOTNET_SYSTEM_GLOBALIZATION_USENLS=1`
+(Wine's ICU is incomplete; invariant mode broke the game's "en" culture). No sound yet: no audio server.
+
 ### Steam games (2026-10-30, later)
 
 Built and tested on the S22, GameNative's way:

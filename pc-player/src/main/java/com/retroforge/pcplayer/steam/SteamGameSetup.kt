@@ -66,6 +66,10 @@ class SteamGameSetup(private val runtimeRoot: File, private val account: SteamAc
         File(dir, "steam_appid.txt").takeIf { !it.exists() }?.writeText(appId.toString())
         val settings = File(dir, "steam_settings").apply { mkdirs() }
         File(settings, "steam_appid.txt").writeText(appId.toString())
+        // gbe's LAN emulation (Steam lobbies on the local network) asks Windows for the network interfaces, which
+        // hangs under Wine on Android (Android blocks the netlink query behind it), so the game never gets past
+        // SteamAPI_Init. Single-player doesn't need it.
+        File(settings, "configs.main.ini").writeText("[main::connectivity]\ndisable_lan_only=1\ndisable_networking=1\n")
         val steamId = account.steamId64
         val accountId = steamId and 0xFFFFFFFFL
         File(settings, "configs.user.ini").writeText(
