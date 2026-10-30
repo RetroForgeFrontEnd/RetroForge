@@ -28,7 +28,7 @@ import kotlin.concurrent.thread
  *
  * Android won't run programs from an app's own storage directly, so Wine is started as
  * `/system/bin/linker64 wine ...` and libpcexec.so (preloaded into each Wine process) does the same for every
- * program Wine starts. The game's folder is Windows drive D:.
+ * program Wine starts. The game's folder is Windows drive D: (see [gameFolder]).
  */
 class PcSession(private val context: Context, private val runtime: PcRuntime, val exe: File, screen: ScreenInfo) {
 
@@ -41,6 +41,8 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
     val log = File(runtime.root, "last-run.log")
     /** The program actually run: [exe], or the game an Unreal Engine starter .exe would start (see [unrealGame]). */
     val program: File = unrealGame(exe) ?: exe
+    /** Drive D:, the game's own top folder, so paths the game reaches with ..\ from its .exe's folder still work. */
+    private val folder: File = gameFolder(exe)
     /** The on-screen gamepad, seen by the game as an Xbox 360 controller once [VirtualPad.connected] is set. */
     val pad = VirtualPad(File(runtime.root, "pad.mem"))
 
@@ -85,7 +87,7 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             Os.symlink(target, file.path)
         }
         link("c:", "../drive_c")
-        link("d:", exe.parentFile!!.path)
+        link("d:", folder.path)
         link("z:", runtime.imageFs.path)
         runCatching { Os.remove(File(devices, "e:").path) }
     }
@@ -200,7 +202,7 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
         // the taskbar, and blackDesktop() makes it black, so nothing shows around a 4:3 game or while it loads.
         val command = listOf(
             "/system/bin/linker64", "${runtime.wineDir.path}/bin/wine",
-            "explorer", "/desktop=RetroForge,$screen", "D:\\" + program.relativeTo(exe.parentFile!!).path.replace('/', '\\'),
+            "explorer", "/desktop=RetroForge,$screen", "D:\\" + program.relativeTo(folder).path.replace('/', '\\'),
         ) + gameArguments(program)
         log.delete()
         val builder = ProcessBuilder(command)
@@ -286,6 +288,24 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             return exe.parentFile?.listFiles { f -> f.isDirectory && f.name != "Engine" }.orEmpty()
                 .flatMap { File(it, "Binaries/Win64").listFiles { f -> f.name.endsWith("-Shipping.exe", true) }.orEmpty().asList() }
                 .firstOrNull()
+        }
+
+        /** Folders games keep their .exe in, below the game's own folder (Binaries\Win32 for Unreal Engine 3, bin\x64...). */
+        private val PROGRAM_FOLDERS = setOf(
+            "binaries", "win32", "win64", "bin", "bin32", "bin64", "x86", "x64", "win_x86", "win_x64", "system", "system32", "exe",
+        )
+
+        /**
+         * The game's own top folder for [exe]: up from its folder past folders like Binaries\Win32 (XCOM: Enemy Unknown
+         * runs Binaries\Win32\XComGame.exe and reads ..\..\XComGame), and past an Unreal Engine project folder to the
+         * folder holding Engine. Wine can't go above a drive's top (D:\..\ is D:\), so D: has to be this folder.
+         */
+        fun gameFolder(exe: File): File {
+            var dir = exe.parentFile!!
+            while (dir.name.lowercase() in PROGRAM_FOLDERS && dir.parentFile != null) dir = dir.parentFile!!
+            val parent = dir.parentFile
+            if (dir != exe.parentFile && parent != null && File(parent, "Engine").isDirectory) dir = parent
+            return dir
         }
 
         fun gameArguments(exe: File): List<String> =
