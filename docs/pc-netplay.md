@@ -1,6 +1,6 @@
 # PC player: Play together (LAN and internet multiplayer for Windows games)
 
-Last updated 2026-10-30. Branch `claude/sad-franklin-d79194` (based on `claude/pc-player`). Not pushed.
+Last updated 2026-10-30. Branch `claude/sad-franklin-d79194` (based on `claude/pc-player`, merged up to cbb0fc9). Not pushed.
 
 ## What it does
 
@@ -49,9 +49,19 @@ mobile data or networks without UPnP can't host (joining works); the host's rout
 | Test | Result |
 |---|---|
 | `PcLanTest` (JVM): host and guest on one machine, games speaking the relay protocol: UDP broadcast + reply with the right sender, TCP through the relay both ways, `accept` sees 10.77.0.2:port, close propagates | Pass |
-| `libpcexec.so` builds for arm64 (NDK 28) | Pass |
-| `lantest.exe` (tools/lantest) natively on the PC | Lists adapters, broadcasts and listens |
-| On the S22: adapter list, broadcasts with the PC, virtual LAN | Not yet: the phone was busy (another session's download) |
+| S22, Wine, **old** `libpcexec.so`: `tools/lantest` | **Hangs** in `GetAdaptersAddresses` (killed after 150 s): the gbe_fork hang |
+| S22, Wine, new `libpcexec.so`: adapter list | `wlan0 192.168.0.14/24` (Ethernet), `rmnet*`, `lo`; `GetAdaptersInfo` and `gethostbyname(own name)` work; route table made from `getifaddrs` |
+| S22 (Wine) ↔ PC (native), same Wi-Fi: `tools/lantest` on both | **Works both ways:** each hears the other's UDP broadcast on 47777, connects to the other over TCP 47778 and gets its reply |
+| S22 (Wine, virtual LAN, joined) ↔ PC (`PcLanCli host … answer`, a stand-in game on 10.77.0.1), over Wi-Fi to the PC's address | **Works:** Windows on the phone sees only `rf0 10.77.0.2/24` (and loopback), `gethostbyname` gives 10.77.0.2; its broadcasts reach the PC from 10.77.0.2, the PC's reply arrives from 10.77.0.1, TCP to 10.77.0.1:47778 goes through the relay with both sides seeing virtual addresses |
+| The Play together menu in the installed app; a real internet connection (two networks, UPnP); a phone accepting TCP from the other side through the virtual LAN; two RetroForge phones | Not yet tested |
+
+Known quirk: Wine reports some adapters (`rf0`, `epdg5`) with type 0 in `GetAdaptersAddresses`, although the
+`SIOCGIFHWADDR` answer is Ethernet; LAN games rarely look at it.
+
+How to repeat the device tests (debug build, as the app's user, nothing installed):
+`run-as com.retroforge.app app_process -cp /data/local/tmp/<app-debug.apk> /system/bin com.retroforge.pcplayer.net.PcLanCli join <host> <config>`
+on the phone; on the PC `java -cp <pc-player debug classes>;<kotlin-stdlib>;<kotlinx-coroutines-core-jvm> com.retroforge.pcplayer.net.PcLanCli host <config> answer`;
+then Wine with `PCNET_FILE=<config>` running `lantest.exe` from a C: path (a Unix path crashes Wine's start-up).
 
 ## Games
 
