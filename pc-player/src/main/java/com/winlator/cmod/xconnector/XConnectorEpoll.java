@@ -68,12 +68,12 @@ public class XConnectorEpoll implements Runnable {
         running = false;
         requestShutdown();
 
-        while (epollThread.isAlive()) {
-            try {
-                epollThread.join();
-            }
-            catch (InterruptedException e) {}
+        // RetroForge: wait at most 2 seconds. A client thread stuck in a blocking call (sound, say) would otherwise
+        // hold the game's shutdown, and what waits for it (saving to Steam Cloud), forever.
+        try {
+            epollThread.join(2000);
         }
+        catch (InterruptedException e) {}
         epollThread = null;
     }
 

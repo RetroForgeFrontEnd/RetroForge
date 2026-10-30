@@ -11,7 +11,9 @@ import `in`.dragonbra.javasteam.steam.authentication.AuthSessionDetails
 import `in`.dragonbra.javasteam.steam.authentication.IAuthenticator
 import `in`.dragonbra.javasteam.steam.authentication.IChallengeUrlChanged
 import `in`.dragonbra.javasteam.steam.authentication.QrAuthSession
+import `in`.dragonbra.javasteam.steam.handlers.steamapps.License
 import `in`.dragonbra.javasteam.steam.handlers.steamapps.SteamApps
+import `in`.dragonbra.javasteam.steam.handlers.steamapps.callback.LicenseListCallback
 import `in`.dragonbra.javasteam.steam.handlers.steamuser.LogOnDetails
 import `in`.dragonbra.javasteam.steam.handlers.steamuser.SteamUser
 import `in`.dragonbra.javasteam.steam.handlers.steamuser.callback.LoggedOnCallback
@@ -110,6 +112,44 @@ class SteamAccount(private val context: Context) {
             GameAccess(owned = true, encryptedTicket = ticket)
         }
     }
+
+    /** Signs in to Steam and runs [block] with the connected client. Null when not signed in. */
+    suspend fun <T> withSignIn(block: suspend (SteamClient, CoroutineScope) -> T): T? {
+        val token = prefs.getString(KEY_TOKEN, null) ?: return null
+        return session { client, scope ->
+            logOn(client, accountName.orEmpty(), token)
+            block(client, scope)
+        }
+    }
+
+    /**
+     * Signs in and runs [block] with the account's licences (what it owns, as packages), which Steam sends right
+     * after signing in. Null when not signed in.
+     */
+    suspend fun <T> withLicenses(block: suspend (SteamClient, List<License>) -> T): T? {
+        val token = prefs.getString(KEY_TOKEN, null) ?: return null
+        return session { client, _ ->
+            val licenses = CompletableDeferred<LicenseListCallback>()
+            val subscription = manager!!.subscribe(LicenseListCallback::class.java) { licenses.complete(it) }
+            try {
+                logOn(client, accountName.orEmpty(), token)
+                val list = withTimeoutOrNull(30_000) { licenses.await() }
+                    ?: throw IOException("Steam didn't send your library in time")
+                if (list.result != EResult.OK) throw IOException("Steam couldn't list your library (${list.result})")
+                block(client, list.licenseList)
+            } finally {
+                subscription.close()
+            }
+        }
+    }
+
+    /** This device's name as Steam shows it (Steam Cloud records which machine wrote each save). */
+    val machineName: String get() = deviceName()
+
+    /** A random id for this device, kept: Steam Cloud tells one device's sync sessions from another's by it. */
+    val cloudClientId: Long
+        get() = prefs.getLong(KEY_CLIENT_ID, 0L).takeIf { it != 0L }
+            ?: java.security.SecureRandom().nextLong().let { if (it == 0L) 1L else it }.also { prefs.edit().putLong(KEY_CLIENT_ID, it).apply() }
 
     private fun details(prompts: SignInPrompts, scope: CoroutineScope) = AuthSessionDetails().apply {
         deviceFriendlyName = deviceName()
@@ -233,6 +273,7 @@ class SteamAccount(private val context: Context) {
         private const val KEY_NAME = "account_name"
         private const val KEY_TOKEN = "refresh_token"
         private const val KEY_STEAM_ID = "steam_id"
+        private const val KEY_CLIENT_ID = "cloud_client_id"
 
         /** JavaSteam's encryption needs a full Bouncy Castle provider, which Android doesn't ship; SpongyCastle is it. */
         @Synchronized

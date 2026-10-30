@@ -57,6 +57,14 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     val roots by library.roots.collectAsStateWithLifecycle(initialValue = null)
     var changes by remember { mutableIntStateOf(0) }
     val games = remember(changes) { pc.all() }
+    // The signed-in account's Steam library (shown on request; the last list shows at once, then Steam is asked again).
+    val steamAccount = remember { com.retroforge.pcplayer.steam.SteamAccount(context) }
+    val steamLibrary = remember {
+        com.retroforge.pcplayer.steam.SteamLibrary(steamAccount, java.io.File(com.retroforge.pcplayer.PcRuntime(context).root, "steam_library.json"))
+    }
+    var showLibrary by remember { mutableStateOf(false) }
+    var library by remember { mutableStateOf<List<com.retroforge.pcplayer.steam.SteamOwnedGame>?>(null) }
+    var libraryBusy by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf(false) }
     // Choosing which .exe starts a Windows game: the mode, then the game whose .exe files are listed.
     var choosingExe by remember { mutableStateOf(false) }
@@ -147,6 +155,24 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                 "RetroForge's own PC player (early test: the first game downloads the PC runtime, about 280 MB).",
         )
         ChipRow {
+            FocusChip(if (showLibrary) "Hide my Steam library" else "My Steam library", onClick = {
+                showLibrary = !showLibrary
+                if (showLibrary && !libraryBusy) {
+                    if (!steamAccount.signedIn) {
+                        status = "Sign in to Steam first (Steam sign-in on this tab)."
+                        showLibrary = false
+                        return@FocusChip
+                    }
+                    library = steamLibrary.cached().ifEmpty { null }
+                    libraryBusy = true
+                    scope.launch {
+                        val result = withContext(Dispatchers.IO) { runCatching { steamLibrary.refresh() } }
+                        result.getOrNull()?.let { library = it }
+                        result.exceptionOrNull()?.let { status = "Couldn't get your Steam library: ${it.message}" }
+                        libraryBusy = false
+                    }
+                }
+            })
             FocusChip("Add a Steam game", onClick = { searching = !searching; hits = null })
             FocusChip("Look in my game folders", enabled = !busy, onClick = { scanGameFolders(say = true) })
             FocusChip("Add from another folder", enabled = !busy, onClick = { pickFolder.launch(null) })
@@ -190,6 +216,31 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
         copying?.let { CardBody("Copying the game… $it%") }
         if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
         status?.let { CardBody(it) }
+    }
+    if (showLibrary) {
+        val onDevice = games.filter { it.source == PcSource.WINDOWS }.mapNotNull { g -> g.appId?.toIntOrNull()?.let { it to g } }.toMap()
+        val list = library.orEmpty().filter { it.windows }
+        Text(
+            when {
+                library == null -> "Getting your Steam library…"
+                libraryBusy -> "Your Steam library (${list.size} games, checking for changes…)"
+                else -> "Your Steam library (${list.size} games)"
+            },
+            style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface,
+        )
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            list.forEach { owned ->
+                val installed = onDevice[owned.appId]
+                PcGameTile(
+                    PcGame(owned.name, PcSource.STEAM, appId = owned.appId.toString()), pc,
+                    if (installed != null) "On this device" else "Not downloaded",
+                    onClick = {
+                        if (installed != null) start(installed)
+                        else status = "Downloading ${owned.name} from Steam is coming next. For now, add its folder from a PC."
+                    },
+                )
+            }
+        }
     }
     if (games.isNotEmpty()) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {

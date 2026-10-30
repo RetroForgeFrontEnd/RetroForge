@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -58,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.retroforge.pcplayer.steam.SteamAccount
+import com.retroforge.pcplayer.steam.SteamCloudSync
 import com.retroforge.pcplayer.steam.SteamGameSetup
 import com.winlator.cmod.widget.XServerView
 import com.winlator.cmod.xserver.Pointer
@@ -72,6 +74,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import java.io.File
 
 /**
@@ -97,6 +100,8 @@ class PcPlayerActivity : ComponentActivity() {
     private var view: XServerView? = null
     private var controlsView: PcControlsView? = null
     private var quitting = false
+    /** Steam Cloud saves for a Steam game (null for other games). */
+    private var cloud: SteamCloudSync? = null
 
     private var phase by mutableStateOf<Phase>(Phase.Loading("Starting"))
     private var menuOpen by mutableStateOf(false)
@@ -160,6 +165,13 @@ class PcPlayerActivity : ComponentActivity() {
                     phase = Phase.Failed(problem)
                     return@launch
                 }
+                // Saves newer in Steam Cloud (from a PC, a Deck, another phone) come down before the game starts. If
+                // Steam can't be reached the game starts anyway with the saves already here.
+                val sync = SteamCloudSync(SteamAccount(this@PcPlayerActivity), runtime.root, File(runtime.prefix, "drive_c"), exe.parentFile!!, appId!!)
+                cloud = sync
+                phase = Phase.Loading("Checking Steam Cloud")
+                runCatching { withContext(Dispatchers.IO) { withTimeout(CLOUD_TIMEOUT_MS) { sync.download { phase = Phase.Loading(it) } } } }
+                    .onFailure { Log.w(TAG, "Steam Cloud download failed", it) }
             }
             startGame(exe)
         }
@@ -440,6 +452,12 @@ class PcPlayerActivity : ComponentActivity() {
 
     private fun onWineExit(code: Int, ended: PcSession) {
         if (quitting || isFinishing) return
+        // The game quit by itself: back to RetroForge (saving to Steam Cloud first). Anything else shows Wine's last
+        // lines, which say what went wrong.
+        if (code == 0) {
+            quit()
+            return
+        }
         val tail = runCatching { ended.log.readLines().takeLast(12).joinToString("\n") }.getOrDefault("")
         menuOpen = false
         controlsView?.visibility = View.GONE
@@ -451,8 +469,26 @@ class PcPlayerActivity : ComponentActivity() {
         quitting = true
         val ending = session
         session = null
-        Thread { ending?.stop() }.start()
-        finish()
+        val sync = cloud
+        if (sync == null) {
+            Thread { ending?.stop() }.start()
+            finish()
+            return
+        }
+        // A Steam game: once Wine has stopped (its saves written), changed saves go up to Steam Cloud before the
+        // player closes, so Android can't end the upload by closing the app.
+        menuOpen = false
+        exitMessage = null
+        controlsView?.visibility = View.GONE
+        phase = Phase.Loading("Saving to Steam Cloud")
+        scope.launch {
+            withContext(Dispatchers.IO) {
+                // Wine's processes end within seconds; the rest of the shutdown isn't worth waiting on longer.
+                ending?.let { Thread { it.stop() }.apply { start() }.join(STOP_WAIT_MS) }
+                runCatching { withTimeout(CLOUD_TIMEOUT_MS) { sync.upload() } }.onFailure { Log.w(TAG, "Steam Cloud upload failed", it) }
+            }
+            finish()
+        }
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -601,6 +637,9 @@ class PcPlayerActivity : ComponentActivity() {
         const val EXTRA_STEAM_APP_ID = "steam_app_id"
         private const val SCREEN_HEIGHT = 720
         private const val LOADING_LIMIT_MS = 90_000L
+        private const val CLOUD_TIMEOUT_MS = 90_000L
+        private const val STOP_WAIT_MS = 8_000L
+        private const val TAG = "PcPlayer"
 
         fun intent(context: Context, exe: File, title: String, steamAppId: Int? = null): Intent =
             Intent(context, PcPlayerActivity::class.java).putExtra(EXTRA_EXE, exe.path).putExtra(EXTRA_TITLE, title)
