@@ -277,7 +277,8 @@ class LibraryScanner(private val rules: SystemRules) {
 
         val hidden = referencedByPlaylists(romFiles, prefix, problems)
         return romFiles.filter { it.path.lowercase() !in hidden }.map { entry ->
-            val name = RomNames.parse(entry.node.name)
+            // Arcade romsets are named by short names ("sf2.zip"): shown by their full titles.
+            val name = ArcadeNames.named(rule.id, entry.node.name, RomNames.parse(entry.node.name))
             // A playlist RetroForge (or the user) made has no gamelist entry of its own: borrow its first disc's.
             val meta = metadata[entry.path.lowercase()] ?: if (isPlaylist(entry)) firstDisc(entry)?.let { metadata[it] } else null
             val image = listOfNotNull(meta?.image, meta?.thumbnail, meta?.marquee)

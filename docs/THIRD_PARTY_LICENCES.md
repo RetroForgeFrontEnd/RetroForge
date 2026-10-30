@@ -57,3 +57,5 @@ Referenced, not bundled: TMDB (film posters, only with the user's own API key; "
 Online services used at runtime (no code bundled): libretro thumbnails (thumbnails.libretro.com), SteamGridDB API (user's own key; personal non-commercial use per its terms).
 
 An in-app licence screen is still to be added before any public release.
+
+Arcade game names (`retro-library/src/main/resources/arcade_names.tsv.gz`): short name, title, year and maker from libretro-database's FinalBurn Neo and MAME lists (github.com/libretro/libretro-database), CC BY-SA 4.0.
