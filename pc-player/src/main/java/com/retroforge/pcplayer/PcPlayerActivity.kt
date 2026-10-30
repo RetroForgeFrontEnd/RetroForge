@@ -177,6 +177,26 @@ class PcPlayerActivity : ComponentActivity() {
     /** Gets a Steam game ready (with Steam lobbies on for Play together when [lobbies]), then starts the game. */
     private suspend fun prepareAndStart(exe: File, lobbies: Boolean) {
         val steam = SteamGameSetup(runtime.root, SteamAccount(this@PcPlayerActivity))
+        // Steam method 2: Valve's own Steam client starts the game (it signs in, syncs Steam Cloud and does the DRM).
+        if (intent.getBooleanExtra(EXTRA_STEAM_CLIENT, false)) {
+            val client = com.retroforge.pcplayer.steam.WindowsSteamClient(this@PcPlayerActivity)
+            val appId = steam.appId(exe.parentFile!!, intent.getIntExtra(EXTRA_STEAM_APP_ID, 0))
+            if (!client.installed || appId == null) {
+                phase = Phase.Failed(
+                    if (appId == null) "RetroForge couldn't tell which Steam game this is."
+                    else "Set up the Steam client on the PC tab first (Steam method 2).",
+                )
+                return
+            }
+            phase = Phase.Loading("Getting the game ready for the Steam client")
+            withContext(Dispatchers.IO) {
+                val folder = PcSession.gameFolder(exe)
+                steam.restore(folder) // the game's own Steam DLLs, not Goldberg's stand-in
+                client.registerGame(appId, title, folder)
+            }
+            startGame(client.exe, listOf("-applaunch", appId.toString()), windowExe = exe)
+            return
+        }
         if (steam.steamDlls(exe.parentFile!!).isNotEmpty()) {
             together?.steamGame = true
             phase = Phase.Loading("Checking your Steam account")
@@ -226,14 +246,19 @@ class PcPlayerActivity : ComponentActivity() {
 
     private fun matchParent() = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
 
-    private fun startGame(exe: File) {
+    /** When the game was started, to spot a game handing itself back to Steam (see onWineExit). */
+    private var startedAt = 0L
+
+    /** Starts [exe] (with [extraArgs]); [windowExe] is the program whose window fills the screen. */
+    private fun startGame(exe: File, extraArgs: List<String> = emptyList(), windowExe: File = exe) {
+        startedAt = System.currentTimeMillis()
         phase = Phase.Loading("Starting Windows")
-        val newSession = PcSession(this, runtime, exe, screenSize())
+        val newSession = PcSession(this, runtime, exe, screenSize(), extraArgs)
         val xView = XServerView(this, newSession.xServer)
         newSession.xServer.setRenderer(xView.renderer)
         // The game's own window fills the screen (Wine's desktop stays behind it), and the console window some games
         // open (text output, warnings) isn't shown.
-        xView.renderer.setForceFullscreenWMClass(newSession.program.name.lowercase())
+        xView.renderer.setForceFullscreenWMClass((if (windowExe == exe) newSession.program else windowExe).name.lowercase())
         xView.renderer.setUnviewableWMClasses("conhost.exe", "wineconsole")
         blurredSides = prefs().getBoolean("blurred_sides", true)
         xView.renderer.setBlurredSides(blurredSides)
@@ -545,6 +570,20 @@ class PcPlayerActivity : ComponentActivity() {
             return
         }
         recordRun()
+        // Steam's CEG copy protection hands the game back to Steam and it quits: from now on it starts through the
+        // Steam client (Steam method 2).
+        val appId = intent.getIntExtra(EXTRA_STEAM_APP_ID, 0)
+        if (appId > 0 && !intent.getBooleanExtra(EXTRA_STEAM_CLIENT, false) &&
+            com.retroforge.pcplayer.steam.SteamMethod.handedBackToSteam(ended.exe.parentFile!!, startedAt)
+        ) {
+            com.retroforge.pcplayer.steam.SteamMethod.markNeedsClient(this, appId)
+            menuOpen = false
+            controlsView?.visibility = View.GONE
+            exitMessage = "This game needs the Steam client: its copy protection asks Steam itself to start it.\n\n" +
+                "RetroForge will start it with Steam method 2 from now on. Set up the Steam client on the PC tab " +
+                "(Steam method 2), sign in once, then play it again."
+            return
+        }
         // The game quit by itself: back to RetroForge (saving to Steam Cloud first). Anything else shows Wine's last
         // lines, which say what went wrong.
         if (code == 0) {
@@ -745,14 +784,17 @@ class PcPlayerActivity : ComponentActivity() {
         const val EXTRA_EXE = "exe"
         const val EXTRA_TITLE = "title"
         const val EXTRA_STEAM_APP_ID = "steam_app_id"
+        /** Start the game through Valve's own Steam client (Steam method 2). */
+        const val EXTRA_STEAM_CLIENT = "steam_client"
         private const val SCREEN_HEIGHT = 720
         private const val LOADING_LIMIT_MS = 90_000L
         private const val CLOUD_TIMEOUT_MS = 90_000L
         private const val STOP_WAIT_MS = 8_000L
         private const val TAG = "PcPlayer"
 
-        fun intent(context: Context, exe: File, title: String, steamAppId: Int? = null): Intent =
+        fun intent(context: Context, exe: File, title: String, steamAppId: Int? = null, steamClient: Boolean = false): Intent =
             Intent(context, PcPlayerActivity::class.java).putExtra(EXTRA_EXE, exe.path).putExtra(EXTRA_TITLE, title)
                 .apply { steamAppId?.let { putExtra(EXTRA_STEAM_APP_ID, it) } }
+                .putExtra(EXTRA_STEAM_CLIENT, steamClient)
     }
 }

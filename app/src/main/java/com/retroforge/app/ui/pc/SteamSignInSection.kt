@@ -112,7 +112,12 @@ fun SteamSignInSection() {
     }
 
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle(stringResource(R.string.steam_sign_in_steam_for_retroforge_s_pc_player))
+        CardTitle("Steam method 1: RetroForge Steam")
+        CardBody(
+            "For most Steam games. RetroForge signs in to Steam itself and starts the game straight away, with a small Steam " +
+                "stand-in beside it: quick, light, and it does your library, downloads and Steam Cloud saves. Games that " +
+                "insist on Valve's own Steam use Steam method 2 below.",
+        )
         if (signedInAs != null) {
             CardBody(stringResource(R.string.steam_sign_in_signed_in_as_steam_games_you, signedInAs.toString()))
             ChipRow {

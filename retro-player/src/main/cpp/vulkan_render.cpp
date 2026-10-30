@@ -221,10 +221,17 @@ bool ownInstance(const VkApplicationInfo *app) {
     std::vector<VkExtensionProperties> available(count);
     vkEnumerateInstanceExtensionProperties(nullptr, &count, available.data());
     std::vector<const char *> extensions;
+    // The surface extensions too, as any Android Vulkan app enables (Turnip lists no GPU to an instance without them).
     for (auto &e : available)
-        if (!strcmp(e.extensionName, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME)) extensions.push_back(e.extensionName);
+        if (!strcmp(e.extensionName, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME) || !strcmp(e.extensionName, "VK_KHR_surface") ||
+            !strcmp(e.extensionName, "VK_KHR_android_surface"))
+            extensions.push_back(e.extensionName);
+    // At least Vulkan 1.1: a core asking for 1.0 (PPSSPP) otherwise sees no GPU with Turnip, which leaves out GPUs
+    // under 1.1 instances. Asking for more than a core uses changes nothing for it.
+    VkApplicationInfo raised = *app;
+    if (raised.apiVersion < VK_API_VERSION_1_1) raised.apiVersion = VK_API_VERSION_1_1;
     VkInstanceCreateInfo info{VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO};
-    info.pApplicationInfo = app;
+    info.pApplicationInfo = &raised;
     info.enabledExtensionCount = uint32_t(extensions.size());
     info.ppEnabledExtensionNames = extensions.data();
     return vkCreateInstance(&info, nullptr, &instance) == VK_SUCCESS;
@@ -439,10 +446,24 @@ bool init(std::string &error) {
               instanceFn(vkCreateDevice, "vkCreateDevice") && instanceFn(getDeviceProc, "vkGetDeviceProcAddr");
     if (!ok) return error = "Vulkan driver is incomplete", false;
 
-    uint32_t count = 1;
-    VkPhysicalDevice first = VK_NULL_HANDLE;
-    vkEnumeratePhysicalDevices(instance, &count, &first);
-    if (!first) return error = "No Vulkan GPU found", false;
+    // The usual two calls: how many GPUs, then the list (asking for one straight away gets none from some drivers).
+    uint32_t count = 0;
+    VkResult listed = vkEnumeratePhysicalDevices(instance, &count, nullptr);
+    std::vector<VkPhysicalDevice> gpus(count);
+    if (count) listed = vkEnumeratePhysicalDevices(instance, &count, gpus.data());
+    VkPhysicalDevice first = count ? gpus[0] : VK_NULL_HANDLE;
+    if (!first) {
+        LOGE("no Vulkan GPU: result %d, %u GPUs, app API %u.%u", listed, count, VK_API_VERSION_MAJOR(app->apiVersion), VK_API_VERSION_MINOR(app->apiVersion));
+        // A custom driver that lists no GPU for this core (Turnip does so for PPSSPP's instance): the device's own.
+        if (!driverName.empty()) {
+            LOGI("the custom driver found no GPU for this core; using the device's own");
+            vkDestroyInstance(instance, nullptr);
+            instance = VK_NULL_HANDLE;
+            driverName.clear();
+            return init(error);
+        }
+        return error = "No Vulkan GPU found", false;
+    }
     gpu = first;
 
     retro_vulkan_context context{};

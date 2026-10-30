@@ -38,6 +38,48 @@ class WindowsSteamClient(context: Context) {
     /** Whether Steam remembers an account (signed in once in its own window, with "Remember me"). */
     val signedIn get() = File(dir, "config/loginusers.vdf").let { it.isFile && it.readText().contains("\"AccountName\"") }
 
+    /** Removes the Steam client (its files and sign-in); games and their saves stay. */
+    fun remove() {
+        dir.deleteRecursively()
+    }
+
+    /**
+     * Puts a game RetroForge downloaded into Steam's library so `steam.exe -applaunch` can start it: a link from
+     * steamapps/common to the game's folder, and an app manifest with the depots RetroForge downloaded (from its
+     * .DepotDownloader folder). Steam checks the build itself and fetches only what changed, if anything.
+     */
+    fun registerGame(appId: Int, name: String, folder: File) {
+        val apps = File(dir, "steamapps")
+        val common = File(apps, "common").apply { mkdirs() }
+        val link = File(common, folder.name)
+        if (!link.exists()) runCatching { android.system.Os.symlink(folder.path, link.path) }
+        val depots = File(folder, ".DepotDownloader").listFiles { f -> f.name.endsWith(".manifest") }.orEmpty()
+            .mapNotNull { f -> f.name.removeSuffix(".manifest").split('_').takeIf { it.size == 2 && it.all { p -> p.toLongOrNull() != null } } }
+        val manifest = buildString {
+            appendLine("\"AppState\"")
+            appendLine("{")
+            appendLine("\t\"appid\"\t\t\"$appId\"")
+            appendLine("\t\"Universe\"\t\t\"1\"")
+            appendLine("\t\"name\"\t\t\"${name.replace("\"", "")}\"")
+            appendLine("\t\"StateFlags\"\t\t\"4\"")
+            appendLine("\t\"installdir\"\t\t\"${folder.name}\"")
+            appendLine("\t\"LastUpdated\"\t\t\"${System.currentTimeMillis() / 1000}\"")
+            appendLine("\t\"buildid\"\t\t\"0\"")
+            appendLine("\t\"InstalledDepots\"")
+            appendLine("\t{")
+            for ((depot, manifestId) in depots) {
+                appendLine("\t\t\"$depot\"")
+                appendLine("\t\t{")
+                appendLine("\t\t\t\"manifest\"\t\t\"$manifestId\"")
+                appendLine("\t\t}")
+            }
+            appendLine("\t}")
+            appendLine("\t\"UserConfig\" { \"language\" \"english\" }")
+            appendLine("}")
+        }
+        File(apps, "appmanifest_$appId.acf").writeText(manifest)
+    }
+
     /** One of Valve's client packages: a zip, its size and its SHA-256. */
     private data class Package(val file: String, val size: Long, val sha256: String)
 

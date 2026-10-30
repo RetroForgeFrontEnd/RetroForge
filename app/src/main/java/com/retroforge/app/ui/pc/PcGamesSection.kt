@@ -100,6 +100,8 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     var editing by remember { mutableStateOf(false) }
     // Choosing which .exe starts a Windows game: the mode, then the game whose .exe files are listed.
     var choosingExe by remember { mutableStateOf(false) }
+    // Choosing a Steam game's method: 1, RetroForge Steam, or 2, Valve's Steam client (see SteamClientSection).
+    var choosingSteam by remember { mutableStateOf(false) }
     var exeFor by remember { mutableStateOf<PcGame?>(null) }
     var status by remember { mutableStateOf<String?>(null) }
     var searching by remember { mutableStateOf(false) }
@@ -207,8 +209,11 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
             FocusChip(stringResource(R.string.pc_games_add_from_another_folder), enabled = !busy, onClick = { pickFolder.launch(null) })
             FocusChip(stringResource(R.string.pc_games_add_a_windows_game_folder), enabled = !busy, onClick = { pickWindowsGame.launch(null) })
             if (games.isNotEmpty() && !choosingExe) FocusChip(if (editing) "Done" else "Remove games", onClick = { editing = !editing })
-            if (games.any { it.source == PcSource.WINDOWS } && !editing) {
+            if (games.any { it.source == PcSource.WINDOWS } && !editing && !choosingSteam) {
                 FocusChip(if (choosingExe) "Done" else "Change a game's .exe", onClick = { choosingExe = !choosingExe })
+            }
+            if (games.any { it.source == PcSource.WINDOWS && it.appId?.toIntOrNull() != null } && !editing && !choosingExe) {
+                FocusChip(if (choosingSteam) "Done" else "Steam method for a game", onClick = { choosingSteam = !choosingSteam })
             }
         }
         if (searching) {
@@ -281,9 +286,15 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     }
     if (games.isNotEmpty()) {
         CoverGrid(games) { game, tileModifier ->
+                val steamId = game.appId?.toIntOrNull()?.takeIf { game.source == PcSource.WINDOWS }
+                val throughClient = steamId != null && com.retroforge.pcplayer.steam.SteamMethod.usesClient(context, steamId)
                 val hint = when {
                     editing -> "Select to remove"
                     choosingExe && game.source == PcSource.WINDOWS -> "Select to choose its .exe"
+                    choosingSteam && steamId != null -> if (throughClient) "Steam method 2 · select for 1" else "Steam method 1 · select for 2"
+                    steamId != null && com.retroforge.pcplayer.steam.SteamMethod.needsClient(context, steamId) &&
+                        !com.retroforge.pcplayer.steam.WindowsSteamClient(context).signedIn -> "⚠ Needs Steam method 2"
+                    throughClient -> "Steam method 2"
                     game.source == PcSource.WINDOWS -> PcCompatibility.label(game.title, game.appId, history[game.shortcutPath])
                     else -> null
                 }
@@ -291,6 +302,10 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                     when {
                         editing -> { pc.remove(game); changes++ }
                         choosingExe && game.source == PcSource.WINDOWS -> exeFor = game
+                        choosingSteam && steamId != null -> {
+                            com.retroforge.pcplayer.steam.SteamMethod.setClient(context, steamId, !throughClient)
+                            changes++
+                        }
                         else -> start(game)
                     }
                 })
