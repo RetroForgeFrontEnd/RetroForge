@@ -13,6 +13,16 @@ import java.io.File
 internal fun parseMetadata(text: String): Map<String, String> =
     Regex("<(system[A-Za-z]+)>([^<]{1,200})</\\1>").findAll(text).associate { it.groupValues[1] to it.groupValues[2].trim() }
 
+/**
+ * RetroForge's system ids (RetroBat's) that themes file under another name: canvas-es and ES-DE use "gc" for GameCube,
+ * "atarilynx" for Lynx and so on. A theme's own file for the RetroForge id still wins.
+ */
+val themeNames = mapOf(
+    "gamecube" to "gc", "jaguar" to "atarijaguar", "jaguarcd" to "atarijaguarcd", "lynx" to "atarilynx",
+    "sg1000" to "sg-1000", "wswan" to "wonderswan", "wswanc" to "wonderswancolor", "megadrive-msu" to "msu-md",
+    "oricatmos" to "oric", "doom3" to "boom3", "gw" to "gameandwatch", "zeldaclassic" to "zeldac", "Windows" to "windows",
+)
+
 /** Artwork for one system, read from a theme folder the user chose (never shipped with RetroForge). */
 @Serializable
 data class SystemArtwork(
@@ -102,6 +112,8 @@ class SystemArtStore(private val resolver: ContentResolver, private val cacheFil
                 color = meta["systemColor"]?.takeIf { it.matches(Regex("[0-9A-Fa-f]{6}")) },
             )
         }
+            .toMutableMap()
+        themeNames.forEach { (ours, theirs) -> if (ours !in systems) systems[theirs]?.let { systems[ours] = it } }
         val wallpaper = wallpapers["dark"] ?: wallpapers.values.firstOrNull()
         val result = SystemArtIndex(treeUri.toString(), themeName, systems, wallpaper, VERSION)
         cacheFile.parentFile?.mkdirs()
@@ -151,10 +163,13 @@ class CanvasArtDownloader(private val dir: java.io.File, private val userAgent: 
         lock.withLock {
             val known = _index.value?.systems.orEmpty().toMutableMap()
             for (id in systems.distinct()) {
-                val console = fetch("carousel-icons-icons", id, "webp")
-                val logo = fetch("logos", id, "svg")
-                val meta = fetch("metadata", id, "xml")?.let { runCatching { parseMetadata(it.readText()) }.getOrNull() }.orEmpty()
-                val art = if (withGameArt) fetch("carousel-icons-art", id, "webp") else local("carousel-icons-art", id, "webp")
+                val other = themeNames[id]
+                fun get(kind: String, ext: String) = fetch(kind, id, ext) ?: other?.let { fetch(kind, it, ext) }
+                val console = get("carousel-icons-icons", "webp")
+                val logo = get("logos", "svg")
+                val meta = get("metadata", "xml")?.let { runCatching { parseMetadata(it.readText()) }.getOrNull() }.orEmpty()
+                val art = if (withGameArt) get("carousel-icons-art", "webp")
+                else local("carousel-icons-art", id, "webp") ?: other?.let { local("carousel-icons-art", it, "webp") }
                 if (console == null && logo == null && art == null && meta.isEmpty()) continue
                 known[id] = SystemArtwork(
                     tile = art?.uri(), logo = logo?.uri(), console = console?.uri(),
