@@ -151,7 +151,9 @@ class PcPlayerActivity : ComponentActivity() {
         scope.launch {
             padShown = prefs().getBoolean("pad_shown:${exe.path}", true)
             keyboardMode = if (prefs().contains("keyboard_mode:${exe.path}")) prefs().getBoolean("keyboard_mode:${exe.path}", false)
-            else withContext(Dispatchers.IO) { !usesXInput(exe) }
+            // (A game with its own key layout plays on the keyboard: Undertale mentions XInput but reads the old
+            // Windows joystick, which the Xbox pad doesn't reach.)
+            else KEY_LAYOUTS.containsKey(exe.name.lowercase()) || withContext(Dispatchers.IO) { !usesXInput(exe) }
             launch {
                 runtime.state.collectLatest { state ->
                     if (state is RuntimeState.Working) phase = Phase.Loading("${state.step}… ${state.percent}%")
@@ -584,6 +586,7 @@ class PcPlayerActivity : ComponentActivity() {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (event.keyCode == KeyEvent.KEYCODE_BACK) return super.dispatchKeyEvent(event)
         val current = session ?: return super.dispatchKeyEvent(event)

@@ -142,11 +142,20 @@ private val topics = listOf(
     )),
     Topic("PC: Windows games", listOf(
         "Your PC games (PC tab): Steam, Epic, GOG and Amazon games start in GameNative (sign in and install them there first); Windows games start from Winlator Cmod or WinNative shortcuts. Put the files in a \"windows\" or \"steam\" folder beside your other systems and they're found by themselves (.steam, .epic, .gog, .amazon and .pcgame files hold the game's id; .desktop files are shortcuts exported from Winlator). Or use Add a Steam game.",
-        "RetroForge doesn't run Windows games itself. A free PC game app does, installed separately: DroidDeck on Snapdragon devices, or GameNative and Winlator on others. The PC section checks your graphics chip and says which suit it.",
+        "These games start in a separate free PC game app: DroidDeck on Snapdragon devices, or GameNative and Winlator on others. The PC section checks your graphics chip and says which suit it. RetroForge also has its own PC player (next topic).",
         "GameNative: install it from PC → GameNative releases. Sign in to Steam, Epic, GOG or Amazon inside it, or tap Skip login, then + and choose a game folder you copied to the phone (allow All files access).",
         "If Play says the executable couldn't be chosen: Edit container → Executable Path → pick the game's .exe, save, and press Play again. The first start downloads Proton and takes a minute or two.",
         "DroidDeck: needs a Snapdragon chip with an Adreno 730 or newer GPU. Install it from its official releases page, sign in to Steam inside it and install a game you own.",
         "Use only games you own. RetroForge never shares your store logins or game files.",
+    )),
+    Topic("PC: RetroForge's own PC player", listOf(
+        "RetroForge can play Windows games itself, with nothing else to install (64-bit ARM devices). The first game downloads the PC player's parts, about 300 MB.",
+        "Add a game: PC → Add a Windows game folder and pick the folder that holds the game's .exe, or sign in to Steam on the PC tab and download a game you own from My Steam library (Wi-Fi only unless you allow mobile data).",
+        "Where games are kept: inside RetroForge on the device (or on an SD card if it has more room), not in a folder you can browse. Uninstalling RetroForge removes them, so keep your original copy. Some devices' Android closes games run from shared folders, which is why they live here.",
+        "Controls: the on-screen controller is an Xbox pad; it hides when you connect a controller. Games without controller support get keyboard and mouse instead (sticks move and aim, triggers click). Tap the ☰ at the top, or swipe in from the edge, for the menu: controller, keyboard, Esc, Enter, Play together and Quit.",
+        "Wrong program starts? PC → Change a game's .exe. A game that won't start shows ⚠ Didn't start last time on its tile.",
+        "Older graphics chips: if a game can't use the fast Direct3D route (DXVK), RetroForge switches to a slower one by itself and starts it again.",
+        "Steam Cloud saves sync before and after you play when you're signed in to Steam on the PC tab.",
     )),
     Topic("Media: films and 3D", listOf(
         "Media → Use RetroForge's film folders makes Movies/RetroForge on your phone, with Films and 3D Films inside. When Android shows that folder, tap Use this folder, then Allow.",

@@ -207,26 +207,32 @@ class PcLibrary(private val context: Context) {
         }
     }
 
-    /** Where Windows games copied in for RetroForge's PC player live (on the phone's storage, visible over USB). */
-    fun windowsGamesDir(): File = File(context.getExternalFilesDir(null) ?: context.filesDir, "PC games")
-
     /**
-     * Every place Windows games can live: the phone's storage and each SD card in (Android gives the app a folder
-     * on each, with real paths the PC player can use).
+     * Where Windows games for RetroForge's PC player live on the device itself: RetroForge's private storage. Not the
+     * shared Android/data folder: there every file the game touches goes through Android's storage service, which
+     * some devices' Android 16 aborts under Wine's file traffic (a Galaxy Tab A9+), closing the game.
      */
-    fun windowsGamesDirs(): List<File> = context.getExternalFilesDirs(null).filterNotNull()
+    fun windowsGamesDir(): File = File(context.filesDir, "PC games")
+
+    /** The shared folder games went to before (still played from there). */
+    private fun sharedGamesDir(): File? = context.getExternalFilesDir(null)?.let { File(it, "PC games") }
+
+    /** Each SD card's folder for PC games (Android gives the app one on each, with a real path the player can use). */
+    private fun sdCardGamesDirs(): List<File> = context.getExternalFilesDirs(null).drop(1).filterNotNull()
         .filter { android.os.Environment.getExternalStorageState(it) == android.os.Environment.MEDIA_MOUNTED }
         .map { File(it, "PC games") }
-        .ifEmpty { listOf(windowsGamesDir()) }
 
-    /** Where a new game goes: the storage (phone or SD card) with the most free space. */
-    fun roomiestGamesDir(): File = windowsGamesDirs().maxBy { it.apply { mkdirs() }.usableSpace }
+    /** Every place Windows games can live: the device, each SD card in, and the shared folder from before. */
+    fun windowsGamesDirs(): List<File> = listOf(windowsGamesDir()) + sdCardGamesDirs() + listOfNotNull(sharedGamesDir())
 
-    /** Whether [dir] is on an SD card rather than the phone's own storage. */
-    fun onSdCard(dir: File): Boolean = !dir.canonicalPath.startsWith(windowsGamesDir().canonicalFile.parentFile!!.canonicalPath)
+    /** Where a new game goes: the device or an SD card, whichever has the most free space. */
+    fun roomiestGamesDir(): File = (listOf(windowsGamesDir()) + sdCardGamesDirs()).maxBy { it.apply { mkdirs() }.usableSpace }
+
+    /** Whether [dir] is on an SD card rather than the device's own storage. */
+    fun onSdCard(dir: File): Boolean = sdCardGamesDirs().any { dir.canonicalPath.startsWith(it.canonicalFile.parentFile!!.canonicalPath) }
 
     /**
-     * Copies a Windows game folder the user picked into [windowsGamesDir] (RetroForge's PC player needs the files
+     * Copies a Windows game folder the user picked into [roomiestGamesDir] (RetroForge's PC player needs the files
      * where it can open them directly) and adds it. [onProgress] gets 0–100. Returns the game, or null when the
      * folder has no .exe to start.
      */
@@ -250,7 +256,7 @@ class PcLibrary(private val context: Context) {
         val name = resolver.query(DocumentsContract.buildDocumentUriUsingTree(tree, top), arrayOf(Document.COLUMN_DISPLAY_NAME), null, null, null)
             ?.use { if (it.moveToFirst()) it.getString(0) else null } ?: top.substringAfterLast('/')
         if (files.none { it.path.endsWith(".exe", ignoreCase = true) }) return null
-        val folder = File(windowsGamesDir(), name.replace(Regex("""[\/:*?"<>|]"""), "_"))
+        val folder = File(roomiestGamesDir(), name.replace(Regex("""[\/:*?"<>|]"""), "_"))
         val total = files.sumOf { it.size }.coerceAtLeast(1)
         var copied = 0L
         for (item in files) {
@@ -282,7 +288,7 @@ class PcLibrary(private val context: Context) {
         return com.retroforge.pcplayer.GameExe.candidates(folder)
     }
 
-    /** The game's own folder in [windowsGamesDir] (its .exe can be in a subfolder of it). */
+    /** The game's own folder in one of [windowsGamesDirs] (its .exe can be in a subfolder of it). */
     fun windowsGameFolder(game: PcGame): File? {
         val exe = File(game.shortcutPath ?: return null)
         val roots = windowsGamesDirs().map { it.canonicalFile }.toSet()
