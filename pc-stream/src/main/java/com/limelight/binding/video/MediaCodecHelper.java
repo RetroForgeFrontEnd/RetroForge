@@ -86,6 +86,9 @@ public class MediaCodecHelper {
     
     static {
         blacklistedDecoderPrefixes = new LinkedList<>();
+        // RetroForge: the Android emulator's goldfish decoders reject every streamed frame (MediaCodec error 14), so
+        // emulators fall back to the software decoder. No real device has these decoders.
+        blacklistedDecoderPrefixes.add("c2.goldfish");
 
         // Blacklist software decoders that don't support H264 high profile except on systems
         // that are expected to only have software decoders (like emulators).

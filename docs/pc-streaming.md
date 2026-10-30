@@ -32,6 +32,8 @@ Changes to Moonlight's code (each marked with a `RetroForge:` comment, as the GP
 - `Game.java`: no longer reports the PC and game as launcher shortcuts (RetroForge has none).
 - `preferences/StreamSettings.java`: no longer restarts Moonlight's PC list after a language change on Android 12
   and older.
+- `binding/video/MediaCodecHelper.java`: skips the Android emulator's `c2.goldfish` decoders, which reject every
+  streamed frame (MediaCodec error 14), so emulators use the software decoder. No real device has them.
 - `utils/ServerHelper.java`: cut down to the connection-test server address the stream screen uses.
 - `org/cgutman/shieldcontrollerextensions/*`: stand-ins for Moonlight's NVIDIA SHIELD controller library (only
   published on JitPack); they recognise no controllers, so standard Android battery/rumble paths are used.
@@ -64,26 +66,31 @@ Changes to Moonlight's code (each marked with a `RetroForge:` comment, as the GP
 
 ## Tested
 
-On an emulator (RetroForge_Bezels_Test AVD), with no Sunshine available, against a small fake host on the PC
-(`/serverinfo`, `/applist`, `/launch` answered like Sunshine; port 47989 over HTTP and 47984 over HTTPS through
-`adb reverse`):
+**With a real Sunshine PC (2026-10-30).** Sunshine 2026.914 installed from LizardByte's winget package on the user's
+Windows PC (Intel GPU, QuickSync H.264/HEVC encoding), streamed to the RetroForge_Bezels_Test emulator over the LAN
+(PC at 192.168.0.33):
 
-- Discovery runs and reports no PCs (expected behind the emulator's NAT).
-- Adding an address that doesn't answer shows "Nothing answered at …"; adding the fake host lists it as "Not paired".
-- Pair sends Moonlight's real first pairing request (`getservercert` with the phone's certificate); the fake host
-  refuses it and the card says so.
-- With a pinned certificate the PC shows "Ready", "Show games" lists its two apps over HTTPS.
-- Choosing an app opens the landscape full-screen stream screen, which sends `/launch` and starts the native RTSP
-  handshake; with no real stream it shows Moonlight's "Connection Error" (ports 48010/48000) and OK returns to the
-  PC tab. Back during "Establishing Connection" also returns to the PC tab.
-- Stream settings opens Moonlight's settings pages.
+- Added by address, shown as the PC's name ("Darren"), "Not paired".
+- Pair: RetroForge showed a PIN, the user typed it in Sunshine's PIN page, the card changed to "Paired." / "Ready".
+- "Show games" listed Sunshine's apps (Desktop, Steam Big Picture).
+- Desktop streamed full screen in landscape: 1280×720, ~60 FPS received and rendered, 0% frames dropped, 3 ms
+  network latency, ~12.6 ms host processing; audio track opened (stereo Opus).
+- Touch: a drag on the stream moved the PC's mouse pointer (trackpad mode).
+- Back ended the stream and returned to the PC tab; the chip then read "Resume Desktop" and resumed the session.
+- "Quit the running game" closed the session on the PC ("The game on the PC was closed.").
+- The emulator's own decoders failed on both HEVC and H.264 (MediaCodec error 14); after the `c2.goldfish` change
+  above, the default codec setting picks the software H.264 decoder and streams.
 
-Not tested yet: pairing with a real Sunshine/GeForce Experience, actual video, audio and controller input, on a real
-phone. That needs Sunshine on the user's PC (their OK first) and the Galaxy S22 (claimed through the main session).
+**Against a fake host** (before Sunshine was installed): unreachable address shows "Nothing answered at …"; a
+refused pairing is reported; a failed connection shows Moonlight's "Connection Error" and OK/back return to the PC
+tab; Stream settings opens.
+
+Not tested yet: a real phone (hardware HEVC/AV1 decoding, 1080p+), controllers (Bluetooth/USB), sound actually heard,
+mDNS discovery on a real Wi-Fi network (the emulator's NAT hides it), GeForce Experience hosts.
 
 ## What's next
 
-1. Test with Sunshine on the user's PC and the S22: pairing, 1080p60 HEVC, audio, a Bluetooth/USB controller, touch.
+1. Test on the S22 (claim it first): pairing, 1080p60 HEVC, audio, a Bluetooth/USB controller, "Look for PCs".
 2. Box art: `PcStreaming.boxArt()` already fetches each app's image from the PC; show covers instead of chips.
 3. Wake-on-LAN for sleeping PCs (Moonlight's `nvstream/wol` code is included; needs the MAC from serverinfo saved).
 4. Streaming over the internet (Sunshine's external address / IPv6), and a "network test" button.
