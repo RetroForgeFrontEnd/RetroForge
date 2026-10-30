@@ -25,8 +25,12 @@ class MainActivity : ComponentActivity() {
     @android.annotation.SuppressLint("RestrictedApi")
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         resetCombo.onKey(event)
+        if (com.retroforge.app.ui.settings.ControllerTap.offer(event)) return true
         return super.dispatchKeyEvent(event)
     }
+
+    override fun dispatchGenericMotionEvent(event: android.view.MotionEvent): Boolean =
+        com.retroforge.app.ui.settings.ControllerTap.offer(event) || super.dispatchGenericMotionEvent(event)
 
     private val sectionCommands = MutableSharedFlow<NavCommand>(
         extraBufferCapacity = 4,

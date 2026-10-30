@@ -316,7 +316,7 @@
     <string name="rom_manager_couldn_t_compare_too_large_or">Comparaison impossible (trop gros ou illisible)</string>
     <string name="rom_manager_check_again">Vérifier à nouveau</string>
     <string name="rom_manager_find_games_to_compress">Trouver des jeux à compresser</string>
-    <string name="rom_manager_disc_games_cue_bin_and_ps2">Les jeux sur disque (.cue/.bin, .gdi Dreamcast et .iso PS2/PSP) deviennent des CHD, que RetroArch, DuckStation, Flycast, NetherSX2 et PPSSPP lisent directement. Les jeux GameCube deviennent des RVZ pour Dolphin, les jeux 3DS des Z3DS pour Azahar et les ROMs de cartouche des .zip. Lit seulement vos fichiers jusqu'à ce que vous confirmiez.</string>
+    <string name="rom_manager_disc_games_cue_bin_and_ps2">Les jeux sur disque (.cue/.bin, .gdi Dreamcast et .iso PS2/PSP) deviennent des CHD, que RetroArch, DuckStation, Flycast, NetherSX2 et PPSSPP lisent directement. Les jeux GameCube deviennent des RVZ pour Dolphin, les jeux 3DS des Z3DS pour Azahar et les ROMs de cartouche des .zip. Lit seulement vos fichiers jusqu\'à ce que vous confirmiez.</string>
     <string name="rom_manager_looking_for_uncompressed_games">Recherche de jeux non compressés …</string>
     <string name="rom_manager_everything_that_can_be_compressed_already">Tout ce qui peut être compressé l\'est déjà.</string>
     <string name="rom_manager_select_the_systems_to_compress">Sélectionnez les systèmes à compresser.</string>
@@ -1854,4 +1854,14 @@
     <string name="switch_settings_keys_missing">Clés manquantes</string>
     <string name="switch_settings_firmware_missing">Firmware manquant</string>
     <string name="switch_settings_firmware_version">Firmware %1$s</string>
+    <string name="controller_test_title">Test de la manette</string>
+    <string name="controller_test_card">Appuyez sur chaque bouton et bougez les sticks pour voir ce que RetroForge reçoit, quand un bouton ne marche pas dans un jeu.</string>
+    <string name="controller_test_subtitle">Appuyez sur les boutons et bougez les sticks. Maintenez B 2 secondes pour quitter.</string>
+    <string name="controller_test_nothing_yet">Rien pour l\'instant : branchez une manette et appuyez sur un bouton.</string>
+    <string name="controller_test_last_button">Dernier bouton : %1$s</string>
+    <string name="controller_test_checked">%1$d boutons vérifiés sur %2$d</string>
+    <string name="controller_test_buttons">Boutons</string>
+    <string name="controller_test_sticks">Sticks et gâchettes</string>
+    <string name="controller_test_left_stick">Stick gauche</string>
+    <string name="controller_test_right_stick">Stick droit</string>
 </resources>

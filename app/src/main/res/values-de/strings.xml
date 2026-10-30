@@ -1821,4 +1821,14 @@
     <string name="switch_settings_keys_missing">Schlüssel fehlen</string>
     <string name="switch_settings_firmware_missing">Firmware fehlt</string>
     <string name="switch_settings_firmware_version">Firmware %1$s</string>
+    <string name="controller_test_title">Controller-Test</string>
+    <string name="controller_test_card">Drück jede Taste und beweg die Sticks, um zu sehen, was RetroForge empfängt – wenn eine Taste in einem Spiel nicht geht.</string>
+    <string name="controller_test_subtitle">Drück Tasten und beweg die Sticks. Halte B 2 Sekunden, um zu verlassen.</string>
+    <string name="controller_test_nothing_yet">Noch nichts: Schließ einen Controller an und drück eine Taste.</string>
+    <string name="controller_test_last_button">Letzte Taste: %1$s</string>
+    <string name="controller_test_checked">%1$d von %2$d Tasten geprüft</string>
+    <string name="controller_test_buttons">Tasten</string>
+    <string name="controller_test_sticks">Sticks und Trigger</string>
+    <string name="controller_test_left_stick">Linker Stick</string>
+    <string name="controller_test_right_stick">Rechter Stick</string>
 </resources>

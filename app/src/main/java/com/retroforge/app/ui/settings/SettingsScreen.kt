@@ -50,6 +50,7 @@ fun SettingsScreen(
     onOpenSetup: () -> Unit,
     onOpenAbout: () -> Unit,
     onOpenHotkeys: () -> Unit,
+    onOpenControllerTest: () -> Unit = {},
     onOpenGpu: () -> Unit,
     onOpenTexturePacks: () -> Unit = {},
     onOpenCheck: () -> Unit = {},
@@ -155,6 +156,11 @@ fun SettingsScreen(
                 if (SwitchPlayer.installed(LocalContext.current)) SwitchSettingsCard(stringResource(R.string.switch_settings_title), setup = false)
 
                 NetplayCard()
+
+                FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenControllerTest) {
+                    CardTitle(stringResource(R.string.controller_test_title))
+                    CardBody(stringResource(R.string.controller_test_card))
+                }
 
                 HotkeysCard(settings.retroArchHotkeys, HotkeyCombo.of(settings.menuCombo), HotkeyCombo.of(settings.quitCombo), viewModel::setRetroArchHotkeys, onOpenHotkeys)
                 if (settings.retroArchHotkeys) {

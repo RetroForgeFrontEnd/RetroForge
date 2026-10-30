@@ -81,6 +81,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | "Made by Darren Glancy, built with AI" credit | ✅ About page and Settings |
 | GPU detector, custom GPU driver support and downloads | ✅ GPU check, per-emulator driver recommendations, Turnip list/download; ✅ the built-in player loads Turnip on Snapdragon (tested on the Tab A9+); ✅ the Switch Player downloads its recommended Turnip in one tap |
 | Saturn in the built-in player | 🟡 experimental (Yabause: 1 of 2 test games boots); YabaSanshiro after GPU rendering; RetroArch and Yaba Sanshiro 2 offered |
+| Controller button tester in Settings | ✅ Settings → Playing → Controller test: buttons light up, sticks and triggers move, the controller's name and the last key are shown; hold B 2 s to leave (checked on the emulator with adb gamepad keys; a real controller's sticks not yet tried) |
 | Tester guide and email to Mr Sujano | ✅ docs/TESTER_GUIDE.md; email in Documents (Word) |
 | GPU rendering in the built-in player (N64, PSP, Dreamcast, GameCube, YabaSanshiro) | ✅ OpenGL ES: N64, PSP, Dreamcast, 3DS tested; 🟡 Vulkan experimental (see Vulkan row); GameCube/PS2 still crash or stall |
 | Short demo video for Mr Sujano | ✅ Documents, RetroForge demo.mp4 (raw, from the emulator) |

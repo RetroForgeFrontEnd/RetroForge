@@ -1981,4 +1981,14 @@
     <string name="switch_settings_keys_missing">Keys missing</string>
     <string name="switch_settings_firmware_missing">Firmware missing</string>
     <string name="switch_settings_firmware_version">Firmware %1$s</string>
+    <string name="controller_test_title">Controller test</string>
+    <string name="controller_test_card">Press every button and move the sticks to see what RetroForge receives, for when a button doesn\'t work in a game.</string>
+    <string name="controller_test_subtitle">Press buttons and move the sticks. Hold B for 2 seconds to leave.</string>
+    <string name="controller_test_nothing_yet">Nothing yet: connect a controller and press a button.</string>
+    <string name="controller_test_last_button">Last button: %1$s</string>
+    <string name="controller_test_checked">%1$d of %2$d buttons checked</string>
+    <string name="controller_test_buttons">Buttons</string>
+    <string name="controller_test_sticks">Sticks and triggers</string>
+    <string name="controller_test_left_stick">Left stick</string>
+    <string name="controller_test_right_stick">Right stick</string>
 </resources>

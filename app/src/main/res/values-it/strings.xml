@@ -1853,4 +1853,14 @@
     <string name="switch_settings_keys_missing">Chiavi mancanti</string>
     <string name="switch_settings_firmware_missing">Firmware mancante</string>
     <string name="switch_settings_firmware_version">Firmware %1$s</string>
+    <string name="controller_test_title">Test del controller</string>
+    <string name="controller_test_card">Premi ogni tasto e muovi le levette per vedere cosa riceve RetroForge, quando un tasto non funziona in un gioco.</string>
+    <string name="controller_test_subtitle">Premi i tasti e muovi le levette. Tieni premuto B per 2 secondi per uscire.</string>
+    <string name="controller_test_nothing_yet">Ancora niente: collega un controller e premi un tasto.</string>
+    <string name="controller_test_last_button">Ultimo tasto: %1$s</string>
+    <string name="controller_test_checked">%1$d tasti su %2$d provati</string>
+    <string name="controller_test_buttons">Tasti</string>
+    <string name="controller_test_sticks">Levette e grilletti</string>
+    <string name="controller_test_left_stick">Levetta sinistra</string>
+    <string name="controller_test_right_stick">Levetta destra</string>
 </resources>

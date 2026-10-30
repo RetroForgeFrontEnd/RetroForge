@@ -1854,4 +1854,14 @@
     <string name="switch_settings_keys_missing">Faltan las claves</string>
     <string name="switch_settings_firmware_missing">Falta el firmware</string>
     <string name="switch_settings_firmware_version">Firmware %1$s</string>
+    <string name="controller_test_title">Prueba del mando</string>
+    <string name="controller_test_card">Pulsa cada botón y mueve los sticks para ver qué recibe RetroForge, por si un botón no funciona en un juego.</string>
+    <string name="controller_test_subtitle">Pulsa botones y mueve los sticks. Mantén B 2 segundos para salir.</string>
+    <string name="controller_test_nothing_yet">Nada todavía: conecta un mando y pulsa un botón.</string>
+    <string name="controller_test_last_button">Último botón: %1$s</string>
+    <string name="controller_test_checked">%1$d de %2$d botones comprobados</string>
+    <string name="controller_test_buttons">Botones</string>
+    <string name="controller_test_sticks">Sticks y gatillos</string>
+    <string name="controller_test_left_stick">Stick izquierdo</string>
+    <string name="controller_test_right_stick">Stick derecho</string>
 </resources>

@@ -121,6 +121,7 @@ private const val FOLDERS_ROUTE = "retro/folders"
 private const val SETUP_ROUTE = "setup"
 private const val ABOUT_ROUTE = "settings/about"
 private const val HOTKEYS_ROUTE = "settings/hotkeys"
+private const val CONTROLLER_TEST_ROUTE = "settings/controller-test"
 private const val GPU_ROUTE = "settings/gpu"
 private const val TEXTURES_ROUTE = "settings/textures"
 private const val CHECK_ROUTE = "settings/check"
@@ -352,12 +353,13 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
                         composable(Section.SETTINGS.route) {
                             val counts by container.library.systemCounts.collectAsStateWithLifecycle(initialValue = emptyList())
                             SettingsScreen(settingsViewModel,
-                                playerSystems = counts.map { it.system to container.library.systemName(it.system) }, coreChoices = container.coreChoices, viewPrefs = container.viewPrefs, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenGpu = { nav.navigate(GPU_ROUTE) }, onOpenTexturePacks = { nav.navigate(TEXTURES_ROUTE) }, onOpenCheck = { nav.navigate(CHECK_ROUTE) }, library = container.library, onOpenApps = { nav.goTo(Section.APPS) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
+                                playerSystems = counts.map { it.system to container.library.systemName(it.system) }, coreChoices = container.coreChoices, viewPrefs = container.viewPrefs, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenControllerTest = { nav.navigate(CONTROLLER_TEST_ROUTE) }, onOpenGpu = { nav.navigate(GPU_ROUTE) }, onOpenTexturePacks = { nav.navigate(TEXTURES_ROUTE) }, onOpenCheck = { nav.navigate(CHECK_ROUTE) }, library = container.library, onOpenApps = { nav.goTo(Section.APPS) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
                                 onOpenLicences = { nav.navigate(LICENCES_ROUTE) }, onOpenPrivacy = { nav.navigate(PRIVACY_ROUTE) },
                             )
                         }
                         composable(ABOUT_ROUTE) { AboutScreen() }
                         composable(HOTKEYS_ROUTE) { HotkeysScreen(settingsViewModel) }
+                        composable(CONTROLLER_TEST_ROUTE) { com.retroforge.app.ui.settings.ControllerTestScreen() }
                         composable(GPU_ROUTE) { GpuDriversScreen() }
                         composable(TEXTURES_ROUTE) { com.retroforge.app.ui.settings.TexturePacksScreen() }
                         composable(CHECK_ROUTE) {
