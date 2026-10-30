@@ -1,5 +1,7 @@
 package com.retroforge.retro
 
+import com.retroforge.retro.R
+import com.retroforge.core.ui.str
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
@@ -8,16 +10,18 @@ import android.os.Environment
 import android.provider.MediaStore
 
 /** RetroArch's controller-independent button combos (RetroArch 1.22.2 input_defines.h, INPUT_COMBO_*). */
-enum class HotkeyCombo(val value: Int, val label: String) {
-    NONE(0, "Off"),
-    L3_R3(2, "L3 + R3"),
-    START_SELECT(4, "Start + Select"),
-    L1_R1(6, "L1 + R1"),
-    HOLD_START(7, "Hold Start"),
-    HOLD_SELECT(8, "Hold Select"),
-    DOWN_SELECT(9, "Down + Select"),
-    L2_R2(10, "L2 + R2"),
+enum class HotkeyCombo(val value: Int, private val labelId: Int) {
+    NONE(0, R.string.hotkey_off),
+    L3_R3(2, R.string.hotkey_l3_r3),
+    START_SELECT(4, R.string.hotkey_start_select),
+    L1_R1(6, R.string.hotkey_l1_r1),
+    HOLD_START(7, R.string.hotkey_hold_start),
+    HOLD_SELECT(8, R.string.hotkey_hold_select),
+    DOWN_SELECT(9, R.string.hotkey_down_select),
+    L2_R2(10, R.string.hotkey_l2_r2),
     ;
+
+    val label: String get() = str(labelId)
 
     companion object {
         fun of(value: Int) = entries.firstOrNull { it.value == value } ?: NONE
@@ -50,10 +54,10 @@ class RetroArchHotkeys(private val context: Context) {
                     put(MediaStore.MediaColumns.MIME_TYPE, "application/octet-stream")
                     put(MediaStore.MediaColumns.RELATIVE_PATH, "${Environment.DIRECTORY_DOCUMENTS}/RetroForge")
                 }
-                val created = resolver.insert(collection, values) ?: error("couldn't create the hotkey file")
+                val created = resolver.insert(collection, values) ?: error(str(R.string.retro_arch_hotkeys_couldn_t_create_the_hotkey_file))
                 created to (displayName(created) ?: FILE_NAME)
             }
-            if (text != previous) resolver.openOutputStream(uri, "wt")?.use { it.write(text.toByteArray(Charsets.UTF_8)) } ?: error("couldn't write")
+            if (text != previous) resolver.openOutputStream(uri, "wt")?.use { it.write(text.toByteArray(Charsets.UTF_8)) } ?: error(str(R.string.retro_arch_hotkeys_couldn_t_write))
             "/storage/emulated/0/${Environment.DIRECTORY_DOCUMENTS}/RetroForge/$name"
         }.getOrNull()
     }

@@ -1,5 +1,6 @@
 package com.retroforge.app.ui
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -19,12 +20,11 @@ import com.retroforge.core.ui.Wordmark
 /** Bump when the notice's meaning changes, so everyone sees the new version once. */
 const val LEGAL_NOTICE_VERSION = 1
 
-val legalNoticeParagraphs = listOf(
-    "RetroForge does not include, sell or download any games (ROMs or disc images), BIOS or firmware files.",
-    "To play, you need your own copies, obtained legally: for example, made from cartridges, discs or consoles you own. " +
-        "The rules differ from country to country, and you are responsible for the files you use.",
-    "RetroForge only reads the folders you choose. Emulators such as RetroArch are separate apps from their own developers.",
-    "Nintendo, Sony, Sega and other names are trademarks of their owners. RetroForge is not affiliated with or endorsed by them.",
+val legalNoticeParagraphs get() = listOf(
+    str(R.string.legal_notice_retroforge_does_not_include_sell_or),
+    str(R.string.legal_notice_to_play_you_need_your_own),
+    str(R.string.legal_notice_retroforge_only_reads_the_folders_you),
+    str(R.string.legal_notice_nintendo_sony_sega_and_other_names),
 )
 
 /** Shown once at first launch (and again if the notice changes). The app can't be used until it's acknowledged. */

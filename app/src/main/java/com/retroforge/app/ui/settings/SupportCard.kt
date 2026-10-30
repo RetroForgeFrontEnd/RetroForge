@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -42,7 +43,7 @@ fun SupportCard() {
         if (BuildConfig.SUPPORT_BUYMEACOFFEE.startsWith("https://")) {
             androidx.compose.foundation.Image(
                 androidx.compose.ui.res.painterResource(com.retroforge.app.R.drawable.support_qr),
-                contentDescription = "QR code for Buy Me a Coffee",
+                contentDescription = str(R.string.support_qr_code_for_buy_me_a),
                 modifier = Modifier.size(180.dp),
             )
             CardBody(stringResource(R.string.support_scan_with_your_phone_or_use))

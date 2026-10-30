@@ -16,6 +16,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core-ui"))
     api(project(":theme-engine"))
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.coroutines.core)

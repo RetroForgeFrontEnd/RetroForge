@@ -1,5 +1,7 @@
 package com.retroforge.app.player
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -49,7 +51,7 @@ class SaveBackup(private val folders: Map<String, File>) {
                 part.outputStream().use { zip.copyTo(it) }
                 if (!part.renameTo(target)) {
                     target.delete()
-                    if (!part.renameTo(target)) throw IOException("couldn't write ${target.name}")
+                    if (!part.renameTo(target)) throw IOException(str(R.string.save_backup_couldn_t_write, target.name))
                 }
                 count++
             }

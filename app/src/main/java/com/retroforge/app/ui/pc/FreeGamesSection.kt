@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -56,13 +57,13 @@ fun FreeGamesSection(library: com.retroforge.core.library.LibraryRepository) {
         runCatching { context.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION) }
         prefs.edit().putString("folder", uri.toString()).putString("prefix", FreeGames.prefixFor(context.contentResolver, uri)).apply()
         changes++
-        status = "Free games will go in that folder, each in its system's folder."
+        status = str(R.string.free_games_free_games_will_go_in_that)
     }
 
     fun get(game: FreeGame) {
         val target = folder ?: return
         busy = game.title
-        status = "Downloading ${game.title}…"
+        status = str(R.string.free_games_downloading, game.title)
         scope.launch {
             status = withContext(Dispatchers.IO) {
                 runCatching { FreeGames.install(game, context.contentResolver, target, prefs.getString("prefix", "").orEmpty()) { progress = it } }.fold(
@@ -77,9 +78,9 @@ fun FreeGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                                 ?.let { pickedId == it || pickedId.startsWith("$it/") } == true
                         }
                         if (holder != null) library.scan(holder.id) else library.addFolder(target)
-                        "${game.title} is in your library (${game.system} folder). Find it on the Retro tab."
+                        str(R.string.free_games_is_in_your_library_folder_find, game.title, game.system)
                     },
-                    onFailure = { "Couldn't get ${game.title}: ${it.message}" },
+                    onFailure = { str(R.string.free_games_couldn_t_get, game.title, it.message) },
                 )
             }
             busy = null
@@ -97,7 +98,7 @@ fun FreeGamesSection(library: com.retroforge.core.library.LibraryRepository) {
             CardBody(stringResource(R.string.free_games_first_choose_where_they_go_your))
             FocusChip(stringResource(R.string.free_games_choose_a_folder), onClick = { pickFolder.launch(null) })
         } else {
-            CardBody("Saving to: ${folder.lastPathSegment?.substringAfter(':')?.ifBlank { "the folder you chose" } ?: "the folder you chose"}")
+            CardBody(stringResource(R.string.free_games_saving_to_the_folder_you_chose, folder.lastPathSegment?.substringAfter(':')?.ifBlank { stringResource(R.string.free_games_the_folder_you_chose) } ?: stringResource(R.string.free_games_the_folder_you_chose)))
             FocusChip(stringResource(R.string.free_games_choose_a_different_folder), onClick = { pickFolder.launch(null) })
         }
         if (busy != null) DownloadBar(progress)
@@ -114,7 +115,7 @@ fun FreeGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                     games.forEach { game ->
                         val have = game.title in got
                         FocusChip(
-                            if (have) "✓ ${game.title}" else "Get ${game.title}",
+                            if (have) "✓ ${game.title}" else str(R.string.cloud_apps_get, game.title),
                             enabled = folder != null && busy == null,
                             onClick = { get(game) },
                         )

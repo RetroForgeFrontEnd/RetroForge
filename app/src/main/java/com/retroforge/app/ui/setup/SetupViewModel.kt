@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.setup
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
@@ -182,7 +184,7 @@ class SetupViewModel(
                     .minBy { it.second.status.ordinal }
             } }
             _bios.update {
-                it.copy(checking = false, reports = sources?.map { s -> s.second }, error = result.exceptionOrNull()?.let { e -> "Couldn't read that folder: ${e.message}" })
+                it.copy(checking = false, reports = sources?.map { s -> s.second }, error = result.exceptionOrNull()?.let { e -> str(R.string.pc_games_couldn_t_read_that_folder, e.message) })
             }
             // The built-in player needs no folder picking: its BIOS folder is RetroForge's own. Each file is copied
             // from the folder it was found in.
@@ -214,7 +216,7 @@ class SetupViewModel(
             _bios.update { it.copy(copying = true, copyResult = null, error = null) }
             val result = withContext(Dispatchers.IO) { runCatching { installer.copy(source, installer.toCopy(reports), target) } }
             _bios.update {
-                it.copy(copying = false, copyResult = result.getOrNull(), error = result.exceptionOrNull()?.let { e -> "Copy failed: ${e.message}" })
+                it.copy(copying = false, copyResult = result.getOrNull(), error = result.exceptionOrNull()?.let { e -> str(R.string.setup_copy_failed, e.message) })
             }
         }
     }

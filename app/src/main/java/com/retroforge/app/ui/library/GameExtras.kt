@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -141,7 +142,7 @@ fun ManualViewer(uri: Uri, title: String, onClose: () -> Unit) {
                                     }
                                 }
                             }
-                            page?.let { Image(it.asImageBitmap(), contentDescription = "Page ${index + 1}", contentScale = ContentScale.FillWidth, modifier = Modifier.fillMaxWidth()) }
+                            page?.let { Image(it.asImageBitmap(), contentDescription = str(R.string.game_extras_page, index + 1), contentScale = ContentScale.FillWidth, modifier = Modifier.fillMaxWidth()) }
                                 ?: Box(Modifier.fillMaxWidth().aspectRatio(0.7f).background(Color(0xFF222228)))
                         }
                     }

@@ -1,5 +1,7 @@
 package com.retroforge.pcplayer.net
 
+import com.retroforge.pcplayer.R
+import com.retroforge.core.ui.str
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.io.Closeable
@@ -44,7 +46,7 @@ class PcLan private constructor(private val configFile: File, private val myName
         data class Failed(val message: String) : Status
     }
 
-    private val _status = MutableStateFlow<Status>(Status.Starting(if (hosting) "Starting" else "Connecting"))
+    private val _status = MutableStateFlow<Status>(Status.Starting(if (hosting) str(R.string.pc_player_starting) else str(R.string.pc_lan_connecting)))
     val status: StateFlow<Status> = _status
 
     @Volatile private var me = if (hosting) HOST else 0
@@ -156,7 +158,7 @@ class PcLan private constructor(private val configFile: File, private val myName
                 (if (free) want else ((HOST + 1)..MAX_MEMBER).firstOrNull { !links.containsKey(it) })?.also { links[it] = link }
             } ?: return
             link.index = index
-            names[index] = lines.getOrNull(1).orEmpty().take(40).ifBlank { "Player $index" }
+            names[index] = lines.getOrNull(1).orEmpty().take(40).ifBlank { str(R.string.pc_lan_player, index) }
             link.send('W', HOST, index, ByteArray(0))
             publish()
             readLink(link)
@@ -185,7 +187,7 @@ class PcLan private constructor(private val configFile: File, private val myName
         val welcome = link.read()
         if (welcome.type != 'W' || welcome.to !in (HOST + 1)..MAX_MEMBER) {
             link.close()
-            throw EOFException("The host didn't let this device in")
+            throw EOFException(str(R.string.pc_lan_the_host_didn_t_let_this))
         }
         socket.soTimeout = 0
         link.index = welcome.to
@@ -222,7 +224,7 @@ class PcLan private constructor(private val configFile: File, private val myName
                 // Wi-Fi dropped, the router restarted, the host's phone was busy: keep trying for a while, as the same
                 // player (the game keeps its address, so it can carry on once the link is back).
                 hostUdpWorks = false
-                _status.value = Status.Starting("Connection lost. Reconnecting")
+                _status.value = Status.Starting(str(R.string.pc_lan_connection_lost_reconnecting))
                 val giveUp = System.currentTimeMillis() + RECONNECT_MS
                 var back: Link? = null
                 while (!closed && back == null && System.currentTimeMillis() < giveUp) {
@@ -231,7 +233,7 @@ class PcLan private constructor(private val configFile: File, private val myName
                 }
                 if (back == null || back.index != me) {
                     back?.close()
-                    if (!closed) _status.value = Status.Failed("The connection to the host was lost")
+                    if (!closed) _status.value = Status.Failed(str(R.string.pc_lan_the_connection_to_the_host_was))
                     break
                 }
                 current = back
@@ -573,7 +575,7 @@ class PcLan private constructor(private val configFile: File, private val myName
                     udp.close()
                 }
             }
-            throw java.io.IOException("No free port for the relay")
+            throw java.io.IOException(str(R.string.pc_lan_no_free_port_for_the_relay))
         }
         private fun ipBytes(member: Int) = byteArrayOf(10, 77, 0, member.toByte())
         private fun key(opener: Int, id: Int) = (opener.toLong() shl 32) or (id.toLong() and 0xFFFFFFFFL)

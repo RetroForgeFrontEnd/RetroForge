@@ -1,5 +1,6 @@
 package com.retroforge.core.settings
 
+import com.retroforge.core.ui.str
 import com.retroforge.theme.BuiltInThemes
 import com.retroforge.theme.ThemeFormat
 import com.retroforge.theme.ThemeFormatException
@@ -31,7 +32,7 @@ class ThemeStore(private val dir: File) {
         dir.mkdirs()
         val temp = File(dir, "$id.json.tmp")
         temp.writeText(ThemeFormat.write(saved))
-        if (!temp.renameTo(File(dir, "$id.json"))) error("couldn't save the theme")
+        if (!temp.renameTo(File(dir, "$id.json"))) error(str(R.string.theme_store_couldn_t_save_the_theme))
         _userThemes.value = load()
         return saved
     }

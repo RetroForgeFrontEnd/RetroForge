@@ -1,5 +1,6 @@
 package com.retroforge.core.library
 
+import com.retroforge.core.ui.str
 import android.content.ContentResolver
 import android.net.Uri
 import android.os.ParcelFileDescriptor
@@ -36,8 +37,8 @@ class SafCollectionFiles(private val resolver: ContentResolver, private val tree
                 null, null, null,
             )
         } catch (e: SecurityException) {
-            throw IOException("RetroForge no longer has access to this folder", e)
-        } ?: throw IOException("the storage provider returned nothing")
+            throw IOException(str(R.string.saf_collection_files_retroforge_no_longer_has_access_to), e)
+        } ?: throw IOException(str(R.string.saf_collection_files_the_storage_provider_returned_nothing))
         cursor.use { c ->
             buildList {
                 while (c.moveToNext()) {
@@ -66,7 +67,7 @@ class SafCollectionFiles(private val resolver: ContentResolver, private val tree
         return null
     }
 
-    private fun need(path: String): Child = find(path) ?: throw FileNotFoundException("$path doesn't exist")
+    private fun need(path: String): Child = find(path) ?: throw FileNotFoundException(str(R.string.saf_collection_files_doesn_t_exist, path))
 
     private fun changed(folderId: String) { listings.remove(folderId) }
 
@@ -75,7 +76,7 @@ class SafCollectionFiles(private val resolver: ContentResolver, private val tree
     override fun size(path: String): Long? = find(path)?.takeIf { !it.isDirectory }?.size
 
     override fun open(path: String): InputStream =
-        resolver.openInputStream(uri(need(path).id)) ?: throw IOException("can't open $path")
+        resolver.openInputStream(uri(need(path).id)) ?: throw IOException(str(R.string.saf_collection_files_can_t_open, path))
 
     override fun makeFolders(path: String) {
         if (path.isEmpty()) return
@@ -85,12 +86,12 @@ class SafCollectionFiles(private val resolver: ContentResolver, private val tree
             folder = when {
                 existing == null -> {
                     val created = DocumentsContract.createDocument(resolver, uri(folder), Document.MIME_TYPE_DIR, part)
-                        ?: throw IOException("couldn't create folder $part")
+                        ?: throw IOException(str(R.string.bios_installer_couldn_t_create_folder, part))
                     changed(folder)
                     DocumentsContract.getDocumentId(created)
                 }
                 existing.isDirectory -> existing.id
-                else -> throw IOException("$part is a file, not a folder")
+                else -> throw IOException(str(R.string.saf_collection_files_is_a_file_not_a_folder, part))
             }
         }
     }
@@ -99,49 +100,49 @@ class SafCollectionFiles(private val resolver: ContentResolver, private val tree
         val source = need(path)
         val sourceParent = need(parentOf(path))
         val target = need(folder)
-        if (childNamed(target.id, source.name) != null) throw IOException("${source.name} is already in ${folder.ifEmpty { "the folder" }}")
+        if (childNamed(target.id, source.name) != null) throw IOException(str(R.string.rom_manager_is_already_in, source.name, folder.ifEmpty { "the folder" }))
         val moved = try {
             DocumentsContract.moveDocument(resolver, uri(source.id), uri(sourceParent.id), uri(target.id))
         } catch (e: UnsupportedOperationException) {
-            throw IOException("this storage can't move files", e)
+            throw IOException(str(R.string.saf_collection_files_this_storage_can_t_move_files), e)
         } catch (e: IllegalStateException) {
-            throw IOException("this storage can't move files", e)
+            throw IOException(str(R.string.saf_collection_files_this_storage_can_t_move_files), e)
         }
         changed(sourceParent.id)
         changed(target.id)
-        if (moved == null) throw IOException("couldn't move $path")
+        if (moved == null) throw IOException(str(R.string.saf_collection_files_couldn_t_move, path))
     }
 
     override fun rename(path: String, newName: String) {
         val source = need(path)
         val parent = need(parentOf(path))
-        if (childNamed(parent.id, newName) != null) throw IOException("$newName already exists")
-        val renamed = DocumentsContract.renameDocument(resolver, uri(source.id), newName) ?: throw IOException("couldn't rename $path")
+        if (childNamed(parent.id, newName) != null) throw IOException(str(R.string.saf_collection_files_already_exists, newName))
+        val renamed = DocumentsContract.renameDocument(resolver, uri(source.id), newName) ?: throw IOException(str(R.string.saf_collection_files_couldn_t_rename, path))
         changed(parent.id)
         // Some providers adjust names (e.g. add an extension); a CHD or zip with the wrong name would be lost.
-        if (childNamed(parent.id, newName) == null) throw IOException("the storage renamed $path to something else ($renamed)")
+        if (childNamed(parent.id, newName) == null) throw IOException(str(R.string.saf_collection_files_the_storage_renamed_to_something_else, path, renamed))
     }
 
     override fun create(path: String): SeekableByteChannel {
         val parent = need(parentOf(path))
         val name = nameOf(path)
-        if (childNamed(parent.id, name) != null) throw IOException("$path already exists")
+        if (childNamed(parent.id, name) != null) throw IOException(str(R.string.saf_collection_files_already_exists, path))
         val created = DocumentsContract.createDocument(resolver, uri(parent.id), "application/octet-stream", name)
-            ?: throw IOException("couldn't create $path")
+            ?: throw IOException(str(R.string.saf_collection_files_couldn_t_create, path))
         changed(parent.id)
-        if (childNamed(parent.id, name)?.id != DocumentsContract.getDocumentId(created)) throw IOException("the storage created $path under another name")
-        val pfd = resolver.openFileDescriptor(created, "rw") ?: throw IOException("couldn't open $path for writing")
+        if (childNamed(parent.id, name)?.id != DocumentsContract.getDocumentId(created)) throw IOException(str(R.string.saf_collection_files_the_storage_created_under_another_name, path))
+        val pfd = resolver.openFileDescriptor(created, "rw") ?: throw IOException(str(R.string.saf_collection_files_couldn_t_open_for_writing, path))
         return ParcelFileDescriptor.AutoCloseOutputStream(pfd).channel
     }
 
     override fun openRead(path: String): SeekableByteChannel {
-        val pfd = resolver.openFileDescriptor(uri(need(path).id), "r") ?: throw IOException("can't open $path")
+        val pfd = resolver.openFileDescriptor(uri(need(path).id), "r") ?: throw IOException(str(R.string.saf_collection_files_can_t_open, path))
         return ParcelFileDescriptor.AutoCloseInputStream(pfd).channel
     }
 
     override fun replace(path: String, bytes: ByteArray) {
         val file = need(path)
-        (resolver.openOutputStream(uri(file.id), "wt") ?: throw IOException("can't write $path")).use { it.write(bytes) }
+        (resolver.openOutputStream(uri(file.id), "wt") ?: throw IOException(str(R.string.saf_collection_files_can_t_write, path))).use { it.write(bytes) }
         changed(need(parentOf(path)).id)
     }
 
@@ -161,12 +162,12 @@ class SafCollectionFiles(private val resolver: ContentResolver, private val tree
     override fun deleteHoldingFolder(folder: String) {
         requireHoldingFolder(folder)
         val target = find(folder) ?: return
-        if (!DocumentsContract.deleteDocument(resolver, uri(target.id))) throw IOException("couldn't delete $folder")
+        if (!DocumentsContract.deleteDocument(resolver, uri(target.id))) throw IOException(str(R.string.saf_collection_files_couldn_t_delete, folder))
         listings.clear()
     }
 
     override fun discardPartial(path: String) {
-        require(path.endsWith(PARTIAL_SUFFIX)) { "only unfinished files can be removed" }
+        require(path.endsWith(PARTIAL_SUFFIX)) { str(R.string.saf_collection_files_only_unfinished_files_can_be_removed) }
         val file = find(path) ?: return
         DocumentsContract.deleteDocument(resolver, uri(file.id))
         find(parentOf(path))?.let { changed(it.id) }

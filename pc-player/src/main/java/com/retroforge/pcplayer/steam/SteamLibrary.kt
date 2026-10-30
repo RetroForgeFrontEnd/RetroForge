@@ -1,5 +1,7 @@
 package com.retroforge.pcplayer.steam
 
+import com.retroforge.pcplayer.R
+import com.retroforge.core.ui.str
 import android.util.Log
 import `in`.dragonbra.javasteam.steam.handlers.steamapps.PICSRequest
 import `in`.dragonbra.javasteam.steam.handlers.steamapps.SteamApps
@@ -30,7 +32,7 @@ class SteamLibrary(private val account: SteamAccount, private val cacheFile: Fil
 
     /** Asks Steam for the library and keeps it. Null when not signed in. */
     suspend fun refresh(): List<SteamOwnedGame>? = account.withLicenses { client, licenses ->
-        val apps = client.getHandler(SteamApps::class.java) ?: throw IOException("Steam's app handler is missing")
+        val apps = client.getHandler(SteamApps::class.java) ?: throw IOException(str(R.string.steam_account_steam_s_app_handler_is_missing))
 
         val appIds = linkedSetOf<Int>()
         for (chunk in licenses.map { PICSRequest(it.packageID, it.accessToken) }.chunked(CHUNK)) {

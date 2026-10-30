@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.hacks
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.content.ContentResolver
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -76,7 +78,7 @@ class HacksViewModel(
                 if (bytes.size > CatalogueParser.MAX_BYTES) null else bytes.toString(Charsets.UTF_8)
             }
         }.getOrNull()
-        if (text == null) "Couldn't read that file, or it's larger than 2 MB." to true else describe(store.add(text, url = null))
+        if (text == null) str(R.string.hacks_couldn_t_read_that_file_or) to true else describe(store.add(text, url = null))
     }
 
     fun addFromUrl(url: String) = runBusy {
@@ -93,14 +95,14 @@ class HacksViewModel(
 
     fun remove(sourceId: String) = runBusy {
         store.remove(sourceId)
-        "Catalogue removed." to false
+        str(R.string.hacks_catalogue_removed) to false
     }
 
     private fun describe(result: AddResult): Pair<String, Boolean> = when (result) {
         is AddResult.Added -> buildString {
-            append("Added \"${result.source.name}\".")
+            append(str(R.string.hacks_added_2, result.source.name))
             if (result.warnings.isNotEmpty()) {
-                append(if (result.warnings.size == 1) " 1 entry was skipped: " else " ${result.warnings.size} entries were skipped: ")
+                append(if (result.warnings.size == 1) str(R.string.hacks_1_entry_was_skipped) else str(R.string.hacks_entries_were_skipped, result.warnings.size))
                 append(result.warnings.take(3).joinToString(" "))
             }
         } to false

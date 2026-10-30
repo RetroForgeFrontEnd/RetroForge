@@ -1,5 +1,6 @@
 package com.retroforge.player
 
+import com.retroforge.core.ui.str
 import android.content.Context
 import android.os.Build
 import java.io.File
@@ -55,7 +56,7 @@ object GpuDriver {
                     true
                 }
             }
-            if (!copied) throw IllegalStateException("$name isn't in the app")
+            if (!copied) throw IllegalStateException(str(R.string.gpu_driver_isn_t_in_the_app, name))
         }
     }
 

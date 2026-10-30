@@ -1,5 +1,7 @@
 package com.retroforge.app.ui
 
+import com.retroforge.core.ui.pluralStr
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -63,17 +65,17 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
         val target = host.trim()
         if (target.isBlank()) return
         folders = null
-        folderStatus = "Looking for shared folders on $target…"
+        folderStatus = str(R.string.network_drives_looking_for_shared_folders_on, target)
         scope.launch {
             val result = withContext(Dispatchers.IO) { runCatching { NetworkDrives.sharedFolders(target, user.trim(), password) } }
             result.onSuccess { list ->
                 folders = list
-                folderStatus = if (list.isEmpty()) "$target doesn't share any folders yet. Share one first (Settings → How to use RetroForge → network drives)." else null
+                folderStatus = if (list.isEmpty()) str(R.string.network_drives_doesn_t_share_any_folders_yet, target) else null
                 if (list.size == 1 && folder.isBlank()) folder = list.single()
             }.onFailure {
                 folderStatus = if (it is java.net.SocketTimeoutException || it is java.net.ConnectException || it.cause is java.net.ConnectException)
-                    "Couldn't reach $target. Check it's on, and on the same network as this device."
-                else "Couldn't list its folders: ${it.message} Enter the username and password, then Show shared folders."
+                    str(R.string.network_drives_couldn_t_reach_check_it_s, target)
+                else str(R.string.network_drives_couldn_t_list_its_folders_enter, it.message)
             }
         }
     }
@@ -97,7 +99,7 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
         } else {
             // Find the PC or NAS instead of typing its address.
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FocusChip(if (searching) "Searching your network…" else "Find on my network", enabled = !searching, onClick = {
+                FocusChip(if (searching) stringResource(R.string.network_drives_searching_your_network) else stringResource(R.string.network_drives_find_on_my_network), enabled = !searching, onClick = {
                     searching = true
                     scope.launch {
                         found = com.retroforge.app.network.NetworkSearch.find(context)
@@ -136,25 +138,25 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
                 label = { Text(stringResource(R.string.network_drives_name_to_show_optional)) }, modifier = Modifier.fillMaxWidth())
             CardBody(stringResource(R.string.network_drives_the_password_stays_on_this_device))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FocusChip(if (showPassword) "Hide password" else "Show password", onClick = { showPassword = !showPassword })
-                FocusChip(if (onUse != null) "Add to my ${what.lowercase()}" else "Test and save", enabled = host.isNotBlank() && folder.isNotBlank(), onClick = {
+                FocusChip(if (showPassword) stringResource(R.string.network_drives_hide_password) else stringResource(R.string.network_drives_show_password), onClick = { showPassword = !showPassword })
+                FocusChip(if (onUse != null) stringResource(R.string.network_drives_add_to_my, what.lowercase()) else stringResource(R.string.network_drives_test_and_save), enabled = host.isNotBlank() && folder.isNotBlank(), onClick = {
                     val share = draft()
-                    status = "Connecting to ${share.address}…"
+                    status = str(R.string.network_drives_connecting_to, share.address)
                     scope.launch {
                         val result = withContext(Dispatchers.IO) { runCatching { NetworkDrives.test(share) } }
                         result.onSuccess { count ->
                             NetworkDrives.save(context, share)
-                            status = if (onUse != null) "Connected to ${share.address}. Looking for your ${what.lowercase()}… (a big collection can take a few minutes)"
-                            else "Connected: ${share.address} has $count items. Choose it in the folder picker now."
+                            status = if (onUse != null) str(R.string.network_drives_connected_to_looking_for_your_a, share.address, what.lowercase())
+                            else str(R.string.network_drives_connected_has_items_choose_it_in, share.address, count)
                             // The confirmation once it's scanned: how many games (or films) were found there.
                             if (onUse != null) {
                                 val started = System.currentTimeMillis()
                                 popupHidden = false
-                                popup = Triple("Connecting to ${share.address}…", null, null)
+                                popup = Triple(str(R.string.network_drives_connecting_to, share.address), null, null)
                                 status = onUse(NetworkDrives.folderUri(context, share)) { text, fraction ->
                                     val left = fraction?.takeIf { it > 0.05f }?.let { f ->
                                         val seconds = ((System.currentTimeMillis() - started) / 1000f * (1 - f) / f).toInt()
-                                        if (seconds < 60) "Less than a minute left" else "About ${(seconds + 30) / 60} minute${if (seconds >= 90) "s" else ""} left"
+                                        if (seconds < 60) str(R.string.network_drives_less_than_a_minute_left) else pluralStr(R.plurals.network_drives_about_minutes_left, (seconds + 30) / 60, (seconds + 30) / 60)
                                     }
                                     if (!popupHidden) popup = Triple(text, fraction, left)
                                 }
@@ -164,7 +166,7 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
                             changes++
                         }.onFailure {
                             NetworkDrives.remove(context, share.id)
-                            status = "Couldn't connect: ${it.message ?: it.javaClass.simpleName}"
+                            status = str(R.string.network_drives_couldn_t_connect, it.message ?: it.javaClass.simpleName)
                         }
                     }
                 })
@@ -182,7 +184,7 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
                     Text(text)
                     if (fraction != null) androidx.compose.material3.LinearProgressIndicator(progress = { fraction }, modifier = Modifier.fillMaxWidth())
                     else androidx.compose.material3.LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                    Text(left ?: "Working out how long…", style = androidx.compose.material3.MaterialTheme.typography.bodySmall)
+                    Text(left ?: stringResource(R.string.network_drives_working_out_how_long), style = androidx.compose.material3.MaterialTheme.typography.bodySmall)
                 }
             },
             // It carries on in the background; the result shows on the card when it's done.

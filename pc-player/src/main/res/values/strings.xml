@@ -1,0 +1,159 @@
+<resources>
+
+    <!-- PcPlayerActivity.kt -->
+    <string name="pc_player_starting">Starting</string>
+    <string name="pc_player_the_game_s_exe_wasn_t">The game\'s .exe wasn\'t found:\n%1$s</string>
+    <string name="pc_player_the_pc_runtime_couldn_t_be">The PC runtime couldn\'t be installed</string>
+    <string name="pc_player_retroforge_couldn_t_tell_which_steam">RetroForge couldn\'t tell which Steam game this is.</string>
+    <string name="pc_player_set_up_the_steam_client_on">Set up the Steam client on the PC tab first (Steam method 2).</string>
+    <string name="pc_player_getting_the_game_ready_for_the">Getting the game ready for the Steam client</string>
+    <string name="pc_player_checking_your_steam_account">Checking your Steam account</string>
+    <string name="pc_player_this_game_uses_steam_but_retroforge">This game uses Steam, but RetroForge couldn\'t tell which Steam game it is.</string>
+    <string name="pc_player_steam_couldn_t_be_set_up">Steam couldn\'t be set up for this game</string>
+    <string name="pc_player_checking_steam_cloud">Checking Steam Cloud</string>
+    <string name="pc_player_restarting">Restarting %1$s</string>
+    <string name="pc_player_starting_windows">Starting Windows</string>
+    <string name="pc_player_the_game_couldn_t_be_started">The game couldn\'t be started: %1$s</string>
+    <string name="pc_player_starting_2">Starting %1$s</string>
+    <string name="pc_player_couldn_t_start">Couldn\'t start %1$s</string>
+    <string name="pc_player_the_game_closed">The game closed</string>
+    <string name="pc_player_back_to_retroforge">Back to RetroForge</string>
+    <string name="pc_player_pc_game">PC game</string>
+    <string name="pc_player_back">Back</string>
+    <string name="pc_player_paused_pc_game">Paused · PC game</string>
+    <string name="pc_player_resume">Resume</string>
+    <string name="pc_player_play_together_on">Play together: On</string>
+    <string name="pc_player_play_together">Play together</string>
+    <string name="pc_player_on_screen_controller">On-screen controller: %1$s</string>
+    <string name="pc_player_hidden_while_a_controller_is_connected">" (hidden while a controller is connected)"</string>
+    <string name="pc_player_controller_works_as">Controller works as: %1$s</string>
+    <string name="pc_player_sides_of_4_3_games">Sides of 4:3 games: %1$s</string>
+    <string name="pc_player_for_games_without_controller_support_sticks">For games without controller support. Sticks: move (WASD) and mouse. RT/LT: left/right click. A Space · B Ctrl · X R · Y E · LB Q · RB next weapon · Start Esc · Back Tab · L3 Shift.</string>
+    <string name="pc_player_keyboard">Keyboard</string>
+    <string name="pc_player_press_esc">Press Esc</string>
+    <string name="pc_player_press_enter">Press Enter</string>
+    <string name="pc_player_quit_to_retroforge">Quit to RetroForge</string>
+    <string name="pc_player_this_game_needs_the_steam_client">This game needs the Steam client: its copy protection asks Steam itself to start it.\n\nRetroForge will start it with Steam method 2 from now on. Set up the Steam client on the PC tab (Steam method 2), sign in once, then play it again.</string>
+    <string name="pc_player_wine_finished_code">Wine finished (code %1$s).\n\n%2$s</string>
+    <string name="pc_player_saving_to_steam_cloud">Saving to Steam Cloud</string>
+
+    <!-- PcRuntime.kt -->
+    <string name="pc_runtime_downloading">Downloading %1$s</string>
+    <string name="pc_runtime_unpacking">Unpacking %1$s</string>
+    <string name="pc_runtime_setting_up_windows">Setting up Windows</string>
+    <string name="pc_runtime_installing">Installing %1$s</string>
+    <string name="pc_runtime_fex_s_is_missing">FEX\'s %1$s is missing</string>
+    <string name="pc_runtime_the_download_server_answered_for">The download server answered %1$s for %2$s</string>
+    <string name="pc_runtime_didn_t_download_completely">%1$s didn\'t download completely</string>
+    <string name="pc_runtime_couldn_t_save">Couldn\'t save %1$s</string>
+    <string name="pc_runtime_the_linux_image">the Linux image</string>
+    <string name="pc_runtime_the_vulkan_driver">the Vulkan driver</string>
+    <string name="pc_runtime_couldn_t_make_the_link">Couldn\'t make the link %1$s: %2$s</string>
+
+    <!-- PcSession.kt -->
+    <string name="pc_session_retroforge_s_is_missing_from_the">RetroForge\'s %1$s is missing from the app</string>
+
+    <!-- PlayTogether.kt -->
+    <string name="play_together_this_device_is_on_your_wi">This device is %1$son your Wi-Fi. Open the game\'s LAN or multiplayer menu on both devices; they should find each other.</string>
+    <string name="play_together_starting">Starting…</string>
+    <string name="play_together_couldn_t_host_is_in_use">Couldn\'t host: %1$s.</string>
+    <string name="play_together_checking_whether_friends_on_the_internet">Checking whether friends on the internet can reach this device…</string>
+    <string name="play_together_friends_on_the_internet_join_at">Friends on the internet join at %1$s (your router opened the port). On the same Wi-Fi they can use %2$s.</string>
+    <string name="play_together_your_router_opened_the_port_friends">Your router opened the port. Friends on the same Wi-Fi can join at %1$s.</string>
+    <string name="play_together_your_router_didn_t_let_retroforge">Your router didn\'t let RetroForge open port %1$s (TCP and UDP) for friends on the internet: send it to %2$s in the router\'s settings. Friends on the same Wi-Fi can join at %3$s.</string>
+    <string name="play_together_connecting_to">Connecting to %1$s…</string>
+    <string name="play_together_couldn_t_reach_check_the_address">Couldn\'t reach %1$s. Check the address, and that the host chose \"Host over the internet\" first.</string>
+    <string name="play_together_hosting_waiting_for_a_friend_to">Hosting. Waiting for a friend to join…</string>
+    <string name="play_together_playing_together">"Playing together: "</string>
+    <string name="play_together_open_the_game_s_lan_or">. Open the game\'s LAN or multiplayer menu: the others are on its local network.</string>
+    <string name="play_together_play_this_game_s_lan_or">Play this game\'s LAN or multiplayer mode with other RetroForge devices or PCs.</string>
+    <string name="play_together_steam_games_use_retroforge_s_steam">" Steam games use RetroForge\'s Steam lobbies; turning them on restarts the game."</string>
+    <string name="play_together_same_wi_fi">Same Wi-Fi</string>
+    <string name="play_together_host_over_the_internet">Host over the internet</string>
+    <string name="play_together_host_s_address">Host\'s address</string>
+    <string name="play_together_join_over_the_internet">Join over the internet</string>
+    <string name="play_together_stop_playing_together">Stop playing together</string>
+    <string name="play_together_turn_steam_lobbies_off_restarts">Turn Steam lobbies off (restarts)</string>
+
+    <!-- PcLan.kt -->
+    <string name="pc_lan_connecting">Connecting</string>
+    <string name="pc_lan_player">Player %1$s</string>
+    <string name="pc_lan_the_host_didn_t_let_this">The host didn\'t let this device in</string>
+    <string name="pc_lan_connection_lost_reconnecting">Connection lost. Reconnecting</string>
+    <string name="pc_lan_the_connection_to_the_host_was">The connection to the host was lost</string>
+    <string name="pc_lan_no_free_port_for_the_relay">No free port for the relay</string>
+
+    <!-- PlayTogetherService.kt -->
+    <string name="play_together_service_playing_together">Playing together</string>
+    <string name="play_together_service_still_connected_to_the_other_players">Still connected to the other players. Tap to go back to the game.</string>
+
+    <!-- SteamAccount.kt -->
+    <string name="steam_account_steam_s_app_handler_is_missing">Steam\'s app handler is missing</string>
+    <string name="steam_account_steam_didn_t_answer_whether_you">Steam didn\'t answer whether you own the game in time</string>
+    <string name="steam_account_steam_didn_t_send_your_library">Steam didn\'t send your library in time</string>
+    <string name="steam_account_steam_couldn_t_list_your_library">Steam couldn\'t list your library (%1$s)</string>
+    <string name="steam_account_your_email">your email</string>
+    <string name="steam_account_steam_s_user_handler_is_missing">Steam\'s user handler is missing</string>
+    <string name="steam_account_steam_didn_t_answer_the_sign">Steam didn\'t answer the sign-in in time</string>
+    <string name="steam_account_steam_refused_the_sign_in">Steam refused the sign-in (%1$s)</string>
+    <string name="steam_account_couldn_t_reach_steam">Couldn\'t reach Steam</string>
+    <string name="steam_account_couldn_t_reach_steam_s_servers">Couldn\'t reach Steam\'s servers</string>
+
+    <!-- SteamCloudSync.kt -->
+    <string name="steam_cloud_sync_steam_s_cloud_handler_is_missing">Steam\'s cloud handler is missing</string>
+    <string name="steam_cloud_sync_downloading_your_steam_cloud_saves">Downloading your Steam Cloud saves</string>
+    <string name="steam_cloud_sync_is_encrypted_in_steam_cloud">%1$s is encrypted in Steam Cloud</string>
+    <string name="steam_cloud_sync_steam_cloud_download_of_failed">Steam Cloud download of %1$s failed (%2$s)</string>
+    <string name="steam_cloud_sync_came_compressed_but_empty">%1$s came compressed but empty</string>
+    <string name="steam_cloud_sync_downloaded_incomplete">%1$s downloaded incomplete</string>
+
+    <!-- SteamDownloadService.kt -->
+    <string name="steam_download_service_waiting_for_wi_fi">Waiting for Wi-Fi</string>
+    <string name="steam_download_service_sign_in_to_steam_first">Sign in to Steam first</string>
+    <string name="steam_download_service_ready_to_play">Ready to play</string>
+    <string name="steam_download_service_stopped">Stopped</string>
+    <string name="steam_download_service_cancelled_select_the_game_to_carry">Cancelled. Select the game to carry on.</string>
+    <string name="steam_download_service_the_download_failed">The download failed</string>
+    <string name="steam_download_service_download_stopped">Download stopped: %1$s</string>
+    <string name="steam_download_service_downloaded_from_steam_ready_to_play">Downloaded from Steam. Ready to play.</string>
+    <string name="steam_download_service_of_1f_gb" formatted="false">" of %.1f GB"</string>
+    <string name="steam_download_service_cancel">Cancel</string>
+    <string name="steam_download_service_steam_downloads">Steam downloads</string>
+
+    <!-- SteamDownloads.kt -->
+    <string name="steam_downloads_downloading_manifest">Downloading manifest</string>
+    <string name="steam_downloads_getting_the_file_list">Getting the file list</string>
+    <string name="steam_downloads_downloading">Downloading</string>
+    <string name="steam_downloads_steam_has_no_app_info_for">Steam has no app info for %1$s</string>
+
+    <!-- SteamGameSetup.kt -->
+    <string name="steam_game_setup_this_is_a_steam_game_sign">This is a Steam game: sign in to Steam on RetroForge\'s PC tab first.</string>
+    <string name="steam_game_setup_sign_in_to_steam_on_retroforge">Sign in to Steam on RetroForge\'s PC tab first.</string>
+    <string name="steam_game_setup_steam_says_this_account_doesn_t">Steam says this account doesn\'t own this game (app %1$s).</string>
+    <string name="steam_game_setup_couldn_t_download_the_steam_emulator">Couldn\'t download the Steam emulator (%1$s)</string>
+    <string name="steam_game_setup_the_steam_emulator_download_didn_t">The Steam emulator download didn\'t match</string>
+    <string name="steam_game_setup_couldn_t_save_the_steam_emulator">Couldn\'t save the Steam emulator</string>
+
+    <!-- WindowsSteamClient.kt -->
+    <string name="windows_steam_client_asking_valve_for_the_steam_client">Asking Valve for the Steam client\'s files</string>
+    <string name="windows_steam_client_valve_s_list_of_steam_client">Valve\'s list of Steam client files was empty</string>
+    <string name="windows_steam_client_downloading_steam">Downloading Steam</string>
+    <string name="windows_steam_client_didn_t_match_valve_s_checksum">%1$s didn\'t match Valve\'s checksum</string>
+    <string name="windows_steam_client_unpacking_steam">Unpacking Steam</string>
+    <string name="windows_steam_client_steam_client_ready">Steam client ready</string>
+    <string name="windows_steam_client_valve_s_server_answered_for">Valve\'s server answered %1$s for %2$s</string>
+
+    <!-- PcPlayerActivity.kt -->
+    <string name="pc_player_none_given">(none given)</string>
+    <string name="pc_player_shown">Shown</string>
+    <string name="pc_player_hidden">Hidden</string>
+    <string name="pc_player_keyboard_mouse">Keyboard &amp; mouse</string>
+    <string name="pc_player_xbox_controller">Xbox controller</string>
+    <string name="pc_player_blurred">Blurred</string>
+    <string name="pc_player_black">Black</string>
+
+    <!-- PlayTogether.kt -->
+    <string name="play_together_port_is_in_use">port %1$s is in use</string>
+    <string name="play_together_this_device">this device</string>
+    <string name="play_together_this_device_s_address">this device\'s address</string>
+</resources>

@@ -1,5 +1,7 @@
 package com.retroforge.app.player
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
@@ -78,7 +80,7 @@ class FolderTarget(private val resolver: ContentResolver, private val tree: Uri)
         children(parentId).firstOrNull { it.name == name }?.let { ids[path] = it.id; return it.id }
         if (!make) return null
         return DocumentsContract.createDocument(resolver, DocumentsContract.buildDocumentUriUsingTree(tree, parentId), Document.MIME_TYPE_DIR, name)
-            ?.let { DocumentsContract.getDocumentId(it) }?.also { ids[path] = it } ?: throw IOException("couldn't make the folder $name")
+            ?.let { DocumentsContract.getDocumentId(it) }?.also { ids[path] = it } ?: throw IOException(str(R.string.save_sync_couldn_t_make_the_folder, name))
     }
 
     override fun read(path: String): ByteArray {
@@ -91,10 +93,10 @@ class FolderTarget(private val resolver: ContentResolver, private val tree: Uri)
             val parentId = find(path.substringBeforeLast('/', ""), make = true)!!
             DocumentsContract.createDocument(
                 resolver, DocumentsContract.buildDocumentUriUsingTree(tree, parentId), "application/octet-stream", path.substringAfterLast('/'),
-            )?.let { DocumentsContract.getDocumentId(it) }?.also { ids[path] = it } ?: throw IOException("couldn't make $path")
+            )?.let { DocumentsContract.getDocumentId(it) }?.also { ids[path] = it } ?: throw IOException(str(R.string.save_sync_couldn_t_make, path))
         }
         val uri = DocumentsContract.buildDocumentUriUsingTree(tree, id)
-        resolver.openOutputStream(uri, "wt")?.use { it.write(bytes) } ?: throw IOException("couldn't write $path")
+        resolver.openOutputStream(uri, "wt")?.use { it.write(bytes) } ?: throw IOException(str(R.string.save_backup_couldn_t_write, path))
         return resolver.query(uri, arrayOf(Document.COLUMN_LAST_MODIFIED), null, null, null)?.use { if (it.moveToFirst()) it.getLong(0) else 0L } ?: 0L
     }
 }
@@ -170,7 +172,7 @@ class SaveSync(
                 part.writeBytes(bytes)
                 if (!part.renameTo(file)) {
                     file.delete()
-                    if (!part.renameTo(file)) throw IOException("couldn't save ${file.name}")
+                    if (!part.renameTo(file)) throw IOException(str(R.string.bezels_couldn_t_save, file.name))
                 }
                 file.setLastModified(there!!.modified)
                 seen[path] = Seen(file.lastModified(), there.modified)

@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -28,42 +29,42 @@ fun HotkeysScreen(viewModel: SettingsViewModel) {
     val quit = HotkeyCombo.of(settings.quitCombo).label
 
     ScreenFrame(title = stringResource(R.string.hotkeys_hotkeys), subtitle = stringResource(R.string.hotkeys_change_the_retroarch_combos_under_settings)) {
-        Section("In RetroForge", listOf(
-            "D-pad or stick" to "Move",
-            "A" to "Select",
-            "B" to "Back",
-            "L1 / R1" to "Previous / next section",
+        Section(str(R.string.hotkeys_in_retroforge), listOf(
+            str(R.string.hotkeys_d_pad_or_stick) to str(R.string.hotkeys_move),
+            "A" to str(R.string.hotkeys_select),
+            "B" to str(R.string.retro_forge_root_back),
+            "L1 / R1" to str(R.string.hotkeys_previous_next_section),
         ))
         if (settings.retroArchHotkeys) {
-            Section("In games (RetroArch, set by RetroForge)", listOf(
-                quit to "Quit the game and return to RetroForge",
-                menu to "Open RetroArch's menu",
-            ) + if (settings.fastForwardOnR2) listOf("Hold R2" to "Fast-forward (GBA, SNES, Mega Drive and other systems without R2)") else emptyList())
+            Section(str(R.string.hotkeys_in_games_retroarch_set_by_retroforge), listOf(
+                quit to str(R.string.hotkeys_quit_the_game_and_return_to),
+                menu to str(R.string.hotkeys_open_retroarch_s_menu),
+            ) + if (settings.fastForwardOnR2) listOf(str(R.string.hotkeys_hold_r2) to str(R.string.hotkeys_fast_forward_gba_snes_mega_drive)) else emptyList())
         } else {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
                 CardTitle(stringResource(R.string.hotkeys_in_games_retroarch))
                 CardBody(stringResource(R.string.hotkeys_retroforge_s_hotkeys_are_off_so))
             }
         }
-        Section("In RetroArch's menu (Quick Menu)", listOf(
-            "Save States" to "Save or load a state",
-            "Disc Control" to "Eject, choose the next disc, insert",
-            "Restart" to "Reset the game",
-            "Shaders" to "CRT and other screen effects",
-            "Close Content" to "Leave the game without quitting RetroArch",
+        Section(str(R.string.hotkeys_in_retroarch_s_menu_quick_menu), listOf(
+            "Save States" to str(R.string.hotkeys_save_or_load_a_state),
+            "Disc Control" to str(R.string.hotkeys_eject_choose_the_next_disc_insert),
+            "Restart" to str(R.string.hotkeys_reset_the_game),
+            "Shaders" to str(R.string.hotkeys_crt_and_other_screen_effects),
+            "Close Content" to str(R.string.hotkeys_leave_the_game_without_quitting_retroarch),
         ))
-        Section("RetroArch keyboard defaults", listOf(
-            "F1" to "Menu",
-            "Esc" to "Quit",
-            "F2 / F4" to "Save / load state",
-            "F7" to "Next state slot",
-            "H" to "Reset",
-            "Space / L (hold)" to "Fast-forward (toggle / hold)",
-            "E (hold)" to "Slow motion",
-            "R (hold)" to "Rewind (when Rewind Support is on)",
-            "P" to "Pause",
-            "K" to "Frame advance",
-            "F9" to "Mute",
+        Section(str(R.string.hotkeys_retroarch_keyboard_defaults), listOf(
+            "F1" to str(R.string.hotkeys_menu),
+            "Esc" to str(R.string.hotkeys_quit),
+            "F2 / F4" to str(R.string.hotkeys_save_load_state),
+            "F7" to str(R.string.hotkeys_next_state_slot),
+            "H" to str(R.string.hotkeys_reset),
+            str(R.string.hotkeys_space_l_hold) to str(R.string.hotkeys_fast_forward_toggle_hold),
+            str(R.string.hotkeys_e_hold) to str(R.string.hotkeys_slow_motion),
+            str(R.string.hotkeys_r_hold) to str(R.string.hotkeys_rewind_when_rewind_support_is_on),
+            "P" to str(R.string.hotkeys_pause),
+            "K" to str(R.string.hotkeys_frame_advance),
+            "F9" to str(R.string.hotkeys_mute),
         ))
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle(stringResource(R.string.hotkeys_standalone_emulators))

@@ -1,5 +1,6 @@
 package com.retroforge.retro
 
+import com.retroforge.core.ui.str
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
@@ -51,11 +52,11 @@ class StandaloneLauncher(private val context: Context) {
             context.startActivity(intent)
             null
         } catch (e: ActivityNotFoundException) {
-            LaunchProblem.StartFailed("The emulator's game screen wasn't found. Update the emulator.")
+            LaunchProblem.StartFailed(str(R.string.standalone_launcher_the_emulator_s_game_screen_wasn))
         } catch (e: SecurityException) {
-            LaunchProblem.StartFailed("Android refused to start the emulator: ${e.message}")
+            LaunchProblem.StartFailed(str(R.string.standalone_launcher_android_refused_to_start_the_emulator, e.message))
         } catch (e: RuntimeException) {
-            LaunchProblem.StartFailed("Couldn't start the emulator: ${e.message}")
+            LaunchProblem.StartFailed(str(R.string.standalone_launcher_couldn_t_start_the_emulator, e.message))
         }
     }
 

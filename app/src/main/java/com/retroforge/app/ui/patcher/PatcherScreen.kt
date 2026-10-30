@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.patcher
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -81,12 +82,12 @@ fun PatcherScreen(viewModel: PatcherViewModel) {
             if (rom == null) {
                 CardBody(stringResource(R.string.patcher_select_to_choose_a_rom_zip))
             } else {
-                CardBody(if (rom.file.name == rom.pickedName) rom.pickedName else "${rom.file.name} (from ${rom.pickedName})")
+                CardBody(if (rom.file.name == rom.pickedName) rom.pickedName else stringResource(R.string.patcher_from, rom.file.name, rom.pickedName))
                 CardBody(stringResource(R.string.patcher_bytes_crc32, rom.file.bytes.size, hex(rom.crc32)))
             }
         }
 
-        CardTitle(if (state.patches.size > 1) "2. Patches, applied top to bottom" else "2. Patch")
+        CardTitle(if (state.patches.size > 1) stringResource(R.string.patcher_2_patches_applied_top_to_bottom) else stringResource(R.string.patcher_2_patch))
         state.patches.forEachIndexed { index, patch ->
             PatchCard(index, patch, state, viewModel)
         }
@@ -106,10 +107,10 @@ fun PatcherScreen(viewModel: PatcherViewModel) {
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth().focusRequester(addPatch), onClick = { pickPatch.launch(arrayOf("*/*")) }) {
-            CardTitle(if (state.patches.isEmpty()) "Add a patch" else "Add another patch on top")
+            CardTitle(if (state.patches.isEmpty()) stringResource(R.string.patcher_add_a_patch) else stringResource(R.string.patcher_add_another_patch_on_top))
             CardBody(
-                if (state.patches.isEmpty()) "Select to choose a .ips, .bps or .ups file, or a .zip containing one."
-                else "For add-on hacks whose readme says to apply another patch first.",
+                if (state.patches.isEmpty()) str(R.string.patcher_select_to_choose_a_ips_bps)
+                else str(R.string.patcher_for_add_on_hacks_whose_readme),
             )
         }
 
@@ -118,17 +119,17 @@ fun PatcherScreen(viewModel: PatcherViewModel) {
             CardTitle(stringResource(R.string.patcher_3_create_patched_copy))
             CardBody(
                 when {
-                    state.rom == null || state.patches.isEmpty() -> "Choose a ROM and at least one patch first."
-                    state.match == RomMatch.MISMATCH -> "Unavailable: the first patch needs a different ROM."
-                    state.patches.size > 1 -> "Select to apply all ${state.patches.size} patches in order, then choose where to save."
-                    else -> "Select to patch, then choose where to save the new file."
+                    state.rom == null || state.patches.isEmpty() -> str(R.string.patcher_choose_a_rom_and_at_least)
+                    state.match == RomMatch.MISMATCH -> str(R.string.patcher_unavailable_the_first_patch_needs_a)
+                    state.patches.size > 1 -> str(R.string.patcher_select_to_apply_all_patches_in, state.patches.size)
+                    else -> str(R.string.patcher_select_to_patch_then_choose_where)
                 },
             )
         }
 
         state.message?.let { message ->
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                StatusPill(if (state.messageIsError) "Problem" else "Done", if (state.messageIsError) StatusTone.BAD else StatusTone.GOOD)
+                StatusPill(if (state.messageIsError) str(R.string.play_problem) else str(R.string.setup_done), if (state.messageIsError) StatusTone.BAD else StatusTone.GOOD)
                 CardBody(message)
             }
         }
@@ -144,7 +145,7 @@ private fun PatchCard(index: Int, patch: PickedPatch, state: PatcherState, viewM
         CardBody(
             buildString {
                 append(patch.info.format.label)
-                if (patch.file.name != patch.pickedName) append(" · from ${patch.pickedName}")
+                if (patch.file.name != patch.pickedName) append(str(R.string.patcher_from_2, patch.pickedName))
             },
         )
         patch.info.expectedSourceCrc32?.let { CardBody(stringResource(R.string.patcher_needs_rom_crc32_bytes, hex(it), patch.info.expectedSourceSize.toString())) }
@@ -171,8 +172,8 @@ private fun PatchCard(index: Int, patch: PickedPatch, state: PatcherState, viewM
             )
             CardBody(
                 when {
-                    expanded -> "Select to collapse the readme."
-                    lines.size > README_PREVIEW_LINES -> "Readme: ${readme.name}. Select to read all of it."
+                    expanded -> str(R.string.patcher_select_to_collapse_the_readme)
+                    lines.size > README_PREVIEW_LINES -> str(R.string.patcher_readme_select_to_read_all_of, readme.name)
                     else -> "Readme: ${readme.name}"
                 },
             )

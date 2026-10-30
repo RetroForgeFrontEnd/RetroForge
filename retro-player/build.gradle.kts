@@ -31,6 +31,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core-ui"))
     implementation(libs.kotlinx.coroutines.core)
     testImplementation(libs.junit)
 }

@@ -1,5 +1,7 @@
 package com.retroforge.app.ui
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -136,7 +138,7 @@ fun CardBody(text: String) {
     )
     if (cut || expanded) {
         Text(
-            if (expanded) "Less" else "More",
+            if (expanded) str(R.string.screen_less) else str(R.string.screen_more),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable { expanded = !expanded }.padding(vertical = 4.dp),

@@ -1,5 +1,8 @@
 package com.retroforge.app.ui.manager
 
+import com.retroforge.core.ui.pluralStr
+import com.retroforge.app.ui.countOf
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -140,13 +143,13 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         when (pending) {
             is Pending.MoveDuplicates -> {
-                CardTitle("Move ${if (pending.count == 1) "1 copy" else "${pending.count} copies"}?")
+                CardTitle(stringResource(R.string.rom_manager_move_copies, countOf(pending.count, "copy")))
                 CardBody(
                     stringResource(R.string.rom_manager_they_go_to_the_folder_at, DUPLICATES_FOLDER, root.name, DUPLICATES_FOLDER),
                 )
             }
             is Pending.Compress -> {
-                CardTitle("Compress ${plural(pending.count, "game")} (${formatBytes(pending.bytes)})?")
+                CardTitle(stringResource(R.string.rom_manager_compress, plural(pending.count, "game"), formatBytes(pending.bytes)))
                 CardBody(
                     stringResource(R.string.rom_manager_each_game_is_compressed_then_read, ORIGINALS_FOLDER),
                 )
@@ -154,8 +157,7 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
             is Pending.DeleteGame -> {
                 CardTitle(stringResource(R.string.rom_manager_delete, pending.game.title))
                 CardBody(
-                    "${if (pending.parts.size == 1) "Its file moves" else "Its ${pending.parts.size} files move"} to the $DELETED_FOLDER folder and its gamelist.xml entry is removed. " +
-                        "You can undo this from History until you empty $DELETED_FOLDER with Free up space.",
+                    str(R.string.rom_manager_files_move_to_the_folder_and, pluralStr(R.plurals.rom_manager_its_files_move, pending.parts.size, pending.parts.size), DELETED_FOLDER, DELETED_FOLDER),
                 )
                 pending.parts.take(6).forEach { CardBody("• $it") }
                 if (pending.parts.size > 6) CardBody(stringResource(R.string.rom_manager_and_more, pending.parts.size - 6))
@@ -163,18 +165,17 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
             is Pending.Purge -> {
                 CardTitle(stringResource(R.string.rom_manager_delete_permanently, pending.summary.folder)) { StatusPill(stringResource(R.string.rom_manager_this_can_t_be_undone), StatusTone.BAD) }
                 CardBody(
-                    "${plural(pending.summary.files, "file")} (${formatBytes(pending.summary.bytes)}) will be deleted for good. " +
-                        "History entries that would need them can no longer be undone.",
+                    str(R.string.rom_manager_will_be_deleted_for_good_history, plural(pending.summary.files, "file"), formatBytes(pending.summary.bytes)),
                 )
             }
             is Pending.SortLoose -> {
-                CardTitle("Move ${plural(pending.count, "game")} into system folders?")
+                CardTitle(stringResource(R.string.rom_manager_move_into_system_folders, plural(pending.count, "game")))
                 CardBody(
                     stringResource(R.string.rom_manager_each_game_moves_into_the_folder),
                 )
             }
             is Pending.MakePlaylists -> {
-                CardTitle("Make ${plural(pending.count, "playlist")}?")
+                CardTitle(stringResource(R.string.rom_manager_make, plural(pending.count, "playlist")))
                 CardBody(
                     stringResource(R.string.rom_manager_each_multi_disc_game_gets_an),
                 )
@@ -195,7 +196,7 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
         }
     }
     ChipRow {
-        if (canWrite) FocusChip(if (pending is Pending.Purge) "Delete permanently" else "Yes, go ahead", onClick = viewModel::confirm)
+        if (canWrite) FocusChip(if (pending is Pending.Purge) stringResource(R.string.rom_manager_delete_permanently_3) else stringResource(R.string.rom_manager_yes_go_ahead), onClick = viewModel::confirm)
         else FocusChip(stringResource(R.string.rom_manager_allow_changes_to, root.name), onClick = {
             val rootUri = root.treeUri.toUri()
             pickFolder.launch(DocumentsContract.buildDocumentUriUsingTree(rootUri, DocumentsContract.getTreeDocumentId(rootUri)))
@@ -218,7 +219,7 @@ private fun DuplicatesTab(viewModel: RomManagerViewModel) {
             CardBody(stringResource(R.string.rom_manager_looks_for_the_same_game_in))
         }
         is Loadable.Loading -> {
-            CardBody(if (s.total == 0) "Looking for duplicates …" else "Checking set ${s.done + 1} of ${s.total} …")
+            CardBody(if (s.total == 0) stringResource(R.string.rom_manager_looking_for_duplicates) else stringResource(R.string.rom_manager_checking_set_of, s.done + 1, s.total))
             com.retroforge.app.ui.DownloadBar(s.share)
         }
         is Loadable.Failed -> { StatusPill(stringResource(R.string.rom_manager_couldn_t_check), StatusTone.BAD); CardBody(s.reason); FocusChip(stringResource(R.string.rom_manager_try_again), onClick = viewModel::findDuplicates) }
@@ -226,10 +227,10 @@ private fun DuplicatesTab(viewModel: RomManagerViewModel) {
             val report = s.value
             if (report.sets.isEmpty()) CardBody(stringResource(R.string.rom_manager_no_duplicates_to_tidy))
             else {
-                CardBody("${plural(report.sets.size, "set")} of duplicates. Ticked sets hold identical data. Select a file to keep it instead.")
+                CardBody(stringResource(R.string.rom_manager_of_duplicates_ticked_sets_hold_identical, plural(report.sets.size, "set")))
                 ChipRow {
-                    FocusChip((if (rule == KeepRule.MOST_COMPATIBLE) "● " else "") + "Keep most compatible", onClick = { viewModel.keepRule.value = KeepRule.MOST_COMPATIBLE })
-                    FocusChip((if (rule == KeepRule.SMALLEST) "● " else "") + "Keep smallest", onClick = { viewModel.keepRule.value = KeepRule.SMALLEST })
+                    FocusChip((if (rule == KeepRule.MOST_COMPATIBLE) "● " else "") + stringResource(R.string.rom_manager_keep_most_compatible), onClick = { viewModel.keepRule.value = KeepRule.MOST_COMPATIBLE })
+                    FocusChip((if (rule == KeepRule.SMALLEST) "● " else "") + stringResource(R.string.rom_manager_keep_smallest), onClick = { viewModel.keepRule.value = KeepRule.SMALLEST })
                 }
             }
             report.sets.forEachIndexed { i, set ->
@@ -253,7 +254,7 @@ private fun DuplicatesTab(viewModel: RomManagerViewModel) {
             }
             if (report.skipped.isNotEmpty()) {
                 FocusCard(modifier = Modifier.fillMaxWidth()) {
-                    CardTitle("Left alone: ${plural(report.skipped.size, "set")}")
+                    CardTitle(stringResource(R.string.rom_manager_left_alone, plural(report.skipped.size, "set")))
                     report.skipped.groupBy { it.reason }.forEach { (reason, sets) ->
                         CardBody("${sets.size} × $reason")
                         CardBody("  e.g. ${sets.take(3).joinToString { it.title }}")
@@ -262,7 +263,7 @@ private fun DuplicatesTab(viewModel: RomManagerViewModel) {
             }
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 val count = selected.sumOf { report.sets[it].files.size - 1 }
-                FocusChip("Move ${if (count == 1) "1 copy" else "$count copies"} to $DUPLICATES_FOLDER", onClick = viewModel::askMoveDuplicates, enabled = count > 0)
+                FocusChip(stringResource(R.string.rom_manager_move_to, countOf(count, "copy"), DUPLICATES_FOLDER), onClick = viewModel::askMoveDuplicates, enabled = count > 0)
                 FocusChip(stringResource(R.string.rom_manager_check_again), onClick = viewModel::findDuplicates)
             }
         }
@@ -294,14 +295,14 @@ private fun CompressTab(viewModel: RomManagerViewModel) {
                         (if (on) "☑ " else "☐ ") + "${viewModel.systemName(system)}: ${plural(jobs.size, "game")} · ${formatBytes(jobs.sumOf { it.inputBytes })}",
                         style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface,
                     )
-                    CardBody("To " + jobs.map { it.format }.distinct().joinToString { it.label } + ". " + jobs.take(4).joinToString { it.title } + if (jobs.size > 4) " and ${jobs.size - 4} more" else "")
+                    CardBody(stringResource(R.string.rom_manager_to) + jobs.map { it.format }.distinct().joinToString { it.label } + ". " + jobs.take(4).joinToString { it.title } + if (jobs.size > 4) stringResource(R.string.rom_manager_and_more_2, jobs.size - 4) else "")
                     if (jobs.any { it.format == CompressFormat.ZIP }) CardBody(stringResource(R.string.rom_manager_a_zip_is_usually_30_60))
                     if (jobs.any { it.format != CompressFormat.ZIP }) CardBody(stringResource(R.string.rom_manager_a_chd_is_usually_30_60))
                 }
             }
             if (report.skipped.isNotEmpty()) {
                 FocusCard(modifier = Modifier.fillMaxWidth()) {
-                    CardTitle("Left alone: ${plural(report.skipped.size, "game")}")
+                    CardTitle(stringResource(R.string.rom_manager_left_alone, plural(report.skipped.size, "game")))
                     report.skipped.groupBy { it.system to it.reason }.forEach { (key, games) ->
                         CardBody("${viewModel.systemName(key.first)}: ${games.size} × ${key.second}")
                     }
@@ -309,7 +310,7 @@ private fun CompressTab(viewModel: RomManagerViewModel) {
             }
             val jobs = viewModel.selectedJobs()
             ChipRow {
-                FocusChip("Compress ${plural(jobs.size, "game")}", onClick = viewModel::askCompress, enabled = jobs.isNotEmpty())
+                FocusChip(stringResource(R.string.rom_manager_compress_2, plural(jobs.size, "game")), onClick = viewModel::askCompress, enabled = jobs.isNotEmpty())
                 FocusChip(stringResource(R.string.rom_manager_check_again), onClick = viewModel::findCompressible)
             }
         }
@@ -334,13 +335,13 @@ private fun SortTab(viewModel: RomManagerViewModel) {
             if (jobs.isEmpty()) CardBody(stringResource(R.string.rom_manager_every_game_is_already_in_its))
             jobs.groupBy { it.folder }.forEach { (folder, list) ->
                 FocusCard(modifier = Modifier.fillMaxWidth()) {
-                    Text("Into $folder: ${plural(list.size, "game")}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-                    list.take(5).forEach { CardBody("${it.title}  (from ${it.path.substringBeforeLast('/', "the top folder")})") }
+                    Text(stringResource(R.string.rom_manager_into, folder, plural(list.size, "game")), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
+                    list.take(5).forEach { CardBody(stringResource(R.string.rom_manager_from, it.title, it.path.substringBeforeLast('/', stringResource(R.string.rom_manager_the_top_folder)))) }
                     if (list.size > 5) CardBody(stringResource(R.string.rom_manager_and_more, list.size - 5))
                 }
             }
             ChipRow {
-                if (jobs.isNotEmpty()) FocusChip("Move ${plural(jobs.size, "game")}", onClick = viewModel::askSortLoose)
+                if (jobs.isNotEmpty()) FocusChip(stringResource(R.string.rom_manager_move, plural(jobs.size, "game")), onClick = viewModel::askSortLoose)
                 FocusChip(stringResource(R.string.rom_manager_check_again), onClick = viewModel::findLoose)
             }
         }
@@ -371,12 +372,12 @@ private fun MultiDiscTab(viewModel: RomManagerViewModel) {
             }
             if (report.skipped.isNotEmpty()) {
                 FocusCard(modifier = Modifier.fillMaxWidth()) {
-                    CardTitle("Left alone: ${plural(report.skipped.size, "game")}")
+                    CardTitle(stringResource(R.string.rom_manager_left_alone, plural(report.skipped.size, "game")))
                     report.skipped.take(10).forEach { CardBody("${it.title}: ${it.reason}") }
                 }
             }
             ChipRow {
-                if (report.jobs.isNotEmpty()) FocusChip("Make ${plural(report.jobs.size, "playlist")}", onClick = viewModel::askMakePlaylists)
+                if (report.jobs.isNotEmpty()) FocusChip(stringResource(R.string.rom_manager_make_2, plural(report.jobs.size, "playlist")), onClick = viewModel::askMakePlaylists)
                 FocusChip(stringResource(R.string.rom_manager_check_again), onClick = viewModel::findMultiDisc)
             }
         }
@@ -404,9 +405,9 @@ private fun HistoryTab(viewModel: RomManagerViewModel, root: RootEntity) {
     val format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
     mine.forEach { log ->
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle(when (log.kind) { "compress" -> "Compressed"; "delete" -> "Deleted"; "playlists" -> "Playlists made"; else -> "Duplicates tidied" })
+            CardTitle(when (log.kind) { "compress" -> stringResource(R.string.rom_manager_compressed); "delete" -> stringResource(R.string.rom_manager_deleted); "playlists" -> stringResource(R.string.rom_manager_playlists_made); else -> stringResource(R.string.rom_manager_duplicates_tidied) })
             CardBody(log.summary)
-            CardBody(format.format(Date(log.startedAt)) + " · ${plural(log.steps.size, "change")}" + if (!log.finished) " · interrupted" else "")
+            CardBody(format.format(Date(log.startedAt)) + " · ${plural(log.steps.size, "change")}" + if (!log.finished) stringResource(R.string.rom_manager_interrupted) else "")
             log.undoneAt?.let { StatusPill(stringResource(R.string.rom_manager_undone, format.format(Date(it))), StatusTone.NEUTRAL) }
             if (log.undoneAt == null && log.purgedAt != null) StatusPill(stringResource(R.string.rom_manager_can_t_be_undone_its_files), StatusTone.NEUTRAL)
         }

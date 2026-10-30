@@ -1,0 +1,24 @@
+<resources>
+
+    <!-- RetroArchHotkeys.kt -->
+    <string name="retro_arch_hotkeys_couldn_t_create_the_hotkey_file">couldn\'t create the hotkey file</string>
+    <string name="retro_arch_hotkeys_couldn_t_write">couldn\'t write</string>
+
+    <!-- RetroArchLauncher.kt -->
+    <string name="retro_arch_launcher_retroarch_s_game_activity_wasn_t">RetroArch\'s game activity wasn\'t found. Update RetroArch.</string>
+    <string name="retro_arch_launcher_android_refused_to_start_retroarch">Android refused to start RetroArch: %1$s</string>
+    <string name="retro_arch_launcher_couldn_t_start_retroarch">Couldn\'t start RetroArch: %1$s</string>
+
+    <!-- StandaloneLauncher.kt -->
+    <string name="standalone_launcher_the_emulator_s_game_screen_wasn">The emulator\'s game screen wasn\'t found. Update the emulator.</string>
+    <string name="standalone_launcher_android_refused_to_start_the_emulator">Android refused to start the emulator: %1$s</string>
+    <string name="standalone_launcher_couldn_t_start_the_emulator">Couldn\'t start the emulator: %1$s</string>
+    <string name="hotkey_off">Off</string>
+    <string name="hotkey_start_select">Start + Select</string>
+    <string name="hotkey_hold_start">Hold Start</string>
+    <string name="hotkey_hold_select">Hold Select</string>
+    <string name="hotkey_down_select">Down + Select</string>
+    <string name="hotkey_l3_r3">L3 + R3</string>
+    <string name="hotkey_l1_r1">L1 + R1</string>
+    <string name="hotkey_l2_r2">L2 + R2</string>
+</resources>

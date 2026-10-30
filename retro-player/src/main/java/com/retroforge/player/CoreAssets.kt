@@ -1,5 +1,6 @@
 package com.retroforge.player
 
+import com.retroforge.core.ui.str
 import java.io.File
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -28,7 +29,7 @@ object CoreAssets {
             setRequestProperty("User-Agent", userAgent)
         }
         try {
-            if (connection.responseCode != 200) throw IOException("libretro answered ${connection.responseCode}")
+            if (connection.responseCode != 200) throw IOException(str(R.string.core_assets_libretro_answered, connection.responseCode))
             val root = systemDir.canonicalFile
             ZipInputStream(connection.inputStream.buffered()).use { input ->
                 while (true) {
@@ -44,7 +45,7 @@ object CoreAssets {
                     val part = File(target.path + ".part")
                     part.outputStream().use { input.copyTo(it) }
                     target.delete()
-                    if (!part.renameTo(target)) throw IOException("couldn't write ${target.name}")
+                    if (!part.renameTo(target)) throw IOException(str(R.string.core_assets_couldn_t_write, target.name))
                 }
             }
         } finally {

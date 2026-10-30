@@ -1,5 +1,7 @@
 package com.retroforge.app.player
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import java.text.Normalizer
 
 /**
@@ -12,7 +14,7 @@ class MemoryCard(val data: ByteArray) {
     data class Save(val firstBlock: Int, val blocks: List<Int>, val fileName: String, val title: String)
 
     init {
-        require(data.size == SIZE) { "not a PlayStation memory card (${data.size} bytes)" }
+        require(data.size == SIZE) { str(R.string.memory_not_a_playstation_memory_card_bytes, data.size) }
     }
 
     val saves: List<Save>
@@ -123,7 +125,7 @@ class MemoryCard(val data: ByteArray) {
             bytes.size == SIZE -> MemoryCard(bytes)
             bytes.size == SIZE + 3904 && String(bytes, 0, 12, Charsets.US_ASCII).startsWith("123-456-STD") ->
                 MemoryCard(bytes.copyOfRange(3904, bytes.size))
-            else -> throw IllegalArgumentException("not a PlayStation memory card")
+            else -> throw IllegalArgumentException(str(R.string.memory_not_a_playstation_memory_card))
         }
     }
 }

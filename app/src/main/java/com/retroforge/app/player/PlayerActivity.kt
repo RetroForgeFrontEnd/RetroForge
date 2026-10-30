@@ -1,5 +1,6 @@
 package com.retroforge.app.player
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -215,7 +216,7 @@ class PlayerActivity : ComponentActivity() {
     /** Turns on exactly the enabled cheats; tells the user when this emulator has no cheat support. */
     private fun applyCheats(list: List<Cheat>) {
         val ok = NativePlayer.applyCheats(list.filter { it.enabled }.map { it.code }.toTypedArray())
-        if (!ok && list.any { it.enabled }) runOnUiThread { cheatStatus = "This emulator doesn't support cheats." }
+        if (!ok && list.any { it.enabled }) runOnUiThread { cheatStatus = str(R.string.player_this_emulator_doesn_t_support_cheats) }
     }
 
     private fun updateCheats(list: List<Cheat>) {
@@ -230,7 +231,7 @@ class PlayerActivity : ComponentActivity() {
         menuPage = MenuPage.CHEATS
         cheats = cheatStore.load()
         if (cheatStore.downloaded) return
-        cheatStatus = "Looking for cheats for this game…"
+        cheatStatus = str(R.string.player_looking_for_cheats_for_this_game)
         fetchingCheats = true
         worker.execute {
             val found = runCatching {
@@ -239,9 +240,9 @@ class PlayerActivity : ComponentActivity() {
             runOnUiThread {
                 fetchingCheats = false
                 found.onSuccess { list ->
-                    if (list == null) cheatStatus = "libretro's cheat database has no cheats for this game. You can add your own code below."
+                    if (list == null) cheatStatus = str(R.string.player_libretro_s_cheat_database_has_no)
                     else { cheats = list; cheatStatus = null }
-                }.onFailure { cheatStatus = "Couldn't get cheats (${it.message}). Check the internet connection." }
+                }.onFailure { cheatStatus = str(R.string.player_couldn_t_get_cheats_check_the, it.message) }
             }
         }
     }
@@ -275,17 +276,16 @@ class PlayerActivity : ComponentActivity() {
         announcer = Netplay.Announcer(this, intent.getStringExtra(EXTRA_TITLE).orEmpty(), netGameId, Netplay.name(this))
         pollNetplay()
         // Friends on the internet: ask the router to send the netplay port here.
-        netInternet = "Checking whether friends on the internet can join…"
+        netInternet = str(R.string.player_checking_whether_friends_on_the_internet)
         Thread {
             val local = Netplay.localAddresses().firstOrNull()
             val router = Upnp.find()
             val text = if (router != null && local != null && router.open(Netplay.GAME_PORT, local)) {
                 upnp = router
-                router.externalAddress()?.let { "Friends on the internet can join at $it (your router opened the port)." }
-                    ?: "Your router opened the port for friends on the internet."
+                router.externalAddress()?.let { str(R.string.player_friends_on_the_internet_can_join, it) }
+                    ?: str(R.string.player_your_router_opened_the_port_for)
             } else {
-                "For friends on the internet, your router needs port ${Netplay.GAME_PORT} (TCP) sent to ${local ?: "this device"}: " +
-                    "it didn't allow RetroForge to do it. Players on the same Wi-Fi can join anyway."
+                str(R.string.player_for_friends_on_the_internet_your, Netplay.GAME_PORT, local ?: str(R.string.pc_games_this_device))
             }
             runOnUiThread { if (netState != 0) netInternet = text }
         }.start()
@@ -331,7 +331,7 @@ class PlayerActivity : ComponentActivity() {
         netStatus = NativePlayer.netplayStatus()
         if (netState == 4 && !wasPlaying) netPlayingSince = android.os.SystemClock.elapsedRealtime()
         netShowStatus = netState != 0 && netStatus.isNotBlank() &&
-            (netState != 4 || netStatus.startsWith("Waiting") || android.os.SystemClock.elapsedRealtime() - netPlayingSince < 4000)
+            (netState != 4 || netStatus.startsWith(str(R.string.player_waiting)) || android.os.SystemClock.elapsedRealtime() - netPlayingSince < 4000)
         // Once someone has joined, nobody else needs to find this game.
         if (netState >= 3) { announcer?.stop(); announcer = null }
         if (netState != 0 && !isFinishing) window.decorView.postDelayed({ pollNetplay() }, 500)
@@ -459,7 +459,7 @@ class PlayerActivity : ComponentActivity() {
         coreId = File(corePath).name.substringBefore("_libretro")
         syncSaves(SaveSync.Direction.PULL)
         if (com.retroforge.player.CoreAssets.needed(coreId, systemDir)) {
-            runOnUiThread { loadingDetail = "Getting the emulator's data files (first time only)…" }
+            runOnUiThread { loadingDetail = str(R.string.player_getting_the_emulator_s_data_files) }
             runCatching { com.retroforge.player.CoreAssets.fetch(coreId, systemDir, "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}") }
                 .onFailure { android.util.Log.w("RetroForgePlayer", "data files: ${it.message}") } // the game still runs without them
             runOnUiThread { loadingDetail = null }
@@ -469,9 +469,9 @@ class PlayerActivity : ComponentActivity() {
         val texturePacks = when {
             coreId.startsWith("mupen64plus") && File(systemDir, "Mupen64plus/cache").list().orEmpty().any { it.endsWith(".hts", true) } ->
                 // Downloaded packs are single .hts files (GLideN64's enhanced storage), with full alpha as their authors ask.
-                mapOf("mupen64plus-txHiresEnable" to "True", "mupen64plus-EnableEnhancedHighResStorage" to "True", "mupen64plus-txHiresFullAlphaChannel" to "True")
+                mapOf("mupen64plus-txHiresEnable" to str(R.string.player_true), "mupen64plus-EnableEnhancedHighResStorage" to str(R.string.player_true), "mupen64plus-txHiresFullAlphaChannel" to str(R.string.player_true))
             coreId.startsWith("mupen64plus") && File(systemDir, "Mupen64plus/hires_texture").list().orEmpty().isNotEmpty() ->
-                mapOf("mupen64plus-txHiresEnable" to "True")
+                mapOf("mupen64plus-txHiresEnable" to str(R.string.player_true))
             coreId == "ppsspp" && File(savesDir, "TEXTURES").list().orEmpty().isNotEmpty() -> mapOf("ppsspp_texture_replacement" to "enabled")
             else -> emptyMap()
         }
@@ -491,14 +491,14 @@ class PlayerActivity : ComponentActivity() {
         val ok = try {
             loadContent(uri, fileName, info.needsFile, info.extensions, systemDir)
         } catch (e: IOException) {
-            return fail(if (onUnpluggedDrive(uri)) UNPLUGGED else "Couldn't read the game: ${e.message}")
+            return fail(if (onUnpluggedDrive(uri)) UNPLUGGED else str(R.string.player_couldn_t_read_the_game, e.message))
         } catch (e: SecurityException) {
-            return fail(if (onUnpluggedDrive(uri)) UNPLUGGED else "RetroForge no longer has access to this game's folder. Add the folder again in Settings.")
+            return fail(if (onUnpluggedDrive(uri)) UNPLUGGED else str(R.string.player_retroforge_no_longer_has_access_to))
         }
         if (!ok) {
             // Arcade romsets made for another emulator version: name the files it couldn't find.
             val arcade = if (system in com.retroforge.library.ArcadeNames.SYSTEMS) ArcadeRomsets.explain(info.name, NativePlayer.coreMessages().toList()) else null
-            return fail(arcade ?: "${info.name} couldn't start this game. The file may be damaged, or it may need BIOS files.")
+            return fail(arcade ?: str(R.string.player_couldn_t_start_this_game_the, info.name))
         }
 
         sram().takeIf { it.isFile }?.let { NativePlayer.restoreSaveRam(it.readBytes()) }
@@ -559,7 +559,7 @@ class PlayerActivity : ComponentActivity() {
             val dir = File(root, Integer.toHexString(uri.toString().hashCode()))
             GameFiles.prune(root, keep = 2, current = dir)
             val start = FolderGame.expose(contentResolver, uri, fileName, dir) { percent ->
-                runOnUiThread { loadingDetail = "Preparing the game for the first time… $percent%" }
+                runOnUiThread { loadingDetail = str(R.string.player_preparing_the_game_for_the_first, percent) }
             }
             return NativePlayer.loadGame(start.path, -1, false)
         }
@@ -569,19 +569,19 @@ class PlayerActivity : ComponentActivity() {
                 ZipInputStream(stream).use { zip ->
                     val entries = generateSequence { zip.nextEntry }.filter { !it.isDirectory }
                     val entry = entries.firstOrNull { it.name.substringAfterLast('.').lowercase() in extensions }
-                        ?: throw IOException("the zip has no file this emulator can open")
+                        ?: throw IOException(str(R.string.player_the_zip_has_no_file_this))
                     File(cache, contentName(entry.name.substringAfterLast('/'))).also { out -> out.outputStream().use { zip.copyTo(it) } }
                 }
-            } ?: throw IOException("couldn't open it")
+            } ?: throw IOException(str(R.string.player_couldn_t_open_it))
             return NativePlayer.loadGame(file.path, -1, !needsFile)
         }
         if (ext == "7z" && "7z" !in extensions) {
             // 7-Zip needs random access, so the archive is copied to the cache first.
             val archive = File(cache, "game.7z")
-            contentResolver.openInputStream(uri)?.use { input -> archive.outputStream().use { input.copyTo(it) } } ?: throw IOException("couldn't open it")
+            contentResolver.openInputStream(uri)?.use { input -> archive.outputStream().use { input.copyTo(it) } } ?: throw IOException(str(R.string.player_couldn_t_open_it))
             val file = SevenZFile.builder().setFile(archive).get().use { seven ->
                 val entry = seven.entries.firstOrNull { !it.isDirectory && it.name.substringAfterLast('.').lowercase() in extensions }
-                    ?: throw IOException("the 7z has no file this emulator can open")
+                    ?: throw IOException(str(R.string.player_the_7z_has_no_file_this))
                 File(cache, contentName(entry.name.substringAfterLast('/'))).also { out ->
                     seven.getInputStream(entry).use { input -> out.outputStream().use { input.copyTo(it) } }
                 }
@@ -610,12 +610,12 @@ class PlayerActivity : ComponentActivity() {
             // Copied once into RetroForge's cache and reused next time; only the two most recent games are kept.
             GameFiles.prune(root, keep = 2, current = dir)
             val path = files.expose(uri, fileName, PlayerCores.companions(system), fallback = systemDir) { percent ->
-                runOnUiThread { loadingDetail = "Preparing the game for the first time… $percent%" }
+                runOnUiThread { loadingDetail = str(R.string.player_preparing_the_game_for_the_first, percent) }
             }
             return NativePlayer.loadGame(path, -1, false)
         }
         return contentResolver.openFileDescriptor(uri, "r")?.use { pfd -> NativePlayer.loadGame(named.path, pfd.fd, false) }
-            ?: throw IOException("couldn't open it")
+            ?: throw IOException(str(R.string.player_couldn_t_open_it))
     }
 
     /**
@@ -662,7 +662,7 @@ class PlayerActivity : ComponentActivity() {
         refreshVideo(10)
         // Mupen64Plus only reads its picture shape at start: restart the game (its place is saved first).
         if (key.startsWith("mupen")) {
-            notice = "Restarting in ${if (next == wide) "widescreen" else "4:3"}…"
+            notice = str(R.string.player_restarting_in, if (next == wide) str(R.string.player_widescreen) else "4:3")
             restartWith(Intent(intent))
         }
     }
@@ -714,7 +714,7 @@ class PlayerActivity : ComponentActivity() {
     private fun chooseGraphics() {
         val next = if (vulkanOn) "opengl" else "vulkan"
         videoChoices.set("graphics.$system", next)
-        notice = "Restarting with ${if (next == "vulkan") "Vulkan" else "OpenGL"}…"
+        notice = str(R.string.player_restarting_with, if (next == "vulkan") "Vulkan" else "OpenGL")
         restartWith(Intent(intent))
     }
 
@@ -729,7 +729,7 @@ class PlayerActivity : ComponentActivity() {
         refreshVideo(10)
         // PCSX2 only reads its resolution at start.
         if (coreId == "pcsx2") {
-            notice = "Restarting at ${scale}×…"
+            notice = str(R.string.player_restarting_at, scale)
             restartWith(Intent(intent))
         }
     }
@@ -738,11 +738,11 @@ class PlayerActivity : ComponentActivity() {
     private fun switchEmulator(core: PlayerCores.PlayerCore) {
         if (core.id == coreId || switching) return
         switching = true
-        notice = "Getting ${core.name}…"
+        notice = str(R.string.player_getting, core.name)
         lifecycleScope.launch {
             if (!cores.ensure(core.id)) {
                 switching = false
-                notice = "Couldn't download ${core.name}. Check the internet connection."
+                notice = str(R.string.player_couldn_t_download_check_the_internet, core.name)
                 return@launch
             }
             coreChoices.set(system, core.id)
@@ -815,7 +815,7 @@ class PlayerActivity : ComponentActivity() {
             val screen = android.graphics.Bitmap.createBitmap(view.width, view.height, android.graphics.Bitmap.Config.ARGB_8888)
             android.view.PixelCopy.request(view, screen, { result ->
                 if (result != android.view.PixelCopy.SUCCESS) {
-                    android.widget.Toast.makeText(this, "Couldn't take a screenshot", android.widget.Toast.LENGTH_SHORT).show()
+                    android.widget.Toast.makeText(this, str(R.string.player_couldn_t_take_a_screenshot), android.widget.Toast.LENGTH_SHORT).show()
                     return@request
                 }
                 val r = picture
@@ -825,7 +825,7 @@ class PlayerActivity : ComponentActivity() {
                 worker.execute {
                     val saved = runCatching { saveScreenshot(shot) }.isSuccess
                     runOnUiThread {
-                        android.widget.Toast.makeText(this, if (saved) "Screenshot saved to Pictures/RetroForge" else "Couldn't save the screenshot", android.widget.Toast.LENGTH_SHORT).show()
+                        android.widget.Toast.makeText(this, if (saved) str(R.string.player_screenshot_saved_to_pictures_retroforge) else str(R.string.player_couldn_t_save_the_screenshot), android.widget.Toast.LENGTH_SHORT).show()
                     }
                 }
             }, handler)
@@ -875,12 +875,12 @@ class PlayerActivity : ComponentActivity() {
      */
     private fun syncSaves(direction: SaveSync.Direction) {
         val sync = SaveSync.of(this) ?: return
-        runOnUiThread { loadingDetail = if (direction == SaveSync.Direction.PULL) "Getting your saves…" else "Saving to your sync folder…" }
+        runOnUiThread { loadingDetail = if (direction == SaveSync.Direction.PULL) str(R.string.player_getting_your_saves) else str(R.string.player_saving_to_your_sync_folder) }
         runCatching { sync.sync(direction, only = listOf("saves/$system/", "states/$system/")) }
             .onSuccess { android.util.Log.i("RetroForgePlayer", "save sync $direction: $it") }
             .onFailure {
                 android.util.Log.w("RetroForgePlayer", "save sync $direction: ${it.message}")
-                if (direction == SaveSync.Direction.PULL) runOnUiThread { notice = "Couldn't reach your save sync folder (${it.message}). Playing with this device's saves." }
+                if (direction == SaveSync.Direction.PULL) runOnUiThread { notice = str(R.string.player_couldn_t_reach_your_save_sync, it.message) }
             }
         runOnUiThread { loadingDetail = null }
     }
@@ -1222,12 +1222,12 @@ class PlayerActivity : ComponentActivity() {
     /** From the in-game menu: this system's bezels, so the game shows its bezel straight away. */
     private fun downloadBezels() {
         bezelBusy = true
-        bezelStatus = "Downloading bezels from The Bezel Project…"
+        bezelStatus = str(R.string.player_downloading_bezels_from_the_bezel_project)
         Thread {
             val error = runCatching { bezels.install(system) }.exceptionOrNull()
             runOnUiThread {
                 bezelBusy = false
-                bezelStatus = if (error == null) "Bezels downloaded. They show in landscape." else "Couldn't download bezels: ${error.message}"
+                bezelStatus = if (error == null) str(R.string.player_bezels_downloaded_they_show_in_landscape) else str(R.string.player_couldn_t_download_bezels, error.message)
                 if (error == null) chooseBezel(true)
             }
             if (error == null) loadBezel(intent.getStringExtra(EXTRA_FILE_NAME).orEmpty())
@@ -1468,19 +1468,19 @@ class PlayerActivity : ComponentActivity() {
                         MenuButton(onClick = {
                             worker.execute {
                                 val saved = NativePlayer.saveState()?.let { writeSafely(slotState(), it); true } == true
-                                runOnUiThread { notice = if (saved) "State saved" else "This emulator can't save states" }
+                                runOnUiThread { notice = if (saved) str(R.string.player_state_saved) else str(R.string.player_this_emulator_can_t_save_states) }
                             }
                         }, modifier = wide) { Text(stringResource(R.string.player_save_state)) }
                         MenuButton(onClick = {
-                            if (netGuest) { notice = "During netplay only player 1 can load a state."; return@MenuButton }
+                            if (netGuest) { notice = str(R.string.player_during_netplay_only_player_1_can); return@MenuButton }
                             worker.execute {
                                 val file = slotState()
                                 val done = file.isFile && NativePlayer.loadState(file.readBytes())
-                                runOnUiThread { if (done) closeMenu() else notice = "No saved state yet" }
+                                runOnUiThread { if (done) closeMenu() else notice = str(R.string.player_no_saved_state_yet) }
                             }
                         }, modifier = wide) { Text(stringResource(R.string.player_load_state)) }
                         MenuButton(onClick = {
-                            if (netPlaying) { notice = "Fast-forward is off during netplay: both players run at the same speed."; return@MenuButton }
+                            if (netPlaying) { notice = str(R.string.player_fast_forward_is_off_during_netplay); return@MenuButton }
                             fastForwardOn = !fastForwardOn
                             NativePlayer.setFastForward(fastForwardOn)
                         }, modifier = wide) { Text("Fast-forward: ${if (fastForwardOn) "On" else "Off"}") }
@@ -1490,7 +1490,7 @@ class PlayerActivity : ComponentActivity() {
                             val (count, current) = discs
                             MenuButton(onClick = {
                                 val next = (current + 1) % count
-                                notice = if (NativePlayer.insertDisc(next)) "Disc ${next + 1} inserted" else "Couldn't change disc"
+                                notice = if (NativePlayer.insertDisc(next)) str(R.string.player_disc_inserted, next + 1) else str(R.string.player_couldn_t_change_disc)
                                 closeMenu()
                             }, modifier = wide) { Text(stringResource(R.string.player_disc_of_change_to_disc, current + 1, count, (current + 1) % count + 1)) }
                         }
@@ -1503,10 +1503,10 @@ class PlayerActivity : ComponentActivity() {
                         MenuButton(onClick = { menuPage = MenuPage.SOUND_CONTROLS }, modifier = wide) { Text(stringResource(R.string.player_sound_and_controls)) }
                         MenuButton(onClick = { menuPage = MenuPage.EMULATOR }, modifier = wide) { Text(stringResource(R.string.player_emulator)) }
                         if (Netplay.supports(system)) MenuButton(onClick = { menuPage = MenuPage.NETPLAY; if (netState == 0 && netHosts == null) findNetplayHosts() }, modifier = wide) {
-                            Text(if (netPlaying) "Netplay: player ${NativePlayer.netplayPlayer() + 1} ›" else "Netplay ›")
+                            Text(if (netPlaying) stringResource(R.string.player_netplay_player, NativePlayer.netplayPlayer() + 1) else stringResource(R.string.player_netplay_2))
                         }
                         MenuButton(onClick = {
-                            if (netGuest) { notice = "During netplay only player 1 can restart the game."; return@MenuButton }
+                            if (netGuest) { notice = str(R.string.player_during_netplay_only_player_1_can_2); return@MenuButton }
                             NativePlayer.reset()
                             // Player 2 gets the restarted game too (a state load sends it).
                             if (netPlaying) NativePlayer.saveState()?.let { NativePlayer.loadState(it) }
@@ -1524,8 +1524,7 @@ class PlayerActivity : ComponentActivity() {
                             if (netState == 1) {
                                 val addresses = Netplay.localAddresses()
                                 Text(
-                                    "On the same Wi-Fi, player 2 opens this game and picks Netplay → your device. " +
-                                        "Or they join by address: ${addresses.firstOrNull() ?: "this device's IP"} (port ${Netplay.GAME_PORT}).",
+                                    str(R.string.player_on_the_same_wi_fi_player, addresses.firstOrNull() ?: str(R.string.player_this_device_s_ip), Netplay.GAME_PORT),
                                     color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
                                 )
                                 netInternet?.let { Text(it, color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center) }
@@ -1545,8 +1544,8 @@ class PlayerActivity : ComponentActivity() {
                                 val same = host.gameId == netGameId
                                 MenuButton(onClick = {
                                     if (same) joinNetplay(host.address, host.port)
-                                    else notice = "${host.player} is playing ${host.title}. Open that game to join."
-                                }, modifier = wide) { Text(if (same) "Join ${host.player}" else "${host.player}: ${host.title}") }
+                                    else notice = str(R.string.player_is_playing_open_that_game_to, host.player, host.title)
+                                }, modifier = wide) { Text(if (same) stringResource(R.string.player_join, host.player) else "${host.player}: ${host.title}") }
                             }
                             MenuButton(onClick = { findNetplayHosts() }, modifier = wide) { Text(stringResource(R.string.player_look_again)) }
                             val joinAddress = {
@@ -1576,12 +1575,12 @@ class PlayerActivity : ComponentActivity() {
                         MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         MenuButton(onClick = { chooseShape(shape.next()) }, modifier = wide) { Text(stringResource(R.string.player_screen_shape, shape.label)) }
                         MenuButton(onClick = { chooseFilter(filter.next()) }, modifier = wide) { Text(stringResource(R.string.player_screen_filter, filter.label)) }
-                        MenuButton(onClick = { chooseLook(!consoleLook) }, modifier = wide) { Text("Console look: ${if (consoleLook) "On" else "Off"}") }
+                        MenuButton(onClick = { chooseLook(!consoleLook) }, modifier = wide) { Text(stringResource(R.string.player_console_look, if (consoleLook) stringResource(R.string.settings_on) else stringResource(R.string.player_off))) }
                         if (Bezels.repoFor(system) != null) {
                             if (bezels.downloaded(system)) MenuButton(onClick = { chooseBezel(!bezelOn) }, modifier = wide) {
-                                Text("Bezel (landscape): ${if (bezelOn) "On" else "Off"}")
+                                Text(stringResource(R.string.player_bezel_landscape, if (bezelOn) stringResource(R.string.settings_on) else stringResource(R.string.player_off)))
                             } else MenuButton(onClick = { if (!bezelBusy) downloadBezels() }, modifier = wide) {
-                                Text(if (bezelBusy) "Downloading bezels…" else "Download bezels (The Bezel Project)")
+                                Text(if (bezelBusy) stringResource(R.string.player_downloading_bezels) else stringResource(R.string.player_download_bezels_the_bezel_project))
                             }
                             bezelStatus?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
                         }
@@ -1590,25 +1589,25 @@ class PlayerActivity : ComponentActivity() {
                             MenuButton(onClick = { chooseWidescreen() }, modifier = wide) { Text("Widescreen: ${if (on) "On" else "Off"}") }
                         }
                         if (PlayerCores.resolutionOption(coreId) != null) MenuButton(onClick = { chooseScale() }, modifier = wide) {
-                            Text("Resolution: ${scale}×" + if (scale == 1) " (original)" else "")
+                            Text(stringResource(R.string.player_resolution, scale) + if (scale == 1) stringResource(R.string.player_resolution_original) else "")
                         }
                         if (coreId in PlayerCores.vulkanCores) MenuButton(onClick = { chooseGraphics() }, modifier = wide) {
                             Text(stringResource(R.string.player_graphics, PlayerCores.graphicsLabel(coreId, vulkanOn)))
                         }
                         MenuButton(onClick = { chooseVr(!vr) }, modifier = wide) {
-                            Text("Cardboard VR: ${if (vr) "On" else "Off"}" + if (PlayerCores.sideBySide(coreId)) " (3D)" else "")
+                            Text(stringResource(R.string.player_cardboard_vr, if (vr) stringResource(R.string.settings_on) else stringResource(R.string.player_off)) + if (PlayerCores.sideBySide(coreId)) " (3D)" else "")
                         }
                         MenuButton(onClick = {
                             showFps = !showFps
                             videoChoices.set("show_fps", if (showFps) "true" else null)
-                        }, modifier = wide) { Text("Show FPS: ${if (showFps) "On" else "Off"}") }
+                        }, modifier = wide) { Text(stringResource(R.string.player_show_fps, if (showFps) stringResource(R.string.settings_on) else stringResource(R.string.player_off))) }
                     }
                     MenuPage.SOUND_CONTROLS -> {
                         Text(stringResource(R.string.player_sound_and_controls_2), color = Color.White, fontWeight = FontWeight.Bold)
                         MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         MenuButton(onClick = { chooseVolume() }, modifier = wide) { Text(stringResource(R.string.player_volume, (volume * 100).toInt())) }
                         if (hasTouch) MenuButton(onClick = { chooseTouch(!touchEnabled) }, modifier = wide) {
-                            Text("Touch controls: ${if (touchEnabled) "On" else "Off"}")
+                            Text(stringResource(R.string.player_touch_controls, if (touchEnabled) stringResource(R.string.settings_on) else stringResource(R.string.player_off)))
                         }
                         MenuButton(onClick = { menuPage = MenuPage.CONTROLS }, modifier = wide) { Text(stringResource(R.string.player_remap_buttons)) }
                     }
@@ -1620,7 +1619,7 @@ class PlayerActivity : ComponentActivity() {
                             menuPage = MenuPage.OPTIONS
                         }, modifier = wide) { Text(stringResource(R.string.player_emulator_settings)) }
                         MenuButton(onClick = { openCheats() }, modifier = wide) {
-                            Text("Cheats ›" + cheats.count { it.enabled }.let { if (it > 0) "  ($it on)" else "" })
+                            Text(stringResource(R.string.player_cheats_2) + cheats.count { it.enabled }.let { if (it > 0) stringResource(R.string.player_on, it) else "" })
                         }
                         if (PlayerCores.choices(system).size > 1) {
                             MenuButton(onClick = { menuPage = MenuPage.EMULATORS }, modifier = wide) { Text(stringResource(R.string.player_switch_emulator)) }
@@ -1656,7 +1655,7 @@ class PlayerActivity : ComponentActivity() {
                             }, modifier = wide) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text(cheat.description, textAlign = TextAlign.Center, fontSize = 14.sp)
-                                    Text(if (cheat.enabled) "On" else "Off", color = if (cheat.enabled) Color(0xFF9FE3B0) else Color(0xFFFF8A1F), fontSize = 13.sp)
+                                    Text(if (cheat.enabled) stringResource(R.string.settings_on) else stringResource(R.string.player_off), color = if (cheat.enabled) Color(0xFF9FE3B0) else Color(0xFFFF8A1F), fontSize = 13.sp)
                                 }
                             }
                             if (cheat.custom) {
@@ -1672,7 +1671,7 @@ class PlayerActivity : ComponentActivity() {
                         MenuButton(onClick = {
                             val code = newCode.trim()
                             if (code.isNotEmpty()) {
-                                updateCheats(cheats + Cheat(newName.trim().ifEmpty { "My code ${cheats.count { it.custom } + 1}" }, code, enabled = true, custom = true))
+                                updateCheats(cheats + Cheat(newName.trim().ifEmpty { str(R.string.player_my_code_1, cheats.count { it.custom } + 1) }, code, enabled = true, custom = true))
                                 newCode = ""
                                 newName = ""
                             }
@@ -1707,7 +1706,7 @@ class PlayerActivity : ComponentActivity() {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text(label, fontSize = 14.sp)
                                     Text(
-                                        if (waitingFor == button) "Press a controller button…" else keyFor(button),
+                                        if (waitingFor == button) str(R.string.player_press_a_controller_button) else keyFor(button),
                                         color = if (waitingFor == button) Color(0xFF9FE3B0) else Color(0xFFFF8A1F), fontSize = 13.sp,
                                     )
                                 }
@@ -1742,7 +1741,7 @@ class PlayerActivity : ComponentActivity() {
                         PlayerCores.choices(system).forEach { core ->
                             MenuButton(onClick = { switchEmulator(core) }, modifier = wide) {
                                 Text(
-                                    core.name + (if (core.id == coreId) "  ✓" else "") + (if (core.needsBios) " (needs BIOS)" else ""),
+                                    core.name + (if (core.id == coreId) "  ✓" else "") + (if (core.needsBios) str(R.string.player_needs_bios) else ""),
                                     textAlign = TextAlign.Center,
                                 )
                             }
@@ -1762,8 +1761,7 @@ class PlayerActivity : ComponentActivity() {
             KeyEvent.KEYCODE_BUTTON_START, KeyEvent.KEYCODE_BUTTON_SELECT,
         )
 
-        private const val UNPLUGGED = "This game is on a USB drive or SD card that isn't plugged in. Plug it in and try again: " +
-            "RetroForge remembers the folder, so there's nothing to add again."
+        private const val UNPLUGGED = "This game is on a USB drive or SD card that isn't plugged in. Plug it in and try again: RetroForge remembers the folder, so there's nothing to add again."
         private const val EXTRA_CORE_PATH = "core_path"
         private const val EXTRA_URI = "uri"
         private const val EXTRA_FILE_NAME = "file_name"

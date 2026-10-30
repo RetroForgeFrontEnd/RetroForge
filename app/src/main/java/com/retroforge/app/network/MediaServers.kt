@@ -1,5 +1,7 @@
 package com.retroforge.app.network
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.content.Context
 import android.net.wifi.WifiManager
 import kotlinx.coroutines.Dispatchers
@@ -54,8 +56,7 @@ object MediaServers {
     /** SSDP M-SEARCH on every network this device is on; returns the description addresses that answered. */
     private fun search(timeoutMs: Int): List<String> {
         val message = (
-            "M-SEARCH * HTTP/1.1\r\nHOST: $SSDP:1900\r\nMAN: \"ssdp:discover\"\r\nMX: 2\r\n" +
-                "ST: urn:schemas-upnp-org:device:MediaServer:1\r\n\r\n"
+            "M-SEARCH * HTTP/1.1\r\nHOST: $SSDP:1900\r\nMAN: \"ssdp:discover\"\r\nMX: 2\r\nST: urn:schemas-upnp-org:device:MediaServer:1\r\n\r\n"
             ).toByteArray()
         val found = mutableSetOf<String>()
         val sockets = NetworkSearch.ownAddresses().mapNotNull { own ->
@@ -140,9 +141,9 @@ object MediaServers {
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
 <s:Body><u:Browse xmlns:u="$CONTENT_DIRECTORY"><ObjectID>${escape(id)}</ObjectID><BrowseFlag>BrowseDirectChildren</BrowseFlag>
 <Filter>*</Filter><StartingIndex>$start</StartingIndex><RequestedCount>200</RequestedCount><SortCriteria></SortCriteria></u:Browse></s:Body></s:Envelope>"""
-            val answer = http(server.controlUrl, body, "\"$CONTENT_DIRECTORY#Browse\"") ?: error("${server.name} didn't answer")
+            val answer = http(server.controlUrl, body, "\"$CONTENT_DIRECTORY#Browse\"") ?: error(str(R.string.media_servers_didn_t_answer, server.name))
             val doc = parse(answer)
-            val result = doc.getElementsByTagName("Result").item(0)?.textContent ?: break
+            val result = doc.getElementsByTagName(str(R.string.media_servers_result)).item(0)?.textContent ?: break
             val page = didl(result).map { it.copy(url = it.url?.let { u -> reachable(u, server) }, art = it.art?.let { u -> reachable(u, server) }) }
             entries += page
             val total = doc.getElementsByTagName("TotalMatches").item(0)?.textContent?.trim()?.toIntOrNull() ?: break
@@ -173,7 +174,7 @@ object MediaServers {
         for (i in 0 until nodes.length) {
             val e = nodes.item(i) as? Element ?: continue
             val id = e.getAttribute("id")
-            val title = e.child("title")?.trim().orEmpty().ifEmpty { "Untitled" }
+            val title = e.child("title")?.trim().orEmpty().ifEmpty { str(R.string.media_servers_untitled) }
             val art = e.child("albumArtURI")
             when (e.localName ?: e.tagName.substringAfter(':')) {
                 "container" -> {

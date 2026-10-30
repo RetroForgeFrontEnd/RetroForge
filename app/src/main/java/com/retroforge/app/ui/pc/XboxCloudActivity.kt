@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
@@ -92,11 +94,11 @@ class XboxCloudActivity : ComponentActivity() {
 
     private fun askBeforeLeaving() {
         val dialog = AlertDialog.Builder(this)
-            .setTitle("Leave Xbox Cloud Gaming?")
-            .setMessage("A game you're streaming stops when you leave. You stay signed in.")
-            .setPositiveButton("Leave") { _, _ -> finish() }
-            .setNegativeButton("Stay", null)
-        if (web.canGoBack()) dialog.setNeutralButton("Previous page") { _, _ -> web.goBack() }
+            .setTitle(str(R.string.xbox_cloud_leave_xbox_cloud_gaming))
+            .setMessage(str(R.string.xbox_cloud_a_game_you_re_streaming_stops))
+            .setPositiveButton(str(R.string.xbox_cloud_leave)) { _, _ -> finish() }
+            .setNegativeButton(str(R.string.retro_forge_root_stay), null)
+        if (web.canGoBack()) dialog.setNeutralButton(str(R.string.xbox_cloud_previous_page)) { _, _ -> web.goBack() }
         dialog.show()
     }
 

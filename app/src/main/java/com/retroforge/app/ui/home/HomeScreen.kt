@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.home
 
+import com.retroforge.core.ui.str
 import androidx.compose.ui.res.stringResource
 
 import kotlinx.coroutines.launch
@@ -79,7 +80,7 @@ fun HomeScreen(
         if (LocalThemeSpec.current.banner == "key-art") {
             // RetroForge's key art already carries the logo and tagline, so it replaces the text wordmark.
             Image(
-                painterResource(R.drawable.key_art), contentDescription = "RetroForge: merging the past, building the future",
+                painterResource(R.drawable.key_art), contentDescription = str(R.string.home_retroforge_merging_the_past_building_the),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxWidth().aspectRatio(1584f / 672f).clip(MaterialTheme.shapes.large),
             )
@@ -111,8 +112,8 @@ fun HomeScreen(
         if (last != null) {
             GameHero(
                 last, library.art(rootsById, chosen, last),
-                eyebrow = "Jump back in", subtitle = listOfNotNull(library.systemName(last.system), tagLine(last)).joinToString(" · "),
-                actionLabel = "Open", onAction = { onOpenGame(last.id) },
+                eyebrow = str(R.string.home_jump_back_in), subtitle = listOfNotNull(library.systemName(last.system), tagLine(last)).joinToString(" · "),
+                actionLabel = str(R.string.home_layouts_open), onAction = { onOpenGame(last.id) },
             )
         } else if (systems.isEmpty()) {
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { onOpen(Section.RETRO) }) {
@@ -121,8 +122,8 @@ fun HomeScreen(
             }
         }
 
-        GameRow("Recently played", recent.drop(1), library, rootsById, chosen, onOpenGame)
-        GameRow("Favourites", favourites, library, rootsById, chosen, onOpenGame)
+        GameRow(str(R.string.library_recently_played), recent.drop(1), library, rootsById, chosen, onOpenGame)
+        GameRow(str(R.string.playlists_favourites), favourites, library, rootsById, chosen, onOpenGame)
 
         if (systems.isNotEmpty()) {
             CardTitle(stringResource(R.string.home_your_systems))

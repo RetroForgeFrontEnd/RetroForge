@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.links
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -31,24 +32,24 @@ data class LinkGroup(val title: String, val links: List<UsefulLink>)
  * Hand-picked channels, each checked against its own YouTube page on 2026-10-28 (handle resolves to the named
  * channel). Summaries are our own wording. Opening one hands the address to the YouTube app or browser.
  */
-val usefulLinks = listOf(
+val usefulLinks get() = listOf(
     LinkGroup(
-        "YouTube: handhelds and emulation",
+        str(R.string.links_youtube_handhelds_and_emulation),
         listOf(
-            UsefulLink("Retro Game Corps", "https://www.youtube.com/@RetroGameCorps", "Russ's in-depth handheld reviews and emulation setup guides."),
-            UsefulLink("ETA PRIME", "https://www.youtube.com/@ETAPRIME", "Emulation and gaming on Android, PCs, Raspberry Pi and single-board computers."),
-            UsefulLink("TechDweeb", "https://www.youtube.com/@TechDweeb", "Retro handheld reviews and comparisons, from budget emulation devices to the latest Android handhelds."),
-            UsefulLink("Ryan Retro","https://www.youtube.com/@RyanRetro", "Easy-to-follow handheld gaming guides for beginners and experienced players."),
-            UsefulLink("Joey's Retro Handhelds", "https://www.youtube.com/@JoeysRetroHandhelds", "Retro handheld reviews, guides, and Joey's Retro Newscast every week."),
-            UsefulLink("Taki Udon", "https://www.youtube.com/@TakiUdon", "Handheld mods and FPGA hardware, from the MiSTer Pi to the SuperStation One."),
-            UsefulLink("Retro Handhelds", "https://www.youtube.com/RetroHandhelds", "News, reviews and guides for retro handhelds, from the Retro Handhelds community (retrohandhelds.gg)."),
-            UsefulLink("Mr. Sujano", "https://www.youtube.com/@MrSujano", "Gaming and tech news, with handhelds, controllers and consoles."),
-            UsefulLink("Wicked Gamer & Collector", "https://www.youtube.com/@wickedgamercollector", "Retro hardware, games, emulation and arcade."),
-            UsefulLink("Modern Vintage Gamer", "https://www.youtube.com/@ModernVintageGamer", "How classic games and consoles work, homebrew and emulation history."),
-            UsefulLink("Digital Foundry", "https://www.youtube.com/@DigitalFoundry", "In-depth technical analysis, including retro games, remasters and emulation."),
-            UsefulLink("My Life in Gaming", "https://www.youtube.com/@MyLifeinGaming", "Retro gaming hardware, best ways to play old games, and RGB video guides."),
-            UsefulLink("The Gaming Historian", "https://www.youtube.com/@GamingHistorian", "Well-researched documentaries on video game history."),
-            UsefulLink("Wicked Package From China", "https://www.youtube.com/@PackageFromChina", "Gadgets and handhelds from AliExpress, Amazon and other Chinese stores."),
+            UsefulLink("Retro Game Corps", "https://www.youtube.com/@RetroGameCorps", str(R.string.links_russ_s_in_depth_handheld_reviews)),
+            UsefulLink("ETA PRIME", "https://www.youtube.com/@ETAPRIME", str(R.string.links_emulation_and_gaming_on_android_pcs)),
+            UsefulLink("TechDweeb", "https://www.youtube.com/@TechDweeb", str(R.string.links_retro_handheld_reviews_and_comparisons_from)),
+            UsefulLink("Ryan Retro","https://www.youtube.com/@RyanRetro", str(R.string.links_easy_to_follow_handheld_gaming_guides)),
+            UsefulLink("Joey's Retro Handhelds", "https://www.youtube.com/@JoeysRetroHandhelds", str(R.string.links_retro_handheld_reviews_guides_and_joey)),
+            UsefulLink("Taki Udon", "https://www.youtube.com/@TakiUdon", str(R.string.links_handheld_mods_and_fpga_hardware_from)),
+            UsefulLink("Retro Handhelds", "https://www.youtube.com/RetroHandhelds", str(R.string.links_news_reviews_and_guides_for_retro)),
+            UsefulLink("Mr. Sujano", "https://www.youtube.com/@MrSujano", str(R.string.links_gaming_and_tech_news_with_handhelds)),
+            UsefulLink("Wicked Gamer & Collector", "https://www.youtube.com/@wickedgamercollector", str(R.string.links_retro_hardware_games_emulation_and_arcade)),
+            UsefulLink("Modern Vintage Gamer", "https://www.youtube.com/@ModernVintageGamer", str(R.string.links_how_classic_games_and_consoles_work)),
+            UsefulLink("Digital Foundry", "https://www.youtube.com/@DigitalFoundry", str(R.string.links_in_depth_technical_analysis_including_retro)),
+            UsefulLink("My Life in Gaming", "https://www.youtube.com/@MyLifeinGaming", str(R.string.links_retro_gaming_hardware_best_ways_to)),
+            UsefulLink("The Gaming Historian", "https://www.youtube.com/@GamingHistorian", str(R.string.links_well_researched_documentaries_on_video_game)),
+            UsefulLink("Wicked Package From China", "https://www.youtube.com/@PackageFromChina", str(R.string.links_gadgets_and_handhelds_from_aliexpress_amazon)),
         ),
     ),
 )
@@ -77,5 +78,5 @@ private fun open(context: Context, url: String): String? = try {
     context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     null
 } catch (_: ActivityNotFoundException) {
-    "No app on this device can open links. Visit $url on another device."
+    str(R.string.links_no_app_on_this_device_can, url)
 }

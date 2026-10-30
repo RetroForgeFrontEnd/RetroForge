@@ -213,7 +213,7 @@ private fun LauncherModeCard() {
         // Android decides the home app; this opens its choice so the user can pick RetroForge (or go back).
         start(context, Intent(Settings.ACTION_HOME_SETTINGS))
     }) {
-        CardTitle(stringResource(R.string.apps_use_retroforge_as_the_home_screen)) { StatusPill(if (on) "Offered to Android" else "Off", if (on) StatusTone.GOOD else StatusTone.NEUTRAL) }
+        CardTitle(stringResource(R.string.apps_use_retroforge_as_the_home_screen)) { StatusPill(if (on) stringResource(R.string.apps_offered_to_android) else stringResource(R.string.player_off), if (on) StatusTone.GOOD else StatusTone.NEUTRAL) }
         CardBody(
             stringResource(R.string.apps_for_handhelds_and_tv_boxes_the),
         )

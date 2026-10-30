@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.core.ui.pluralStr
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -66,14 +68,14 @@ fun SettingsScreen(
     var group by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf<String?>(null) }
     com.retroforge.app.ui.CloseStep(enabled = group != null) { group = null }
     val groups = listOf(
-        "games" to ("Games and library" to "Game folders and network drives, ES-DE collections, texture packs, scanning, the Retro and PC tabs."),
-        "playing" to ("Playing" to "The built-in player, saves, backups and save syncing, emulator apps, dual screens, GPU drivers, netplay, RetroArch hotkeys."),
-        "covers" to ("Covers and bezels" to "SteamGridDB and ScreenScraper accounts for box art, and Bezel Project bezels round the game."),
-        "looks" to ("Looks and sounds" to "Themes, interface sounds, Android apps and the home screen."),
-        "help" to ("Help and about" to "How to use RetroForge, updates, set up, check my setup, report a problem, about, licences."),
+        "games" to (str(R.string.settings_games_and_library) to str(R.string.settings_game_folders_and_network_drives_es)),
+        "playing" to (str(R.string.settings_playing) to str(R.string.settings_the_built_in_player_saves_backups)),
+        "covers" to (str(R.string.settings_covers_and_bezels) to str(R.string.settings_steamgriddb_and_screenscraper_accounts_for_box)),
+        "looks" to (str(R.string.settings_looks_and_sounds) to str(R.string.settings_themes_interface_sounds_android_apps_and)),
+        "help" to (str(R.string.settings_help_and_about) to str(R.string.settings_how_to_use_retroforge_updates_set)),
     )
 
-    ScreenFrame(title = groups.firstOrNull { it.first == group }?.second?.first ?: "Settings", compact = true) {
+    ScreenFrame(title = groups.firstOrNull { it.first == group }?.second?.first ?: str(R.string.settings_settings), compact = true) {
         if (group == null) {
             groups.forEach { (id, text) ->
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { group = id }) {
@@ -86,18 +88,18 @@ fun SettingsScreen(
         FocusChip(stringResource(R.string.settings_all_settings), onClick = { group = null })
         when (group) {
             "games" -> {
-                com.retroforge.app.ui.NetworkDrivesCard("Games", onUse = library?.let { lib ->
+                com.retroforge.app.ui.NetworkDrivesCard(str(R.string.settings_games), onUse = library?.let { lib ->
                     { uri, progress ->
                         // A short running report while it scans: which system, and how far.
                         val root = lib.addFolderAndWait(uri) { p ->
                             val system = p.currentSystem?.let { " ${lib.systemName(it)}" }.orEmpty()
-                            val of = if (p.systemsTotal > 0) " (${p.systemsDone * 100 / p.systemsTotal}%, ${p.systemsDone} of ${p.systemsTotal} systems)" else ""
-                            progress("Looking in$system… ${p.filesSeen} files checked$of", if (p.systemsTotal > 0) p.systemsDone.toFloat() / p.systemsTotal else null)
+                            val of = if (p.systemsTotal > 0) str(R.string.settings_of_systems, p.systemsDone * 100 / p.systemsTotal, p.systemsDone, p.systemsTotal) else ""
+                            progress(str(R.string.settings_looking_in_files_checked, system, p.filesSeen, of), if (p.systemsTotal > 0) p.systemsDone.toFloat() / p.systemsTotal else null)
                         }
                         when {
-                            root == null -> "Added. It's still scanning: see Retro → Game folders for progress."
-                            root.gameCount == 0 -> "Added ${root.name}, but no games were found. Pick the folder holding your system folders (snes, psx …)."
-                            else -> "Added ${root.name}: ${root.gameCount} game${if (root.gameCount == 1) "" else "s"} found. They're in the Retro tab now."
+                            root == null -> str(R.string.settings_added_it_s_still_scanning_see)
+                            root.gameCount == 0 -> str(R.string.settings_added_but_no_games_were_found, root.name)
+                            else -> pluralStr(R.plurals.settings_added_games_found, root.gameCount, root.name, root.gameCount)
                         }
                     }
                 })
@@ -115,7 +117,7 @@ fun SettingsScreen(
                         scanOnStart = !scanOnStart
                         prefs.edit().putBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, scanOnStart).apply()
                     }) {
-                        CardTitle(stringResource(R.string.settings_look_for_new_games_when_retroforge)) { StatusPill(if (scanOnStart) "On" else "Off", if (scanOnStart) StatusTone.GOOD else StatusTone.NEUTRAL) }
+                        CardTitle(stringResource(R.string.settings_look_for_new_games_when_retroforge)) { StatusPill(if (scanOnStart) stringResource(R.string.settings_on) else stringResource(R.string.player_off), if (scanOnStart) StatusTone.GOOD else StatusTone.NEUTRAL) }
                         CardBody(stringResource(R.string.settings_each_time_retroforge_opens_it_checks))
                     }
                     var showAll by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SHOW_ALL_SYSTEMS, false)) }
@@ -123,7 +125,7 @@ fun SettingsScreen(
                         showAll = !showAll
                         prefs.edit().putBoolean(com.retroforge.app.ui.library.LibraryViewModel.SHOW_ALL_SYSTEMS, showAll).apply()
                     }) {
-                        CardTitle(stringResource(R.string.settings_show_systems_you_have_no_games)) { StatusPill(if (showAll) "On" else "Off", if (showAll) StatusTone.GOOD else StatusTone.NEUTRAL) }
+                        CardTitle(stringResource(R.string.settings_show_systems_you_have_no_games)) { StatusPill(if (showAll) stringResource(R.string.settings_on) else stringResource(R.string.player_off), if (showAll) StatusTone.GOOD else StatusTone.NEUTRAL) }
                         CardBody(stringResource(R.string.settings_on_the_retro_tab_lists_every))
                     }
                 }
@@ -131,7 +133,7 @@ fun SettingsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { viewModel.setShowPcSection(!settings.showPcSection) },
                 ) {
-                    CardTitle(stringResource(R.string.settings_show_the_pc_tab)) { StatusPill(if (settings.showPcSection) "On" else "Off", if (settings.showPcSection) StatusTone.GOOD else StatusTone.NEUTRAL) }
+                    CardTitle(stringResource(R.string.settings_show_the_pc_tab)) { StatusPill(if (settings.showPcSection) stringResource(R.string.settings_on) else stringResource(R.string.player_off), if (settings.showPcSection) StatusTone.GOOD else StatusTone.NEUTRAL) }
                     CardBody(stringResource(R.string.settings_turn_off_to_hide_the_pc))
                 }
 
@@ -155,7 +157,7 @@ fun SettingsScreen(
                 HotkeysCard(settings.retroArchHotkeys, HotkeyCombo.of(settings.menuCombo), HotkeyCombo.of(settings.quitCombo), viewModel::setRetroArchHotkeys, onOpenHotkeys)
                 if (settings.retroArchHotkeys) {
                     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.setFastForwardOnR2(!settings.fastForwardOnR2) }) {
-                        CardTitle(stringResource(R.string.settings_hold_r2_to_fast_forward)) { StatusPill(if (settings.fastForwardOnR2) "On" else "Off", if (settings.fastForwardOnR2) StatusTone.GOOD else StatusTone.NEUTRAL) }
+                        CardTitle(stringResource(R.string.settings_hold_r2_to_fast_forward)) { StatusPill(if (settings.fastForwardOnR2) stringResource(R.string.settings_on) else stringResource(R.string.player_off), if (settings.fastForwardOnR2) StatusTone.GOOD else StatusTone.NEUTRAL) }
                         CardBody(stringResource(R.string.settings_while_you_hold_r2_the_game))
                     }
                 }
@@ -184,7 +186,7 @@ fun SettingsScreen(
                         prefs.edit().putBoolean(com.retroforge.app.UI_SOUNDS, sounds).apply()
                         com.retroforge.core.ui.UiSounds.enabled = sounds
                     }) {
-                        CardTitle(stringResource(R.string.settings_interface_sounds)) { StatusPill(if (sounds) "On" else "Off", if (sounds) StatusTone.GOOD else StatusTone.NEUTRAL) }
+                        CardTitle(stringResource(R.string.settings_interface_sounds)) { StatusPill(if (sounds) stringResource(R.string.settings_on) else stringResource(R.string.player_off), if (sounds) StatusTone.GOOD else StatusTone.NEUTRAL) }
                         CardBody(stringResource(R.string.settings_small_sounds_as_you_move_around))
                     }
                 }
@@ -256,12 +258,12 @@ private fun SteamGridDbKeyCard(saved: String?, onSave: (String?) -> Unit) {
             value = draft,
             onValueChange = { draft = it.trim() },
             singleLine = true,
-            label = { Text(if (saved.isNullOrBlank()) "Paste API key" else "Replace API key") },
+            label = { Text(if (saved.isNullOrBlank()) stringResource(R.string.settings_paste_api_key) else stringResource(R.string.settings_replace_api_key)) },
             visualTransformation = if (showKey) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
         ChipRow {
-            FocusChip(if (showKey) "Hide key" else "Show key", onClick = { showKey = !showKey })
+            FocusChip(if (showKey) stringResource(R.string.media_hide_key) else stringResource(R.string.media_show_key), onClick = { showKey = !showKey })
             FocusChip(stringResource(R.string.settings_save_key), onClick = { onSave(draft); draft = "" }, enabled = draft.length >= 16)
             FocusChip(stringResource(R.string.settings_get_a_free_key), onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, SteamGridDb.KEY_PAGE.toUri())) } })
             if (!saved.isNullOrBlank()) FocusChip(stringResource(R.string.settings_remove_key), onClick = { onSave(null) })
@@ -321,7 +323,7 @@ private fun HotkeysCard(enabled: Boolean, menu: HotkeyCombo, quit: HotkeyCombo, 
         }
         ChipRow {
             FocusChip(stringResource(R.string.settings_show_all_hotkeys), onClick = onShowAll)
-            FocusChip(if (enabled) "Turn hotkeys off" else "Turn hotkeys on", onClick = { onChange(!enabled, menu, quit) })
+            FocusChip(if (enabled) stringResource(R.string.settings_turn_hotkeys_off) else stringResource(R.string.settings_turn_hotkeys_on), onClick = { onChange(!enabled, menu, quit) })
         }
     }
 }
@@ -353,7 +355,7 @@ private fun ScreenScraperCard(savedUser: String?, onSave: (String?, String?) -> 
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
         ChipRow {
-            FocusChip(if (showPassword) "Hide password" else "Show password", onClick = { showPassword = !showPassword })
+            FocusChip(if (showPassword) stringResource(R.string.network_drives_hide_password) else stringResource(R.string.network_drives_show_password), onClick = { showPassword = !showPassword })
             FocusChip(stringResource(R.string.settings_save), onClick = { onSave(user, password); password = "" }, enabled = user.isNotBlank() && password.isNotEmpty())
             FocusChip(stringResource(R.string.settings_create_a_free_account), onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, ScreenScraper.SIGN_UP.toUri())) } })
             if (!savedUser.isNullOrBlank()) FocusChip(stringResource(R.string.settings_sign_out), onClick = { onSave(null, null) })
@@ -367,24 +369,22 @@ private fun ReportProblemCard() {
     val context = LocalContext.current
     val url = BuildConfig.BUG_REPORT_URL
     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
-        val body = "What happened:\n\nWhat you expected:\n\nSteps to repeat it:\n\n---\n" +
-            "RetroForge ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\n" +
-            "Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}, Android ${android.os.Build.VERSION.RELEASE} (API ${android.os.Build.VERSION.SDK_INT})"
+        val body = "What happened:\n\nWhat you expected:\n\nSteps to repeat it:\n\n---\nRetroForge ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})\nDevice: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}, Android ${android.os.Build.VERSION.RELEASE} (API ${android.os.Build.VERSION.SDK_INT})"
         val intent = if (url.isNotBlank()) {
             Intent(Intent.ACTION_VIEW, (url.trimEnd('/') + "/new?labels=bug&body=" + java.net.URLEncoder.encode(body, "UTF-8")).toUri())
         } else {
             // No issue tracker in this build: share the report by email, message or anything else.
             Intent.createChooser(
                 Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_SUBJECT, "RetroForge problem report").putExtra(Intent.EXTRA_TEXT, body),
-                "Send the report with…",
+                str(R.string.settings_send_the_report_with),
             )
         }
         runCatching { context.startActivity(intent) }
     }) {
         CardTitle(stringResource(R.string.settings_report_a_problem))
         CardBody(
-            if (url.isNotBlank()) "Opens a bug report on GitHub with your RetroForge version and device model filled in. Nothing else is sent; you see everything before posting."
-            else "Writes a short report with your RetroForge version and phone model, for you to send by email or message. Nothing is sent until you send it.",
+            if (url.isNotBlank()) str(R.string.settings_opens_a_bug_report_on_github)
+            else str(R.string.settings_writes_a_short_report_with_your),
         )
     }
 }
@@ -410,9 +410,9 @@ private fun DualScreenCard(prefs: android.content.SharedPreferences) {
         prefs.edit().putBoolean(DUAL_SCREEN_DS, ds).apply()
     }) {
         CardTitle(stringResource(R.string.settings_dual_screen))
-        StatusPill(if (second != null) "Second screen found: ${second.name}" else "No second screen on this device", if (second != null) StatusTone.GOOD else StatusTone.NEUTRAL)
-        StatusPill("DS games on both screens: ${if (ds) "On" else "Off"}", if (ds) StatusTone.GOOD else StatusTone.NEUTRAL)
-        StatusPill("Game box on the second screen while browsing (experimental): ${if (browse) "On" else "Off"}", if (browse) StatusTone.GOOD else StatusTone.NEUTRAL)
+        StatusPill(if (second != null) str(R.string.settings_second_screen_found, second.name) else str(R.string.settings_no_second_screen_on_this_device), if (second != null) StatusTone.GOOD else StatusTone.NEUTRAL)
+        StatusPill(str(R.string.settings_ds_games_on_both_screens, if (ds) str(R.string.settings_on) else str(R.string.player_off)), if (ds) StatusTone.GOOD else StatusTone.NEUTRAL)
+        StatusPill(str(R.string.settings_game_box_on_the_second_screen, if (browse) str(R.string.settings_on) else str(R.string.player_off)), if (browse) StatusTone.GOOD else StatusTone.NEUTRAL)
         com.retroforge.core.ui.FocusChip(stringResource(R.string.settings_switch_the_game_box), onClick = {
             browse = !browse
             prefs.edit().putBoolean(DUAL_SCREEN_BROWSE, browse).apply()

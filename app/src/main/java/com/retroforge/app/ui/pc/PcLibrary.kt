@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
@@ -18,16 +20,22 @@ import java.net.URLEncoder
  * Where a PC game lives, which says which app starts it. The file extensions are ES-DE's, so a "windows" or "steam"
  * folder set up for ES-DE (or the files GameNative and Winlator export for frontends) works as it is.
  */
-enum class PcSource(val extension: String, val label: String, val gameNative: String?) {
+enum class PcSource(val extension: String, private val name0: String, val gameNative: String?) {
     STEAM("steam", "Steam", "STEAM"),
     EPIC("epic", "Epic", "EPIC"),
     GOG("gog", "GOG", "GOG"),
     AMAZON("amazon", "Amazon", "AMAZON"),
     CUSTOM("pcgame", "GameNative", "CUSTOM_GAME"),
-    SHORTCUT("desktop", "Winlator shortcut", null),
+    SHORTCUT("desktop", "", null),
 
     /** A Windows game folder copied into RetroForge, played in RetroForge's own PC player ([shortcutPath] is its .exe). */
-    WINDOWS("exe", "RetroForge PC player", null);
+    WINDOWS("exe", "", null);
+
+    val label: String get() = when (this) {
+        SHORTCUT -> str(R.string.pc_library_winlator_shortcut)
+        WINDOWS -> str(R.string.pc_library_retroforge_pc_player)
+        else -> name0
+    }
 
     companion object {
         fun ofExtension(ext: String) = entries.firstOrNull { it.extension.equals(ext, ignoreCase = true) }
@@ -330,16 +338,16 @@ class PcLibrary(private val context: Context) {
      */
     fun launch(game: PcGame): String? {
         if (game.source == PcSource.WINDOWS) {
-            if (!com.retroforge.pcplayer.PcRuntime.deviceSupported) return "RetroForge's PC player needs a 64-bit ARM device (most phones and handhelds); this one is ${android.os.Build.SUPPORTED_ABIS.firstOrNull()}."
-            val exe = File(game.shortcutPath ?: return "This game has no .exe set.")
-            if (!exe.isFile) return "${exe.name} isn't in RetroForge's PC games folder any more. Add the game's folder again."
+            if (!com.retroforge.pcplayer.PcRuntime.deviceSupported) return str(R.string.pc_library_retroforge_s_pc_player_needs_a, android.os.Build.SUPPORTED_ABIS.firstOrNull())
+            val exe = File(game.shortcutPath ?: return str(R.string.pc_library_this_game_has_no_exe_set))
+            if (!exe.isFile) return str(R.string.pc_library_isn_t_in_retroforge_s_pc, exe.name)
             // Steam method 2 for this game: it starts through Valve's own Steam client, once that's set up.
             val appId = game.appId?.toIntOrNull()
             val throughClient = appId != null && com.retroforge.pcplayer.steam.SteamMethod.usesClient(context, appId)
             if (throughClient) {
                 val client = com.retroforge.pcplayer.steam.WindowsSteamClient(context)
-                if (!client.installed) return "${game.title} needs the Steam client: set it up on the PC tab (Steam method 2), then sign in once."
-                if (!client.signedIn) return "Sign in to the Steam client first (PC tab → Steam method 2 → Open Steam to sign in)."
+                if (!client.installed) return str(R.string.pc_library_needs_the_steam_client_set_it, game.title)
+                if (!client.signedIn) return str(R.string.pc_library_sign_in_to_the_steam_client)
             }
             context.startActivity(
                 com.retroforge.pcplayer.PcPlayerActivity.intent(context, exe, game.title, appId, steamClient = throughClient)
@@ -374,8 +382,8 @@ class PcLibrary(private val context: Context) {
             if (ok) return null
         }
         return when (game.source) {
-            PcSource.SHORTCUT -> "Winlator Cmod (or WinNative) isn't installed. Get it from the PC tab, then try again."
-            else -> "GameNative isn't installed. Get it from the PC tab, sign in to ${game.source.label} there and install the game, then try again."
+            PcSource.SHORTCUT -> str(R.string.pc_library_winlator_cmod_or_winnative_isn_t)
+            else -> str(R.string.pc_library_gamenative_isn_t_installed_get_it, game.source.label)
         }
     }
 
@@ -398,7 +406,7 @@ class PcLibrary(private val context: Context) {
             val url = "https://store.steampowered.com/api/storesearch/?l=english&cc=GB&term=" + URLEncoder.encode(term, "UTF-8")
             val connection = (URL(url).openConnection() as HttpURLConnection).apply { connectTimeout = 15_000; readTimeout = 20_000 }
             try {
-                if (connection.responseCode != 200) error("Steam answered ${connection.responseCode}")
+                if (connection.responseCode != 200) error(str(R.string.pc_library_steam_answered, connection.responseCode))
                 val items = JSONObject(connection.inputStream.use { it.readBytes().decodeToString() }).optJSONArray("items") ?: return emptyList()
                 return (0 until items.length()).map { items.getJSONObject(it) }.map { SteamHit(it.get("id").toString(), it.getString("name")) }
             } finally {

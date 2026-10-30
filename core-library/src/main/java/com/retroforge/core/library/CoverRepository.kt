@@ -1,5 +1,6 @@
 package com.retroforge.core.library
 
+import com.retroforge.core.ui.str
 import com.retroforge.artwork.HttpGet
 import com.retroforge.artwork.JvmHttpGet
 import com.retroforge.artwork.LibretroThumbnails
@@ -94,8 +95,8 @@ class CoverRepository(
     suspend fun save(game: GameEntity, url: String, source: String, author: String?, storedUrl: String = url): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
             val response = http.get(url, emptyMap(), JvmHttpGet.MAX_IMAGE_BYTES)
-            check(response.code == 200) { "the server answered HTTP ${response.code}" }
-            check(looksLikeImage(response.body)) { "that download isn't an image" }
+            check(response.code == 200) { str(R.string.cover_the_server_answered_http, response.code) }
+            check(looksLikeImage(response.body)) { str(R.string.cover_that_download_isn_t_an_image) }
             store(game, response.body, storedUrl, source, author)
         }
     }
@@ -103,18 +104,18 @@ class CoverRepository(
     /** An image the user picked on the device (e.g. a scan saved from The Cover Project) becomes the cover. */
     suspend fun saveFromDevice(game: GameEntity, image: Uri): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
-            val bytes = checkNotNull(resolver.openInputStream(image)) { "couldn't open the image" }.use { input ->
+            val bytes = checkNotNull(resolver.openInputStream(image)) { str(R.string.cover_couldn_t_open_the_image) }.use { input ->
                 val out = ByteArrayOutputStream()
                 val buf = ByteArray(64 * 1024)
                 while (true) {
                     val r = input.read(buf)
                     if (r < 0) break
                     out.write(buf, 0, r)
-                    check(out.size() <= JvmHttpGet.MAX_IMAGE_BYTES) { "that image is larger than 15 MB" }
+                    check(out.size() <= JvmHttpGet.MAX_IMAGE_BYTES) { str(R.string.cover_that_image_is_larger_than_15) }
                 }
                 out.toByteArray()
             }
-            check(looksLikeImage(bytes)) { "that file isn't a PNG, JPEG, WebP or GIF image" }
+            check(looksLikeImage(bytes)) { str(R.string.cover_that_file_isn_t_a_png) }
             store(game, bytes, "", SOURCE_DEVICE, null)
         }
     }
@@ -125,14 +126,14 @@ class CoverRepository(
      */
     suspend fun screenScraperCovers(game: GameEntity): Result<List<SsMedia>> = withContext(Dispatchers.IO) {
         runCatching {
-            if (!screenScraper.available) error("ScreenScraper isn't available in this build of RetroForge (it needs RetroForge's developer ID from ScreenScraper).")
-            val systemId = ScreenScraper.systemIds[game.system] ?: error("ScreenScraper doesn't list this system.")
+            if (!screenScraper.available) error(str(R.string.cover_screenscraper_isn_t_available_in_this))
+            val systemId = ScreenScraper.systemIds[game.system] ?: error(str(R.string.cover_screenscraper_doesn_t_list_this_system))
             val md5 = if (game.sizeBytes in 1..MD5_MAX_BYTES) runCatching { md5Of(game) }.getOrNull() else null
             when (val r = screenScraper.gameInfo(systemId, game.fileName, game.sizeBytes, md5)) {
                 is SsResult.Found -> ScreenScraper.covers(r.game, regionCode(game))
                 SsResult.NotFound -> emptyList()
-                SsResult.NotAvailable -> error("ScreenScraper didn't accept RetroForge's developer ID.")
-                SsResult.BadLogin -> error("ScreenScraper didn't accept your username or password. Check them in Settings.")
+                SsResult.NotAvailable -> error(str(R.string.cover_screenscraper_didn_t_accept_retroforge_s))
+                SsResult.BadLogin -> error(str(R.string.cover_screenscraper_didn_t_accept_your_username))
                 is SsResult.Failed -> error(r.reason)
             }
         }
@@ -154,8 +155,8 @@ class CoverRepository(
 
     /** ScreenScraper region code from the file name's first region, for picking that region's box. */
     private fun regionCode(game: GameEntity): String? = when (game.regions.substringBefore(',').trim()) {
-        "USA" -> "us"; "Europe" -> "eu"; "Japan" -> "jp"; "World" -> "wor"; "UK" -> "uk"; "France" -> "fr"; "Germany" -> "de"
-        "Spain" -> "sp"; "Italy" -> "it"; "Australia" -> "au"; "Brazil" -> "br"; "Korea" -> "kr"; "China" -> "cn"
+        "USA" -> "us"; str(R.string.cover_europe) -> "eu"; str(R.string.cover_japan) -> "jp"; str(R.string.cover_world) -> "wor"; "UK" -> "uk"; str(R.string.cover_france) -> "fr"; str(R.string.cover_germany) -> "de"
+        str(R.string.cover_spain) -> "sp"; str(R.string.cover_italy) -> "it"; str(R.string.cover_australia) -> "au"; str(R.string.cover_brazil) -> "br"; str(R.string.cover_korea) -> "kr"; str(R.string.cover_china) -> "cn"
         else -> null
     }
 
@@ -171,7 +172,7 @@ class CoverRepository(
         batchJob = scope.launch {
             val folder = LibretroThumbnails.folderFor(system)
             if (folder == null) {
-                _batch.value = CoverBatch.Failed(system, "No free box-art source for this system yet.")
+                _batch.value = CoverBatch.Failed(system, str(R.string.cover_no_free_box_art_source_for))
                 return@launch
             }
             val existing = dao.covers().first().map { it.rootId to it.relativePath }.toSet()
@@ -179,7 +180,7 @@ class CoverRepository(
             val names = try {
                 index(folder)
             } catch (e: Exception) {
-                _batch.value = CoverBatch.Failed(system, "Couldn't reach the box-art server: ${e.message}")
+                _batch.value = CoverBatch.Failed(system, str(R.string.cover_couldn_t_reach_the_box_art, e.message))
                 return@launch
             }
             var found = 0
@@ -248,7 +249,7 @@ class CoverRepository(
         val target = File(coversDir, name)
         if (!temp.renameTo(target)) {
             target.delete()
-            check(temp.renameTo(target)) { "couldn't save the cover" }
+            check(temp.renameTo(target)) { str(R.string.cover_couldn_t_save_the_cover) }
         }
         dao.upsertCover(CoverEntity(game.rootId, game.relativePath, name, source, url, author, clock()))
     }

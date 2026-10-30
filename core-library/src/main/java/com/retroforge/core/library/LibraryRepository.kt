@@ -1,5 +1,6 @@
 package com.retroforge.core.library
 
+import com.retroforge.core.ui.str
 import android.content.ContentResolver
 import android.content.Intent
 import android.net.Uri
@@ -239,7 +240,7 @@ class LibraryRepository(
         jobs[rootId] = scope.launch {
             val root = dao.root(rootId) ?: return@launch
             if (!hasAccess(root)) {
-                setState(rootId, ScanState.Failed("RetroForge no longer has access to this folder. Remove it and add it again."))
+                setState(rootId, ScanState.Failed(str(R.string.library_retroforge_no_longer_has_access_to)))
                 return@launch
             }
             setState(rootId, ScanState.Running(ScanProgress(0, 0, null, 0)))
@@ -249,7 +250,7 @@ class LibraryRepository(
             } catch (_: ScanCancelled) {
                 return@launch
             } catch (e: Exception) {
-                setState(rootId, ScanState.Failed("Scan failed: ${e.message ?: e.javaClass.simpleName}"))
+                setState(rootId, ScanState.Failed(str(R.string.library_scan_failed, e.message ?: e.javaClass.simpleName)))
                 return@launch
             }
             dao.replaceIndex(
@@ -275,7 +276,7 @@ class LibraryRepository(
             resolver.query(uri, arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME), null, null, null)?.use { c ->
                 if (c.moveToFirst()) c.getString(0) else null
             }
-        }.getOrNull() ?: docId.substringAfterLast(':').substringAfterLast('/').ifEmpty { "Folder" }
+        }.getOrNull() ?: docId.substringAfterLast(':').substringAfterLast('/').ifEmpty { str(R.string.library_folder) }
     }
 
     private fun ScannedGame.toEntity(rootId: Long) = GameEntity(

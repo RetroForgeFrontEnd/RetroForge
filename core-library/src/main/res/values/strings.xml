@@ -1,0 +1,109 @@
+<resources>
+
+    <!-- BiosInstaller.kt -->
+    <string name="bios_installer_couldn_t_create_the_file">couldn\'t create the file</string>
+    <string name="bios_installer_couldn_t_read">couldn\'t read %1$s</string>
+    <string name="bios_installer_couldn_t_write">couldn\'t write %1$s</string>
+    <string name="bios_installer_unexpected_file_name">unexpected file name</string>
+    <string name="bios_installer_couldn_t_save">couldn\'t save %1$s</string>
+    <string name="bios_installer_couldn_t_create_folder">couldn\'t create folder %1$s</string>
+
+    <!-- CoverRepository.kt -->
+    <string name="cover_the_server_answered_http">the server answered HTTP %1$s</string>
+    <string name="cover_that_download_isn_t_an_image">that download isn\'t an image</string>
+    <string name="cover_couldn_t_open_the_image">couldn\'t open the image</string>
+    <string name="cover_that_image_is_larger_than_15">that image is larger than 15 MB</string>
+    <string name="cover_that_file_isn_t_a_png">that file isn\'t a PNG, JPEG, WebP or GIF image</string>
+    <string name="cover_screenscraper_isn_t_available_in_this">ScreenScraper isn\'t available in this build of RetroForge (it needs RetroForge\'s developer ID from ScreenScraper).</string>
+    <string name="cover_screenscraper_doesn_t_list_this_system">ScreenScraper doesn\'t list this system.</string>
+    <string name="cover_screenscraper_didn_t_accept_retroforge_s">ScreenScraper didn\'t accept RetroForge\'s developer ID.</string>
+    <string name="cover_screenscraper_didn_t_accept_your_username">ScreenScraper didn\'t accept your username or password. Check them in Settings.</string>
+    <string name="cover_europe">Europe</string>
+    <string name="cover_japan">Japan</string>
+    <string name="cover_world">World</string>
+    <string name="cover_france">France</string>
+    <string name="cover_germany">Germany</string>
+    <string name="cover_spain">Spain</string>
+    <string name="cover_italy">Italy</string>
+    <string name="cover_australia">Australia</string>
+    <string name="cover_brazil">Brazil</string>
+    <string name="cover_korea">Korea</string>
+    <string name="cover_china">China</string>
+    <string name="cover_no_free_box_art_source_for">No free box-art source for this system yet.</string>
+    <string name="cover_couldn_t_reach_the_box_art">Couldn\'t reach the box-art server: %1$s</string>
+    <string name="cover_couldn_t_save_the_cover">couldn\'t save the cover</string>
+
+    <!-- LibraryRepository.kt -->
+    <string name="library_retroforge_no_longer_has_access_to">RetroForge no longer has access to this folder. Remove it and add it again.</string>
+    <string name="library_scan_failed">Scan failed: %1$s</string>
+    <string name="library_folder">Folder</string>
+
+    <!-- RomManagerRepository.kt -->
+    <string name="rom_manager_sorted_games_into_system_folders">Sorted %1$s games into system folders</string>
+    <string name="rom_manager_sorting_games">Sorting games</string>
+    <string name="rom_manager_moving_games_into_their_system_folders">Moving %1$s games into their system folders</string>
+    <string name="rom_manager_is_already_in">%1$s is already in %2$s</string>
+    <string name="rom_manager_games_sorted">Games sorted</string>
+    <string name="rom_manager_undo_from_history_puts_them_back">%1$s. Undo from History puts them back.</string>
+    <string name="rom_manager_made_playlists">Made %1$s playlists</string>
+    <string name="rom_manager_making_playlists">Making playlists</string>
+    <string name="rom_manager_multi_disc_games">%1$s multi-disc games</string>
+    <string name="rom_manager_playlists_made">Playlists made</string>
+    <string name="rom_manager_each_shows_as_one_game_change">%1$s. Each shows as one game; change discs from the emulator\'s menu.</string>
+    <string name="rom_manager_moving_copies">Moving %1$s copies</string>
+    <string name="rom_manager_tidying_duplicates">Tidying duplicates</string>
+    <string name="rom_manager_moving_copies_to_duplicates">Moving copies to _duplicates …</string>
+    <string name="rom_manager_duplicates_tidied">Duplicates tidied</string>
+    <string name="rom_manager_compressing_games">Compressing %1$s games</string>
+    <string name="rom_manager_compressing_of">Compressing %1$s of %2$s</string>
+    <string name="rom_manager_compressed_of_games_saving_originals_are">Compressed %1$s of %2$s games, saving %3$s; originals are in _originals</string>
+    <string name="rom_manager_compression_finished">Compression finished</string>
+    <string name="rom_manager_compression_stopped">Compression stopped</string>
+    <string name="rom_manager_deleted">Deleted %1$s</string>
+    <string name="rom_manager_deleting">Deleting</string>
+    <string name="rom_manager_deleted_2">Deleted</string>
+    <string name="rom_manager_is_in_the_folder_undo_it">%1$s is in the %2$s folder. Undo it from History, or use Free up space to delete it for good.</string>
+    <string name="rom_manager_retroforge_needs_permission_to_change_this">RetroForge needs permission to change this folder.</string>
+    <string name="rom_manager_deleting_permanently">Deleting permanently</string>
+    <string name="rom_manager_deleted_permanently">Deleted permanently</string>
+    <string name="rom_manager_emptied">Emptied %1$s.</string>
+    <string name="rom_manager_undoing">Undoing</string>
+    <string name="rom_manager_undone">Undone</string>
+    <string name="rom_manager_put_back">Put back: %1$s.</string>
+    <string name="rom_manager_stopped">Stopped</string>
+    <string name="rom_manager_stopped_anything_already_done_can_be">Stopped. Anything already done can be undone from History.</string>
+
+    <!-- SafCollectionFiles.kt -->
+    <string name="saf_collection_files_retroforge_no_longer_has_access_to">RetroForge no longer has access to this folder</string>
+    <string name="saf_collection_files_the_storage_provider_returned_nothing">the storage provider returned nothing</string>
+    <string name="saf_collection_files_doesn_t_exist">%1$s doesn\'t exist</string>
+    <string name="saf_collection_files_can_t_open">can\'t open %1$s</string>
+    <string name="saf_collection_files_is_a_file_not_a_folder">%1$s is a file, not a folder</string>
+    <string name="saf_collection_files_this_storage_can_t_move_files">this storage can\'t move files</string>
+    <string name="saf_collection_files_couldn_t_move">couldn\'t move %1$s</string>
+    <string name="saf_collection_files_already_exists">%1$s already exists</string>
+    <string name="saf_collection_files_couldn_t_rename">couldn\'t rename %1$s</string>
+    <string name="saf_collection_files_the_storage_renamed_to_something_else">the storage renamed %1$s to something else (%2$s)</string>
+    <string name="saf_collection_files_couldn_t_create">couldn\'t create %1$s</string>
+    <string name="saf_collection_files_the_storage_created_under_another_name">the storage created %1$s under another name</string>
+    <string name="saf_collection_files_couldn_t_open_for_writing">couldn\'t open %1$s for writing</string>
+    <string name="saf_collection_files_can_t_write">can\'t write %1$s</string>
+    <string name="saf_collection_files_couldn_t_delete">couldn\'t delete %1$s</string>
+    <string name="saf_collection_files_only_unfinished_files_can_be_removed">only unfinished files can be removed</string>
+
+    <!-- SafScanNode.kt -->
+    <string name="saf_scan_node_access_was_withdrawn">access was withdrawn</string>
+    <string name="saf_scan_node_folder_no_longer_exists">folder no longer exists</string>
+    <plurals name="rom_manager_sorted_games">
+        <item quantity="one">Sorted %1$s game into system folders</item>
+        <item quantity="other">Sorted %1$s games into system folders</item>
+    </plurals>
+    <plurals name="rom_manager_made_playlists">
+        <item quantity="one">Made 1 playlist for multi-disc games</item>
+        <item quantity="other">Made %1$s playlists for multi-disc games</item>
+    </plurals>
+    <plurals name="rom_manager_moved_copies">
+        <item quantity="one">Moved %1$s copy to _duplicates</item>
+        <item quantity="other">Moved %1$s copies to _duplicates</item>
+    </plurals>
+</resources>

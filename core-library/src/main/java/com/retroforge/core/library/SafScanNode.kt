@@ -1,5 +1,6 @@
 package com.retroforge.core.library
 
+import com.retroforge.core.ui.str
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.DocumentsContract
@@ -27,10 +28,10 @@ class SafScanNode(
         val cursor = try {
             resolver.query(childrenUri, PROJECTION, null, null, null)
         } catch (e: SecurityException) {
-            throw IOException("access was withdrawn", e)
+            throw IOException(str(R.string.saf_scan_node_access_was_withdrawn), e)
         } catch (e: IllegalArgumentException) {
-            throw IOException("folder no longer exists", e)
-        } ?: throw IOException("the storage provider returned nothing")
+            throw IOException(str(R.string.saf_scan_node_folder_no_longer_exists), e)
+        } ?: throw IOException(str(R.string.saf_collection_files_the_storage_provider_returned_nothing))
         return cursor.use { c ->
             buildList {
                 while (c.moveToNext()) {
@@ -50,9 +51,9 @@ class SafScanNode(
     }
 
     override fun open(): InputStream = try {
-        resolver.openInputStream(DocumentsContract.buildDocumentUriUsingTree(treeUri, id)) ?: throw IOException("can't open $name")
+        resolver.openInputStream(DocumentsContract.buildDocumentUriUsingTree(treeUri, id)) ?: throw IOException(str(R.string.saf_collection_files_can_t_open, name))
     } catch (e: SecurityException) {
-        throw IOException("access was withdrawn", e)
+        throw IOException(str(R.string.saf_scan_node_access_was_withdrawn), e)
     }
 
     companion object {

@@ -1,5 +1,6 @@
 package com.retroforge.pcplayer
 
+import com.retroforge.core.ui.str
 import android.content.Context
 import android.system.Os
 import com.github.luben.zstd.ZstdInputStream
@@ -75,7 +76,7 @@ class PcRuntime(context: Context) {
                 _state.value = RuntimeState.Ready
                 true
             } catch (e: IOException) {
-                _state.value = RuntimeState.Failed(e.message ?: "The PC runtime couldn't be installed")
+                _state.value = RuntimeState.Failed(e.message ?: str(R.string.pc_player_the_pc_runtime_couldn_t_be))
                 false
             }
         }
@@ -91,7 +92,7 @@ class PcRuntime(context: Context) {
         for (part in PARTS) {
             val file = File(cache, part.file)
             if (!(file.isFile && file.length() == part.size)) {
-                download(part, file) { read -> progress("Downloading ${part.label}", (done + read) / total * DOWNLOAD_SHARE) }
+                download(part, file) { read -> progress(str(R.string.pc_runtime_downloading, part.label), (done + read) / total * DOWNLOAD_SHARE) }
             }
             done += part.size
         }
@@ -101,11 +102,11 @@ class PcRuntime(context: Context) {
             target.mkdirs()
             val file = File(cache, part.file)
             unpack(file, part.zstd, target) { read ->
-                progress("Unpacking ${part.label}", DOWNLOAD_SHARE + (done + read) / total * (100 - DOWNLOAD_SHARE - 3))
+                progress(str(R.string.pc_runtime_unpacking, part.label), DOWNLOAD_SHARE + (done + read) / total * (100 - DOWNLOAD_SHARE - 3))
             }
             done += part.size
         }
-        progress("Setting up Windows", 97.0)
+        progress(str(R.string.pc_runtime_setting_up_windows), 97.0)
         setUpPrefix()
         cache.deleteRecursively()
         marker.writeText(VERSION)
@@ -120,10 +121,10 @@ class PcRuntime(context: Context) {
             cache.mkdirs()
             val file = File(cache, extra.file)
             if (!(file.isFile && file.length() == extra.size)) {
-                download(extra, file) { read -> progress("Downloading ${extra.label}", read * 90.0 / extra.size) }
+                download(extra, file) { read -> progress(str(R.string.pc_runtime_downloading, extra.label), read * 90.0 / extra.size) }
             }
             val target = File(imageFs, extra.into).apply { mkdirs() }
-            progress("Installing ${extra.label}", 95.0)
+            progress(str(R.string.pc_runtime_installing, extra.label), 95.0)
             unpack(file, extra.zstd, target) {}
             file.delete()
             extraMarker(extra).writeText(extra.url)
@@ -141,7 +142,7 @@ class PcRuntime(context: Context) {
         system32.mkdirs()
         for (dll in listOf("libarm64ecfex.dll", "libwow64fex.dll")) {
             val from = File(imageFs, "opt/fex/system32/$dll")
-            if (!from.isFile) throw IOException("FEX's $dll is missing")
+            if (!from.isFile) throw IOException(str(R.string.pc_runtime_fex_s_is_missing, dll))
             from.copyTo(File(system32, dll), overwrite = true)
         }
         // The Vulkan wrapper's manifest names the Winlator package's path; point it at ours.
@@ -161,11 +162,11 @@ class PcRuntime(context: Context) {
             readTimeout = 60_000
         }
         try {
-            if (connection.responseCode != 200) throw IOException("The download server answered ${connection.responseCode} for ${part.label}")
+            if (connection.responseCode != 200) throw IOException(str(R.string.pc_runtime_the_download_server_answered_for, connection.responseCode, part.label))
             val partial = File(file.path + ".part")
             CountingStream(connection.inputStream, onRead).use { input -> partial.outputStream().use { input.copyTo(it, 1 shl 16) } }
-            if (partial.length() != part.size) throw IOException("${part.label} didn't download completely")
-            if (!partial.renameTo(file)) throw IOException("Couldn't save ${part.label}")
+            if (partial.length() != part.size) throw IOException(str(R.string.pc_runtime_didn_t_download_completely, part.label))
+            if (!partial.renameTo(file)) throw IOException(str(R.string.pc_runtime_couldn_t_save, part.label))
         } finally {
             connection.disconnect()
         }
@@ -183,10 +184,10 @@ class PcRuntime(context: Context) {
         private class Part(val label: String, val url: String, val file: String, val size: Long, val zstd: Boolean, val into: String)
 
         private val PARTS = listOf(
-            Part("the Linux image", "$SERVER/imagefs_bionic.txz", "imagefs_bionic.txz", 183_506_500, zstd = false, into = ""),
+            Part(str(R.string.pc_runtime_the_linux_image), "$SERVER/imagefs_bionic.txz", "imagefs_bionic.txz", 183_506_500, zstd = false, into = ""),
             Part("Wine (Proton 11)", "$SERVER/proton-11.0-2-arm64ec-9.wcp", "proton.wcp", 96_016_250, zstd = true, into = "opt/proton"),
             Part("FEX", "$SERVER/FEXCore-2610-gn-5.wcp", "fex.wcp", 1_332_620, zstd = false, into = "opt/fex"),
-            Part("the Vulkan driver", "$SERVER/graphics_driver/wrapper-gamenative-20260925.tzst", "wrapper.tzst", 774_855, zstd = true, into = ""),
+            Part(str(R.string.pc_runtime_the_vulkan_driver), "$SERVER/graphics_driver/wrapper-gamenative-20260925.tzst", "wrapper.tzst", 774_855, zstd = true, into = ""),
         )
 
         /**
@@ -223,7 +224,7 @@ class PcRuntime(context: Context) {
                                 try {
                                     Os.symlink(entry.linkName, out.path)
                                 } catch (e: Exception) {
-                                    throw IOException("Couldn't make the link $name: ${e.message}")
+                                    throw IOException(str(R.string.pc_runtime_couldn_t_make_the_link, name, e.message))
                                 }
                             }
                             entry.isLink -> {

@@ -43,6 +43,7 @@ object AppLanguage {
         } else {
             context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY, tag).apply()
         }
+        AppStrings.reset()
     }
 
     /** For an Activity's attachBaseContext on Android 12 and older: [base] in the chosen language. */

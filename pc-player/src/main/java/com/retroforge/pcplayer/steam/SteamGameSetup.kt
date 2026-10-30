@@ -1,5 +1,7 @@
 package com.retroforge.pcplayer.steam
 
+import com.retroforge.pcplayer.R
+import com.retroforge.core.ui.str
 import java.io.File
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -38,9 +40,9 @@ class SteamGameSetup(private val runtimeRoot: File, private val account: SteamAc
     suspend fun prepare(gameDir: File, appId: Int, lobbies: Boolean = false) {
         val dlls = steamDlls(gameDir)
         if (dlls.isEmpty()) return
-        if (!account.signedIn) throw IOException("This is a Steam game: sign in to Steam on RetroForge's PC tab first.")
-        val access = account.gameAccess(appId) ?: throw IOException("Sign in to Steam on RetroForge's PC tab first.")
-        if (!access.owned) throw IOException("Steam says this account doesn't own this game (app $appId).")
+        if (!account.signedIn) throw IOException(str(R.string.steam_game_setup_this_is_a_steam_game_sign))
+        val access = account.gameAccess(appId) ?: throw IOException(str(R.string.steam_game_setup_sign_in_to_steam_on_retroforge))
+        if (!access.owned) throw IOException(str(R.string.steam_game_setup_steam_says_this_account_doesn_t, appId))
         val ticket = access.encryptedTicket
         for (dll in dlls) {
             val is64 = dll.name.equals("steam_api64.dll", true)
@@ -119,14 +121,14 @@ class SteamGameSetup(private val runtimeRoot: File, private val account: SteamAc
             readTimeout = 60_000
         }
         try {
-            if (connection.responseCode != 200) throw IOException("Couldn't download the Steam emulator (${connection.responseCode})")
+            if (connection.responseCode != 200) throw IOException(str(R.string.steam_game_setup_couldn_t_download_the_steam_emulator, connection.responseCode))
             val part = File(file.path + ".part")
             connection.inputStream.use { input -> part.outputStream().use { input.copyTo(it) } }
             if (sha256(part) != (if (is64) SHA_64 else SHA_32)) {
                 part.delete()
-                throw IOException("The Steam emulator download didn't match")
+                throw IOException(str(R.string.steam_game_setup_the_steam_emulator_download_didn_t))
             }
-            if (!part.renameTo(file)) throw IOException("Couldn't save the Steam emulator")
+            if (!part.renameTo(file)) throw IOException(str(R.string.steam_game_setup_couldn_t_save_the_steam_emulator))
             return file
         } finally {
             connection.disconnect()

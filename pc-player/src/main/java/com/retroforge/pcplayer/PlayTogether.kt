@@ -1,5 +1,7 @@
 package com.retroforge.pcplayer
 
+import androidx.compose.ui.res.stringResource
+import com.retroforge.core.ui.str
 import android.content.Context
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -106,8 +108,7 @@ class PlayTogether(
         stop()
         mode = Mode.SameWifi
         holdMulticast()
-        status = "This device is ${wifiAddress()?.let { "at $it " } ?: ""}on your Wi-Fi. Open the game's LAN or " +
-            "multiplayer menu on both devices; they should find each other."
+        status = str(R.string.play_together_this_device_is_on_your_wi, wifiAddress()?.let { "at $it " } ?: "")
         if (steamGame && !lobbies) restart(true)
     }
 
@@ -115,16 +116,16 @@ class PlayTogether(
         stop()
         mode = Mode.Internet
         busy = true
-        status = "Starting…"
+        status = str(R.string.play_together_starting)
         scope.launch {
             val started = runCatching { withContext(Dispatchers.IO) { PcLan.host(PcLan.configFile(runtimeRoot), name) } }
             busy = false
             started.onSuccess { watch(it) }.onFailure {
                 mode = Mode.Off
-                status = "Couldn't host: ${it.message ?: "port ${PcLan.PORT} is in use"}."
+                status = str(R.string.play_together_couldn_t_host_is_in_use, it.message ?: str(R.string.play_together_port_is_in_use, PcLan.PORT))
                 return@launch
             }
-            routerNote = "Checking whether friends on the internet can reach this device…"
+            routerNote = str(R.string.play_together_checking_whether_friends_on_the_internet)
             routerNote = withContext(Dispatchers.IO) { openRouter() }
             if (steamGame && !lobbies) restart(true)
         }
@@ -137,12 +138,10 @@ class PlayTogether(
             found.open(PcLan.PORT, local, "UDP")
             router = found
             val outside = found.externalAddress()
-            return if (outside != null) "Friends on the internet join at $outside (your router opened the port). " +
-                "On the same Wi-Fi they can use $local."
-            else "Your router opened the port. Friends on the same Wi-Fi can join at $local."
+            return if (outside != null) str(R.string.play_together_friends_on_the_internet_join_at, outside, local)
+            else str(R.string.play_together_your_router_opened_the_port_friends, local)
         }
-        return "Your router didn't let RetroForge open port ${PcLan.PORT} (TCP and UDP) for friends on the internet: " +
-            "send it to ${local ?: "this device"} in the router's settings. Friends on the same Wi-Fi can join at ${local ?: "this device's address"}."
+        return str(R.string.play_together_your_router_didn_t_let_retroforge, PcLan.PORT, local ?: str(R.string.play_together_this_device), local ?: str(R.string.play_together_this_device_s_address))
     }
 
     private fun join() {
@@ -150,7 +149,7 @@ class PlayTogether(
         stop()
         mode = Mode.Internet
         busy = true
-        status = "Connecting to $address…"
+        status = str(R.string.play_together_connecting_to, address)
         scope.launch {
             val joined = runCatching { withContext(Dispatchers.IO) { PcLan.join(PcLan.configFile(runtimeRoot), name, address) } }
             busy = false
@@ -159,7 +158,7 @@ class PlayTogether(
                 if (steamGame && !lobbies) restart(true)
             }.onFailure {
                 mode = Mode.Off
-                status = "Couldn't reach $address. Check the address, and that the host chose \"Host over the internet\" first."
+                status = str(R.string.play_together_couldn_t_reach_check_the_address, address)
             }
         }
     }
@@ -172,10 +171,10 @@ class PlayTogether(
                 status = when (s) {
                     is PcLan.Status.Starting -> "${s.step}…"
                     is PcLan.Status.Failed -> s.message
-                    is PcLan.Status.Up -> if (s.members.size < 2) "Hosting. Waiting for a friend to join…"
-                    else "Playing together: " + s.members.joinToString(", ") {
+                    is PcLan.Status.Up -> if (s.members.size < 2) str(R.string.play_together_hosting_waiting_for_a_friend_to)
+                    else str(R.string.play_together_playing_together) + s.members.joinToString(", ") {
                         (if (PcLan.address(it.index) == s.address) "you" else it.name) + " (${PcLan.address(it.index)})"
-                    } + ". Open the game's LAN or multiplayer menu: the others are on its local network."
+                    } + str(R.string.play_together_open_the_game_s_lan_or)
                 }
             }
         }
@@ -199,30 +198,30 @@ class PlayTogether(
     @Composable
     fun Panel(button: @Composable (onClick: () -> Unit, content: @Composable () -> Unit) -> Unit) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("Play together", color = Color.White, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.pc_player_play_together), color = Color.White, fontWeight = FontWeight.Bold)
             Hint(
-                "Play this game's LAN or multiplayer mode with other RetroForge devices or PCs." +
-                    if (steamGame) " Steam games use RetroForge's Steam lobbies; turning them on restarts the game." else "",
+                str(R.string.play_together_play_this_game_s_lan_or) +
+                    if (steamGame) str(R.string.play_together_steam_games_use_retroforge_s_steam) else "",
             )
             if (status.isNotEmpty()) Text(status, color = Color(0xFFFF8A1F), fontSize = 13.sp, textAlign = TextAlign.Center)
             routerNote?.let { Hint(it) }
             if (busy) return@Column
             if (mode == Mode.Off) {
-                button({ sameWifi() }) { Text("Same Wi-Fi") }
-                button({ host() }) { Text("Host over the internet") }
+                button({ sameWifi() }) { Text(stringResource(R.string.play_together_same_wi_fi)) }
+                button({ host() }) { Text(stringResource(R.string.play_together_host_over_the_internet)) }
                 OutlinedTextField(
                     value = joinAddress,
                     onValueChange = { joinAddress = it },
-                    label = { Text("Host's address") },
+                    label = { Text(stringResource(R.string.play_together_host_s_address)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                     modifier = Modifier.fillMaxWidth(),
                 )
-                button({ join() }) { Text("Join over the internet") }
+                button({ join() }) { Text(stringResource(R.string.play_together_join_over_the_internet)) }
             } else {
-                button({ stop() }) { Text("Stop playing together") }
+                button({ stop() }) { Text(stringResource(R.string.play_together_stop_playing_together)) }
             }
-            if (lobbies && mode == Mode.Off) button({ restart(false) }) { Text("Turn Steam lobbies off (restarts)") }
+            if (lobbies && mode == Mode.Off) button({ restart(false) }) { Text(stringResource(R.string.play_together_turn_steam_lobbies_off_restarts)) }
         }
     }
 

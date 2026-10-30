@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.media
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.graphics.SurfaceTexture
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
@@ -11,12 +13,14 @@ import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 /** How a film is shown: as it is, or for a Cardboard viewer (a picture per eye). */
-enum class ViewMode(val label: String) {
-    NORMAL("Normal"),
-    CINEMA("Cardboard cinema (2D)"),
-    SIDE_BY_SIDE("Cardboard 3D, side by side"),
-    TOP_BOTTOM("Cardboard 3D, top and bottom"),
+enum class ViewMode(private val labelId: Int) {
+    NORMAL(R.string.stereo_renderer_normal),
+    CINEMA(R.string.stereo_renderer_cardboard_cinema_2d),
+    SIDE_BY_SIDE(R.string.stereo_renderer_cardboard_3d_side_by_side),
+    TOP_BOTTOM(R.string.stereo_renderer_cardboard_3d_top_and_bottom),
     ;
+
+    val label: String get() = str(labelId)
 
     fun next(): ViewMode = entries[(ordinal + 1) % entries.size]
 }

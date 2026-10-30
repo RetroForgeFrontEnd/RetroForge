@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.setup
 
+import com.retroforge.core.ui.pluralStr
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -77,7 +79,7 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
         val loose by androidx.compose.runtime.produceState(0, s?.games) { value = viewModel.looseGames() }
         if (loose > 0) {
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSort) {
-                CardTitle(stringResource(R.string.setup_tidy_your_games_folder)) { StatusPill("${plural(loose, "game")} not in a system folder", StatusTone.CAUTION) }
+                CardTitle(stringResource(R.string.setup_tidy_your_games_folder)) { StatusPill(stringResource(R.string.setup_not_in_a_system_folder, plural(loose, "game")), StatusTone.CAUTION) }
                 CardBody(
                     stringResource(R.string.setup_they_play_fine_where_they_are),
                 )
@@ -98,10 +100,10 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
                     val ready = cores.count { (coreStates[it.id] ?: viewModel.coreState(it.id)) == com.retroforge.player.CoreState.Ready }
                     if (ready == cores.size) StatusPill(stringResource(R.string.pc_stream_ready), StatusTone.GOOD)
                     else StatusPill(stringResource(R.string.setup_getting_of, ready + 1, cores.size), StatusTone.CAUTION)
-                    CardBody("Built in, nothing to install: ${builtIn.map { viewModel.systemName(it.first) }.sorted().joinToString()}.")
+                    CardBody(stringResource(R.string.setup_built_in_nothing_to_install_sorted, builtIn.map { viewModel.systemName(it.first) }.sorted().joinToString()))
                     CardBody(stringResource(R.string.setup_retroforge_downloads_these_emulators_for_you))
                     val failed = cores.filter { (coreStates[it.id] ?: viewModel.coreState(it.id)) is com.retroforge.player.CoreState.Failed }
-                    if (failed.isNotEmpty()) CardBody("Couldn't download ${failed.joinToString { it.name }} yet (no internet?). RetroForge tries again next time.")
+                    if (failed.isNotEmpty()) CardBody(stringResource(R.string.setup_couldn_t_download_yet_no_internet, failed.joinToString { it.name }))
                 }
             }
         }
@@ -110,9 +112,9 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
         val needRetroArch = systemIds.filter { com.retroforge.player.PlayerCores.forSystem(it) == null && RetroArchCores.coresFor(it).isNotEmpty() }
         if (needRetroArch.isNotEmpty()) {
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = if (install != null) viewModel::openRetroArch else null) {
-                CardTitle("RetroArch, for ${plural(needRetroArch.size, "more system")}")
+                CardTitle(stringResource(R.string.setup_retroarch_for, plural(needRetroArch.size, "more system")))
                 val i = install
-                if (i == null) StatusPill(stringResource(R.string.pc_not_installed), StatusTone.CAUTION) else StatusPill("Installed ${i.versionName.orEmpty()}".trim(), StatusTone.GOOD)
+                if (i == null) StatusPill(stringResource(R.string.pc_not_installed), StatusTone.CAUTION) else StatusPill(str(R.string.pc_installed, i.versionName.orEmpty()).trim(), StatusTone.GOOD)
                 CardBody(stringResource(R.string.setup_play_in_retroarch_a_free_emulator, needRetroArch.map(viewModel::systemName).sorted().joinToString()))
                 if (i == null) {
                     CardBody(stringResource(R.string.setup_install_it_from_google_play_or))
@@ -139,7 +141,7 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
             }
         }
         if (s != null && s.unsupported.isNotEmpty()) {
-            CardBody("Not playable from RetroForge yet: ${s.unsupported.take(15).joinToString()}${if (s.unsupported.size > 15) " …" else ""}")
+            CardBody(stringResource(R.string.setup_not_playable_from_retroforge_yet, s.unsupported.take(15).joinToString(), if (s.unsupported.size > 15) " …" else ""))
         }
 
         // 4. BIOS
@@ -155,7 +157,7 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
         }
         if (settings?.biosFolderUri != null) {
             ChipRow {
-                FocusChip(if (bios.reports == null) "Scan for BIOS files" else "Scan again", enabled = !bios.checking, onClick = { viewModel.recheckBios() })
+                FocusChip(if (bios.reports == null) stringResource(R.string.setup_scan_for_bios_files) else stringResource(R.string.setup_scan_again), enabled = !bios.checking, onClick = { viewModel.recheckBios() })
                 FocusChip(stringResource(R.string.setup_choose_another_bios_folder), onClick = { pickBios.launch(null) })
             }
         }
@@ -182,14 +184,14 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
                         BiosStatus.MISSING -> StatusPill(stringResource(R.string.setup_missing_2, need), if (report.rule.need == BiosNeed.REQUIRED) StatusTone.BAD else StatusTone.NEUTRAL)
                     }
                     report.found.forEach { f ->
-                        CardBody("${f.foundAs}${if (f.foundAs != f.wanted.baseName) " → ${f.wanted.name}" else ""}${if (f.verified) "" else " (unrecognised version)"}")
+                        CardBody(stringResource(R.string.setup_else, f.foundAs, if (f.foundAs != f.wanted.baseName) " → ${f.wanted.name}" else "", if (f.verified) "" else stringResource(R.string.setup_unrecognised_version)))
                     }
                     // A rule that takes any one of many versions (73 PS2 BIOS dumps) says so instead of listing them all.
                     if (report.status == BiosStatus.MISSING) CardBody(
-                        if (report.rule.mode == "any" && report.rule.files.size > 4) "Needs one BIOS file for this system, any version (${report.rule.files.size} are recognised)."
-                        else "Needs ${report.rule.files.joinToString(if (report.rule.mode == "any") " or " else " and ") { it.baseName }}.",
+                        if (report.rule.mode == "any" && report.rule.files.size > 4) str(R.string.setup_needs_one_bios_file_for_this, report.rule.files.size)
+                        else str(R.string.setup_needs, report.rule.files.joinToString(if (report.rule.mode == "any") str(R.string.setup_list_or) else str(R.string.setup_list_and)) { it.baseName }),
                     )
-                    else if (report.missing.isNotEmpty() && report.rule.mode == "all") CardBody("Missing: ${report.missing.joinToString { it.name }}")
+                    else if (report.missing.isNotEmpty() && report.rule.mode == "all") CardBody(stringResource(R.string.setup_missing_3, report.missing.joinToString { it.name }))
                     if (report.rule.note.isNotBlank()) CardBody(report.rule.note)
                 }
             }
@@ -211,17 +213,17 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
                 }
                 bios.playerCopy?.takeIf { it.copied.isNotEmpty() || it.alreadyThere.isNotEmpty() || it.failed.isNotEmpty() }?.let { r ->
                     CardBody(
-                        "Built-in player: " + listOfNotNull(
-                            r.copied.size.takeIf { it > 0 }?.let { "$it BIOS file(s) copied" },
-                            r.alreadyThere.size.takeIf { it > 0 }?.let { "$it already there" },
-                            r.failed.size.takeIf { it > 0 }?.let { "$it couldn't be copied" },
-                        ).joinToString(", ") + ". Nothing to do: RetroForge keeps its own copy.",
+                        str(R.string.setup_built_in_player) + listOfNotNull(
+                            r.copied.size.takeIf { it > 0 }?.let { str(R.string.setup_bios_file_s_copied, it) },
+                            r.alreadyThere.size.takeIf { it > 0 }?.let { str(R.string.setup_already_there, it) },
+                            r.failed.size.takeIf { it > 0 }?.let { str(R.string.setup_couldn_t_be_copied, it) },
+                        ).joinToString(", ") + str(R.string.setup_nothing_to_do_retroforge_keeps_its),
                     )
                 }
                 if (bios.copying) LinearProgressIndicator(Modifier.fillMaxWidth())
                 bios.copyResult?.let { r ->
                     FocusCard(modifier = Modifier.fillMaxWidth()) {
-                        StatusPill(if (r.failed.isEmpty()) "Done" else "Finished with problems", if (r.failed.isEmpty()) StatusTone.GOOD else StatusTone.CAUTION)
+                        StatusPill(if (r.failed.isEmpty()) str(R.string.setup_done) else str(R.string.setup_finished_with_problems), if (r.failed.isEmpty()) StatusTone.GOOD else StatusTone.CAUTION)
                         if (r.copied.isNotEmpty()) CardBody(stringResource(R.string.setup_copied, r.copied.joinToString()))
                         if (r.alreadyThere.isNotEmpty()) CardBody(stringResource(R.string.setup_already_there_left_alone, r.alreadyThere.joinToString()))
                         r.failed.forEach { (name, why) -> CardBody(stringResource(R.string.setup_couldn_t_copy, name, why)) }
@@ -252,23 +254,23 @@ private fun BiosSummary(reports: List<BiosReport>, systemName: (String) -> Strin
     val context = androidx.compose.ui.platform.LocalContext.current
     // A short message when the check finishes, which can take minutes on a network drive.
     androidx.compose.runtime.LaunchedEffect(reports) {
-        val text = if (missing.isEmpty()) "BIOS check done: you have every BIOS your games need."
-        else "BIOS check done: ${missing.size} system${if (missing.size == 1) "" else "s"} missing a BIOS."
+        val text = if (missing.isEmpty()) str(R.string.setup_bios_check_done_you_have_every)
+        else pluralStr(R.plurals.setup_bios_check_systems_missing, missing.size, missing.size)
         android.widget.Toast.makeText(context, text, android.widget.Toast.LENGTH_LONG).show()
     }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         if (missing.isEmpty()) {
             CardTitle(stringResource(R.string.setup_you_have_every_bios_your_games)) { StatusPill(stringResource(R.string.setup_all_found), StatusTone.GOOD) }
             CardBody(
-                if (optional == 0) "Every system in your library has what it needs."
-                else "$optional optional one${if (optional == 1) "" else "s"} would make some systems more accurate; see below.",
+                if (optional == 0) str(R.string.setup_every_system_in_your_library_has)
+                else pluralStr(R.plurals.setup_optional_bios, optional, optional),
             )
         } else {
-            CardTitle("Missing BIOS for ${missing.size} system${if (missing.size == 1) "" else "s"}") { StatusPill(stringResource(R.string.setup_missing), StatusTone.BAD) }
+            CardTitle(pluralStr(R.plurals.setup_missing_bios_for_systems, missing.size, missing.size)) { StatusPill(stringResource(R.string.setup_missing), StatusTone.BAD) }
             CardBody(stringResource(R.string.setup_games_for_these_won_t_start))
             missing.forEach { r ->
                 val files = if (r.status == BiosStatus.PARTIAL) r.missing.map { it.baseName }
-                else if (r.rule.mode == "any" && r.rule.files.size > 4) listOf("one BIOS file, any version")
+                else if (r.rule.mode == "any" && r.rule.files.size > 4) listOf(str(R.string.setup_one_bios_file_any_version))
                 else r.rule.files.map { it.baseName }
                 CardBody("• ${names(r)}: ${files.joinToString(if (r.rule.mode == "any") " or " else ", ")}")
             }

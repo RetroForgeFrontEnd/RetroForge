@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -63,7 +64,7 @@ fun GpuDriversScreen() {
                 CardBody(stringResource(R.string.pc_stream_checking))
             } else {
                 CardBody(a.gpuName)
-                StatusPill(if (a.canUseCustomDrivers) "Custom drivers can be used" else "Custom drivers can't be used", if (a.canUseCustomDrivers) StatusTone.GOOD else StatusTone.NEUTRAL)
+                StatusPill(if (a.canUseCustomDrivers) str(R.string.gpu_drivers_custom_drivers_can_be_used) else str(R.string.gpu_drivers_custom_drivers_can_t_be_used), if (a.canUseCustomDrivers) StatusTone.GOOD else StatusTone.NEUTRAL)
                 CardBody(a.advice)
             }
         }
@@ -82,8 +83,8 @@ fun GpuDriversScreen() {
                 CardBody(
                     stringResource(R.string.gpu_drivers_the_built_in_player_s_vulkan),
                 )
-                StatusPill(inPlayers?.let { "Using $it" } ?: "Using the phone's own driver", if (inPlayers != null) StatusTone.GOOD else StatusTone.NEUTRAL)
-                CardBody(if (inPlayers == null) "Choose Use in RetroForge on a driver below." else "If games get worse, go back to the phone's driver.")
+                StatusPill(inPlayers?.let { str(R.string.gpu_drivers_using, it) } ?: str(R.string.gpu_drivers_using_the_phone_s_own_driver), if (inPlayers != null) StatusTone.GOOD else StatusTone.NEUTRAL)
+                CardBody(if (inPlayers == null) stringResource(R.string.gpu_drivers_choose_use_in_retroforge_on_a) else stringResource(R.string.gpu_drivers_if_games_get_worse_go_back))
                 if (inPlayers != null) FocusChip(stringResource(R.string.gpu_drivers_use_the_phone_s_own_driver), onClick = {
                     stopUsingInPlayers(context)
                     inPlayers = null
@@ -97,17 +98,17 @@ fun GpuDriversScreen() {
         }
         if (canUse || showAnyway) {
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
-                listStatus = "Looking for the latest Turnip builds…"
+                listStatus = str(R.string.gpu_drivers_looking_for_the_latest_turnip_builds)
                 scope.launch {
                     val found = withContext(Dispatchers.IO) { GpuDrivers.fetch(agent) }
                     files = found
-                    listStatus = if (found.isEmpty()) "Couldn't get the list. Check the internet connection and try again." else null
+                    listStatus = if (found.isEmpty()) str(R.string.gpu_drivers_couldn_t_get_the_list_check) else null
                 }
             }) {
-                CardTitle(if (files == null) "Find Turnip drivers" else "Look again")
+                CardTitle(if (files == null) stringResource(R.string.gpu_drivers_find_turnip_drivers) else stringResource(R.string.player_look_again))
                 CardBody(
-                    "Turnip is the open-source Vulkan driver for Adreno GPUs from the Mesa project (MIT licence), built by " +
-                        GpuDrivers.SOURCES.joinToString(" and ") { it.name } + ". RetroForge lists their GitHub releases and downloads only what you pick.",
+                    str(R.string.gpu_drivers_turnip_is_the_open_source_vulkan) +
+                        GpuDrivers.SOURCES.joinToString(" and ") { it.name } + str(R.string.gpu_drivers_retroforge_lists_their_github_releases_and),
                 )
                 listStatus?.let { CardBody(it) }
             }
@@ -131,13 +132,13 @@ fun GpuDriversScreen() {
                         scope.launch {
                             progress[file.url] = withContext(Dispatchers.IO) {
                                 runCatching { save(context, file, agent) { p -> progress[file.url] = "$p%" } }
-                                    .fold({ "Saved to $it" }, { "Didn't download: ${it.message}" })
+                                    .fold({ str(R.string.gpu_drivers_saved_to, it) }, { str(R.string.ports_didn_t_download, it.message) })
                             }
                         }
                     }) {
                         CardTitle(file.fileName)
-                        CardBody("${file.release} · ${file.source} · ${file.published} · ${"%.1f".format(file.size / 1_000_000.0)} MB")
-                        CardBody(progress[file.url]?.let { if (it.endsWith("%")) "Downloading… $it" else it } ?: "Select to download.")
+                        CardBody(stringResource(R.string.gpu_drivers_mb, file.release, file.source, file.published, "%.1f".format(file.size / 1_000_000.0)))
+                        CardBody(progress[file.url]?.let { if (it.endsWith("%")) stringResource(R.string.gpu_drivers_downloading, it) else it } ?: stringResource(R.string.gpu_drivers_select_to_download))
                     }
                     if (canUse) FocusChip(stringResource(R.string.gpu_drivers_use_in_retroforge, file.release), onClick = {
                         if (progress[file.url]?.endsWith("%") == true) return@FocusChip
@@ -145,7 +146,7 @@ fun GpuDriversScreen() {
                         scope.launch {
                             progress[file.url] = withContext(Dispatchers.IO) {
                                 runCatching { useInPlayers(context, file, agent) { p -> progress[file.url] = "$p%" } }
-                                    .fold({ "RetroForge's players now use it" }, { "Couldn't use it: ${it.message}" })
+                                    .fold({ str(R.string.gpu_drivers_retroforge_s_players_now_use_it) }, { str(R.string.gpu_drivers_couldn_t_use_it, it.message) })
                             }
                             inPlayers = com.retroforge.player.GpuDriver.current(context)?.second
                         }
@@ -174,11 +175,11 @@ private fun useInPlayers(context: Context, file: DriverFile, agent: String, onPr
                 archive.getInputStream(entry).use { input -> out.outputStream().use { input.copyTo(it) } }
             }
         }
-        val meta = File(fresh, "meta.json").takeIf { it.isFile }?.readText() ?: error("it has no meta.json (not an adrenotools driver)")
+        val meta = File(fresh, "meta.json").takeIf { it.isFile }?.readText() ?: error(str(R.string.gpu_drivers_it_has_no_meta_json_not))
         val library = Regex("\"libraryName\"\\s*:\\s*\"([^\"]+)\"").find(meta)?.groupValues?.get(1) ?: error("its meta.json names no library")
-        if (!File(fresh, library).isFile) error("$library is missing from it")
+        if (!File(fresh, library).isFile) error(str(R.string.gpu_drivers_is_missing_from_it, library))
         target.deleteRecursively()
-        if (!fresh.renameTo(target)) error("couldn't put it in place")
+        if (!fresh.renameTo(target)) error(str(R.string.gpu_drivers_couldn_t_put_it_in_place))
     } finally {
         fresh.deleteRecursively()
         zip.delete()
@@ -206,8 +207,8 @@ private fun save(context: Context, file: DriverFile, agent: String, onProgress: 
             put(MediaStore.Downloads.RELATIVE_PATH, "${Environment.DIRECTORY_DOWNLOADS}/$FOLDER")
         }
         val resolver = context.contentResolver
-        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values) ?: error("Android refused to create the file")
-        resolver.openOutputStream(uri)?.use { out -> temp.inputStream().use { it.copyTo(out) } } ?: error("couldn't write the file")
+        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values) ?: error(str(R.string.ports_android_refused_to_create_the_file))
+        resolver.openOutputStream(uri)?.use { out -> temp.inputStream().use { it.copyTo(out) } } ?: error(str(R.string.ports_couldn_t_write_the_file))
         return "Download/$FOLDER"
     } finally {
         temp.delete()

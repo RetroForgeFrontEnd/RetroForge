@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -76,9 +77,9 @@ fun SteamSignInSection() {
         override suspend fun code(email: String?, previousWasWrong: Boolean): String {
             val answer = CompletableDeferred<String>()
             message = when {
-                previousWasWrong -> "That code wasn't right. Try the newest one."
-                email != null -> "Steam emailed a code to $email."
-                else -> "Type the code from the Steam app (Steam Guard)."
+                previousWasWrong -> str(R.string.steam_sign_in_that_code_wasn_t_right_try)
+                email != null -> str(R.string.steam_sign_in_steam_emailed_a_code_to, email)
+                else -> str(R.string.steam_sign_in_type_the_code_from_the_steam)
             }
             code = ""
             codeFor = email to answer
@@ -86,7 +87,7 @@ fun SteamSignInSection() {
         }
 
         override fun approveInSteamApp() {
-            message = "Open the Steam app and approve the sign-in (it may show as a notification)."
+            message = str(R.string.steam_sign_in_open_the_steam_app_and_approve)
         }
 
         override fun qrLink(url: String) {
@@ -96,14 +97,14 @@ fun SteamSignInSection() {
 
     fun run(block: suspend () -> String) {
         job?.cancel()
-        message = "Connecting to Steam…"
+        message = str(R.string.steam_sign_in_connecting_to_steam)
         job = SignIn.scope.launch {
             runCatching { block() }
                 .onSuccess { signedInAs = it; message = null; password = "" }
                 .onFailure {
                     android.util.Log.w("PcSteam", "Sign-in failed", it)
                     // A real cancel (the Cancel button) clears the job first; any other stop is an error to show.
-                    if (job != null) message = "Couldn't sign in: ${it.message ?: it.javaClass.simpleName}"
+                    if (job != null) message = str(R.string.steam_sign_in_couldn_t_sign_in, it.message ?: it.javaClass.simpleName)
                 }
             qr = null
             codeFor = null
@@ -112,11 +113,9 @@ fun SteamSignInSection() {
     }
 
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Steam method 1: RetroForge Steam")
+        CardTitle(stringResource(R.string.steam_sign_in_steam_method_1_retroforge_steam))
         CardBody(
-            "For most Steam games. RetroForge signs in to Steam itself and starts the game straight away, with a small Steam " +
-                "stand-in beside it: quick, light, and it does your library, downloads and Steam Cloud saves. Games that " +
-                "insist on Valve's own Steam use Steam method 2 below.",
+            str(R.string.steam_sign_in_for_most_steam_games_retroforge_signs),
         )
         if (signedInAs != null) {
             CardBody(stringResource(R.string.steam_sign_in_signed_in_as_steam_games_you, signedInAs.toString()))
@@ -135,7 +134,7 @@ fun SteamSignInSection() {
                     account.signInWithQr(object : SteamAccount.SignInPrompts by prompts {
                         override fun qrLink(url: String) {
                             prompts.qrLink(url)
-                            message = "Scan this with the Steam app on another device (Steam Guard → Scan a QR code)."
+                            message = str(R.string.steam_sign_in_scan_this_with_the_steam_app)
                         }
 
                         // A QR sign-in is approved by scanning; keep the scan instructions on screen.
@@ -163,7 +162,7 @@ fun SteamSignInSection() {
         }
         if (job != null) LinearProgressIndicator(Modifier.fillMaxWidth())
         message?.let { CardBody(it) }
-        qr?.let { Image(it.asImageBitmap(), contentDescription = "Steam sign-in QR code", modifier = Modifier.size(220.dp)) }
+        qr?.let { Image(it.asImageBitmap(), contentDescription = str(R.string.steam_sign_in_steam_sign_in_qr_code), modifier = Modifier.size(220.dp)) }
     }
 }
 

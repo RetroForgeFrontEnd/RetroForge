@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.patcher
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -139,9 +141,9 @@ class PatcherViewModel(private val resolver: ContentResolver, private val onSave
                 }
                 is ChainOutcome.Failure -> {
                     val failed = patches[outcome.step]
-                    val prefix = if (patches.size > 1) "Patch ${outcome.step + 1} (${failed.file.name}): " else ""
+                    val prefix = if (patches.size > 1) str(R.string.patcher_patch, outcome.step + 1, failed.file.name) else ""
                     val hint = if (outcome.step > 0 && outcome.error is PatchError.WrongSourceRom) {
-                        " It may need a different order or a different patch before it; check its readme."
+                        str(R.string.patcher_it_may_need_a_different_order)
                     } else ""
                     showError(prefix + describe(outcome.error) + hint)
                 }
@@ -152,27 +154,27 @@ class PatcherViewModel(private val resolver: ContentResolver, private val onSave
     fun onOutputChosen(uri: Uri?) {
         val pending = _state.value.pending ?: return
         if (uri == null) {
-            _state.update { it.copy(message = "Not saved. Select \"Create patched copy\" again to choose a location.", messageIsError = false) }
+            _state.update { it.copy(message = str(R.string.patcher_not_saved_select_create_patched_copy), messageIsError = false) }
             return
         }
         viewModelScope.launch {
             _state.update { it.copy(busy = true) }
             val written = withContext(Dispatchers.IO) {
-                runCatching { resolver.openOutputStream(uri, "wt")?.use { it.write(pending.bytes) } ?: error("could not open the file for writing") }
+                runCatching { resolver.openOutputStream(uri, "wt")?.use { it.write(pending.bytes) } ?: error(str(R.string.patcher_could_not_open_the_file_for)) }
             }
             written.fold(
                 onSuccess = {
                     val extra = buildList {
-                        if (PatchNote.COPIER_HEADER_REMOVED in pending.notes) add("Your ROM's 512-byte copier header was removed so the patch could apply.")
-                        if (PatchNote.SOURCE_NOT_VERIFIABLE in pending.notes) add("IPS patches can't confirm the base ROM; if the game misbehaves, check the readme for the exact ROM and patch order.")
+                        if (PatchNote.COPIER_HEADER_REMOVED in pending.notes) add(str(R.string.patcher_your_rom_s_512_byte_copier))
+                        if (PatchNote.SOURCE_NOT_VERIFIABLE in pending.notes) add(str(R.string.patcher_ips_patches_can_t_confirm_the))
                     }
                     _state.update {
                         it.copy(busy = false, pending = null, messageIsError = false,
-                            message = (listOf("Saved ${displayName(uri) ?: pending.suggestedName}. If it's in one of your game folders it appears in the library in a moment.") + extra).joinToString(" "))
+                            message = (listOf(str(R.string.patcher_saved_if_it_s_in_one, displayName(uri) ?: pending.suggestedName)) + extra).joinToString(" "))
                     }
                     onSaved()
                 },
-                onFailure = { showError("Couldn't save the patched ROM: ${it.message}") },
+                onFailure = { showError(str(R.string.patcher_couldn_t_save_the_patched_rom, it.message)) },
             )
         }
     }
@@ -185,7 +187,7 @@ class PatcherViewModel(private val resolver: ContentResolver, private val onSave
                 runCatching { resolver.openInputStream(uri)?.use { ArchiveInput.readLimited(it, name) } }.getOrNull()
             }
             if (bytes == null) {
-                showError("Couldn't read $name. It may be too large (over 256 MB) or no longer accessible.")
+                showError(str(R.string.patcher_couldn_t_read_it_may_be, name))
                 return@launch
             }
             withContext(Dispatchers.Default) { onLoaded(name, bytes) }
@@ -207,21 +209,20 @@ class PatcherViewModel(private val resolver: ContentResolver, private val onSave
         }
 
         fun describe(error: PatchError?): String = when (error) {
-            PatchError.UnknownFormat, null -> "This isn't an IPS, BPS or UPS patch."
-            is PatchError.Malformed -> "The patch file is malformed (${error.detail})."
-            PatchError.PatchDamaged -> "The patch file is damaged or incomplete (its checksum doesn't match). Try downloading it again."
-            is PatchError.WrongSourceRom -> "This patch was made for a different ROM (expected CRC32 ${hex(error.expectedCrc32)}, " +
-                "${error.expectedSize} bytes; got ${hex(error.actualCrc32)})."
-            PatchError.OutputMismatch -> "The patch applied but the result failed its checksum, so it wasn't saved."
-            is PatchError.TooLarge -> "The result would be too large (${error.bytes} bytes)."
+            PatchError.UnknownFormat, null -> str(R.string.patcher_this_isn_t_an_ips_bps)
+            is PatchError.Malformed -> str(R.string.patcher_the_patch_file_is_malformed, error.detail)
+            PatchError.PatchDamaged -> str(R.string.patcher_the_patch_file_is_damaged_or)
+            is PatchError.WrongSourceRom -> str(R.string.patcher_this_patch_was_made_for_a, hex(error.expectedCrc32), error.expectedSize, hex(error.actualCrc32))
+            PatchError.OutputMismatch -> str(R.string.patcher_the_patch_applied_but_the_result)
+            is PatchError.TooLarge -> str(R.string.patcher_the_result_would_be_too_large, error.bytes)
         }
 
         fun describe(result: ArchiveResult, what: String): String = when (result) {
             is ArchiveResult.Ok -> ""
-            is ArchiveResult.NothingSuitable -> "${result.archiveName} doesn't contain a $what file."
-            is ArchiveResult.Ambiguous -> "${result.archiveName} contains several possible ${what}s (${result.candidates.joinToString()}). Extract the one you want and pick it directly."
-            is ArchiveResult.Unreadable -> "Couldn't open ${result.archiveName}: ${result.detail}"
-            is ArchiveResult.TooLarge -> "${result.name} is too large to open (over 256 MB)."
+            is ArchiveResult.NothingSuitable -> str(R.string.patcher_doesn_t_contain_a_file, result.archiveName, what)
+            is ArchiveResult.Ambiguous -> str(R.string.patcher_contains_several_possible_s_extract_the, result.archiveName, what, result.candidates.joinToString())
+            is ArchiveResult.Unreadable -> str(R.string.network_drives_provider_couldn_t_open, result.archiveName, result.detail)
+            is ArchiveResult.TooLarge -> str(R.string.patcher_is_too_large_to_open_over, result.name)
         }
 
         fun hex(crc: Long) = "%08X".format(crc)

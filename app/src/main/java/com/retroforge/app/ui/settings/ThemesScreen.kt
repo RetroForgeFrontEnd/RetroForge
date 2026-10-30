@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -92,11 +93,11 @@ class ThemesViewModel(private val settings: SettingsRepository, private val stor
             message.value = try {
                 val text = withContext(Dispatchers.IO) {
                     resolver.openInputStream(uri)?.use { it.readBytes() }?.takeIf { it.size <= 64 * 1024 }?.toString(Charsets.UTF_8)
-                } ?: throw ThemeFormatException("couldn't read the file, or it's larger than 64 KB")
+                } ?: throw ThemeFormatException(str(R.string.themes_couldn_t_read_the_file_or))
                 val saved = store.importFile(text)
-                "Added \"${saved.name}\"." to false
+                str(R.string.hacks_added_2, saved.name) to false
             } catch (e: ThemeFormatException) {
-                "That isn't a RetroForge theme: ${e.message}" to true
+                str(R.string.themes_that_isn_t_a_retroforge_theme, e.message) to true
             }
         }
     }
@@ -107,7 +108,7 @@ class ThemesViewModel(private val settings: SettingsRepository, private val stor
             working.value = true
             pending.value = withContext(Dispatchers.IO) {
                 val root = SafScanNode.root(resolver, tree, "theme")
-                val name = runCatching { tree.lastPathSegment?.substringAfterLast('/')?.substringAfterLast(':') }.getOrNull()?.ifBlank { null } ?: "Imported theme"
+                val name = runCatching { tree.lastPathSegment?.substringAfterLast('/')?.substringAfterLast(':') }.getOrNull()?.ifBlank { null } ?: str(R.string.themes_imported_theme)
                 val xmls = mutableListOf<String>()
                 var licence: String? = null
                 fun walk(node: ScanNode, depth: Int) {
@@ -135,7 +136,7 @@ class ThemesViewModel(private val settings: SettingsRepository, private val stor
         val saved = store.save(p)
         pending.value = null
         use(saved)
-        message.value = "Added and switched to \"${saved.name}\"." to false
+        message.value = str(R.string.themes_added_and_switched_to, saved.name) to false
     }
 
     fun cancelPending() { pending.value = null }
@@ -162,7 +163,7 @@ fun ThemesScreen(viewModel: ThemesViewModel) {
 
     ScreenFrame(title = stringResource(R.string.settings_themes), subtitle = stringResource(R.string.themes_each_preview_below_is_drawn_in)) {
         message?.let { (text, isError) ->
-            StatusPill(if (isError) "Problem" else "Done", if (isError) StatusTone.BAD else StatusTone.GOOD)
+            StatusPill(if (isError) str(R.string.play_problem) else str(R.string.setup_done), if (isError) StatusTone.BAD else StatusTone.GOOD)
             CardBody(text)
         }
 
@@ -226,13 +227,13 @@ private fun PendingCard(p: PendingImport, dark: Boolean, viewModel: ThemesViewMo
         } else {
             CardBody("Imported: " + p.report.used.joinToString { (role, from) -> "$role ← $from" })
         }
-        CardBody("Not imported: " + p.report.notImported.joinToString())
-        CardBody("Licence: " + (p.report.license ?: "not stated; ask the author before sharing it"))
+        CardBody(stringResource(R.string.themes_not_imported) + p.report.notImported.joinToString())
+        CardBody("Licence: " + (p.report.license ?: stringResource(R.string.themes_not_stated_ask_the_author_before)))
     }
     p.theme?.let { ThemePreview(it, dark) }
     ChipRow {
         if (p.theme != null) FocusChip(stringResource(R.string.themes_save_and_use), onClick = viewModel::savePending)
-        FocusChip(if (p.theme != null) "Cancel" else "OK", onClick = viewModel::cancelPending)
+        FocusChip(if (p.theme != null) stringResource(R.string.network_drives_cancel) else "OK", onClick = viewModel::cancelPending)
     }
 }
 

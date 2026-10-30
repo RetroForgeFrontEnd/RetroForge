@@ -1,5 +1,7 @@
 package com.retroforge.app.player
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import com.retroforge.artwork.LibretroThumbnails
 import com.retroforge.artwork.ThumbnailType
 import org.json.JSONArray
@@ -75,7 +77,7 @@ class CheatStore(private val file: File) {
             setRequestProperty("User-Agent", userAgent)
         }
         try {
-            if (connection.responseCode != 200) throw IOException("the cheat database answered ${connection.responseCode}")
+            if (connection.responseCode != 200) throw IOException(str(R.string.cheats_the_cheat_database_answered, connection.responseCode))
             return connection.inputStream.use { it.readBytes().decodeToString() }
         } finally {
             connection.disconnect()
@@ -96,7 +98,7 @@ class CheatStore(private val file: File) {
             return (0 until count).mapNotNull { i ->
                 val code = values["cheat${i}_code"]?.trim().orEmpty()
                 if (code.isEmpty()) return@mapNotNull null
-                Cheat(values["cheat${i}_desc"]?.ifBlank { null } ?: "Cheat ${i + 1}", code)
+                Cheat(values["cheat${i}_desc"]?.ifBlank { null } ?: str(R.string.cheats_cheat, i + 1), code)
             }
         }
     }

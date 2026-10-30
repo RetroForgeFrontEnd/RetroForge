@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.manager
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -26,7 +28,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-enum class ManagerTab(val label: String) { DUPLICATES("Duplicates"), COMPRESS("Compress"), MULTI_DISC("Multi-disc"), SORT("Sort"), HISTORY("History") }
+enum class ManagerTab(private val labelId: Int) {
+    DUPLICATES(R.string.rom_manager_duplicates), COMPRESS(R.string.rom_manager_compress_3), MULTI_DISC(R.string.rom_manager_multi_disc), SORT(R.string.rom_manager_sort), HISTORY(R.string.rom_manager_history);
+
+    val label: String get() = str(labelId)
+}
 
 sealed interface Loadable<out T> {
     data object Idle : Loadable<Nothing>
@@ -85,7 +91,7 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
             multiDisc.value = try {
                 Loadable.Ready(manager.findMultiDisc(root) { done, total -> multiDisc.value = Loadable.Loading(done, total) })
             } catch (e: Exception) {
-                Loadable.Failed(e.message ?: "Couldn't look for multi-disc games")
+                Loadable.Failed(e.message ?: str(R.string.rom_manager_couldn_t_look_for_multi_disc))
             }
         }
     }
@@ -96,7 +102,7 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
         val root = root() ?: return
         viewModelScope.launch {
             loose.value = Loadable.Loading(0, 0)
-            loose.value = try { Loadable.Ready(manager.findLoose(root)) } catch (e: Exception) { Loadable.Failed(e.message ?: "Couldn't look") }
+            loose.value = try { Loadable.Ready(manager.findLoose(root)) } catch (e: Exception) { Loadable.Failed(e.message ?: str(R.string.rom_manager_couldn_t_look)) }
         }
     }
 
@@ -156,7 +162,7 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
                 selectedSets.value = report.sets.indices.filter { report.sets[it].sameness == Sameness.SAME_DATA }.toSet()
                 Loadable.Ready(report)
             } catch (e: Exception) {
-                Loadable.Failed(e.message ?: "Couldn't check for duplicates")
+                Loadable.Failed(e.message ?: str(R.string.rom_manager_couldn_t_check_for_duplicates))
             }
         }
     }
@@ -176,7 +182,7 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
                 selectedSystems.value = emptySet()
                 Loadable.Ready(report)
             } catch (e: Exception) {
-                Loadable.Failed(e.message ?: "Couldn't look for games to compress")
+                Loadable.Failed(e.message ?: str(R.string.rom_manager_couldn_t_look_for_games_to))
             }
         }
     }

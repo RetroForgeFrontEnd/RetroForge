@@ -34,6 +34,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core-ui"))
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.androidx.collection)
     implementation(libs.androidx.annotation)

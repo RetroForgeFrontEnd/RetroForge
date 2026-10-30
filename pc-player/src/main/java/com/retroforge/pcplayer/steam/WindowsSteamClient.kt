@@ -1,5 +1,7 @@
 package com.retroforge.pcplayer.steam
 
+import com.retroforge.pcplayer.R
+import com.retroforge.core.ui.str
 import android.content.Context
 import com.retroforge.pcplayer.PcRuntime
 import kotlinx.coroutines.Dispatchers
@@ -89,10 +91,10 @@ class WindowsSteamClient(context: Context) {
      * checksum.
      */
     suspend fun install(onProgress: (Float, String) -> Unit) = withContext(Dispatchers.IO) {
-        onProgress(0f, "Asking Valve for the Steam client's files")
+        onProgress(0f, str(R.string.windows_steam_client_asking_valve_for_the_steam_client))
         val manifest = get(URL(HOST + MANIFEST)).toString(Charsets.UTF_8)
         val packages = packages(manifest)
-        if (packages.isEmpty()) throw IOException("Valve's list of Steam client files was empty")
+        if (packages.isEmpty()) throw IOException(str(R.string.windows_steam_client_valve_s_list_of_steam_client))
         val total = packages.sumOf { it.size }.coerceAtLeast(1)
         val packageDir = File(dir, "package").apply { mkdirs() }
         var done = 0L
@@ -100,24 +102,24 @@ class WindowsSteamClient(context: Context) {
             coroutineContext.ensureActive()
             val zip = File(packageDir, pkg.file)
             if (!(zip.length() == pkg.size && sha256(zip) == pkg.sha256)) {
-                download(URL(HOST + pkg.file), zip) { read -> onProgress(0.9f * (done + read) / total, "Downloading Steam") }
+                download(URL(HOST + pkg.file), zip) { read -> onProgress(0.9f * (done + read) / total, str(R.string.windows_steam_client_downloading_steam)) }
                 if (sha256(zip) != pkg.sha256) {
                     zip.delete()
-                    throw IOException("${pkg.file} didn't match Valve's checksum")
+                    throw IOException(str(R.string.windows_steam_client_didn_t_match_valve_s_checksum, pkg.file))
                 }
             }
             done += pkg.size
-            onProgress(0.9f * done / total, "Downloading Steam")
+            onProgress(0.9f * done / total, str(R.string.windows_steam_client_downloading_steam))
         }
         packages.forEachIndexed { i, pkg ->
-            onProgress(0.9f + 0.1f * i / packages.size, "Unpacking Steam")
+            onProgress(0.9f + 0.1f * i / packages.size, str(R.string.windows_steam_client_unpacking_steam))
             val zip = File(packageDir, pkg.file)
             unzip(zip, dir)
             zip.delete() // unpacked; it would only take space (an update downloads what changed again)
         }
         installedManifest.writeText(manifest)
         raiseWebHelperStack(dir)
-        onProgress(1f, "Steam client ready")
+        onProgress(1f, str(R.string.windows_steam_client_steam_client_ready))
     }
 
     companion object {
@@ -175,7 +177,7 @@ class WindowsSteamClient(context: Context) {
         private fun connect(url: URL): HttpURLConnection = (url.openConnection() as HttpURLConnection).apply {
             connectTimeout = 20_000
             readTimeout = 60_000
-            if (responseCode != 200) throw IOException("Valve's server answered $responseCode for ${url.path}")
+            if (responseCode != 200) throw IOException(str(R.string.windows_steam_client_valve_s_server_answered_for, responseCode, url.path))
         }
 
         private fun get(url: URL): ByteArray = connect(url).run { inputStream.use { it.readBytes() } }
@@ -195,7 +197,7 @@ class WindowsSteamClient(context: Context) {
                     }
                 }
             }
-            if (!part.renameTo(to)) throw IOException("Couldn't save ${to.name}")
+            if (!part.renameTo(to)) throw IOException(str(R.string.pc_runtime_couldn_t_save, to.name))
         }
 
         private fun sha256(file: File): String {
