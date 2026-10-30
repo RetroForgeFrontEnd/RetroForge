@@ -75,7 +75,22 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             start()
         }
         mapDrives()
+        clearStaleSync()
         launchWine()
+    }
+
+    /**
+     * Wine's userspace sync state (usr/tmp/ntsync_userspace.*.shm) outlives a session Android killed outright; the next
+     * Wine finds it and waits forever at start. With no wineserver running nothing is using it, so it goes.
+     */
+    private fun clearStaleSync() {
+        val wineRunning = File("/proc").listFiles().orEmpty().any { dir ->
+            dir.name.all(Char::isDigit) &&
+                runCatching { File(dir, "cmdline").readText() }.getOrDefault("").contains("wineserver")
+        }
+        if (wineRunning) return
+        File(runtime.imageFs, "usr/tmp").listFiles { f -> f.name.startsWith("ntsync_userspace") }.orEmpty()
+            .forEach { it.delete() }
     }
 
     private fun mapDrives() {
