@@ -81,16 +81,21 @@ Windows PC (Intel GPU, QuickSync H.264/HEVC encoding), streamed to the RetroForg
 - The emulator's own decoders failed on both HEVC and H.264 (MediaCodec error 14); after the `c2.goldfish` change
   above, the default codec setting picks the software H.264 decoder and streams.
 
+**On the Galaxy S22 (Exynos), same PC, run by the PC-player session:** "Look for PCs" found the PC by mDNS over real
+Wi-Fi and added it; pairing with a new PIN gave "Ready"; Desktop streamed full screen within about a second at
+1280×720×60 using the hardware HEVC decoder (`c2.exynos.hevc.decoder`) with no decoder errors; audio track opened and
+Android reported active playback (phone was on silent, so not heard); back returned to the PC tab.
+
 **Against a fake host** (before Sunshine was installed): unreachable address shows "Nothing answered at …"; a
 refused pairing is reported; a failed connection shows Moonlight's "Connection Error" and OK/back return to the PC
 tab; Stream settings opens.
 
-Not tested yet: a real phone (hardware HEVC/AV1 decoding, 1080p+), controllers (Bluetooth/USB), sound actually heard,
-mDNS discovery on a real Wi-Fi network (the emulator's NAT hides it), GeForce Experience hosts.
+Not tested yet: 1080p and above, touch and controllers (Bluetooth/USB) on a phone, sound actually heard,
+GeForce Experience hosts.
 
 ## What's next
 
-1. Test on the S22 (claim it first): pairing, 1080p60 HEVC, audio, a Bluetooth/USB controller, "Look for PCs".
+1. More S22 testing (claim it first): 1080p60, sound by ear, touch, a Bluetooth/USB controller.
 2. Box art: `PcStreaming.boxArt()` already fetches each app's image from the PC; show covers instead of chips.
 3. Wake-on-LAN for sleeping PCs (Moonlight's `nvstream/wol` code is included; needs the MAC from serverinfo saved).
 4. Streaming over the internet (Sunshine's external address / IPv6), and a "network test" button.
