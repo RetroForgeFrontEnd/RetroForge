@@ -95,6 +95,8 @@ class PcPlayerActivity : ComponentActivity() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private lateinit var runtime: PcRuntime
     private lateinit var frame: FrameLayout
+    /** Where the phone's keyboard types (see showKeyboard). */
+    private lateinit var keyInput: KeyInputView
     private lateinit var title: String
     private var session: PcSession? = null
     private var view: XServerView? = null
@@ -126,6 +128,8 @@ class PcPlayerActivity : ComponentActivity() {
         runtime = PcRuntime(this)
         frame = FrameLayout(this).apply { setBackgroundColor(android.graphics.Color.BLACK) }
         frame.addView(ComposeView(this).apply { setContent { Overlay() } }, matchParent())
+        keyInput = KeyInputView(this) { event -> session?.xServer?.keyboard?.onKeyEvent(event) }
+        frame.addView(keyInput, FrameLayout.LayoutParams(1, 1))
         setContentView(frame)
         hideSystemBars()
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -368,9 +372,8 @@ class PcPlayerActivity : ComponentActivity() {
 
     private fun showKeyboard() {
         closeMenu()
-        view?.requestFocus()
-        @Suppress("DEPRECATION")
-        (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+        keyInput.requestFocus()
+        (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).showSoftInput(keyInput, InputMethodManager.SHOW_FORCED)
     }
 
     @Composable
@@ -636,17 +639,27 @@ class PcPlayerActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        view?.onResume()
         getSystemService(android.hardware.input.InputManager::class.java).registerInputDeviceListener(controllerWatcher, null)
         applyControls()
     }
 
     override fun onPause() {
-        // Leaving the app (home, notification) opens the menu, so the game waits paused.
-        if (!quitting) openMenu()
         getSystemService(android.hardware.input.InputManager::class.java).unregisterInputDeviceListener(controllerWatcher)
-        view?.onPause()
         super.onPause()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        view?.onResume()
+    }
+
+    override fun onStop() {
+        // Leaving the game (home, another app) opens the menu, so the game waits paused. Only once it's out of sight:
+        // with another app in a pop-up or split screen beside it (Steam's app, to scan a sign-in QR code, say) it
+        // keeps running and drawing.
+        if (!quitting) openMenu()
+        view?.onPause()
+        super.onStop()
     }
 
     override fun onDestroy() {
