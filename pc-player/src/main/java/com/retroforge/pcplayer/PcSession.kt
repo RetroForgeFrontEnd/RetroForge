@@ -146,7 +146,9 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             // DXVK's Direct3D DLLs and Mesa's OpenGL (installed in the prefix) before Wine's own.
             // Steam's own client loads Valve's steamclient DLLs: the prefix's built-in ones only forward to a Linux
             // Steam, and with none here Steam stops at once.
-            "WINEDLLOVERRIDES" to "winemenubuilder.exe=d;winepulse.drv=d;d3d8,d3d9,d3d10core,d3d11,dxgi,opengl32=n,b" +
+            // (Wine's own Direct3D instead where the GPU's Vulkan can't run DXVK; see dxvkUnsupported.)
+            "WINEDLLOVERRIDES" to "winemenubuilder.exe=d;winepulse.drv=d;" +
+                (if (dxvkUnsupported(runtime.root)) "d3d8,d3d9,d3d10core,d3d11,dxgi=b;opengl32=n,b" else "d3d8,d3d9,d3d10core,d3d11,dxgi,opengl32=n,b") +
                 if (steamClient) ";steamclient,steamclient64=n" else "",
             // Mesa's OpenGL draws through Vulkan (zink); GameNative's settings for the wrapper driver.
             "GALLIUM_DRIVER" to "zink",
@@ -375,6 +377,17 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
          * starts quietly, without its library window: the store and library pages run a phone out of memory under
          * emulation, and RetroForge shows the library itself.
          */
+        /**
+         * Whether this device's Vulkan driver can't run DXVK (it needs Vulkan 1.3 and features older Adreno drivers
+         * lack, even when Android lists 1.3), found the first time a game tried: then games use Wine's own Direct3D.
+         */
+        fun dxvkUnsupported(root: File) = File(root, "no-dxvk").isFile
+
+        fun markDxvkUnsupported(root: File) = runCatching { File(root, "no-dxvk").writeText("DXVK found no usable Vulkan GPU\n") }
+
+        /** DXVK's message when the Vulkan driver gives it no GPU it can use. */
+        fun dxvkFoundNoGpu(log: File) = runCatching { log.readText().contains("DXVK: No adapters found") }.getOrDefault(false)
+
         /** Steam's own client: steam.exe beside the package folder its files came from. */
         fun isSteamClient(exe: File) = exe.name.equals("steam.exe", true) && File(exe.parentFile, "package").isDirectory
 

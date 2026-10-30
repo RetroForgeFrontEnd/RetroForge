@@ -240,9 +240,12 @@ class PcControlsView(context: Context, private val session: PcSession) : View(co
         }
     }
 
+    /** Keys a game wants instead of the usual ones (see [KEY_LAYOUTS]), set from the game's .exe name. */
+    var keyLayout: Map<Button, XKeycode> = emptyMap()
+
     private fun asKeyboard(action: Action): Action = when (action) {
         is Action.Trigger -> Action.Mouse(if (action.axis == Axis.RIGHT_TRIGGER) Pointer.Button.BUTTON_LEFT else Pointer.Button.BUTTON_RIGHT)
-        is Action.Pad -> when (action.button) {
+        is Action.Pad -> keyLayout[action.button]?.let { Action.Key(it) } ?: when (action.button) {
             Button.A -> Action.Key(XKeycode.KEY_SPACE)
             Button.B -> Action.Key(XKeycode.KEY_CTRL_L)
             Button.X -> Action.Key(XKeycode.KEY_R)
@@ -330,3 +333,12 @@ class PcControlsView(context: Context, private val session: PcSession) : View(co
         const val MOUSE_SPEED = 14f
     }
 }
+
+/**
+ * Keyboard-mode keys for games whose own keys differ from the usual ones, by the game's .exe name (lower case).
+ * Toby Fox's games use Z to confirm, X to cancel and C for the menu.
+ */
+internal val KEY_LAYOUTS: Map<String, Map<VirtualPad.Button, XKeycode>> = mapOf(
+    "undertale.exe" to mapOf(VirtualPad.Button.A to XKeycode.KEY_Z, VirtualPad.Button.B to XKeycode.KEY_X, VirtualPad.Button.Y to XKeycode.KEY_C),
+    "deltarune.exe" to mapOf(VirtualPad.Button.A to XKeycode.KEY_Z, VirtualPad.Button.B to XKeycode.KEY_X, VirtualPad.Button.Y to XKeycode.KEY_C),
+)

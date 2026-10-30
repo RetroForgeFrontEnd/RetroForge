@@ -239,6 +239,7 @@ class PcPlayerActivity : ComponentActivity() {
         xView.isFocusableInTouchMode = true
         xView.setOnTouchListener(TouchMouse(newSession, xView))
         val pad = PcControlsView(this, newSession)
+        pad.keyLayout = KEY_LAYOUTS[newSession.program.name.lowercase()].orEmpty()
         // Under the menu and loading screen (the Compose layer stays on top), over the game.
         frame.addView(xView, 0, matchParent())
         frame.addView(pad, 1, matchParent())
@@ -534,6 +535,13 @@ class PcPlayerActivity : ComponentActivity() {
     private fun onWineExit(code: Int, ended: PcSession) {
         // (A game restarted for Play together ends without it meaning anything.)
         if (quitting || isFinishing || ended !== session) return
+        // This GPU's Vulkan driver can't run DXVK (older Adrenos say so and the game quits): from now on Wine's own
+        // Direct3D (through OpenGL) on this device, and the game starts again.
+        if (!PcSession.dxvkUnsupported(runtime.root) && PcSession.dxvkFoundNoGpu(ended.log)) {
+            PcSession.markDxvkUnsupported(runtime.root)
+            restartGame(ended.exe, lobbies = false)
+            return
+        }
         recordRun()
         // The game quit by itself: back to RetroForge (saving to Steam Cloud first). Anything else shows Wine's last
         // lines, which say what went wrong.
