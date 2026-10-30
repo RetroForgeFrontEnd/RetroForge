@@ -2,8 +2,10 @@ package com.retroforge.pcplayer
 
 import android.content.Context
 import android.os.Build
+import android.provider.Settings
 import android.system.Os
 import android.util.Log
+import com.retroforge.pcplayer.net.PcLan
 import com.winlator.cmod.alsaserver.ALSAClientConnectionHandler
 import com.winlator.cmod.alsaserver.ALSARequestHandler
 import com.winlator.cmod.sysvshm.SysVSHMConnectionHandler
@@ -123,6 +125,10 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             "LD_PRELOAD" to "$imageFs/usr/lib/libandroid-sysvshm.so:${preloadLibrary("libpcexec.so").path}:${preloadLibrary("libpcpad.so").path}",
             // The on-screen gamepad's state, read by libpcpad.so in Wine's controller driver.
             "PCPAD_FILE" to pad.file.path,
+            // Play together's virtual LAN (read by libpcexec.so while it exists), and a seed for the made-up MAC
+            // addresses it gives adapters whose real one Android hides, different on each device.
+            "PCNET_FILE" to PcLan.configFile(runtime.root).path,
+            "PCNET_MACSEED" to (Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: Build.MODEL),
             "ANDROID_SYSVSHM_SERVER" to imageFs + UnixSocketConfig.SYSVSHM_SERVER_PATH,
             "ANDROID_ALSA_SERVER" to imageFs + UnixSocketConfig.ALSA_SERVER_PATH,
             "ALSA_CONFIG_PATH" to "$imageFs/usr/share/alsa/alsa.conf:$imageFs/usr/etc/alsa/conf.d/android_aserver.conf",

@@ -1,4 +1,4 @@
-package com.retroforge.app.player
+package com.retroforge.pcplayer.net
 
 import java.net.DatagramPacket
 import java.net.DatagramSocket
@@ -9,7 +9,7 @@ import java.net.URL
 
 /**
  * Asks the home router (UPnP Internet Gateway Device) to send a port to this device, so friends on the internet can
- * join a netplay game without anyone setting up port forwarding. Routers that have UPnP switched off just say no.
+ * join a netplay game (or a PC game played together) without anyone setting up port forwarding. Routers that have UPnP switched off just say no.
  * Mobile data and most hotel or office networks can't be opened this way.
  */
 class Upnp private constructor(private val controlUrl: String, private val service: String) {
@@ -17,17 +17,17 @@ class Upnp private constructor(private val controlUrl: String, private val servi
     /** The router's public address, for the other player to type. */
     fun externalAddress(): String? = soap("GetExternalIPAddress", "")?.let { Regex("<NewExternalIPAddress>([^<]+)<").find(it)?.groupValues?.get(1) }
 
-    /** Sends [port] (TCP) from the internet to [localAddress]. True when the router agreed. */
-    fun open(port: Int, localAddress: String): Boolean = soap(
+    /** Sends [port] ([protocol]: TCP or UDP) from the internet to [localAddress]. True when the router agreed. */
+    fun open(port: Int, localAddress: String, protocol: String = "TCP"): Boolean = soap(
         "AddPortMapping",
-        "<NewRemoteHost></NewRemoteHost><NewExternalPort>$port</NewExternalPort><NewProtocol>TCP</NewProtocol>" +
+        "<NewRemoteHost></NewRemoteHost><NewExternalPort>$port</NewExternalPort><NewProtocol>$protocol</NewProtocol>" +
             "<NewInternalPort>$port</NewInternalPort><NewInternalClient>$localAddress</NewInternalClient>" +
             "<NewEnabled>1</NewEnabled><NewPortMappingDescription>RetroForge netplay</NewPortMappingDescription>" +
             "<NewLeaseDuration>7200</NewLeaseDuration>",
     ) != null
 
-    fun close(port: Int) {
-        soap("DeletePortMapping", "<NewRemoteHost></NewRemoteHost><NewExternalPort>$port</NewExternalPort><NewProtocol>TCP</NewProtocol>")
+    fun close(port: Int, protocol: String = "TCP") {
+        soap("DeletePortMapping", "<NewRemoteHost></NewRemoteHost><NewExternalPort>$port</NewExternalPort><NewProtocol>$protocol</NewProtocol>")
     }
 
     private fun soap(action: String, args: String): String? = runCatching {
