@@ -36,6 +36,8 @@ data class NetworkShare(
     /** The folder inside the share that's shown as its top, if one was given. */
     val base: String get() = share.trim('/', '\\').replace('\\', '/').substringAfter('/', "")
     val address: String get() = "\\\\$host\\${share.trim('/', '\\').replace('/', '\\')}"
+    /** Reached through Tailscale (a 100.64–100.127 address or a .ts.net name), so it works away from home too. */
+    val viaTailscale: Boolean get() = NetworkDrives.isTailscale(host.substringBefore(':'))
 }
 
 /** One entry in a share: a file or a folder, by its path from the share's top ("" for the top). */
@@ -144,8 +146,17 @@ object NetworkDrives {
 
     /** The share's PC didn't answer at its address and wasn't found elsewhere on the network. */
     class PcUnreachable(share: NetworkShare, cause: Throwable? = null) : java.io.IOException(
-        "Can't reach ${share.address}. Is the PC switched on and on the same network as this device?", cause,
+        if (share.viaTailscale) "Can't reach ${share.address}. Is Tailscale switched on on this device, and is the PC switched on with Tailscale running?"
+        else "Can't reach ${share.address}. Is the PC switched on and on the same network as this device?",
+        cause,
     )
+
+    /** Tailscale's addresses (100.64.0.0/10) and its MagicDNS names. */
+    fun isTailscale(host: String): Boolean {
+        if (host.endsWith(".ts.net", ignoreCase = true)) return true
+        val parts = host.split('.').mapNotNull { it.toIntOrNull() }
+        return parts.size == 4 && parts[0] == 100 && parts[1] in 64..127
+    }
 
     private fun unreachable(e: Throwable): Boolean = generateSequence(e) { it.cause }.any {
         it is java.net.ConnectException || it is java.net.SocketTimeoutException || it is java.net.NoRouteToHostException ||
@@ -164,7 +175,9 @@ object NetworkDrives {
             val moved = share.copy(host = computer.address + port)
             val works = runCatching { openDisk(moved).list(smbPath(moved, "")) }.isSuccess
             if (works) {
-                save(context, moved)
+                // A Tailscale address is kept: it's the one that works away from home. The home address is used
+                // for now (Tailscale switched off on the phone, say) without replacing it.
+                if (!share.viaTailscale) save(context, moved)
                 return moved
             }
         }

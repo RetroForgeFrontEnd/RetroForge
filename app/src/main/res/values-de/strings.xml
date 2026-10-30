@@ -712,4 +712,6 @@
     <string name="play_in_app_installed_for">In %1$s, der installierten App für %2$s-Spiele.</string>
     <string name="library_find_a_system">System suchen (Switch, N64, PlayStation …)</string>
     <string name="library_no_systems_match">Kein System passt zu „%1$s“.</string>
+    <string name="network_drives_get_tailscale">Tailscale holen (kostenlos)</string>
+    <string name="network_drives_away_from_home">Nicht zu Hause, zum Beispiel bei Freunden? Installiere Tailscale (kostenlos) auf dem PC und auf diesem Handy und melde beide beim selben Konto an. Füge das Laufwerk dann mit der Tailscale-Adresse des PCs hinzu (100.x.x.x, in Tailscale auf dem PC zu sehen) statt mit seiner Heimadresse. Das funktioniert auch zu Hause. Die Schritte: Einstellungen → Hilfe und Info → So benutzt du RetroForge.</string>
 </resources>

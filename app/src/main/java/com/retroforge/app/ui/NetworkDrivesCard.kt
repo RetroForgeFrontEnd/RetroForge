@@ -93,7 +93,13 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
                 shares.forEach { share ->
                     FocusChip(stringResource(R.string.network_drives_remove, share.name), onClick = { NetworkDrives.remove(context, share.id); changes++ })
                 }
+                FocusChip(stringResource(R.string.network_drives_get_tailscale), onClick = {
+                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW,
+                        android.net.Uri.parse("https://play.google.com/store/apps/details?id=com.tailscale.ipn"))
+                    runCatching { context.startActivity(intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)) }
+                })
             }
+            CardBody(stringResource(R.string.network_drives_away_from_home))
         } else {
             // Find the PC or NAS instead of typing its address.
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {

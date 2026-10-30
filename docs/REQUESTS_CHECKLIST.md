@@ -202,3 +202,10 @@ Requests that were never fully done, or only answered:
 | Percentages on downloads and scans | ✅ game and BIOS scans, bezels, free games, hack patches, ROM Manager scans, app updates; cover downloads are a single small file |
 | App updates | ✅ checked every few hours from GitHub releases (betas included), offered on Home with a message at startup, and Settings → Help and about → Check for updates; Android's installer confirms |
 
+
+## Future plans (30 October)
+
+| Request | Status |
+|---|---|
+| RetroForge PS3 Player (our own Android build of RPCS3, open source GPL-2.0, aiming to be more stable than the existing ports) | 🔨 started 2026-10-30 in `F:\PS3Player`; early preview at best for the 31 October update |
+| PS4 | 📋 future. The open-source PS4 emulators (shadPS4, GPL-2.0, and others) are PC-only and early, and a PS4 game needs far more than today's phones have. Revisit once shadPS4 or a fork runs on ARM64 Android. RetroForge has no PS4 system yet |

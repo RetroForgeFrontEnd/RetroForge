@@ -713,4 +713,6 @@
     <string name="play_in_app_installed_for">In %1$s, the app installed for %2$s games.</string>
     <string name="library_find_a_system">Find a system (Switch, N64, PlayStation …)</string>
     <string name="library_no_systems_match">No systems match “%1$s”.</string>
+    <string name="network_drives_get_tailscale">Get Tailscale (free)</string>
+    <string name="network_drives_away_from_home">Away from home, at a friend\'s say? Install Tailscale (free) on the PC and on this phone and sign both in to the same account. Then add the drive with the PC\'s Tailscale address (100.x.x.x, shown in Tailscale on the PC) instead of its home address. It works at home too. The steps: Settings → Help and about → How to use RetroForge.</string>
 </resources>

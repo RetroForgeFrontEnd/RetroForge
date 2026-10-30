@@ -51,6 +51,19 @@ A rough guide only: the same chip runs some games of a system perfectly and stru
 - If Find on my network finds nothing but the address works: some routers keep Wi-Fi devices apart ("AP isolation" or "client isolation"): turn that off in the router, or type the address yourself.
 - Cloud storage (Google Drive, Dropbox, OneDrive) can't be opened as a folder by Android apps: use a sync app to keep a folder on the phone in step with it, and choose that folder.
 
+## Your network drive away from home (Tailscale)
+
+- What it does: plays the games on your home PC from anywhere: a friend's house, a hotel, mobile data. Tailscale (free for personal use) joins your PC and phone in a private network of their own, so the phone can reach the PC as if it were at home. Nothing is opened to the internet.
+- STEP 1: set up the network drive at home first (above), and check a game plays.
+- STEP 2, on the PC: install Tailscale from tailscale.com/download and sign in (a Google, Microsoft or Apple account works). Leave it running; it starts with Windows.
+- STEP 3, on the phone: Settings → Games and library → Games on a network drive → Get Tailscale (free), or find Tailscale on the Play Store. Sign in with the same account and switch it on.
+- STEP 4: on the PC, click Tailscale's icon by the clock: your PC is listed with an address starting 100. (for example 100.101.102.103). Write it down.
+- STEP 5, in RetroForge: remove the old network drive and add it again with that 100. address instead of the home one: same shared folder, username and password. Then Retro → Game folders: forget the old folder and add the new one.
+- With Tailscale switched on, the drive works at home and away. At home Tailscale goes straight across your Wi-Fi, so it's just as fast.
+- Speed away from home depends on your home broadband's upload speed. Cartridge games start straight away; big CD and Switch games are copied to the phone first, which can take a long time. Copy the ones you want before you leave.
+- On mobile data every game you play uses data. A Switch game is several gigabytes.
+- If it can't connect: check Tailscale is switched on on the phone and the PC is on and awake (not asleep). Windows can block file sharing on Tailscale's network: on the PC open PowerShell as administrator and run `Set-NetConnectionProfile -InterfaceAlias Tailscale -NetworkCategory Private`.
+
 ## Finding and playing games
 
 - Retro shows your systems (only ones you have games for, or all of them in Settings), Recently played, Favourites, Playlists and a search box.
