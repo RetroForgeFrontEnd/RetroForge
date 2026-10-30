@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import com.retroforge.app.ui.ChipRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -52,7 +56,7 @@ fun FavouriteAndPlaylists(game: GameEntity, viewModel: LibraryViewModel) {
     }
     if (showPlaylists) {
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Playlists")
+            CardTitle(stringResource(R.string.playlists_playlists))
             CardBody(if (playlists.isEmpty()) "No playlists yet. Name one below." else "Select a playlist to add or remove this game.")
         }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -61,8 +65,8 @@ fun FavouriteAndPlaylists(game: GameEntity, viewModel: LibraryViewModel) {
                 FocusChip((if (inIt) "☑ " else "☐ ") + p.name, onClick = { viewModel.setInPlaylist(p.id, game, !inIt) })
             }
         }
-        ControllerTextField(value = newName, onValueChange = { newName = it.take(60) }, singleLine = true, label = { Text("New playlist name") }, modifier = Modifier.fillMaxWidth())
-        FocusChip("Make playlist and add this game", enabled = newName.isNotBlank(), onClick = {
+        ControllerTextField(value = newName, onValueChange = { newName = it.take(60) }, singleLine = true, label = { Text(stringResource(R.string.playlists_new_playlist_name)) }, modifier = Modifier.fillMaxWidth())
+        FocusChip(stringResource(R.string.playlists_make_playlist_and_add_this_game), enabled = newName.isNotBlank(), onClick = {
             val name = newName
             newName = ""
             scope.launch { viewModel.setInPlaylist(viewModel.createPlaylist(name), game, true) }
@@ -83,7 +87,7 @@ fun FavouritesAndPlaylistsSection(
     val playlists by viewModel.playlists.collectAsStateWithLifecycle()
     val chosen by viewModel.chosenCovers.collectAsStateWithLifecycle()
     if (favourites.isNotEmpty()) {
-        CardTitle("Favourites")
+        CardTitle(stringResource(R.string.playlists_favourites))
         LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             items(favourites, key = { it.id }) { game ->
                 GameTile(game, viewModel.art(rootsById, chosen, game), onClick = { onOpenGame(game.id) }, modifier = Modifier.width(190.dp))
@@ -91,7 +95,7 @@ fun FavouritesAndPlaylistsSection(
         }
     }
     if (playlists.isNotEmpty()) {
-        CardTitle("Playlists")
+        CardTitle(stringResource(R.string.playlists_playlists))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             playlists.forEach { p -> PlaylistCard(p) { onOpenPlaylist(p.id) } }
         }
@@ -118,43 +122,43 @@ fun PlaylistScreen(viewModel: LibraryViewModel, playlistId: Long, onOpenGame: (L
     var renaming by remember { mutableStateOf<String?>(null) }
     var confirmDelete by remember { mutableStateOf(false) }
     val p = playlist ?: run {
-        ScreenFrame(title = "Playlist") { CardBody("This playlist no longer exists.") }
+        ScreenFrame(title = stringResource(R.string.playlists_playlist)) { CardBody(stringResource(R.string.playlists_this_playlist_no_longer_exists)) }
         return
     }
 
     ScreenFrame(title = p.name, subtitle = plural(games.size, "game") + ". Add games from any game's page.") {
-        if (games.isEmpty()) CardBody("Empty so far. Open a game and use \"Add to a playlist\".")
+        if (games.isEmpty()) CardBody(stringResource(R.string.playlists_empty_so_far_open_a_game))
         games.forEachIndexed { i, game ->
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 GameTile(game, viewModel.art(rootsById, chosen, game), onClick = { onOpenGame(game.id) }, modifier = Modifier.width(150.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FocusChip("Up", enabled = i > 0, onClick = { viewModel.movePlaylistGame(playlistId, game, -1) })
-                    FocusChip("Down", enabled = i < games.lastIndex, onClick = { viewModel.movePlaylistGame(playlistId, game, 1) })
-                    FocusChip("Remove", onClick = { viewModel.setInPlaylist(playlistId, game, false) })
+                    FocusChip(stringResource(R.string.playlists_up), enabled = i > 0, onClick = { viewModel.movePlaylistGame(playlistId, game, -1) })
+                    FocusChip(stringResource(R.string.playlists_down), enabled = i < games.lastIndex, onClick = { viewModel.movePlaylistGame(playlistId, game, 1) })
+                    FocusChip(stringResource(R.string.hacks_remove), onClick = { viewModel.setInPlaylist(playlistId, game, false) })
                 }
             }
         }
 
         val name = renaming
         if (name != null) {
-            ControllerTextField(value = name, onValueChange = { renaming = it.take(60) }, singleLine = true, label = { Text("Playlist name") }, modifier = Modifier.fillMaxWidth())
+            ControllerTextField(value = name, onValueChange = { renaming = it.take(60) }, singleLine = true, label = { Text(stringResource(R.string.playlists_playlist_name)) }, modifier = Modifier.fillMaxWidth())
             ChipRow {
-                FocusChip("Save name", enabled = name.isNotBlank(), onClick = { viewModel.renamePlaylist(playlistId, name); renaming = null })
-                FocusChip("Cancel", onClick = { renaming = null })
+                FocusChip(stringResource(R.string.library_save_name), enabled = name.isNotBlank(), onClick = { viewModel.renamePlaylist(playlistId, name); renaming = null })
+                FocusChip(stringResource(R.string.network_drives_cancel), onClick = { renaming = null })
             }
         } else if (confirmDelete) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
                 CardTitle("Delete \"${p.name}\"?")
-                CardBody("Only the playlist goes. The games stay in your library and on your storage.")
+                CardBody(stringResource(R.string.playlists_only_the_playlist_goes_the_games))
             }
             ChipRow {
-                FocusChip("Delete playlist", onClick = { viewModel.deletePlaylist(playlistId); onDeleted() })
-                FocusChip("Cancel", onClick = { confirmDelete = false })
+                FocusChip(stringResource(R.string.playlists_delete_playlist), onClick = { viewModel.deletePlaylist(playlistId); onDeleted() })
+                FocusChip(stringResource(R.string.network_drives_cancel), onClick = { confirmDelete = false })
             }
         } else {
             ChipRow {
-                FocusChip("Rename", onClick = { renaming = p.name })
-                FocusChip("Delete playlist", onClick = { confirmDelete = true })
+                FocusChip(stringResource(R.string.library_rename), onClick = { renaming = p.name })
+                FocusChip(stringResource(R.string.playlists_delete_playlist), onClick = { confirmDelete = true })
             }
         }
     }

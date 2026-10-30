@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.graphics.Bitmap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -221,7 +225,7 @@ private fun Details(system: SystemSummary, artwork: SystemArtwork?, modifier: Mo
             plural(system.games, "game").uppercase() + if (system.hacks > 0) " · ${plural(system.hacks, "hack").uppercase()}" else "",
             color = colors.onBackground, fontSize = 15.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp,
         )
-        Text("◀ ▶ browse   ·   A open", color = colors.onBackground.copy(alpha = 0.55f), fontSize = 12.sp, modifier = Modifier.padding(top = 6.dp))
+        Text(stringResource(R.string.canvas_systems_browse_a_open), color = colors.onBackground.copy(alpha = 0.55f), fontSize = 12.sp, modifier = Modifier.padding(top = 6.dp))
     }
 }
 

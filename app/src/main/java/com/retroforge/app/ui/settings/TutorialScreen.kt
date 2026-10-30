@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.Intent
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -195,7 +199,7 @@ fun TutorialScreen() {
     fun open(url: String) { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) } }
     var openTopic by remember { mutableStateOf<String?>(null) }
 
-    ScreenFrame(title = "How to use RetroForge", subtitle = "Grab a drink and a snack (as Russ from Retro Game Corps would say), and pick a topic.") {
+    ScreenFrame(title = stringResource(R.string.settings_how_to_use_retroforge), subtitle = stringResource(R.string.tutorial_grab_a_drink_and_a_snack)) {
         topics.forEach { topic ->
             val expanded = openTopic == topic.title
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { openTopic = if (expanded) null else topic.title }) {
@@ -205,15 +209,14 @@ fun TutorialScreen() {
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Learn more about Android emulation")
+            CardTitle(stringResource(R.string.tutorial_learn_more_about_android_emulation))
             CardBody(
-                "Retro Game Corps (Russ) writes some of the best guides around. They're his own work, so they open on his site. " +
-                    "More channels are in the Links tab.",
+                stringResource(R.string.tutorial_retro_game_corps_russ_writes_some),
             )
         }
-        FocusChip("Android Emulation Starter Guide", onClick = { open(STARTER_GUIDE) })
-        FocusChip("Dual-Screen Android Handheld Guide", onClick = { open(DUAL_SCREEN_GUIDE) })
-        FocusChip("All Retro Game Corps guides", onClick = { open(ALL_GUIDES) })
+        FocusChip(stringResource(R.string.tutorial_android_emulation_starter_guide), onClick = { open(STARTER_GUIDE) })
+        FocusChip(stringResource(R.string.tutorial_dual_screen_android_handheld_guide), onClick = { open(DUAL_SCREEN_GUIDE) })
+        FocusChip(stringResource(R.string.tutorial_all_retro_game_corps_guides), onClick = { open(ALL_GUIDES) })
     }
 }
 

@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.Intent
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.LinearProgressIndicator
@@ -60,13 +64,11 @@ fun PcStreamSection() {
         }
     }
 
-    Text("Stream from your PC", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
+    Text(stringResource(R.string.pc_stream_stream_from_your_pc), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Your PC's games on this screen")
+        CardTitle(stringResource(R.string.pc_stream_your_pc_s_games_on_this))
         CardBody(
-            "Play games running on your own Windows, Linux or Mac computer here, with your controller or touch. The PC needs " +
-                "Sunshine, a free streaming host (or an NVIDIA graphics card with GeForce Experience's GameStream), on the same " +
-                "network. RetroForge streams with Moonlight's open-source code built in, so there's no other app to install here.",
+            stringResource(R.string.pc_stream_play_games_running_on_your_own),
         )
         ChipRow {
             FocusChip(if (looking) "Looking…" else "Look for PCs", enabled = !looking, onClick = {
@@ -76,8 +78,8 @@ fun PcStreamSection() {
                     looking = false
                 }
             })
-            FocusChip("Stream settings", onClick = { runCatching { context.startActivity(streaming.settingsIntent()) } })
-            FocusChip("Get Sunshine", onClick = {
+            FocusChip(stringResource(R.string.pc_stream_stream_settings), onClick = { runCatching { context.startActivity(streaming.settingsIntent()) } })
+            FocusChip(stringResource(R.string.pc_stream_get_sunshine), onClick = {
                 runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, SUNSHINE_RELEASES.toUri())) }
             })
         }
@@ -85,15 +87,15 @@ fun PcStreamSection() {
         found?.let { list ->
             val known = hosts.map { it.address }.toSet()
             val fresh = list.filterNot { it.address in known }
-            if (list.isEmpty()) CardBody("No PCs answered. Type its address below instead (on the PC: Settings > Network shows its IP address).")
-            else if (fresh.isEmpty()) CardBody("Every PC that answered is already in your list.")
+            if (list.isEmpty()) CardBody(stringResource(R.string.pc_stream_no_pcs_answered_type_its_address))
+            else if (fresh.isEmpty()) CardBody(stringResource(R.string.pc_stream_every_pc_that_answered_is_already))
             else ChipRow { fresh.forEach { pc -> FocusChip("Add ${pc.name}", onClick = { add(pc.address) }) } }
         }
         ControllerTextField(
             value = address, onValueChange = { address = it }, singleLine = true,
-            label = { Text("PC's address, e.g. 192.168.1.20") }, modifier = Modifier.fillMaxWidth(),
+            label = { Text(stringResource(R.string.pc_stream_pc_s_address_e_g_192)) }, modifier = Modifier.fillMaxWidth(),
         )
-        FocusChip("Add this PC", enabled = address.isNotBlank(), onClick = { add(address) })
+        FocusChip(stringResource(R.string.pc_stream_add_this_pc), enabled = address.isNotBlank(), onClick = { add(address) })
         message?.let { CardBody(it) }
     }
     hosts.forEach { host -> key(host.uuid) { HostCard(host, streaming, onChanged = { changes++ }) } }
@@ -116,14 +118,14 @@ private fun HostCard(host: StreamHost, streaming: PcStreaming, onChanged: () -> 
         val s = status
         CardTitle(host.name) {
             when {
-                s == null -> StatusPill("Checking…", StatusTone.NEUTRAL)
-                !s.online -> StatusPill("Offline", StatusTone.CAUTION)
-                s.paired -> StatusPill("Ready", StatusTone.GOOD)
-                else -> StatusPill("Not paired", StatusTone.NEUTRAL)
+                s == null -> StatusPill(stringResource(R.string.pc_stream_checking), StatusTone.NEUTRAL)
+                !s.online -> StatusPill(stringResource(R.string.pc_stream_offline), StatusTone.CAUTION)
+                s.paired -> StatusPill(stringResource(R.string.pc_stream_ready), StatusTone.GOOD)
+                else -> StatusPill(stringResource(R.string.pc_stream_not_paired), StatusTone.NEUTRAL)
             }
         }
         CardBody("Address: ${host.address}${if (host.port != 47989) ":${host.port}" else ""}")
-        if (s != null && !s.online) CardBody("It didn't answer. Check the PC is on, awake and running Sunshine.")
+        if (s != null && !s.online) CardBody(stringResource(R.string.pc_stream_it_didn_t_answer_check_the))
         pin?.let {
             CardBody(
                 "PIN: $it\nOn the PC, open Sunshine's page (https://localhost:47990), go to PIN, and type $it with any device " +
@@ -131,7 +133,7 @@ private fun HostCard(host: StreamHost, streaming: PcStreaming, onChanged: () -> 
             )
         }
         ChipRow {
-            if (s?.online == true && !s.paired && pin == null) FocusChip("Pair", onClick = {
+            if (s?.online == true && !s.paired && pin == null) FocusChip(stringResource(R.string.pc_stream_pair), onClick = {
                 val newPin = PcStreaming.newPin()
                 pin = newPin
                 note = null
@@ -158,7 +160,7 @@ private fun HostCard(host: StreamHost, streaming: PcStreaming, onChanged: () -> 
                     apps = runCatching { streaming.apps(host) }.onFailure { note = "Couldn't get the list: ${it.message}" }.getOrNull()
                 }
             })
-            if (s?.online == true && s.runningAppId != 0) FocusChip("Quit the running game", onClick = {
+            if (s?.online == true && s.runningAppId != 0) FocusChip(stringResource(R.string.pc_stream_quit_the_running_game), onClick = {
                 scope.launch {
                     note = runCatching { streaming.quit(host) }.fold(
                         onSuccess = { if (it) "The game on the PC was closed." else "The PC didn't close it." },
@@ -167,15 +169,15 @@ private fun HostCard(host: StreamHost, streaming: PcStreaming, onChanged: () -> 
                     refresh++
                 }
             })
-            FocusChip("Check again", onClick = { refresh++ })
-            if (host.paired) FocusChip("Unpair", onClick = { scope.launch { streaming.unpair(host); onChanged() } })
-            FocusChip("Forget", onClick = { streaming.remove(host); onChanged() })
+            FocusChip(stringResource(R.string.rom_manager_check_again), onClick = { refresh++ })
+            if (host.paired) FocusChip(stringResource(R.string.pc_stream_unpair), onClick = { scope.launch { streaming.unpair(host); onChanged() } })
+            FocusChip(stringResource(R.string.pc_stream_forget), onClick = { streaming.remove(host); onChanged() })
         }
         note?.let { CardBody(it) }
         apps?.let { list ->
-            if (list.isEmpty()) CardBody("The PC lists no apps. Add some in Sunshine's Applications page.")
+            if (list.isEmpty()) CardBody(stringResource(R.string.pc_stream_the_pc_lists_no_apps_add))
             else {
-                CardBody("Choose one to stream full screen. Press back (or Start+Select+L1+R1 on a controller) to stop streaming; the game keeps running on the PC until you quit it.")
+                CardBody(stringResource(R.string.pc_stream_choose_one_to_stream_full_screen))
                 ChipRow {
                     list.forEach { app ->
                         val running = s?.runningAppId == app.id

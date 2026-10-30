@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -100,15 +104,15 @@ private val notices = listOf(
 fun LicencesScreen() {
     val context = LocalContext.current
     var open by remember { mutableStateOf<String?>(null) }
-    ScreenFrame(title = "Thanks and licences", subtitle = "RetroForge stands on the work of a lot of people. Thank you all.") {
+    ScreenFrame(title = stringResource(R.string.settings_thanks_and_licences), subtitle = stringResource(R.string.licences_retroforge_stands_on_the_work_of)) {
         thanks.forEach { (who, what) ->
             FocusCard(modifier = Modifier.fillMaxWidth()) {
                 CardTitle(who)
                 CardBody(what)
             }
         }
-        CardTitle("Licences")
-        CardBody("RetroForge is built with these open-source parts. Select one to read its licence text where it ships with the app.")
+        CardTitle(stringResource(R.string.licences_licences))
+        CardBody(stringResource(R.string.licences_retroforge_is_built_with_these_open))
         notices.forEach { n ->
             val expanded = open == n.name
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { open = if (expanded) null else n.name }) {
@@ -121,10 +125,9 @@ fun LicencesScreen() {
             }
         }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Not included")
+            CardTitle(stringResource(R.string.licences_not_included))
             CardBody(
-                "RetroArch, standalone emulators, DroidDeck and Obtainium are separate apps with their own licences; RetroForge only opens them. " +
-                    "No games, BIOS or firmware are included. Covers come from libretro, SteamGridDB or ScreenScraper when you ask, under their own terms.",
+                stringResource(R.string.licences_retroarch_standalone_emulators_droiddeck_and_obtainium),
             )
         }
     }

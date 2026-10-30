@@ -1,5 +1,9 @@
 package com.retroforge.app.player
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -94,6 +98,10 @@ import org.apache.commons.compress.archivers.sevenz.SevenZFile
  * the main process except files.
  */
 class PlayerActivity : ComponentActivity() {
+
+    // The language picked in Settings, on Android 12 and older (newer versions apply it themselves).
+    override fun attachBaseContext(newBase: android.content.Context) = super.attachBaseContext(com.retroforge.core.ui.AppLanguage.wrap(newBase))
+
 
     private sealed interface Phase {
         data object Loading : Phase
@@ -1384,7 +1392,7 @@ class PlayerActivity : ComponentActivity() {
                 is Phase.Failed -> Centered {
                     Text("Couldn't start $title", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     Text(p.message, color = Color(0xFFDDDDDD), textAlign = TextAlign.Center, modifier = Modifier.padding(vertical = 16.dp))
-                    Button(onClick = { finish() }) { Text("Back to RetroForge") }
+                    Button(onClick = { finish() }) { Text(stringResource(R.string.player_back_to_retroforge)) }
                 }
                 Phase.Playing -> if (menuOpen) PauseMenu(title)
             }
@@ -1438,7 +1446,7 @@ class PlayerActivity : ComponentActivity() {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (menuPage != MenuPage.MAIN) {
-                    androidx.compose.material3.TextButton(onClick = { menuPage = MenuPage.MAIN }) { Text("‹ Back", color = Color.White) }
+                    androidx.compose.material3.TextButton(onClick = { menuPage = MenuPage.MAIN }) { Text(stringResource(R.string.player_back), color = Color.White) }
                 } else {
                     androidx.compose.foundation.layout.Spacer(Modifier.width(1.dp))
                 }
@@ -1456,13 +1464,13 @@ class PlayerActivity : ComponentActivity() {
                         Text(title, color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                         Text("Paused · $coreName", color = Color(0xFFAAAAB4), fontSize = 13.sp)
                         notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
-                        MenuButton(onClick = { closeMenu() }, modifier = wide.focusRequester(first)) { Text("Resume") }
+                        MenuButton(onClick = { closeMenu() }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_resume)) }
                         MenuButton(onClick = {
                             worker.execute {
                                 val saved = NativePlayer.saveState()?.let { writeSafely(slotState(), it); true } == true
                                 runOnUiThread { notice = if (saved) "State saved" else "This emulator can't save states" }
                             }
-                        }, modifier = wide) { Text("Save state") }
+                        }, modifier = wide) { Text(stringResource(R.string.player_save_state)) }
                         MenuButton(onClick = {
                             if (netGuest) { notice = "During netplay only player 1 can load a state."; return@MenuButton }
                             worker.execute {
@@ -1470,7 +1478,7 @@ class PlayerActivity : ComponentActivity() {
                                 val done = file.isFile && NativePlayer.loadState(file.readBytes())
                                 runOnUiThread { if (done) closeMenu() else notice = "No saved state yet" }
                             }
-                        }, modifier = wide) { Text("Load state") }
+                        }, modifier = wide) { Text(stringResource(R.string.player_load_state)) }
                         MenuButton(onClick = {
                             if (netPlaying) { notice = "Fast-forward is off during netplay: both players run at the same speed."; return@MenuButton }
                             fastForwardOn = !fastForwardOn
@@ -1487,13 +1495,13 @@ class PlayerActivity : ComponentActivity() {
                             }, modifier = wide) { Text("Disc ${current + 1} of $count · change to disc ${(current + 1) % count + 1}") }
                         }
                         if (system in PlayerCores.keyboardSystems) {
-                            MenuButton(onClick = { closeMenu(); keyboard.show() }, modifier = wide) { Text("Keyboard") }
+                            MenuButton(onClick = { closeMenu(); keyboard.show() }, modifier = wide) { Text(stringResource(R.string.player_keyboard)) }
                         }
-                        MenuButton(onClick = { takeScreenshot() }, modifier = wide) { Text("Take a screenshot") }
+                        MenuButton(onClick = { takeScreenshot() }, modifier = wide) { Text(stringResource(R.string.player_take_a_screenshot)) }
                         // The rest in three groups, so the menu stays short.
-                        MenuButton(onClick = { menuPage = MenuPage.PICTURE }, modifier = wide) { Text("Picture ›") }
-                        MenuButton(onClick = { menuPage = MenuPage.SOUND_CONTROLS }, modifier = wide) { Text("Sound and controls ›") }
-                        MenuButton(onClick = { menuPage = MenuPage.EMULATOR }, modifier = wide) { Text("Emulator ›") }
+                        MenuButton(onClick = { menuPage = MenuPage.PICTURE }, modifier = wide) { Text(stringResource(R.string.player_picture)) }
+                        MenuButton(onClick = { menuPage = MenuPage.SOUND_CONTROLS }, modifier = wide) { Text(stringResource(R.string.player_sound_and_controls)) }
+                        MenuButton(onClick = { menuPage = MenuPage.EMULATOR }, modifier = wide) { Text(stringResource(R.string.player_emulator)) }
                         if (Netplay.supports(system)) MenuButton(onClick = { menuPage = MenuPage.NETPLAY; if (netState == 0 && netHosts == null) findNetplayHosts() }, modifier = wide) {
                             Text(if (netPlaying) "Netplay: player ${NativePlayer.netplayPlayer() + 1} ›" else "Netplay ›")
                         }
@@ -1503,12 +1511,12 @@ class PlayerActivity : ComponentActivity() {
                             // Player 2 gets the restarted game too (a state load sends it).
                             if (netPlaying) NativePlayer.saveState()?.let { NativePlayer.loadState(it) }
                             closeMenu()
-                        }, modifier = wide) { Text("Restart game") }
-                        MenuButton(onClick = { quit() }, modifier = wide) { Text("Quit to RetroForge") }
+                        }, modifier = wide) { Text(stringResource(R.string.player_restart_game)) }
+                        MenuButton(onClick = { quit() }, modifier = wide) { Text(stringResource(R.string.player_quit_to_retroforge)) }
                     }
                     MenuPage.NETPLAY -> {
-                        Text("Netplay", color = Color.White, fontWeight = FontWeight.Bold)
-                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        Text(stringResource(R.string.player_netplay), color = Color.White, fontWeight = FontWeight.Bold)
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         if (netStatus.isNotBlank() && netState != 0) {
                             Text(netStatus, color = if (netState == 5) Color(0xFFFF9A8B) else Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center)
                         }
@@ -1522,17 +1530,16 @@ class PlayerActivity : ComponentActivity() {
                                 )
                                 netInternet?.let { Text(it, color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center) }
                             }
-                            MenuButton(onClick = { leaveNetplay() }, modifier = wide) { Text("Leave netplay") }
+                            MenuButton(onClick = { leaveNetplay() }, modifier = wide) { Text(stringResource(R.string.player_leave_netplay)) }
                         } else {
                             Text(
-                                "Play this game with a friend on another device, each with RetroForge and the same game file. " +
-                                    "One hosts (player 1), the other joins (player 2).",
+                                stringResource(R.string.player_play_this_game_with_a_friend),
                                 color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
                             )
-                            MenuButton(onClick = { hostNetplay() }, modifier = wide) { Text("Host this game") }
+                            MenuButton(onClick = { hostNetplay() }, modifier = wide) { Text(stringResource(R.string.player_host_this_game)) }
                             when {
-                                netSearching -> Text("Looking for games on this Wi-Fi…", color = Color(0xFFAAAAB4), fontSize = 13.sp)
-                                netHosts?.isEmpty() == true -> Text("Nobody's hosting on this Wi-Fi yet.", color = Color(0xFFAAAAB4), fontSize = 13.sp)
+                                netSearching -> Text(stringResource(R.string.player_looking_for_games_on_this_wi), color = Color(0xFFAAAAB4), fontSize = 13.sp)
+                                netHosts?.isEmpty() == true -> Text(stringResource(R.string.player_nobody_s_hosting_on_this_wi), color = Color(0xFFAAAAB4), fontSize = 13.sp)
                             }
                             netHosts.orEmpty().forEach { host ->
                                 val same = host.gameId == netGameId
@@ -1541,7 +1548,7 @@ class PlayerActivity : ComponentActivity() {
                                     else notice = "${host.player} is playing ${host.title}. Open that game to join."
                                 }, modifier = wide) { Text(if (same) "Join ${host.player}" else "${host.player}: ${host.title}") }
                             }
-                            MenuButton(onClick = { findNetplayHosts() }, modifier = wide) { Text("Look again") }
+                            MenuButton(onClick = { findNetplayHosts() }, modifier = wide) { Text(stringResource(R.string.player_look_again)) }
                             val joinAddress = {
                                 if (netAddress.isNotBlank()) {
                                     val port = netAddress.substringAfterLast(':', "").toIntOrNull()
@@ -1553,7 +1560,7 @@ class PlayerActivity : ComponentActivity() {
                                 value = netAddress,
                                 onValueChange = { netAddress = it.trim() },
                                 singleLine = true,
-                                label = { Text("Join by address (internet)") },
+                                label = { Text(stringResource(R.string.player_join_by_address_internet)) },
                                 keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
                                     keyboardType = androidx.compose.ui.text.input.KeyboardType.Uri,
                                     imeAction = androidx.compose.ui.text.input.ImeAction.Go,
@@ -1561,12 +1568,12 @@ class PlayerActivity : ComponentActivity() {
                                 keyboardActions = androidx.compose.foundation.text.KeyboardActions(onGo = { joinAddress() }),
                                 modifier = wide,
                             )
-                            MenuButton(onClick = joinAddress, modifier = wide) { Text("Join this address") }
+                            MenuButton(onClick = joinAddress, modifier = wide) { Text(stringResource(R.string.player_join_this_address)) }
                         }
                     }
                     MenuPage.PICTURE -> {
-                        Text("Picture", color = Color.White, fontWeight = FontWeight.Bold)
-                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        Text(stringResource(R.string.player_picture_2), color = Color.White, fontWeight = FontWeight.Bold)
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         MenuButton(onClick = { chooseShape(shape.next()) }, modifier = wide) { Text("Screen shape: ${shape.label}") }
                         MenuButton(onClick = { chooseFilter(filter.next()) }, modifier = wide) { Text("Screen filter: ${filter.label}") }
                         MenuButton(onClick = { chooseLook(!consoleLook) }, modifier = wide) { Text("Console look: ${if (consoleLook) "On" else "Off"}") }
@@ -1597,40 +1604,40 @@ class PlayerActivity : ComponentActivity() {
                         }, modifier = wide) { Text("Show FPS: ${if (showFps) "On" else "Off"}") }
                     }
                     MenuPage.SOUND_CONTROLS -> {
-                        Text("Sound and controls", color = Color.White, fontWeight = FontWeight.Bold)
-                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        Text(stringResource(R.string.player_sound_and_controls_2), color = Color.White, fontWeight = FontWeight.Bold)
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         MenuButton(onClick = { chooseVolume() }, modifier = wide) { Text("Volume: ${(volume * 100).toInt()}%") }
                         if (hasTouch) MenuButton(onClick = { chooseTouch(!touchEnabled) }, modifier = wide) {
                             Text("Touch controls: ${if (touchEnabled) "On" else "Off"}")
                         }
-                        MenuButton(onClick = { menuPage = MenuPage.CONTROLS }, modifier = wide) { Text("Remap buttons ›") }
+                        MenuButton(onClick = { menuPage = MenuPage.CONTROLS }, modifier = wide) { Text(stringResource(R.string.player_remap_buttons)) }
                     }
                     MenuPage.EMULATOR -> {
                         Text("Emulator · $coreName", color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         MenuButton(onClick = {
                             coreOptions = NativePlayer.options()
                             menuPage = MenuPage.OPTIONS
-                        }, modifier = wide) { Text("Emulator settings ›") }
+                        }, modifier = wide) { Text(stringResource(R.string.player_emulator_settings)) }
                         MenuButton(onClick = { openCheats() }, modifier = wide) {
                             Text("Cheats ›" + cheats.count { it.enabled }.let { if (it > 0) "  ($it on)" else "" })
                         }
                         if (PlayerCores.choices(system).size > 1) {
-                            MenuButton(onClick = { menuPage = MenuPage.EMULATORS }, modifier = wide) { Text("Switch emulator ›") }
+                            MenuButton(onClick = { menuPage = MenuPage.EMULATORS }, modifier = wide) { Text(stringResource(R.string.player_switch_emulator)) }
                         }
                     }
                     MenuPage.CHEATS -> {
-                        Text("Cheats", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.player_cheats), color = Color.White, fontWeight = FontWeight.Bold)
                         Text(
-                            "From libretro's cheat database (CC BY-SA 4.0). Switch one on and it works at once. Cheats can upset saves: save your game first.",
+                            stringResource(R.string.player_from_libretro_s_cheat_database_cc),
                             color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
                         )
                         cheatStatus?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
-                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         // Games with their own cheat codes (Doom's id codes): the emulator takes the code as a cheat.
                         TypedCheats.forSystem(system).takeIf { it.isNotEmpty() }?.let { codes ->
-                            Text("Cheat codes", color = Color.White, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 4.dp))
-                            Text("Works in a level (picked elsewhere, it waits for the next one). Can't be turned off until the game is restarted.", color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
+                            Text(stringResource(R.string.player_cheat_codes), color = Color.White, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 4.dp))
+                            Text(stringResource(R.string.player_works_in_a_level_picked_elsewhere), color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
                             codes.forEach { code ->
                                 MenuButton(onClick = {
                                     NativePlayer.applyCheats((cheats.filter { it.enabled }.map { it.code } + code.code).toTypedArray())
@@ -1659,9 +1666,9 @@ class PlayerActivity : ComponentActivity() {
                             }
                         }
                         if (!fetchingCheats) {
-                        Text("Add your own code", color = Color.White, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
-                        com.retroforge.core.ui.ControllerTextField(newCode, { newCode = it.take(400) }, wide, label = { Text("Code (Game Genie, Action Replay …)") })
-                        com.retroforge.core.ui.ControllerTextField(newName, { newName = it.take(60) }, wide, label = { Text("Name (optional)") })
+                        Text(stringResource(R.string.player_add_your_own_code), color = Color.White, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
+                        com.retroforge.core.ui.ControllerTextField(newCode, { newCode = it.take(400) }, wide, label = { Text(stringResource(R.string.player_code_game_genie_action_replay)) })
+                        com.retroforge.core.ui.ControllerTextField(newName, { newName = it.take(60) }, wide, label = { Text(stringResource(R.string.player_name_optional)) })
                         MenuButton(onClick = {
                             val code = newCode.trim()
                             if (code.isNotEmpty()) {
@@ -1669,14 +1676,14 @@ class PlayerActivity : ComponentActivity() {
                                 newCode = ""
                                 newName = ""
                             }
-                        }, modifier = wide) { Text("Add and switch on") }
+                        }, modifier = wide) { Text(stringResource(R.string.player_add_and_switch_on)) }
                         }
                     }
                     MenuPage.OPTIONS -> {
                         Text("$coreName settings", color = Color.White, fontWeight = FontWeight.Bold)
-                        Text("Select a setting to change it. Kept for this emulator.", color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
-                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
-                        if (coreOptions.isEmpty()) Text("This emulator has no settings.", color = Color(0xFFDDDDDD))
+                        Text(stringResource(R.string.player_select_a_setting_to_change_it), color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
+                        if (coreOptions.isEmpty()) Text(stringResource(R.string.player_this_emulator_has_no_settings), color = Color(0xFFDDDDDD))
                         coreOptions.forEach { option ->
                             MenuButton(onClick = { chooseOption(option) }, modifier = wide) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -1687,14 +1694,14 @@ class PlayerActivity : ComponentActivity() {
                         }
                     }
                     MenuPage.CONTROLS -> {
-                        Text("Remap buttons", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.player_remap_buttons_2), color = Color.White, fontWeight = FontWeight.Bold)
                         Text(
-                            "Select a button, then press the controller button you want for it. Kept for this system.",
+                            stringResource(R.string.player_select_a_button_then_press_the),
                             color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
                         )
-                        MenuButton(onClick = { input.capture = null; waitingFor = null; menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        MenuButton(onClick = { input.capture = null; waitingFor = null; menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         val buttons = gameButtons()
-                        Text("Controller", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.player_controller), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                         buttons.forEach { (label, button) ->
                             MenuButton(onClick = { remapButton(button) }, modifier = wide) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -1706,9 +1713,9 @@ class PlayerActivity : ComponentActivity() {
                                 }
                             }
                         }
-                        if (remap.isNotEmpty()) MenuButton(onClick = { saveRemap(emptyMap()) }, modifier = wide) { Text("Controller back to normal") }
-                        Text("On-screen buttons", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
-                        Text("Select one to change which game button it presses.", color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
+                        if (remap.isNotEmpty()) MenuButton(onClick = { saveRemap(emptyMap()) }, modifier = wide) { Text(stringResource(R.string.player_controller_back_to_normal)) }
+                        Text(stringResource(R.string.player_on_screen_buttons), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
+                        Text(stringResource(R.string.player_select_one_to_change_which_game), color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
                         val onScreen = padLayout().let { it.face + it.shoulders + it.triggers }
                         onScreen.forEach { (label, default) ->
                             val now = touchMap[label] ?: default
@@ -1722,16 +1729,16 @@ class PlayerActivity : ComponentActivity() {
                                 }
                             }
                         }
-                        if (touchMap.isNotEmpty()) MenuButton(onClick = { saveTouchMap(emptyMap()) }, modifier = wide) { Text("On-screen back to normal") }
+                        if (touchMap.isNotEmpty()) MenuButton(onClick = { saveTouchMap(emptyMap()) }, modifier = wide) { Text(stringResource(R.string.player_on_screen_back_to_normal)) }
                     }
                     MenuPage.EMULATORS -> {
-                        Text("Switch emulator", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.player_switch_emulator_2), color = Color.White, fontWeight = FontWeight.Bold)
                         Text(
-                            "The game restarts in the emulator you pick and your in-game save carries over. Save states belong to each emulator.",
+                            stringResource(R.string.player_the_game_restarts_in_the_emulator),
                             color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
                         )
                         notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
-                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         PlayerCores.choices(system).forEach { core ->
                             MenuButton(onClick = { switchEmulator(core) }, modifier = wide) {
                                 Text(

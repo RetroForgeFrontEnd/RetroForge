@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.net.Uri
 import android.provider.DocumentsContract
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -38,12 +42,11 @@ fun EsdeImportCard(library: LibraryRepository) {
         }
     }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Import collections from ES-DE")
+        CardTitle(stringResource(R.string.esde_import_import_collections_from_es_de))
         CardBody(
-            "Turns your ES-DE custom collections into RetroForge playlists, with the games found in your library. Pick ES-DE's " +
-                "folder (or its collections folder); ES-DE's files aren't changed.",
+            stringResource(R.string.esde_import_turns_your_es_de_custom_collections),
         )
-        FocusChip("Choose the ES-DE folder", onClick = { pick.launch(null) })
+        FocusChip(stringResource(R.string.esde_import_choose_the_es_de_folder), onClick = { pick.launch(null) })
         status?.let { CardBody(it) }
     }
 }

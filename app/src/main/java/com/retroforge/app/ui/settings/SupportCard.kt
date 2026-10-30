@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -30,10 +34,9 @@ fun SupportCard() {
     if (links.isEmpty()) return
     val context = LocalContext.current
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Support RetroForge")
+        CardTitle(stringResource(R.string.support_support_retroforge))
         CardBody(
-            "RetroForge is free, with every feature included, and always will be. If you're enjoying it, a coffee helps pay " +
-                "for new features and bug fixes. Thank you!",
+            stringResource(R.string.support_retroforge_is_free_with_every_feature),
         )
         // On a TV box or handheld, scan this with your phone.
         if (BuildConfig.SUPPORT_BUYMEACOFFEE.startsWith("https://")) {
@@ -42,7 +45,7 @@ fun SupportCard() {
                 contentDescription = "QR code for Buy Me a Coffee",
                 modifier = Modifier.size(180.dp),
             )
-            CardBody("Scan with your phone, or use the button below.")
+            CardBody(stringResource(R.string.support_scan_with_your_phone_or_use))
         }
     }
     FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {

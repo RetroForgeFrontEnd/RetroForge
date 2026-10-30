@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -82,13 +86,9 @@ fun SaveSyncCard() {
     }
 
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Save syncing") { StatusPill(if (on) "On" else "Off", if (on) StatusTone.GOOD else StatusTone.NEUTRAL) }
+        CardTitle(stringResource(R.string.save_sync_save_syncing)) { StatusPill(if (on) "On" else "Off", if (on) StatusTone.GOOD else StatusTone.NEUTRAL) }
         CardBody(
-            "Keeps your in-game saves (and save states) the same on all your devices. Choose a folder that every device can " +
-                "reach: one on a network drive (your PC), or a folder on this device that a cloud app keeps in step " +
-                "(Syncthing, FolderSync, Autosync for Google Drive, Nextcloud, OneDrive …). A game's saves come in when it " +
-                "starts and go back when you quit. If a save changed on two devices, the newer one is kept and the other is " +
-                "put in the \"sync conflicts\" folder. Nothing is ever deleted. Built-in player only.",
+            stringResource(R.string.save_sync_keeps_your_in_game_saves_and),
         )
         val where = when {
             !on -> null
@@ -105,7 +105,7 @@ fun SaveSyncCard() {
         if (drives.isNotEmpty()) {
             ControllerTextField(
                 value = folderName, onValueChange = { folderName = it }, singleLine = true,
-                label = { Text("Folder on the network drive") }, modifier = Modifier.fillMaxWidth(),
+                label = { Text(stringResource(R.string.save_sync_folder_on_the_network_drive)) }, modifier = Modifier.fillMaxWidth(),
             )
             ChipRow {
                 drives.forEach { share ->
@@ -122,11 +122,11 @@ fun SaveSyncCard() {
         ChipRow {
             FocusChip(if (kind == "folder" && on) "Choose a different folder" else "Use a folder on this device", onClick = { pickFolder.launch(null) })
             if (on) {
-                FocusChip("Sync now", enabled = progress == null, onClick = ::syncNow)
+                FocusChip(stringResource(R.string.save_sync_sync_now), enabled = progress == null, onClick = ::syncNow)
                 FocusChip(if (states) "Save states too: on" else "Save states too: off", onClick = { edit { putBoolean("states", !states) } })
-                FocusChip("Turn off", onClick = { edit { putBoolean("on", false) }; status = null })
+                FocusChip(stringResource(R.string.save_sync_turn_off), onClick = { edit { putBoolean("on", false) }; status = null })
             }
         }
-        if (drives.isEmpty()) CardBody("To sync through your PC, add it first under Games and library → Game folders → Network drives.")
+        if (drives.isEmpty()) CardBody(stringResource(R.string.save_sync_to_sync_through_your_pc_add))
     }
 }

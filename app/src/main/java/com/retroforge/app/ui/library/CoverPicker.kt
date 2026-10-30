@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import com.retroforge.app.ui.ChipRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -62,7 +66,7 @@ private data class Candidate(val key: String, val previewUrl: String, val fullUr
 fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbKey: Boolean, onOpenSettings: () -> Unit, onDone: () -> Unit) {
     val game by remember(gameId) { viewModel.game(gameId) }.collectAsStateWithLifecycle(initialValue = null)
     val g = game ?: run {
-        ScreenFrame(title = "Change cover") { CardBody("Loading…") }
+        ScreenFrame(title = stringResource(R.string.cover_picker_change_cover)) { CardBody(stringResource(R.string.cover_picker_loading)) }
         return
     }
     val covers = viewModel.covers
@@ -112,7 +116,7 @@ fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbK
         }
     }
 
-    ScreenFrame(title = "Change cover", subtitle = g.title) {
+    ScreenFrame(title = stringResource(R.string.cover_picker_change_cover), subtitle = g.title) {
         if (saving) LinearProgressIndicator(Modifier.fillMaxWidth())
         message?.let { (text, isError) ->
             StatusPill(if (isError) "Problem" else "Done", if (isError) StatusTone.BAD else StatusTone.GOOD)
@@ -120,8 +124,8 @@ fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbK
         }
 
         // Free box art.
-        CardTitle("Box art")
-        CardBody("From libretro's free thumbnail library, matched to your file name.")
+        CardTitle(stringResource(R.string.cover_picker_box_art))
+        CardBody(stringResource(R.string.cover_picker_from_libretro_s_free_thumbnail_library))
         when (val r = libretro) {
             null -> LinearProgressIndicator(Modifier.fillMaxWidth())
             else -> r.fold(
@@ -134,24 +138,24 @@ fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbK
         }
 
         // Custom covers.
-        CardTitle("Custom covers from SteamGridDB")
+        CardTitle(stringResource(R.string.cover_picker_custom_covers_from_steamgriddb))
         if (!hasSteamGridDbKey) {
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSettings) {
-                CardBody("SteamGridDB has thousands of community-made covers. Add your own free API key in Settings to browse them here.")
-                CardBody("Select to open Settings.")
+                CardBody(stringResource(R.string.cover_picker_steamgriddb_has_thousands_of_community_made))
+                CardBody(stringResource(R.string.cover_picker_select_to_open_settings))
             }
         } else {
-            ControllerTextField(value = query, onValueChange = { query = it }, singleLine = true, label = { Text("Search SteamGridDB") }, modifier = Modifier.fillMaxWidth())
-            FocusChip("Search", onClick = {
+            ControllerTextField(value = query, onValueChange = { query = it }, singleLine = true, label = { Text(stringResource(R.string.cover_picker_search_steamgriddb)) }, modifier = Modifier.fillMaxWidth())
+            FocusChip(stringResource(R.string.cover_picker_search), onClick = {
                 sgdbPicked = null; sgdbImages = null; sgdbGames = null
                 scope.launch { sgdbGames = covers.searchSteamGridDb(query) }
             }, enabled = query.isNotBlank())
             when (val r = sgdbGames) {
                 null -> if (sgdbPicked == null) LinearProgressIndicator(Modifier.fillMaxWidth())
-                is SgdbResult.InvalidKey -> CardBody("SteamGridDB didn't accept your API key. Check it in Settings.")
+                is SgdbResult.InvalidKey -> CardBody(stringResource(R.string.cover_picker_steamgriddb_didn_t_accept_your_api))
                 is SgdbResult.Failed -> CardBody(r.reason)
                 is SgdbResult.Ok -> {
-                    if (r.value.isEmpty()) CardBody("No games found. Try a shorter or different name.")
+                    if (r.value.isEmpty()) CardBody(stringResource(R.string.cover_picker_no_games_found_try_a_shorter))
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(r.value.take(12), key = { it.id }) { sg ->
                             FocusChip(
@@ -168,32 +172,32 @@ fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbK
             if (sgdbPicked != null) {
                 when (val r = sgdbImages) {
                     null -> LinearProgressIndicator(Modifier.fillMaxWidth())
-                    is SgdbResult.InvalidKey -> CardBody("SteamGridDB didn't accept your API key. Check it in Settings.")
+                    is SgdbResult.InvalidKey -> CardBody(stringResource(R.string.cover_picker_steamgriddb_didn_t_accept_your_api))
                     is SgdbResult.Failed -> CardBody(r.reason)
                     is SgdbResult.Ok -> {
-                        if (r.value.isEmpty()) CardBody("No covers for this game yet.")
+                        if (r.value.isEmpty()) CardBody(stringResource(R.string.cover_picker_no_covers_for_this_game_yet))
                         CandidateRow(
                             r.value.take(30).map { Candidate("sgdb-${it.id}", it.thumb, it.url, it.style ?: "cover", CoverRepository.SOURCE_STEAMGRIDDB, it.author?.name) },
                             previews, covers, ::choose,
                         )
-                        CardBody("Covers are made by SteamGridDB's community; the artist is credited under each one.")
+                        CardBody(stringResource(R.string.cover_picker_covers_are_made_by_steamgriddb_s))
                     }
                 }
             }
         }
 
         // ScreenScraper: one lookup, only when asked.
-        CardTitle("ScreenScraper")
+        CardTitle(stringResource(R.string.cover_picker_screenscraper))
         if (!covers.screenScraper.available) {
-            CardBody("Not available in this build: ScreenScraper needs RetroForge's own developer ID, which ScreenScraper issues on request.")
+            CardBody(stringResource(R.string.cover_picker_not_available_in_this_build_screenscraper))
         } else when (val r = ssCovers) {
             null -> {
-                CardBody("Front and 3D boxes from ScreenScraper's database, matched by your file. Add your ScreenScraper account in Settings for a higher daily limit.")
-                FocusChip("Look up on ScreenScraper", onClick = { ssCovers = Result.success(emptyList<SsMedia>()).also { ssLoading = true }; scope.launch { ssCovers = covers.screenScraperCovers(g); ssLoading = false } })
+                CardBody(stringResource(R.string.cover_picker_front_and_3d_boxes_from_screenscraper))
+                FocusChip(stringResource(R.string.cover_picker_look_up_on_screenscraper), onClick = { ssCovers = Result.success(emptyList<SsMedia>()).also { ssLoading = true }; scope.launch { ssCovers = covers.screenScraperCovers(g); ssLoading = false } })
             }
             else -> if (ssLoading) LinearProgressIndicator(Modifier.fillMaxWidth()) else r.fold(
                 onSuccess = { list ->
-                    if (list.isEmpty()) CardBody("ScreenScraper has no box art for this file.")
+                    if (list.isEmpty()) CardBody(stringResource(R.string.cover_picker_screenscraper_has_no_box_art_for))
                     CandidateRow(
                         list.take(12).map { m ->
                             Candidate("ss-${m.type}-${m.region}", m.url, m.url, listOfNotNull(m.type.replace("box-", "Box "), m.region?.uppercase()).joinToString(" · "), CoverRepository.SOURCE_SCREENSCRAPER, null)
@@ -206,19 +210,18 @@ fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbK
         }
 
         // The user's own image.
-        CardTitle("Your own image")
+        CardTitle(stringResource(R.string.cover_picker_your_own_image))
         CardBody(
-            "Use any picture saved on this device, for example a cover scan from The Cover Project (thecoverproject.net), " +
-                "which RetroForge can't download from directly.",
+            stringResource(R.string.cover_picker_use_any_picture_saved_on_this),
         )
         ChipRow {
-            FocusChip("Choose an image", onClick = { pickImage.launch("image/*") })
-            FocusChip("Open The Cover Project", onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, COVER_PROJECT.toUri())) } })
+            FocusChip(stringResource(R.string.cover_picker_choose_an_image), onClick = { pickImage.launch("image/*") })
+            FocusChip(stringResource(R.string.cover_picker_open_the_cover_project), onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, COVER_PROJECT.toUri())) } })
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { scope.launch { covers.reset(g); onDone() } }) {
-            CardTitle("Use the original artwork")
-            CardBody("Removes the chosen cover. The game shows its gamelist artwork again, if it has any.")
+            CardTitle(stringResource(R.string.cover_picker_use_the_original_artwork))
+            CardBody(stringResource(R.string.cover_picker_removes_the_chosen_cover_the_game))
         }
     }
 }
@@ -257,7 +260,7 @@ private fun CandidateRow(candidates: List<Candidate>, previews: MutableMap<Strin
 fun CoverControls(game: GameEntity, viewModel: LibraryViewModel, onChangeCover: () -> Unit) {
     val chosen by viewModel.covers.covers.collectAsStateWithLifecycle(initialValue = emptyList())
     val cover = chosen.firstOrNull { it.rootId == game.rootId && it.relativePath == game.relativePath }
-    FocusChip("Change cover", onClick = onChangeCover)
+    FocusChip(stringResource(R.string.cover_picker_change_cover), onClick = onChangeCover)
     cover?.let {
         CardBody(
             when (it.source) {

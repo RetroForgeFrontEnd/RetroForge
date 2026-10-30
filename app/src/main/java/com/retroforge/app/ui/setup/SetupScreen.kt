@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.setup
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import com.retroforge.app.ui.ChipRow
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -55,28 +59,27 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
     val biosScope = androidx.compose.runtime.rememberCoroutineScope()
     val pickRetroArchFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { it?.let(viewModel::onRetroArchFolderPicked) }
 
-    ScreenFrame(title = "Set up RetroForge", subtitle = "Three steps from your game folder to playing; most of it happens by itself. You can come back here any time from Settings.") {
+    ScreenFrame(title = stringResource(R.string.settings_set_up_retroforge), subtitle = stringResource(R.string.setup_three_steps_from_your_game_folder)) {
         val s = summary
 
         // 1. Games
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { pickGames.launch(null) }) {
-            CardTitle("1. Your games")
+            CardTitle(stringResource(R.string.setup_1_your_games))
             if (s == null || s.folders == 0) {
-                StatusPill("To do", StatusTone.CAUTION)
-                CardBody("Select to choose your games folder, e.g. an existing \"roms\" folder from another frontend. RetroForge only reads it.")
+                StatusPill(stringResource(R.string.setup_to_do), StatusTone.CAUTION)
+                CardBody(stringResource(R.string.setup_select_to_choose_your_games_folder))
             } else {
                 StatusPill("${plural(s.games, "game")} in ${plural(s.cores.size + s.unsupported.size, "system")}", StatusTone.GOOD)
-                CardBody("Select to add another folder.")
+                CardBody(stringResource(R.string.setup_select_to_add_another_folder))
             }
         }
         // Tidy-up offer: games lying loose instead of in their system's folder.
         val loose by androidx.compose.runtime.produceState(0, s?.games) { value = viewModel.looseGames() }
         if (loose > 0) {
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSort) {
-                CardTitle("Tidy your games folder?") { StatusPill("${plural(loose, "game")} not in a system folder", StatusTone.CAUTION) }
+                CardTitle(stringResource(R.string.setup_tidy_your_games_folder)) { StatusPill("${plural(loose, "game")} not in a system folder", StatusTone.CAUTION) }
                 CardBody(
-                    "They play fine where they are. Other frontends (RetroArch, ES-DE, RetroBat) want each game in its system's " +
-                        "folder, though. Select to see them in the ROM Manager: it shows every move first, and History can undo it.",
+                    stringResource(R.string.setup_they_play_fine_where_they_are),
                 )
             }
         }
@@ -86,17 +89,17 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
         val systemIds = s?.systemIds.orEmpty()
         val builtIn = systemIds.mapNotNull { id -> com.retroforge.player.PlayerCores.forSystem(id)?.let { id to it } }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("2. Emulators")
+            CardTitle(stringResource(R.string.setup_2_emulators))
             when {
-                s == null || systemIds.isEmpty() -> CardBody("Add your games first. RetroForge then gets the emulators they need by itself.")
-                builtIn.isEmpty() -> CardBody("RetroForge's built-in player doesn't run these systems yet; see below.")
+                s == null || systemIds.isEmpty() -> CardBody(stringResource(R.string.setup_add_your_games_first_retroforge_then))
+                builtIn.isEmpty() -> CardBody(stringResource(R.string.setup_retroforge_s_built_in_player_doesn))
                 else -> {
                     val cores = builtIn.map { it.second }.distinctBy { it.id }
                     val ready = cores.count { (coreStates[it.id] ?: viewModel.coreState(it.id)) == com.retroforge.player.CoreState.Ready }
-                    if (ready == cores.size) StatusPill("Ready", StatusTone.GOOD)
+                    if (ready == cores.size) StatusPill(stringResource(R.string.pc_stream_ready), StatusTone.GOOD)
                     else StatusPill("Getting ${ready + 1} of ${cores.size}…", StatusTone.CAUTION)
                     CardBody("Built in, nothing to install: ${builtIn.map { viewModel.systemName(it.first) }.sorted().joinToString()}.")
-                    CardBody("RetroForge downloads these emulators for you in the background.")
+                    CardBody(stringResource(R.string.setup_retroforge_downloads_these_emulators_for_you))
                     val failed = cores.filter { (coreStates[it.id] ?: viewModel.coreState(it.id)) is com.retroforge.player.CoreState.Failed }
                     if (failed.isNotEmpty()) CardBody("Couldn't download ${failed.joinToString { it.name }} yet (no internet?). RetroForge tries again next time.")
                 }
@@ -109,20 +112,19 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = if (install != null) viewModel::openRetroArch else null) {
                 CardTitle("RetroArch, for ${plural(needRetroArch.size, "more system")}")
                 val i = install
-                if (i == null) StatusPill("Not installed", StatusTone.CAUTION) else StatusPill("Installed ${i.versionName.orEmpty()}".trim(), StatusTone.GOOD)
+                if (i == null) StatusPill(stringResource(R.string.pc_not_installed), StatusTone.CAUTION) else StatusPill("Installed ${i.versionName.orEmpty()}".trim(), StatusTone.GOOD)
                 CardBody("${needRetroArch.map(viewModel::systemName).sorted().joinToString()} play in RetroArch, a free emulator app RetroForge starts for you.")
                 if (i == null) {
-                    CardBody("Install it from Google Play or its website, then open it once and allow it to access files.")
+                    CardBody(stringResource(R.string.setup_install_it_from_google_play_or))
                 } else {
                     CardBody(
-                        "RetroArch keeps its emulators (\"cores\") in its own private storage, so only RetroArch can download them: " +
-                            "in RetroArch, Main Menu → Online Updater → Core Downloader. Each game's page names the core it needs.",
+                        stringResource(R.string.setup_retroarch_keeps_its_emulators_cores_in),
                     )
                 }
             }
             if (install == null) {
                 ChipRow {
-                    FocusChip("Get it on Google Play", onClick = {
+                    FocusChip(stringResource(R.string.setup_get_it_on_google_play), onClick = {
                         val market = Intent(Intent.ACTION_VIEW, "market://details?id=com.retroarch".toUri())
                         try {
                             context.startActivity(market)
@@ -130,7 +132,7 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
                             runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, "https://play.google.com/store/apps/details?id=com.retroarch".toUri())) }
                         }
                     })
-                    FocusChip("RetroArch website", onClick = {
+                    FocusChip(stringResource(R.string.setup_retroarch_website), onClick = {
                         runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, RetroArchLauncher.DOWNLOAD_URL.toUri())) }
                     })
                 }
@@ -146,16 +148,15 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
             if (settings?.biosFolderUri != null) viewModel.recheckBios()
             else biosScope.launch { if (!viewModel.useFoundBiosFolder()) pickBios.launch(null) }
         }) {
-            CardTitle("3. BIOS files")
+            CardTitle(stringResource(R.string.setup_3_bios_files))
             CardBody(
-                "Some systems need BIOS files from the original console. RetroForge doesn't provide them. If you have your own, " +
-                    "select this to choose the folder they're in (for example another frontend's \"bios\" folder) and RetroForge will check them.",
+                stringResource(R.string.setup_some_systems_need_bios_files_from),
             )
         }
         if (settings?.biosFolderUri != null) {
             ChipRow {
                 FocusChip(if (bios.reports == null) "Scan for BIOS files" else "Scan again", enabled = !bios.checking, onClick = { viewModel.recheckBios() })
-                FocusChip("Choose another BIOS folder", onClick = { pickBios.launch(null) })
+                FocusChip(stringResource(R.string.setup_choose_another_bios_folder), onClick = { pickBios.launch(null) })
             }
         }
         if (bios.checking) {
@@ -164,7 +165,7 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
         }
         bios.error?.let { CardBody(it) }
         bios.reports?.let { reports ->
-            if (reports.isEmpty()) CardBody("None of the systems in your library need BIOS files.")
+            if (reports.isEmpty()) CardBody(stringResource(R.string.setup_none_of_the_systems_in_your))
             else BiosSummary(reports, viewModel::systemName)
             reports.forEach { report ->
                 FocusCard(modifier = Modifier.fillMaxWidth()) {
@@ -202,12 +203,11 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
                         }
                     },
                 ) {
-                    CardTitle("Copy them to RetroArch")
+                    CardTitle(stringResource(R.string.setup_copy_them_to_retroarch))
                     CardBody(
-                        "RetroArch reads BIOS from its own \"system\" folder (normally RetroArch/system on internal storage). " +
-                            "Select to copy the files above there under the names the cores expect. Files already there are left alone; nothing is deleted.",
+                        stringResource(R.string.setup_retroarch_reads_bios_from_its_own),
                     )
-                    if (settings?.retroArchSystemUri == null) CardBody("You'll be asked to choose that folder once. Open RetroArch at least once first so it exists.")
+                    if (settings?.retroArchSystemUri == null) CardBody(stringResource(R.string.setup_you_ll_be_asked_to_choose))
                 }
                 bios.playerCopy?.takeIf { it.copied.isNotEmpty() || it.alreadyThere.isNotEmpty() || it.failed.isNotEmpty() }?.let { r ->
                     CardBody(
@@ -228,17 +228,17 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
                     }
                 }
                 if (settings?.retroArchSystemUri != null) {
-                    FocusChip("Choose a different RetroArch folder", onClick = { pickRetroArchFolder.launch(RETROARCH_SYSTEM_HINT) })
+                    FocusChip(stringResource(R.string.setup_choose_a_different_retroarch_folder), onClick = { pickRetroArchFolder.launch(RETROARCH_SYSTEM_HINT) })
                 }
             }
         }
 
         // 4. Bezels round the game in landscape, for every system the scan found.
-        com.retroforge.app.ui.settings.BezelsCard(systems, title = "4. Bezels (optional)")
+        com.retroforge.app.ui.settings.BezelsCard(systems, title = stringResource(R.string.setup_4_bezels_optional))
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.finish(); onDone() }) {
-            CardTitle("Done")
-            CardBody("You can skip any step and come back later from Settings → Set up RetroForge.")
+            CardTitle(stringResource(R.string.setup_done))
+            CardBody(stringResource(R.string.setup_you_can_skip_any_step_and))
         }
     }
 }
@@ -258,14 +258,14 @@ private fun BiosSummary(reports: List<BiosReport>, systemName: (String) -> Strin
     }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         if (missing.isEmpty()) {
-            CardTitle("You have every BIOS your games need") { StatusPill("All found", StatusTone.GOOD) }
+            CardTitle(stringResource(R.string.setup_you_have_every_bios_your_games)) { StatusPill(stringResource(R.string.setup_all_found), StatusTone.GOOD) }
             CardBody(
                 if (optional == 0) "Every system in your library has what it needs."
                 else "$optional optional one${if (optional == 1) "" else "s"} would make some systems more accurate; see below.",
             )
         } else {
-            CardTitle("Missing BIOS for ${missing.size} system${if (missing.size == 1) "" else "s"}") { StatusPill("Missing", StatusTone.BAD) }
-            CardBody("Games for these won't start in the built-in player until the BIOS is in your BIOS folder:")
+            CardTitle("Missing BIOS for ${missing.size} system${if (missing.size == 1) "" else "s"}") { StatusPill(stringResource(R.string.setup_missing), StatusTone.BAD) }
+            CardBody(stringResource(R.string.setup_games_for_these_won_t_start))
             missing.forEach { r ->
                 val files = if (r.status == BiosStatus.PARTIAL) r.missing.map { it.baseName }
                 else if (r.rule.mode == "any" && r.rule.files.size > 4) listOf("one BIOS file, any version")

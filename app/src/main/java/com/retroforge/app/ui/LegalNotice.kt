@@ -1,5 +1,9 @@
 package com.retroforge.app.ui
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,13 +34,13 @@ fun LegalNoticeScreen(onAcknowledge: () -> Unit) {
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
     ScreenFrame(title = null) {
         Wordmark()
-        Text("Before you start", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
+        Text(stringResource(R.string.legal_notice_before_you_start), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
         legalNoticeParagraphs.forEach {
             Text(it, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         FocusCard(modifier = Modifier.fillMaxWidth().focusRequester(focus), onClick = onAcknowledge) {
-            CardTitle("I understand")
-            CardBody("You can read this again any time in Settings.")
+            CardTitle(stringResource(R.string.legal_notice_i_understand))
+            CardBody(stringResource(R.string.legal_notice_you_can_read_this_again_any))
         }
     }
 }

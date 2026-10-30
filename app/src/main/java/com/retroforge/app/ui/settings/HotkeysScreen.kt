@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +27,7 @@ fun HotkeysScreen(viewModel: SettingsViewModel) {
     val menu = HotkeyCombo.of(settings.menuCombo).label
     val quit = HotkeyCombo.of(settings.quitCombo).label
 
-    ScreenFrame(title = "Hotkeys", subtitle = "Change the RetroArch combos under Settings → RetroArch hotkeys.") {
+    ScreenFrame(title = stringResource(R.string.hotkeys_hotkeys), subtitle = stringResource(R.string.hotkeys_change_the_retroarch_combos_under_settings)) {
         Section("In RetroForge", listOf(
             "D-pad or stick" to "Move",
             "A" to "Select",
@@ -37,8 +41,8 @@ fun HotkeysScreen(viewModel: SettingsViewModel) {
             ) + if (settings.fastForwardOnR2) listOf("Hold R2" to "Fast-forward (GBA, SNES, Mega Drive and other systems without R2)") else emptyList())
         } else {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                CardTitle("In games (RetroArch)")
-                CardBody("RetroForge's hotkeys are off, so RetroArch uses its own settings.")
+                CardTitle(stringResource(R.string.hotkeys_in_games_retroarch))
+                CardBody(stringResource(R.string.hotkeys_retroforge_s_hotkeys_are_off_so))
             }
         }
         Section("In RetroArch's menu (Quick Menu)", listOf(
@@ -62,10 +66,9 @@ fun HotkeysScreen(viewModel: SettingsViewModel) {
             "F9" to "Mute",
         ))
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Standalone emulators")
+            CardTitle(stringResource(R.string.hotkeys_standalone_emulators))
             CardBody(
-                "DuckStation, Dolphin, PPSSPP and the other standalone apps have their own menus and hotkeys, set in each app's settings. " +
-                    "RetroForge can't change them, because Android doesn't let one app read the controller while another is on screen.",
+                stringResource(R.string.hotkeys_duckstation_dolphin_ppsspp_and_the_other),
             )
         }
     }

@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.patcher
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import com.retroforge.app.ui.ChipRow
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -66,16 +70,16 @@ fun PatcherScreen(viewModel: PatcherViewModel) {
     }
 
     ScreenFrame(
-        title = "ROM Patcher",
-        subtitle = "Apply IPS, BPS or UPS patches. Your original ROM is never changed; the result is saved as a new file you choose.",
+        title = stringResource(R.string.library_rom_patcher),
+        subtitle = stringResource(R.string.patcher_apply_ips_bps_or_ups_patches),
     ) {
         if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { pickRom.launch(arrayOf("*/*")) }) {
-            CardTitle("1. Original ROM")
+            CardTitle(stringResource(R.string.patcher_1_original_rom))
             val rom = state.rom
             if (rom == null) {
-                CardBody("Select to choose a ROM (.zip and .7z are fine).")
+                CardBody(stringResource(R.string.patcher_select_to_choose_a_rom_zip))
             } else {
                 CardBody(if (rom.file.name == rom.pickedName) rom.pickedName else "${rom.file.name} (from ${rom.pickedName})")
                 CardBody("${rom.file.bytes.size} bytes · CRC32 ${hex(rom.crc32)}")
@@ -98,7 +102,7 @@ fun PatcherScreen(viewModel: PatcherViewModel) {
                     modifier = if (i == 0) Modifier.focusRequester(firstChoice) else Modifier,
                 )
             }
-            FocusChip("Cancel", onClick = viewModel::cancelChoice)
+            FocusChip(stringResource(R.string.network_drives_cancel), onClick = viewModel::cancelChoice)
         }
 
         FocusCard(modifier = Modifier.fillMaxWidth().focusRequester(addPatch), onClick = { pickPatch.launch(arrayOf("*/*")) }) {
@@ -111,7 +115,7 @@ fun PatcherScreen(viewModel: PatcherViewModel) {
 
         val ready = state.rom != null && state.patches.isNotEmpty() && !state.busy && state.match != RomMatch.MISMATCH
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = if (ready) viewModel::applyPatches else null) {
-            CardTitle("3. Create patched copy")
+            CardTitle(stringResource(R.string.patcher_3_create_patched_copy))
             CardBody(
                 when {
                     state.rom == null || state.patches.isEmpty() -> "Choose a ROM and at least one patch first."
@@ -146,14 +150,14 @@ private fun PatchCard(index: Int, patch: PickedPatch, state: PatcherState, viewM
         patch.info.expectedSourceCrc32?.let { CardBody("Needs ROM CRC32 ${hex(it)} (${patch.info.expectedSourceSize} bytes)") }
         if (index == 0) {
             when (state.match) {
-                RomMatch.MATCH -> StatusPill("ROM matches this patch", StatusTone.GOOD)
-                RomMatch.MATCH_WITHOUT_HEADER -> StatusPill("Matches once the 512-byte header is removed", StatusTone.GOOD)
-                RomMatch.MISMATCH -> StatusPill("Wrong ROM for this patch", StatusTone.BAD)
-                RomMatch.UNVERIFIABLE -> StatusPill("Can't verify the ROM (IPS)", StatusTone.CAUTION)
+                RomMatch.MATCH -> StatusPill(stringResource(R.string.patcher_rom_matches_this_patch), StatusTone.GOOD)
+                RomMatch.MATCH_WITHOUT_HEADER -> StatusPill(stringResource(R.string.patcher_matches_once_the_512_byte_header), StatusTone.GOOD)
+                RomMatch.MISMATCH -> StatusPill(stringResource(R.string.patcher_wrong_rom_for_this_patch), StatusTone.BAD)
+                RomMatch.UNVERIFIABLE -> StatusPill(stringResource(R.string.patcher_can_t_verify_the_rom_ips), StatusTone.CAUTION)
                 null -> Unit
             }
         } else if (patch.info.format != PatchFormat.IPS) {
-            CardBody("Checked against the result of the patches above when applied.")
+            CardBody(stringResource(R.string.patcher_checked_against_the_result_of_the))
         }
         patch.info.metadata?.takeIf { it.isNotBlank() }?.let { CardBody("Patch info: ${it.trim().take(300)}") }
 
@@ -173,11 +177,11 @@ private fun PatchCard(index: Int, patch: PickedPatch, state: PatcherState, viewM
                 },
             )
         } else {
-            CardBody("No readme found. Check the patch's download page for the ROM version and patch order it needs.")
+            CardBody(stringResource(R.string.patcher_no_readme_found_check_the_patch))
         }
     }
     ChipRow {
-        if (index > 0) FocusChip("Move up", onClick = { viewModel.movePatchUp(index) })
-        FocusChip("Remove", onClick = { viewModel.removePatch(index) })
+        if (index > 0) FocusChip(stringResource(R.string.patcher_move_up), onClick = { viewModel.movePatchUp(index) })
+        FocusChip(stringResource(R.string.hacks_remove), onClick = { viewModel.removePatch(index) })
     }
 }

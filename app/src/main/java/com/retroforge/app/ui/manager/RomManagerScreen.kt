@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.manager
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import com.retroforge.app.ui.ChipRow
 import android.provider.DocumentsContract
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -61,12 +65,12 @@ fun RomManagerScreen(viewModel: RomManagerViewModel, deleteGameId: Long = -1) {
     }
 
     ScreenFrame(
-        title = "ROM Manager",
-        subtitle = "Tidy duplicates and compress games. Every change is shown first and History can undo it. Files are set aside, never deleted, until you choose Free up space.",
+        title = stringResource(R.string.library_rom_manager),
+        subtitle = stringResource(R.string.rom_manager_tidy_duplicates_and_compress_games_every),
     ) {
         val root = roots?.firstOrNull { it.id == rootId }
         if (roots?.isEmpty() == true) {
-            CardBody("Add a game folder in Retro first.")
+            CardBody(stringResource(R.string.rom_manager_add_a_game_folder_in_retro))
             return@ScreenFrame
         }
         if ((roots?.size ?: 0) > 1) {
@@ -106,8 +110,8 @@ private fun RunCard(run: ManagerRun?, viewModel: RomManagerViewModel) {
             val fraction = run.fraction
             if (fraction != null) LinearProgressIndicator(progress = { fraction }, modifier = Modifier.fillMaxWidth())
             else LinearProgressIndicator(Modifier.fillMaxWidth())
-            CardBody("Keep RetroForge open until this finishes. Stopping is safe: the game in progress is left as it was.")
-            FocusChip("Stop", onClick = viewModel::stop)
+            CardBody(stringResource(R.string.rom_manager_keep_retroforge_open_until_this_finishes))
+            FocusChip(stringResource(R.string.library_stop), onClick = viewModel::stop)
         }
         is ManagerRun.Done -> FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle(run.title)
@@ -116,12 +120,12 @@ private fun RunCard(run: ManagerRun?, viewModel: RomManagerViewModel) {
                 StatusPill(plural(run.problems.size, "problem"), StatusTone.CAUTION)
                 run.problems.take(8).forEach { CardBody("• $it") }
             }
-            FocusChip("OK", onClick = viewModel::dismissRun)
+            FocusChip(stringResource(R.string.rom_manager_ok), onClick = viewModel::dismissRun)
         }
         is ManagerRun.Failed -> FocusCard(modifier = Modifier.fillMaxWidth()) {
-            StatusPill("Didn't run", StatusTone.BAD)
+            StatusPill(stringResource(R.string.rom_manager_didn_t_run), StatusTone.BAD)
             CardBody(run.reason)
-            FocusChip("OK", onClick = viewModel::dismissRun)
+            FocusChip(stringResource(R.string.rom_manager_ok), onClick = viewModel::dismissRun)
         }
         null -> Unit
     }
@@ -160,7 +164,7 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
                 if (pending.parts.size > 6) CardBody("… and ${pending.parts.size - 6} more")
             }
             is Pending.Purge -> {
-                CardTitle("Delete ${pending.summary.folder} permanently?") { StatusPill("This can't be undone", StatusTone.BAD) }
+                CardTitle("Delete ${pending.summary.folder} permanently?") { StatusPill(stringResource(R.string.rom_manager_this_can_t_be_undone), StatusTone.BAD) }
                 CardBody(
                     "${plural(pending.summary.files, "file")} (${formatBytes(pending.summary.bytes)}) will be deleted for good. " +
                         "History entries that would need them can no longer be undone.",
@@ -169,26 +173,24 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
             is Pending.SortLoose -> {
                 CardTitle("Move ${plural(pending.count, "game")} into system folders?")
                 CardBody(
-                    "Each game moves into the folder for its system (made if needed). Favourites, playlists and play history go with " +
-                        "them. Other frontends will find them there too. Undo from History puts every file back.",
+                    stringResource(R.string.rom_manager_each_game_moves_into_the_folder),
                 )
             }
             is Pending.MakePlaylists -> {
                 CardTitle("Make ${plural(pending.count, "playlist")}?")
                 CardBody(
-                    "Each multi-disc game gets an .m3u playlist next to its discs, listing them in order. Your disc files aren't changed. " +
-                        "RetroForge then shows each game once, and the emulator can change discs from its menu. Other frontends will list the playlist too.",
+                    stringResource(R.string.rom_manager_each_multi_disc_game_gets_an),
                 )
             }
             is Pending.Undo -> {
-                CardTitle("Undo this?")
+                CardTitle(stringResource(R.string.rom_manager_undo_this))
                 CardBody(pending.log.summary)
                 CardBody("Files move back where they were and gamelist.xml / .m3u changes are reversed. Files RetroForge made go to $DUPLICATES_FOLDER rather than being deleted.")
             }
         }
-        CardBody("If another frontend uses this folder on a PC, close it first: some rewrite gamelist.xml when they exit.")
+        CardBody(stringResource(R.string.rom_manager_if_another_frontend_uses_this_folder))
         if (!canWrite) {
-            StatusPill("Needs permission to change files", StatusTone.CAUTION)
+            StatusPill(stringResource(R.string.rom_manager_needs_permission_to_change_files), StatusTone.CAUTION)
             CardBody(
                 "So far RetroForge can only read ${root.name}. Choose the same folder in the next screen and tap \"Use this folder\", then \"Allow\".",
             )
@@ -201,7 +203,7 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
             val rootUri = root.treeUri.toUri()
             pickFolder.launch(DocumentsContract.buildDocumentUriUsingTree(rootUri, DocumentsContract.getTreeDocumentId(rootUri)))
         })
-        FocusChip("Cancel", onClick = viewModel::cancelPending)
+        FocusChip(stringResource(R.string.network_drives_cancel), onClick = viewModel::cancelPending)
     }
 }
 
@@ -215,17 +217,17 @@ private fun DuplicatesTab(viewModel: RomManagerViewModel) {
 
     when (val s = state) {
         Loadable.Idle -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = viewModel::findDuplicates) {
-            CardTitle("Find duplicates")
-            CardBody("Looks for the same game in several files (e.g. a .zip and a .7z) and checks whether they hold the same data. This only reads your files.")
+            CardTitle(stringResource(R.string.rom_manager_find_duplicates))
+            CardBody(stringResource(R.string.rom_manager_looks_for_the_same_game_in))
         }
         is Loadable.Loading -> {
             CardBody(if (s.total == 0) "Looking for duplicates …" else "Checking set ${s.done + 1} of ${s.total} …")
             com.retroforge.app.ui.DownloadBar(s.share)
         }
-        is Loadable.Failed -> { StatusPill("Couldn't check", StatusTone.BAD); CardBody(s.reason); FocusChip("Try again", onClick = viewModel::findDuplicates) }
+        is Loadable.Failed -> { StatusPill(stringResource(R.string.rom_manager_couldn_t_check), StatusTone.BAD); CardBody(s.reason); FocusChip(stringResource(R.string.rom_manager_try_again), onClick = viewModel::findDuplicates) }
         is Loadable.Ready -> {
             val report = s.value
-            if (report.sets.isEmpty()) CardBody("No duplicates to tidy.")
+            if (report.sets.isEmpty()) CardBody(stringResource(R.string.rom_manager_no_duplicates_to_tidy))
             else {
                 CardBody("${plural(report.sets.size, "set")} of duplicates. Ticked sets hold identical data. Select a file to keep it instead.")
                 ChipRow {
@@ -239,9 +241,9 @@ private fun DuplicatesTab(viewModel: RomManagerViewModel) {
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.toggleSet(i) }, selected = on) {
                     Text((if (on) "☑ " else "☐ ") + set.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                     when (set.sameness) {
-                        Sameness.SAME_DATA -> StatusPill("Identical data", StatusTone.GOOD)
-                        Sameness.DIFFERENT_DATA -> StatusPill("Different data: check before tidying", StatusTone.CAUTION)
-                        Sameness.NOT_CHECKED -> StatusPill("Couldn't compare (too large or unreadable)", StatusTone.NEUTRAL)
+                        Sameness.SAME_DATA -> StatusPill(stringResource(R.string.rom_manager_identical_data), StatusTone.GOOD)
+                        Sameness.DIFFERENT_DATA -> StatusPill(stringResource(R.string.rom_manager_different_data_check_before_tidying), StatusTone.CAUTION)
+                        Sameness.NOT_CHECKED -> StatusPill(stringResource(R.string.rom_manager_couldn_t_compare_too_large_or), StatusTone.NEUTRAL)
                     }
                 }
                 set.files.forEach { f ->
@@ -264,7 +266,7 @@ private fun DuplicatesTab(viewModel: RomManagerViewModel) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 val count = selected.sumOf { report.sets[it].files.size - 1 }
                 FocusChip("Move ${if (count == 1) "1 copy" else "$count copies"} to $DUPLICATES_FOLDER", onClick = viewModel::askMoveDuplicates, enabled = count > 0)
-                FocusChip("Check again", onClick = viewModel::findDuplicates)
+                FocusChip(stringResource(R.string.rom_manager_check_again), onClick = viewModel::findDuplicates)
             }
         }
     }
@@ -277,18 +279,17 @@ private fun CompressTab(viewModel: RomManagerViewModel) {
     val selected by viewModel.selectedSystems.collectAsStateWithLifecycle()
     when (val s = state) {
         Loadable.Idle -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = viewModel::findCompressible) {
-            CardTitle("Find games to compress")
+            CardTitle(stringResource(R.string.rom_manager_find_games_to_compress))
             CardBody(
-                "Disc games (.cue/.bin, and PS2/PSP .iso) become CHD, which RetroArch, DuckStation, Flycast, NetherSX2 and PPSSPP play directly. " +
-                    "Cartridge ROMs become .zip. This only reads your files until you confirm.",
+                stringResource(R.string.rom_manager_disc_games_cue_bin_and_ps2),
             )
         }
-        is Loadable.Loading -> { CardBody("Looking for uncompressed games …"); com.retroforge.app.ui.DownloadBar(s.share) }
-        is Loadable.Failed -> { StatusPill("Couldn't check", StatusTone.BAD); CardBody(s.reason); FocusChip("Try again", onClick = viewModel::findCompressible) }
+        is Loadable.Loading -> { CardBody(stringResource(R.string.rom_manager_looking_for_uncompressed_games)); com.retroforge.app.ui.DownloadBar(s.share) }
+        is Loadable.Failed -> { StatusPill(stringResource(R.string.rom_manager_couldn_t_check), StatusTone.BAD); CardBody(s.reason); FocusChip(stringResource(R.string.rom_manager_try_again), onClick = viewModel::findCompressible) }
         is Loadable.Ready -> {
             val report = s.value
-            if (report.jobs.isEmpty()) CardBody("Everything that can be compressed already is.")
-            else CardBody("Select the systems to compress.")
+            if (report.jobs.isEmpty()) CardBody(stringResource(R.string.rom_manager_everything_that_can_be_compressed_already))
+            else CardBody(stringResource(R.string.rom_manager_select_the_systems_to_compress))
             report.jobs.groupBy { it.system }.forEach { (system, jobs) ->
                 val on = system in selected
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.toggleSystem(system) }, selected = on) {
@@ -297,8 +298,8 @@ private fun CompressTab(viewModel: RomManagerViewModel) {
                         style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface,
                     )
                     CardBody("To " + jobs.map { it.format }.distinct().joinToString { it.label } + ". " + jobs.take(4).joinToString { it.title } + if (jobs.size > 4) " and ${jobs.size - 4} more" else "")
-                    if (jobs.any { it.format == CompressFormat.ZIP }) CardBody("A .zip is usually 30–60% smaller.")
-                    if (jobs.any { it.format != CompressFormat.ZIP }) CardBody("A CHD is usually 30–60% smaller; audio CD tracks shrink less.")
+                    if (jobs.any { it.format == CompressFormat.ZIP }) CardBody(stringResource(R.string.rom_manager_a_zip_is_usually_30_60))
+                    if (jobs.any { it.format != CompressFormat.ZIP }) CardBody(stringResource(R.string.rom_manager_a_chd_is_usually_30_60))
                 }
             }
             if (report.skipped.isNotEmpty()) {
@@ -312,7 +313,7 @@ private fun CompressTab(viewModel: RomManagerViewModel) {
             val jobs = viewModel.selectedJobs()
             ChipRow {
                 FocusChip("Compress ${plural(jobs.size, "game")}", onClick = viewModel::askCompress, enabled = jobs.isNotEmpty())
-                FocusChip("Check again", onClick = viewModel::findCompressible)
+                FocusChip(stringResource(R.string.rom_manager_check_again), onClick = viewModel::findCompressible)
             }
         }
     }
@@ -324,17 +325,16 @@ private fun SortTab(viewModel: RomManagerViewModel) {
     val state by viewModel.loose.collectAsStateWithLifecycle()
     when (val s = state) {
         Loadable.Idle -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = viewModel::findLoose) {
-            CardTitle("Sort loose games into system folders")
+            CardTitle(stringResource(R.string.rom_manager_sort_loose_games_into_system_folders))
             CardBody(
-                "Finds games outside a folder for their system (loose files, a Downloads or Extras folder) and shows where each " +
-                    "would go: the folder you already use for that system, or a new one named like RetroBat and ES-DE. This only reads your files.",
+                stringResource(R.string.rom_manager_finds_games_outside_a_folder_for),
             )
         }
-        is Loadable.Loading -> { CardBody("Looking for loose games …"); LinearProgressIndicator(Modifier.fillMaxWidth()) }
-        is Loadable.Failed -> { StatusPill("Couldn't check", StatusTone.BAD); CardBody(s.reason); FocusChip("Try again", onClick = viewModel::findLoose) }
+        is Loadable.Loading -> { CardBody(stringResource(R.string.rom_manager_looking_for_loose_games)); LinearProgressIndicator(Modifier.fillMaxWidth()) }
+        is Loadable.Failed -> { StatusPill(stringResource(R.string.rom_manager_couldn_t_check), StatusTone.BAD); CardBody(s.reason); FocusChip(stringResource(R.string.rom_manager_try_again), onClick = viewModel::findLoose) }
         is Loadable.Ready -> {
             val jobs = s.value
-            if (jobs.isEmpty()) CardBody("Every game is already in its system's folder.")
+            if (jobs.isEmpty()) CardBody(stringResource(R.string.rom_manager_every_game_is_already_in_its))
             jobs.groupBy { it.folder }.forEach { (folder, list) ->
                 FocusCard(modifier = Modifier.fillMaxWidth()) {
                     Text("Into $folder: ${plural(list.size, "game")}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
@@ -344,7 +344,7 @@ private fun SortTab(viewModel: RomManagerViewModel) {
             }
             ChipRow {
                 if (jobs.isNotEmpty()) FocusChip("Move ${plural(jobs.size, "game")}", onClick = viewModel::askSortLoose)
-                FocusChip("Check again", onClick = viewModel::findLoose)
+                FocusChip(stringResource(R.string.rom_manager_check_again), onClick = viewModel::findLoose)
             }
         }
     }
@@ -355,17 +355,16 @@ private fun MultiDiscTab(viewModel: RomManagerViewModel) {
     val state by viewModel.multiDisc.collectAsStateWithLifecycle()
     when (val s = state) {
         Loadable.Idle -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = viewModel::findMultiDisc) {
-            CardTitle("Find multi-disc games")
+            CardTitle(stringResource(R.string.rom_manager_find_multi_disc_games))
             CardBody(
-                "Finds games split over several discs or floppies (\"Disc 1\", \"Disk 2 of 4\", \"Side B\") that have no .m3u playlist, " +
-                    "so each plays as one game with disc swapping. This only reads your files.",
+                stringResource(R.string.rom_manager_finds_games_split_over_several_discs),
             )
         }
-        is Loadable.Loading -> { CardBody("Looking for multi-disc games …"); com.retroforge.app.ui.DownloadBar(s.share) }
-        is Loadable.Failed -> { StatusPill("Couldn't check", StatusTone.BAD); CardBody(s.reason); FocusChip("Try again", onClick = viewModel::findMultiDisc) }
+        is Loadable.Loading -> { CardBody(stringResource(R.string.rom_manager_looking_for_multi_disc_games)); com.retroforge.app.ui.DownloadBar(s.share) }
+        is Loadable.Failed -> { StatusPill(stringResource(R.string.rom_manager_couldn_t_check), StatusTone.BAD); CardBody(s.reason); FocusChip(stringResource(R.string.rom_manager_try_again), onClick = viewModel::findMultiDisc) }
         is Loadable.Ready -> {
             val report = s.value
-            if (report.jobs.isEmpty()) CardBody("Every multi-disc game already has a playlist.")
+            if (report.jobs.isEmpty()) CardBody(stringResource(R.string.rom_manager_every_multi_disc_game_already_has))
             report.jobs.groupBy { it.system }.forEach { (system, jobs) ->
                 FocusCard(modifier = Modifier.fillMaxWidth()) {
                     Text("${viewModel.systemName(system)}: ${plural(jobs.size, "game")}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
@@ -381,7 +380,7 @@ private fun MultiDiscTab(viewModel: RomManagerViewModel) {
             }
             ChipRow {
                 if (report.jobs.isNotEmpty()) FocusChip("Make ${plural(report.jobs.size, "playlist")}", onClick = viewModel::askMakePlaylists)
-                FocusChip("Check again", onClick = viewModel::findMultiDisc)
+                FocusChip(stringResource(R.string.rom_manager_check_again), onClick = viewModel::findMultiDisc)
             }
         }
     }
@@ -395,8 +394,8 @@ private fun HistoryTab(viewModel: RomManagerViewModel, root: RootEntity) {
     LaunchedEffect(root.id) { viewModel.refreshHolding() }
     if (holding.isNotEmpty()) {
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Free up space")
-            CardBody("Files RetroForge set aside. Delete a folder once you're sure you don't need it: this is the only step that deletes for good.")
+            CardTitle(stringResource(R.string.rom_manager_free_up_space))
+            CardBody(stringResource(R.string.rom_manager_files_retroforge_set_aside_delete_a))
             holding.forEach { CardBody("${it.folder}: ${plural(it.files, "file")} · ${formatBytes(it.bytes)}") }
         }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -412,8 +411,8 @@ private fun HistoryTab(viewModel: RomManagerViewModel, root: RootEntity) {
             CardBody(log.summary)
             CardBody(format.format(Date(log.startedAt)) + " · ${plural(log.steps.size, "change")}" + if (!log.finished) " · interrupted" else "")
             log.undoneAt?.let { StatusPill("Undone ${format.format(Date(it))}", StatusTone.NEUTRAL) }
-            if (log.undoneAt == null && log.purgedAt != null) StatusPill("Can't be undone: its files were deleted permanently", StatusTone.NEUTRAL)
+            if (log.undoneAt == null && log.purgedAt != null) StatusPill(stringResource(R.string.rom_manager_can_t_be_undone_its_files), StatusTone.NEUTRAL)
         }
-        if (log.undoneAt == null && log.purgedAt == null) FocusChip("Undo", onClick = { viewModel.askUndo(log) })
+        if (log.undoneAt == null && log.purgedAt == null) FocusChip(stringResource(R.string.rom_manager_undo), onClick = { viewModel.askUndo(log) })
     }
 }

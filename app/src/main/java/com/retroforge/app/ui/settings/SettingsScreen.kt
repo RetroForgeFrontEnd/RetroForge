@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import com.retroforge.app.ui.ChipRow
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -79,7 +83,7 @@ fun SettingsScreen(
             }
             return@ScreenFrame
         }
-        FocusChip("‹ All settings", onClick = { group = null })
+        FocusChip(stringResource(R.string.settings_all_settings), onClick = { group = null })
         when (group) {
             "games" -> {
                 com.retroforge.app.ui.NetworkDrivesCard("Games", onUse = library?.let { lib ->
@@ -101,8 +105,8 @@ fun SettingsScreen(
                 library?.let { EsdeImportCard(it) }
 
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenTexturePacks) {
-                    CardTitle("Texture packs")
-                    CardBody("HD textures that make N64 and PSP games look sharper than the original. Download free N64 packs, or add your own.")
+                    CardTitle(stringResource(R.string.settings_texture_packs))
+                    CardBody(stringResource(R.string.settings_hd_textures_that_make_n64_and))
                 }
 
                 viewPrefs?.let { prefs ->
@@ -111,24 +115,24 @@ fun SettingsScreen(
                         scanOnStart = !scanOnStart
                         prefs.edit().putBoolean(com.retroforge.app.ui.library.LibraryViewModel.SCAN_ON_START, scanOnStart).apply()
                     }) {
-                        CardTitle("Look for new games when RetroForge starts") { StatusPill(if (scanOnStart) "On" else "Off", if (scanOnStart) StatusTone.GOOD else StatusTone.NEUTRAL) }
-                        CardBody("Each time RetroForge opens, it checks the game folders on this phone, so games you add show up by themselves. Network drives aren't checked (too slow over Wi-Fi): rescan those in Retro → Game folders.")
+                        CardTitle(stringResource(R.string.settings_look_for_new_games_when_retroforge)) { StatusPill(if (scanOnStart) "On" else "Off", if (scanOnStart) StatusTone.GOOD else StatusTone.NEUTRAL) }
+                        CardBody(stringResource(R.string.settings_each_time_retroforge_opens_it_checks))
                     }
                     var showAll by remember { mutableStateOf(prefs.getBoolean(com.retroforge.app.ui.library.LibraryViewModel.SHOW_ALL_SYSTEMS, false)) }
                     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
                         showAll = !showAll
                         prefs.edit().putBoolean(com.retroforge.app.ui.library.LibraryViewModel.SHOW_ALL_SYSTEMS, showAll).apply()
                     }) {
-                        CardTitle("Show systems you have no games for") { StatusPill(if (showAll) "On" else "Off", if (showAll) StatusTone.GOOD else StatusTone.NEUTRAL) }
-                        CardBody("On: the Retro tab lists every system RetroForge supports. Off: only the systems you have games for.")
+                        CardTitle(stringResource(R.string.settings_show_systems_you_have_no_games)) { StatusPill(if (showAll) "On" else "Off", if (showAll) StatusTone.GOOD else StatusTone.NEUTRAL) }
+                        CardBody(stringResource(R.string.settings_on_the_retro_tab_lists_every))
                     }
                 }
                 FocusCard(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { viewModel.setShowPcSection(!settings.showPcSection) },
                 ) {
-                    CardTitle("Show the PC tab") { StatusPill(if (settings.showPcSection) "On" else "Off", if (settings.showPcSection) StatusTone.GOOD else StatusTone.NEUTRAL) }
-                    CardBody("Turn off to hide the PC tab, if you only play retro games or this device can't run PC games.")
+                    CardTitle(stringResource(R.string.settings_show_the_pc_tab)) { StatusPill(if (settings.showPcSection) "On" else "Off", if (settings.showPcSection) StatusTone.GOOD else StatusTone.NEUTRAL) }
+                    CardBody(stringResource(R.string.settings_turn_off_to_hide_the_pc))
                 }
 
             }
@@ -142,8 +146,8 @@ fun SettingsScreen(
                 viewPrefs?.let { DualScreenCard(it) }
 
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenGpu) {
-                    CardTitle("Graphics chip and drivers")
-                    CardBody("Shows which graphics chip this device has. On Snapdragon phones, it also downloads Turnip drivers, which can make emulator apps like Dolphin, Eden and NetherSX2 run better.")
+                    CardTitle(stringResource(R.string.settings_graphics_chip_and_drivers))
+                    CardBody(stringResource(R.string.settings_shows_which_graphics_chip_this_device))
                 }
 
                 NetplayCard()
@@ -151,8 +155,8 @@ fun SettingsScreen(
                 HotkeysCard(settings.retroArchHotkeys, HotkeyCombo.of(settings.menuCombo), HotkeyCombo.of(settings.quitCombo), viewModel::setRetroArchHotkeys, onOpenHotkeys)
                 if (settings.retroArchHotkeys) {
                     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.setFastForwardOnR2(!settings.fastForwardOnR2) }) {
-                        CardTitle("Hold R2 to fast-forward") { StatusPill(if (settings.fastForwardOnR2) "On" else "Off", if (settings.fastForwardOnR2) StatusTone.GOOD else StatusTone.NEUTRAL) }
-                        CardBody("While you hold R2, the game runs fast, to skip slow text and cutscenes. Only on systems whose controllers had no R2 (Game Boy, GBA, NES, SNES, Mega Drive …).")
+                        CardTitle(stringResource(R.string.settings_hold_r2_to_fast_forward)) { StatusPill(if (settings.fastForwardOnR2) "On" else "Off", if (settings.fastForwardOnR2) StatusTone.GOOD else StatusTone.NEUTRAL) }
+                        CardBody(stringResource(R.string.settings_while_you_hold_r2_the_game))
                     }
                 }
 
@@ -166,8 +170,10 @@ fun SettingsScreen(
 
             }
             "looks" -> {
+                LanguageCard()
+
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenThemes) {
-                    CardTitle("Themes")
+                    CardTitle(stringResource(R.string.settings_themes))
                     CardBody("Change RetroForge's colours, fonts and layout, with previews (brightness: ${settings.themeMode.name.lowercase()}). You can also import a theme, or the colours of one you use in ES-DE or RetroBat.")
                 }
 
@@ -178,51 +184,51 @@ fun SettingsScreen(
                         prefs.edit().putBoolean(com.retroforge.app.UI_SOUNDS, sounds).apply()
                         com.retroforge.core.ui.UiSounds.enabled = sounds
                     }) {
-                        CardTitle("Interface sounds") { StatusPill(if (sounds) "On" else "Off", if (sounds) StatusTone.GOOD else StatusTone.NEUTRAL) }
-                        CardBody("Small sounds as you move around with a controller or remote, and when you select something or go back.")
+                        CardTitle(stringResource(R.string.settings_interface_sounds)) { StatusPill(if (sounds) "On" else "Off", if (sounds) StatusTone.GOOD else StatusTone.NEUTRAL) }
+                        CardBody(stringResource(R.string.settings_small_sounds_as_you_move_around))
                     }
                 }
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenApps) {
-                    CardTitle("Android apps and home screen")
-                    CardBody("Open your other apps and Android's settings from RetroForge, or make RetroForge the home screen (good for handhelds and TV boxes).")
+                    CardTitle(stringResource(R.string.settings_android_apps_and_home_screen))
+                    CardBody(stringResource(R.string.settings_open_your_other_apps_and_android))
                 }
 
             }
             else -> {
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenTutorial) {
-                    CardTitle("How to use RetroForge")
-                    CardBody("A short guide to every feature: playing, emulators, hotkeys, covers, playlists, the ROM Manager and more.")
-                    CardBody("With a controller: D-pad to move, A to select, B to go back, L1/R1 to switch tabs.")
+                    CardTitle(stringResource(R.string.settings_how_to_use_retroforge))
+                    CardBody(stringResource(R.string.settings_a_short_guide_to_every_feature))
+                    CardBody(stringResource(R.string.settings_with_a_controller_d_pad_to))
                 }
 
                 UpdateCard()
 
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenAbout) {
-                    CardTitle("About RetroForge")
+                    CardTitle(stringResource(R.string.settings_about_retroforge))
                     CardBody("Version ${BuildConfig.VERSION_NAME}, made by Darren Glancy.")
-                    CardBody("Who made it, what it does, and where the name comes from.")
+                    CardBody(stringResource(R.string.settings_who_made_it_what_it_does))
                 }
 
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenCheck) {
-                    CardTitle("Check my setup")
-                    CardBody("Checks every system you have games for: is its emulator ready, are its BIOS files in place, were games found? Problems are listed first.")
+                    CardTitle(stringResource(R.string.settings_check_my_setup))
+                    CardBody(stringResource(R.string.settings_checks_every_system_you_have_games))
                 }
 
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSetup) {
-                    CardTitle("Set up RetroForge")
-                    CardBody("Step by step: pick your games folder, get the emulators your systems need (downloaded for you) and add your BIOS files.")
+                    CardTitle(stringResource(R.string.settings_set_up_retroforge))
+                    CardBody(stringResource(R.string.settings_step_by_step_pick_your_games))
                 }
 
                 FocusCard(modifier = Modifier.fillMaxWidth()) {
-                    CardTitle("Games, BIOS and the law")
+                    CardTitle(stringResource(R.string.settings_games_bios_and_the_law))
                     legalNoticeParagraphs.forEach { CardBody(it) }
                 }
 
                 SupportCard()
                 ReportProblemCard()
                 ChipRow {
-                    FocusChip("Thanks and licences", onClick = onOpenLicences)
-                    FocusChip("Privacy", onClick = onOpenPrivacy)
+                    FocusChip(stringResource(R.string.settings_thanks_and_licences), onClick = onOpenLicences)
+                    FocusChip(stringResource(R.string.settings_privacy), onClick = onOpenPrivacy)
                 }
 
             }
@@ -236,16 +242,15 @@ private fun SteamGridDbKeyCard(saved: String?, onSave: (String?) -> Unit) {
     var draft by remember(saved) { mutableStateOf("") }
     var showKey by remember { mutableStateOf(false) }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Box art from SteamGridDB")
+        CardTitle(stringResource(R.string.settings_box_art_from_steamgriddb))
         if (saved.isNullOrBlank()) {
-            StatusPill("No API key", StatusTone.NEUTRAL)
+            StatusPill(stringResource(R.string.settings_no_api_key), StatusTone.NEUTRAL)
             CardBody(
-                "Thousands of fan-made covers to choose from. To use them, make a free SteamGridDB account, tap \"Get a free key\", " +
-                    "then copy the key and paste it here. It stays on this device and is only sent to SteamGridDB.",
+                stringResource(R.string.settings_thousands_of_fan_made_covers_to),
             )
         } else {
             StatusPill("API key saved (…${saved.takeLast(4)})", StatusTone.GOOD)
-            CardBody("Use \"Change cover\" on any game to browse SteamGridDB covers.")
+            CardBody(stringResource(R.string.settings_use_change_cover_on_any_game))
         }
         ControllerTextField(
             value = draft,
@@ -257,9 +262,9 @@ private fun SteamGridDbKeyCard(saved: String?, onSave: (String?) -> Unit) {
         )
         ChipRow {
             FocusChip(if (showKey) "Hide key" else "Show key", onClick = { showKey = !showKey })
-            FocusChip("Save key", onClick = { onSave(draft); draft = "" }, enabled = draft.length >= 16)
-            FocusChip("Get a free key", onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, SteamGridDb.KEY_PAGE.toUri())) } })
-            if (!saved.isNullOrBlank()) FocusChip("Remove key", onClick = { onSave(null) })
+            FocusChip(stringResource(R.string.settings_save_key), onClick = { onSave(draft); draft = "" }, enabled = draft.length >= 16)
+            FocusChip(stringResource(R.string.settings_get_a_free_key), onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, SteamGridDb.KEY_PAGE.toUri())) } })
+            if (!saved.isNullOrBlank()) FocusChip(stringResource(R.string.settings_remove_key), onClick = { onSave(null) })
         }
     }
 }
@@ -269,17 +274,16 @@ private fun EmulatorAppsCard() {
     val context = LocalContext.current
     fun open(url: String) { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) } }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Other emulator apps")
+        CardTitle(stringResource(R.string.settings_other_emulator_apps))
         CardBody(
-            "As well as the built-in player, games can open in RetroArch or in free emulator apps you install yourself (pick one on " +
-                "a game's page). Obtainium installs them from their official releases and keeps them up to date.",
+            stringResource(R.string.settings_as_well_as_the_built_in),
         )
         CardBody(
-            "To add a whole set at once: get the Obtainium Emulation Pack file, then in Obtainium open Import/Export → Obtainium Import and pick the file.",
+            stringResource(R.string.settings_to_add_a_whole_set_at),
         )
         ChipRow {
-            FocusChip("Get Obtainium", onClick = { open(StandaloneLauncher.OBTAINIUM_PAGE) })
-            FocusChip("Emulation Pack", onClick = { open(EMULATION_PACK_PAGE) })
+            FocusChip(stringResource(R.string.settings_get_obtainium), onClick = { open(StandaloneLauncher.OBTAINIUM_PAGE) })
+            FocusChip(stringResource(R.string.settings_emulation_pack), onClick = { open(EMULATION_PACK_PAGE) })
         }
     }
 }
@@ -291,25 +295,24 @@ private const val EMULATION_PACK_PAGE = "https://github.com/RJNY/Obtainium-Emula
 @Composable
 private fun HotkeysCard(enabled: Boolean, menu: HotkeyCombo, quit: HotkeyCombo, onChange: (Boolean, HotkeyCombo, HotkeyCombo) -> Unit, onShowAll: () -> Unit) {
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("RetroArch buttons")
+        CardTitle(stringResource(R.string.settings_retroarch_buttons))
         if (enabled) {
-            StatusPill("On", StatusTone.GOOD)
+            StatusPill(stringResource(R.string.settings_on), StatusTone.GOOD)
             CardBody("In games started from RetroForge: ${quit.label} quits back to RetroForge, ${menu.label} opens RetroArch's menu (save states, disc swap under Disc Control, shaders).")
         } else {
-            StatusPill("Off: RetroArch's own settings", StatusTone.NEUTRAL)
+            StatusPill(stringResource(R.string.settings_off_retroarch_s_own_settings), StatusTone.NEUTRAL)
         }
         CardBody(
-            "Button combos that work in games RetroForge opens in RetroArch. Your RetroArch settings aren't changed: RetroForge " +
-                "adds a small file in Documents/RetroForge with these buttons. Other emulator apps use their own menus and buttons.",
+            stringResource(R.string.settings_button_combos_that_work_in_games),
         )
         if (enabled) {
-            CardBody("Menu:")
+            CardBody(stringResource(R.string.settings_menu))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 HotkeyCombo.entries.filter { it != HotkeyCombo.NONE && it != quit }.forEach { c ->
                     FocusChip((if (c == menu) "● " else "") + c.label, onClick = { onChange(true, c, quit) })
                 }
             }
-            CardBody("Quit to RetroForge:")
+            CardBody(stringResource(R.string.settings_quit_to_retroforge))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 HotkeyCombo.entries.filter { it != HotkeyCombo.NONE && it != menu }.forEach { c ->
                     FocusChip((if (c == quit) "● " else "") + c.label, onClick = { onChange(true, menu, c) })
@@ -317,7 +320,7 @@ private fun HotkeysCard(enabled: Boolean, menu: HotkeyCombo, quit: HotkeyCombo, 
             }
         }
         ChipRow {
-            FocusChip("Show all hotkeys", onClick = onShowAll)
+            FocusChip(stringResource(R.string.settings_show_all_hotkeys), onClick = onShowAll)
             FocusChip(if (enabled) "Turn hotkeys off" else "Turn hotkeys on", onClick = { onChange(!enabled, menu, quit) })
         }
     }
@@ -331,30 +334,29 @@ private fun ScreenScraperCard(savedUser: String?, onSave: (String?, String?) -> 
     var showPassword by remember { mutableStateOf(false) }
     val available = BuildConfig.SCREENSCRAPER_DEV_ID.isNotBlank()
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Box art from ScreenScraper")
+        CardTitle(stringResource(R.string.settings_box_art_from_screenscraper))
         if (!available) {
-            StatusPill("Not available in this build", StatusTone.NEUTRAL)
-            CardBody("ScreenScraper needs RetroForge's own developer ID, which ScreenScraper issues on request. It will work once that's added.")
+            StatusPill(stringResource(R.string.settings_not_available_in_this_build), StatusTone.NEUTRAL)
+            CardBody(stringResource(R.string.settings_screenscraper_needs_retroforge_s_own_developer))
         } else if (savedUser.isNullOrBlank()) {
-            StatusPill("No account (lower limits)", StatusTone.NEUTRAL)
+            StatusPill(stringResource(R.string.settings_no_account_lower_limits), StatusTone.NEUTRAL)
         } else {
             StatusPill("Signed in as $savedUser", StatusTone.GOOD)
         }
         CardBody(
-            "Optional: sign in with a free ScreenScraper account to download more covers each day. Your login stays on this " +
-                "device and is only sent to ScreenScraper. Use \"Change cover\" on a game to look it up.",
+            stringResource(R.string.settings_optional_sign_in_with_a_free),
         )
-        ControllerTextField(value = user, onValueChange = { user = it.trim() }, singleLine = true, label = { Text("ScreenScraper username") }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
+        ControllerTextField(value = user, onValueChange = { user = it.trim() }, singleLine = true, label = { Text(stringResource(R.string.settings_screenscraper_username)) }, modifier = Modifier.fillMaxWidth().padding(top = 8.dp))
         ControllerTextField(
-            value = password, onValueChange = { password = it }, singleLine = true, label = { Text("Password") },
+            value = password, onValueChange = { password = it }, singleLine = true, label = { Text(stringResource(R.string.settings_password)) },
             visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         )
         ChipRow {
             FocusChip(if (showPassword) "Hide password" else "Show password", onClick = { showPassword = !showPassword })
-            FocusChip("Save", onClick = { onSave(user, password); password = "" }, enabled = user.isNotBlank() && password.isNotEmpty())
-            FocusChip("Create a free account", onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, ScreenScraper.SIGN_UP.toUri())) } })
-            if (!savedUser.isNullOrBlank()) FocusChip("Sign out", onClick = { onSave(null, null) })
+            FocusChip(stringResource(R.string.settings_save), onClick = { onSave(user, password); password = "" }, enabled = user.isNotBlank() && password.isNotEmpty())
+            FocusChip(stringResource(R.string.settings_create_a_free_account), onClick = { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, ScreenScraper.SIGN_UP.toUri())) } })
+            if (!savedUser.isNullOrBlank()) FocusChip(stringResource(R.string.settings_sign_out), onClick = { onSave(null, null) })
         }
     }
 }
@@ -379,7 +381,7 @@ private fun ReportProblemCard() {
         }
         runCatching { context.startActivity(intent) }
     }) {
-        CardTitle("Report a problem")
+        CardTitle(stringResource(R.string.settings_report_a_problem))
         CardBody(
             if (url.isNotBlank()) "Opens a bug report on GitHub with your RetroForge version and device model filled in. Nothing else is sent; you see everything before posting."
             else "Writes a short report with your RetroForge version and phone model, for you to send by email or message. Nothing is sent until you send it.",
@@ -407,17 +409,16 @@ private fun DualScreenCard(prefs: android.content.SharedPreferences) {
         ds = !ds
         prefs.edit().putBoolean(DUAL_SCREEN_DS, ds).apply()
     }) {
-        CardTitle("Dual screen")
+        CardTitle(stringResource(R.string.settings_dual_screen))
         StatusPill(if (second != null) "Second screen found: ${second.name}" else "No second screen on this device", if (second != null) StatusTone.GOOD else StatusTone.NEUTRAL)
         StatusPill("DS games on both screens: ${if (ds) "On" else "Off"}", if (ds) StatusTone.GOOD else StatusTone.NEUTRAL)
         StatusPill("Game box on the second screen while browsing (experimental): ${if (browse) "On" else "Off"}", if (browse) StatusTone.GOOD else StatusTone.NEUTRAL)
-        com.retroforge.core.ui.FocusChip("Switch the game box", onClick = {
+        com.retroforge.core.ui.FocusChip(stringResource(R.string.settings_switch_the_game_box), onClick = {
             browse = !browse
             prefs.edit().putBoolean(DUAL_SCREEN_BROWSE, browse).apply()
         })
         CardBody(
-            "For two-screen devices like the AYN Thor and AYANEO Pocket DS. On: a DS game's top screen fills the main display and " +
-                "its touch screen goes to the second one. Off: both DS screens on the main display. Select to switch.",
+            stringResource(R.string.settings_for_two_screen_devices_like_the),
         )
     }
 }
@@ -429,16 +430,15 @@ private fun NetplayCard() {
     var name by remember { mutableStateOf(com.retroforge.app.player.Netplay.name(context)) }
     var delay by remember { mutableStateOf(com.retroforge.app.player.Netplay.delay(context)) }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Play together (netplay)")
+        CardTitle(stringResource(R.string.settings_play_together_netplay))
         CardBody(
-            "Play a game with a friend on another device: open a game and choose Play together, or use Netplay in the game's " +
-                "menu. Same Wi-Fi, or over the internet (RetroForge asks your router to let your friend in).",
+            stringResource(R.string.settings_play_a_game_with_a_friend),
         )
         ControllerTextField(
             value = name,
             onValueChange = { name = it.take(24); com.retroforge.app.player.Netplay.setName(context, name) },
             singleLine = true,
-            label = { Text("Your name for other players") },
+            label = { Text(stringResource(R.string.settings_your_name_for_other_players)) },
             modifier = Modifier.fillMaxWidth(),
         )
         FocusChip("Input delay: $delay frames", onClick = {
@@ -446,6 +446,6 @@ private fun NetplayCard() {
             delay = all[(all.indexOf(delay) + 1) % all.size]
             com.retroforge.app.player.Netplay.setDelay(context, delay)
         })
-        CardBody("Buttons work this many frames late on both devices, so they arrive in time. 2 or 3 on the same Wi-Fi; 4 to 6 over the internet. The host's setting is used.")
+        CardBody(stringResource(R.string.settings_buttons_work_this_many_frames_late))
     }
 }

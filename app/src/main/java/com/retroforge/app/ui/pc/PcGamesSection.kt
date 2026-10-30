@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -177,10 +181,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
 
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardBody(
-            "Install games in GameNative (Steam, Epic, GOG, Amazon) or export their shortcuts from Winlator Cmod or WinNative. " +
-                "Shortcut files (.steam, .epic, .gog, .amazon, .pcgame, .desktop) in a \"windows\" or \"steam\" folder " +
-                "beside snes, psx and the rest are found by themselves. Or add a Windows game's folder to play it in " +
-                "RetroForge's own PC player (early test: the first game downloads the PC runtime, about 280 MB).",
+            stringResource(R.string.pc_games_install_games_in_gamenative_steam_epic),
         )
         ChipRow {
             FocusChip(if (showLibrary) "Hide my Steam library" else "My Steam library", onClick = {
@@ -201,10 +202,10 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                     }
                 }
             })
-            FocusChip("Add a Steam game", onClick = { searching = !searching; hits = null })
-            FocusChip("Look in my game folders", enabled = !busy, onClick = { scanGameFolders(say = true) })
-            FocusChip("Add from another folder", enabled = !busy, onClick = { pickFolder.launch(null) })
-            FocusChip("Add a Windows game folder", enabled = !busy, onClick = { pickWindowsGame.launch(null) })
+            FocusChip(stringResource(R.string.pc_games_add_a_steam_game), onClick = { searching = !searching; hits = null })
+            FocusChip(stringResource(R.string.pc_games_look_in_my_game_folders), enabled = !busy, onClick = { scanGameFolders(say = true) })
+            FocusChip(stringResource(R.string.pc_games_add_from_another_folder), enabled = !busy, onClick = { pickFolder.launch(null) })
+            FocusChip(stringResource(R.string.pc_games_add_a_windows_game_folder), enabled = !busy, onClick = { pickWindowsGame.launch(null) })
             if (games.isNotEmpty() && !choosingExe) FocusChip(if (editing) "Done" else "Remove games", onClick = { editing = !editing })
             if (games.any { it.source == PcSource.WINDOWS } && !editing) {
                 FocusChip(if (choosingExe) "Done" else "Change a game's .exe", onClick = { choosingExe = !choosingExe })
@@ -213,9 +214,9 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
         if (searching) {
             ControllerTextField(
                 value = term, onValueChange = { term = it }, singleLine = true,
-                label = { Text("Game name on Steam") }, modifier = Modifier.fillMaxWidth(),
+                label = { Text(stringResource(R.string.pc_games_game_name_on_steam)) }, modifier = Modifier.fillMaxWidth(),
             )
-            FocusChip("Search Steam", enabled = term.isNotBlank() && !busy, onClick = {
+            FocusChip(stringResource(R.string.pc_games_search_steam), enabled = term.isNotBlank() && !busy, onClick = {
                 busy = true
                 scope.launch {
                     val result = withContext(Dispatchers.IO) { runCatching { PcLibrary.searchSteam(term.trim()) } }
@@ -226,7 +227,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                 }
             })
             hits?.takeIf { it.isNotEmpty() }?.let { list ->
-                CardBody("Choose your game:")
+                CardBody(stringResource(R.string.pc_games_choose_your_game))
                 ChipRow {
                     list.take(8).forEach { hit ->
                         FocusChip(hit.name, onClick = {
@@ -366,7 +367,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                     downloadFor = null
                 }) { Text("Download ${gb(size!!)}") }
             },
-            dismissButton = { androidx.compose.material3.TextButton(onClick = { downloadFor = null }) { Text("Close") } },
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { downloadFor = null }) { Text(stringResource(R.string.retro_forge_root_close)) } },
         )
     }
 
@@ -383,8 +384,8 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                     Modifier.verticalScroll(androidx.compose.foundation.rememberScrollState()),
                 ) {
                     when {
-                        choices == null -> Text("Looking in the game's folder…")
-                        choices!!.isEmpty() -> Text("There's no .exe in the game's folder.")
+                        choices == null -> Text(stringResource(R.string.pc_games_looking_in_the_game_s_folder))
+                        choices!!.isEmpty() -> Text(stringResource(R.string.pc_games_there_s_no_exe_in_the))
                         else -> choices!!.forEachIndexed { i, exe ->
                             val name = folder?.let { exe.relativeTo(it).path } ?: exe.name
                             val current = exe.path == game.shortcutPath
@@ -404,14 +405,14 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                     }
                 }
             },
-            confirmButton = { androidx.compose.material3.TextButton(onClick = { exeFor = null }) { Text("Cancel") } },
+            confirmButton = { androidx.compose.material3.TextButton(onClick = { exeFor = null }) { Text(stringResource(R.string.network_drives_cancel)) } },
         )
     }
 
     needsRuntime?.let { game ->
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { needsRuntime = null },
-            title = { Text("Download the PC player?") },
+            title = { Text(stringResource(R.string.pc_games_download_the_pc_player)) },
             text = {
                 Text(
                     "RetroForge's PC player needs its Windows runtime first: Wine (Proton 11), FEX and a Linux image built " +
@@ -423,9 +424,9 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                 androidx.compose.material3.TextButton(onClick = {
                     needsRuntime = null
                     scope.launch { status = pc.launch(withContext(Dispatchers.IO) { pc.withSteamAppId(game) }) }
-                }) { Text("Download and play") }
+                }) { Text(stringResource(R.string.pc_games_download_and_play)) }
             },
-            dismissButton = { androidx.compose.material3.TextButton(onClick = { needsRuntime = null }) { Text("Not now") } },
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { needsRuntime = null }) { Text(stringResource(R.string.pc_games_not_now)) } },
         )
     }
 }

@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +39,7 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
     val status by viewModel.status.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
 
-    ScreenFrame(title = "PC", subtitle = "Your PC games, cloud gaming, ports and free games.") {
+    ScreenFrame(title = stringResource(R.string.home_pc), subtitle = stringResource(R.string.pc_your_pc_games_cloud_gaming_ports)) {
         PcFold("Your PC games", "Steam, Epic, GOG and Amazon games through GameNative; Windows games through Winlator.", startOpen = true) {
             PcGamesSection(library)
             SteamSignInSection()
@@ -43,7 +47,7 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
         PcFold("Stream from your PC", "Play the games on your own PC from this device, with Moonlight and Sunshine.") {
             PcStreamSection()
         }
-        Text("Cloud gaming", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
+        Text(stringResource(R.string.pc_cloud_gaming), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
         XboxCloudCard()
         CloudAppsCard()
         PcFold("Ports", "Games rebuilt for Android (and Windows-only ports) that use your own copy of the game.") {
@@ -57,7 +61,7 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
             if (loaded == null) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     CircularProgressIndicator()
-                    Text("Checking this device…", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.pc_checking_this_device), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
                 DeviceCard(loaded)
@@ -72,18 +76,16 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
 private fun OtherPcAppsCard() {
     val context = LocalContext.current
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Other PC game apps")
+        CardTitle(stringResource(R.string.pc_other_pc_game_apps))
         CardBody(
-            "GameNative (Steam, Epic, GOG and Amazon games you own) and Winlator (Windows games you have installed) are free, separately " +
-                "developed apps. Their recent versions and community builds are reported to run some games on Mali and Xclipse GPUs " +
-                "too, usually with lower compatibility than on Snapdragon. RetroForge doesn't start their games yet and hasn't tested them.",
+            stringResource(R.string.pc_gamenative_steam_epic_gog_and_amazon),
         )
     }
     com.retroforge.app.ui.ChipRow {
-        com.retroforge.core.ui.FocusChip("GameNative releases", onClick = {
+        com.retroforge.core.ui.FocusChip(stringResource(R.string.pc_gamenative_releases), onClick = {
             runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, GAMENATIVE_RELEASES.toUri())) }
         })
-        com.retroforge.core.ui.FocusChip("Winlator releases", onClick = {
+        com.retroforge.core.ui.FocusChip(stringResource(R.string.pc_winlator_releases), onClick = {
             runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, WINLATOR_RELEASES.toUri())) }
         })
     }
@@ -95,7 +97,7 @@ private const val WINLATOR_RELEASES = "https://github.com/brunodev85/winlator/re
 @Composable
 private fun DeviceCard(status: PcStatus) {
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("This device")
+        CardTitle(stringResource(R.string.pc_this_device))
         val (label, tone) = when (status.support.level) {
             PcSupportLevel.SUPPORTED -> "Supported GPU" to StatusTone.GOOD
             PcSupportLevel.EXPERIMENTAL -> "Experimental GPU" to StatusTone.CAUTION
@@ -106,7 +108,7 @@ private fun DeviceCard(status: PcStatus) {
         CardBody(status.support.reason)
         CardBody("GPU: ${status.gpu.glRenderer ?: "unknown"}")
         status.gpu.socModel?.let { CardBody("Chip: $it") }
-        CardBody("Based on DroidDeck's published requirements; a supported GPU does not guarantee every game runs.")
+        CardBody(stringResource(R.string.pc_based_on_droiddeck_s_published_requirements))
     }
 }
 
@@ -118,10 +120,9 @@ private fun DroidDeckCard(status: PcStatus, bridge: DroidDeckBridge) {
     if (install == null && status.support.level == PcSupportLevel.UNSUPPORTED) {
         // No point sending people to install a runtime their device can't run.
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("PC game runtime")
+            CardTitle(stringResource(R.string.pc_pc_game_runtime))
             CardBody(
-                "DroidDeck, the PC runtime RetroForge works with, needs a Qualcomm Snapdragon chip (Adreno GPU). " +
-                    "Your retro games work as normal.",
+                stringResource(R.string.pc_droiddeck_the_pc_runtime_retroforge_works),
             )
         }
         OtherPcAppsCard()
@@ -137,7 +138,7 @@ private fun DroidDeckCard(status: PcStatus, bridge: DroidDeckBridge) {
                 }
             },
         ) {
-            CardTitle("PC game runtime") { StatusPill("Not installed", StatusTone.NEUTRAL) }
+            CardTitle(stringResource(R.string.pc_pc_game_runtime)) { StatusPill(stringResource(R.string.pc_not_installed), StatusTone.NEUTRAL) }
             CardBody(
                 "RetroForge works with DroidDeck, a free, separately developed app. Install it only from its official releases page: ${DroidDeckBridge.RELEASES_URL}. " +
                     "Select this card to open it in a browser.",
@@ -150,12 +151,12 @@ private fun DroidDeckCard(status: PcStatus, bridge: DroidDeckBridge) {
             modifier = Modifier.fillMaxWidth(),
             onClick = openIntent?.let { intent -> { context.startActivity(intent) } },
         ) {
-            CardTitle("PC game runtime") { StatusPill("Installed ${install.versionName.orEmpty()}".trim(), StatusTone.GOOD) }
+            CardTitle(stringResource(R.string.pc_pc_game_runtime)) { StatusPill("Installed ${install.versionName.orEmpty()}".trim(), StatusTone.GOOD) }
             CardBody(
                 if (install.acceptsLaunchIntent) "It accepts game launch requests from other apps."
                 else "This version does not accept launch requests from other apps.",
             )
-            if (openIntent != null) CardBody("Select this card to open it.")
+            if (openIntent != null) CardBody(stringResource(R.string.pc_select_this_card_to_open_it))
         }
     }
 }

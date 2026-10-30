@@ -1,5 +1,7 @@
 package com.retroforge.app.ui
 
+import androidx.compose.ui.res.stringResource
+
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -170,14 +172,14 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
             LaunchedEffect(Unit) { runCatching { closeFocus.requestFocus() } }
             androidx.compose.material3.AlertDialog(
                 onDismissRequest = { askClose = false },
-                title = { androidx.compose.material3.Text("Close RetroForge?") },
+                title = { androidx.compose.material3.Text(stringResource(R.string.retro_forge_root_close_retroforge)) },
                 confirmButton = {
                     androidx.compose.material3.TextButton(
                         onClick = { askClose = false; activity?.finish() },
                         modifier = Modifier.focusRequester(closeFocus),
-                    ) { androidx.compose.material3.Text("Close") }
+                    ) { androidx.compose.material3.Text(stringResource(R.string.retro_forge_root_close)) }
                 },
-                dismissButton = { androidx.compose.material3.TextButton(onClick = { askClose = false }) { androidx.compose.material3.Text("Stay") } },
+                dismissButton = { androidx.compose.material3.TextButton(onClick = { askClose = false }) { androidx.compose.material3.Text(stringResource(R.string.retro_forge_root_stay)) } },
             )
         }
         // First run (after the notice): offer the setup wizard once; afterwards it's in Settings.

@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.home
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.os.Build
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState
@@ -123,7 +127,7 @@ fun CrossBarHome(library: LibraryViewModel, onOpenGame: (Long) -> Unit, onOpenSy
         Column(Modifier.fillMaxSize().padding(top = 20.dp)) {
             Wordmark(fontSize = 26.sp, modifier = Modifier.padding(horizontal = 24.dp))
             if (cats.isEmpty()) {
-                CardBody("Add your games folder in Retro to fill the bar.")
+                CardBody(stringResource(R.string.home_layouts_add_your_games_folder_in_retro))
                 return@Column
             }
             val current = cats[selected.coerceIn(0, cats.lastIndex)]
@@ -150,7 +154,7 @@ fun CrossBarHome(library: LibraryViewModel, onOpenGame: (Long) -> Unit, onOpenSy
                 if (current.systemId != null && games.size > 60) {
                     item { FocusChip("All ${plural(games.size, "game")}", onClick = { onOpenSystem(current.systemId) }) }
                 }
-                if (games.isEmpty()) item { CardBody("Nothing here yet.") }
+                if (games.isEmpty()) item { CardBody(stringResource(R.string.home_layouts_nothing_here_yet)) }
             }
         }
     }
@@ -181,10 +185,10 @@ fun HeroHome(library: LibraryViewModel, onOpenGame: (Long) -> Unit, onOpenSystem
                             Text(library.systemName(hero.system).uppercase(), style = MaterialTheme.typography.labelLarge, color = colors.primary)
                             Text(hero.title, style = MaterialTheme.typography.displaySmall, color = colors.onBackground, maxLines = 2, overflow = TextOverflow.Ellipsis)
                             tagLine(hero)?.let { Text(it, style = MaterialTheme.typography.bodyLarge, color = colors.onSurfaceVariant) }
-                            FocusChip("Open", onClick = { onOpenGame(hero.id) })
+                            FocusChip(stringResource(R.string.home_layouts_open), onClick = { onOpenGame(hero.id) })
                         }
                     } else {
-                        Text("Play a game and it appears here, big.", style = MaterialTheme.typography.headlineSmall, color = colors.onBackground, modifier = Modifier.align(Alignment.BottomStart))
+                        Text(stringResource(R.string.home_layouts_play_a_game_and_it_appears), style = MaterialTheme.typography.headlineSmall, color = colors.onBackground, modifier = Modifier.align(Alignment.BottomStart))
                     }
                 }
                 LazyRow(contentPadding = PaddingValues(horizontal = 24.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -194,7 +198,7 @@ fun HeroHome(library: LibraryViewModel, onOpenGame: (Long) -> Unit, onOpenSystem
                 }
                 if (systems.isNotEmpty()) {
                     Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Text("Systems", style = MaterialTheme.typography.titleLarge, color = colors.onBackground)
+                        Text(stringResource(R.string.home_layouts_systems), style = MaterialTheme.typography.titleLarge, color = colors.onBackground)
                         SystemsView(systems, onOpenSystem)
                     }
                 }
@@ -237,11 +241,11 @@ fun BladesHome(library: LibraryViewModel, onOpenGame: (Long) -> Unit, onOpenSyst
                         when (page) {
                             0 -> {
                                 item { Wordmark(fontSize = 24.sp) }
-                                if (recent.isEmpty()) item { CardBody("Play a game and it shows up here.") }
+                                if (recent.isEmpty()) item { CardBody(stringResource(R.string.home_layouts_play_a_game_and_it_shows)) }
                                 items(recent, key = { it.id }) { g -> GameRow(g, art(library, g), onClick = { onOpenGame(g.id) }) }
                             }
                             1 -> {
-                                if (favourites.isEmpty()) item { CardBody("Favourite a game from its page.") }
+                                if (favourites.isEmpty()) item { CardBody(stringResource(R.string.home_layouts_favourite_a_game_from_its_page)) }
                                 items(favourites, key = { it.id }) { g -> GameRow(g, art(library, g), onClick = { onOpenGame(g.id) }) }
                             }
                             2 -> items(systems, key = { it.id }) { s ->
@@ -251,7 +255,7 @@ fun BladesHome(library: LibraryViewModel, onOpenGame: (Long) -> Unit, onOpenSyst
                                 }
                             }
                             else -> {
-                                if (playlists.isEmpty()) item { CardBody("Make playlists from any game's page.") }
+                                if (playlists.isEmpty()) item { CardBody(stringResource(R.string.home_layouts_make_playlists_from_any_game_s)) }
                                 items(playlists, key = { it.id }) { p ->
                                     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { onOpenPlaylist(p.id) }) {
                                         Text(p.name, style = MaterialTheme.typography.titleLarge, color = colors.onSurface)

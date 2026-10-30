@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.vr
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.SharedPreferences
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -37,45 +41,42 @@ fun VrScreen(prefs: SharedPreferences, library: LibraryRepository, onOpenGame: (
     var byDefault by remember { mutableStateOf(prefs.getBoolean(VR_BY_DEFAULT, false)) }
     val virtualBoy by produceState(emptyList<GameEntity>(), library) { value = library.gamesFor("virtualboy").first() }
 
-    ScreenFrame(title = "VR and 3D", subtitle = "Play and watch in a Cardboard-style viewer: put your phone in it sideways.") {
+    ScreenFrame(title = stringResource(R.string.vr_vr_and_3d), subtitle = stringResource(R.string.vr_play_and_watch_in_a_cardboard)) {
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("How it works")
+            CardTitle(stringResource(R.string.vr_how_it_works))
             CardBody(
-                "Any game can be shown once per eye: pause it (or swipe in from an edge) and switch on Cardboard VR. The phone turns " +
-                    "sideways and the touch buttons hide, so a Bluetooth controller is the way to play. Most games look like a big " +
-                    "floating screen; Virtual Boy games are real 3D.",
+                stringResource(R.string.vr_any_game_can_be_shown_once),
             )
         }
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
             byDefault = !byDefault
             prefs.edit().putBoolean(VR_BY_DEFAULT, byDefault).apply()
         }) {
-            CardTitle("Start every game in Cardboard VR") { StatusPill(if (byDefault) "On" else "Off", if (byDefault) StatusTone.GOOD else StatusTone.NEUTRAL) }
-            CardBody("For a session in the viewer. Any game can still be switched back in its pause menu.")
+            CardTitle(stringResource(R.string.vr_start_every_game_in_cardboard_vr)) { StatusPill(if (byDefault) "On" else "Off", if (byDefault) StatusTone.GOOD else StatusTone.NEUTRAL) }
+            CardBody(stringResource(R.string.vr_for_a_session_in_the_viewer))
         }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Virtual Boy: real 3D")
+            CardTitle(stringResource(R.string.vr_virtual_boy_real_3d))
             if (virtualBoy.isEmpty()) {
-                CardBody("No Virtual Boy games in your library. Add them to a virtualboy folder and they show up here.")
+                CardBody(stringResource(R.string.vr_no_virtual_boy_games_in_your))
             } else {
-                CardBody("Each eye gets its own picture, as on the original console.")
+                CardBody(stringResource(R.string.vr_each_eye_gets_its_own_picture))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     virtualBoy.forEach { game -> FocusChip(game.title, onClick = { onOpenGame(game.id) }) }
                 }
             }
         }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("3D films")
+            CardTitle(stringResource(R.string.vr_3d_films))
             CardBody(
-                "Side-by-side and top-and-bottom 3D films play one half per eye; any 2D film can play on a big screen per eye " +
-                    "(cinema mode). Your 3D films are below; all films are in Media.",
+                stringResource(R.string.vr_side_by_side_and_top_and),
             )
-            FocusChip("Open Media", onClick = onOpenMedia)
+            FocusChip(stringResource(R.string.vr_open_media), onClick = onOpenMedia)
         }
         com.retroforge.app.ui.media.ThreeDFilms(prefs)
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Meta Quest")
-            CardBody("On a Quest, RetroForge runs as a flat Android window: games and films play on a big virtual screen.")
+            CardTitle(stringResource(R.string.vr_meta_quest))
+            CardBody(stringResource(R.string.vr_on_a_quest_retroforge_runs_as))
         }
     }
 }

@@ -1,5 +1,9 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.app.R
+
+import androidx.compose.ui.res.stringResource
+
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
@@ -73,7 +77,7 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
     if (chosen != null) {
         val (option, emulator) = chosen
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { problem = viewModel.playStandalone(game, root, option, emulator) }) {
-            CardTitle("Play")
+            CardTitle(stringResource(R.string.play_play))
             CardBody("In ${option.label}, your choice for ${viewModel.systemName(game.system)}.")
         }
     }
@@ -84,7 +88,7 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { problem = viewModel.play(game, plan, core) }) {
                     CardTitle(if (index == 0 && chosen == null && !builtInMain) "Play" else "Play in RetroArch with ${core.name}")
                     if (index == 0) CardBody("In RetroArch with the ${core.name} core.")
-                    if (core.id in RetroArchCores.needsBios) CardBody("This core needs BIOS files in RetroArch's system folder.")
+                    if (core.id in RetroArchCores.needsBios) CardBody(stringResource(R.string.play_this_core_needs_bios_files_in))
                 }
             }
             FocusCard(modifier = Modifier.fillMaxWidth()) {
@@ -95,8 +99,8 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
                 )
             }
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FocusChip("Open RetroArch", onClick = { viewModel.openRetroArch(plan) })
-                if (builtIn != null && !retroArchChosen) FocusChip("Use RetroArch by default", onClick = { viewModel.setEmulatorChoice(game.system, RETROARCH_CHOICE) })
+                FocusChip(stringResource(R.string.play_open_retroarch), onClick = { viewModel.openRetroArch(plan) })
+                if (builtIn != null && !retroArchChosen) FocusChip(stringResource(R.string.play_use_retroarch_by_default), onClick = { viewModel.setEmulatorChoice(game.system, RETROARCH_CHOICE) })
             }
         }
         // With the built-in player (or a chosen emulator app) there, RetroArch is optional: no "can't play" card.
@@ -113,19 +117,19 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
                 }
             } else null,
         ) {
-            CardTitle("Play") { StatusPill("Can't play yet", StatusTone.CAUTION) }
+            CardTitle(stringResource(R.string.play_play)) { StatusPill(stringResource(R.string.play_can_t_play_yet), StatusTone.CAUTION) }
             CardBody(describe(plan.reason, viewModel))
         }
     }
     if (builtIn != null && root != null && !builtInMain) {
         BuiltInCard(viewModel, game, root, builtIn, main = false) { problem = it }
-        if (retroArchChosen || chosen != null) FocusChip("Use the built-in player by default", onClick = { viewModel.setEmulatorChoice(game.system, null) })
+        if (retroArchChosen || chosen != null) FocusChip(stringResource(R.string.play_use_the_built_in_player_by), onClick = { viewModel.setEmulatorChoice(game.system, null) })
     }
     if (standalone.isNotEmpty()) StandaloneSection(viewModel, game, root, standalone, choices[game.system], resumes) { problem = it }
 
     problem?.let { p ->
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            StatusPill("Problem", StatusTone.BAD)
+            StatusPill(stringResource(R.string.play_problem), StatusTone.BAD)
             CardBody(describe(p, viewModel))
         }
     }
@@ -172,7 +176,7 @@ private fun BuiltInCard(
             },
         )
         if (core.needsBios) CardBody("${core.name} needs this system's BIOS file.")
-        if (game.system == "saturn") CardBody("Saturn in the built-in player is experimental: some games stay on a black screen. RetroArch or Yaba Sanshiro 2 (below) play more of them.")
+        if (game.system == "saturn") CardBody(stringResource(R.string.play_saturn_in_the_built_in_player))
         if (played > 0) CardBody("Time played here: ${Playtime.format(played)}.")
     }
     if (main && com.retroforge.app.player.Netplay.supports(game.system)) {
@@ -186,11 +190,11 @@ private fun BuiltInCard(
             }
         }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle("Play together")
-            CardBody("Two players on two devices, each with RetroForge and this game: one hosts, the other joins. Same Wi-Fi or over the internet.")
+            CardTitle(stringResource(R.string.play_play_together))
+            CardBody(stringResource(R.string.play_two_players_on_two_devices_each))
             com.retroforge.app.ui.ChipRow {
-                com.retroforge.core.ui.FocusChip("Host", onClick = { start(com.retroforge.app.player.PlayerActivity.NETPLAY_HOST) })
-                com.retroforge.core.ui.FocusChip("Join", onClick = { start(com.retroforge.app.player.PlayerActivity.NETPLAY_FIND) })
+                com.retroforge.core.ui.FocusChip(stringResource(R.string.play_host), onClick = { start(com.retroforge.app.player.PlayerActivity.NETPLAY_HOST) })
+                com.retroforge.core.ui.FocusChip(stringResource(R.string.play_join), onClick = { start(com.retroforge.app.player.PlayerActivity.NETPLAY_FIND) })
             }
         }
     }
@@ -219,18 +223,18 @@ private fun StandaloneSection(
 ) {
     val multiFile = game.fileName.substringAfterLast('.').lowercase() in setOf("cue", "m3u", "gdi", "ccd", "toc")
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Other emulators")
+        CardTitle(stringResource(R.string.play_other_emulators))
         CardBody("Free standalone apps that play ${viewModel.systemName(game.system)} games. RetroForge doesn't include them: install the ones you want.")
-        if (multiFile) CardBody("This game is made of several files. Most standalone emulators can only open it if you also add your game folder inside the emulator.")
-        if (!viewModel.hasObtainium()) CardBody("Tip: Obtainium installs emulators from their official releases and keeps them updated.")
+        if (multiFile) CardBody(stringResource(R.string.play_this_game_is_made_of_several))
+        if (!viewModel.hasObtainium()) CardBody(stringResource(R.string.play_tip_obtainium_installs_emulators_from_their))
     }
     options.forEach { (option, emulator) ->
         val installed = remember(emulator.id, resumes) { viewModel.installedComponent(emulator) } != null
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (installed) {
                 FocusChip("Play with ${option.label}", onClick = { onProblem(viewModel.playStandalone(game, root, option, emulator)) })
-                if (choice == emulator.id) FocusChip("Stop using by default", onClick = { viewModel.setEmulatorChoice(game.system, null) })
-                else FocusChip("Use by default", onClick = { viewModel.setEmulatorChoice(game.system, emulator.id) })
+                if (choice == emulator.id) FocusChip(stringResource(R.string.play_stop_using_by_default), onClick = { viewModel.setEmulatorChoice(game.system, null) })
+                else FocusChip(stringResource(R.string.play_use_by_default), onClick = { viewModel.setEmulatorChoice(game.system, emulator.id) })
             } else {
                 FocusChip("Get ${emulator.name} (free)", onClick = {
                     if (!viewModel.getEmulator(emulator)) onProblem(LaunchProblem.StartFailed("Couldn't open ${emulator.page}"))
