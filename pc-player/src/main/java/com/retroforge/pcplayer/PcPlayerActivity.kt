@@ -107,6 +107,10 @@ class PcPlayerActivity : Activity() {
         val newSession = PcSession(this, runtime, exe, ScreenInfo(SCREEN_WIDTH, SCREEN_HEIGHT))
         val xView = XServerView(this, newSession.xServer)
         newSession.xServer.setRenderer(xView.renderer)
+        // The game's own window fills the screen (Wine's desktop stays behind it), and the console window some games
+        // open (text output, warnings) isn't shown.
+        xView.renderer.setForceFullscreenWMClass(exe.name.lowercase())
+        xView.renderer.setUnviewableWMClasses("conhost.exe", "wineconsole")
         xView.isFocusable = true
         xView.isFocusableInTouchMode = true
         xView.setOnTouchListener(TouchMouse(newSession, xView))

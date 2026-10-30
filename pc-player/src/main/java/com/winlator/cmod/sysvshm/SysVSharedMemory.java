@@ -1,13 +1,9 @@
 package com.winlator.cmod.sysvshm;
 
-import android.os.SharedMemory;
-import android.system.ErrnoException;
 import android.util.SparseArray;
 
 import com.winlator.cmod.xconnector.XConnectorEpoll;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 
 public class SysVSharedMemory {
@@ -100,20 +96,14 @@ public class SysVSharedMemory {
         }
     }
 
+    /**
+     * RetroForge: a memfd this class owns. (Winlator's fallback took the raw fd out of an android.os.SharedMemory it
+     * didn't keep; when that object was garbage-collected the fd closed under us, its number was reused, and our
+     * later close hit someone else's fd: fdsan aborted the player. /dev/ashmem, tried first, isn't open to apps
+     * targeting Android 10+, so the fallback was always used.)
+     */
     private static int createSharedMemory(String name, int size) {
-        try {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O_MR1) {
-                SharedMemory sharedMemory = SharedMemory.create(name, size);
-                try {
-                    Method method = sharedMemory.getClass().getMethod("getFd");
-                    Object ret = method.invoke(sharedMemory);
-                    if (ret != null) return (int)ret;
-                }
-                catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {}
-            }
-        }
-        catch (ErrnoException e) {}
-        return -1;
+        return createMemoryFd(name, size);
     }
 
     public static native int createMemoryFd(String name, int size);

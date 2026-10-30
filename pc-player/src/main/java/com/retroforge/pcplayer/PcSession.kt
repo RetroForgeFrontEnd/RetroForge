@@ -108,7 +108,13 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             "WINEPREFIX" to runtime.prefix.path,
             "WINEDEBUG" to "-all,err+module,err+loaddll",
             // Sound goes through ALSA (above); Wine's PulseAudio driver is off so it doesn't look for a server first.
-            "WINEDLLOVERRIDES" to "winemenubuilder.exe=d;winepulse.drv=d",
+            // DXVK's Direct3D DLLs and Mesa's OpenGL (installed in the prefix) before Wine's own.
+            "WINEDLLOVERRIDES" to "winemenubuilder.exe=d;winepulse.drv=d;d3d8,d3d9,d3d10core,d3d11,dxgi,opengl32=n,b",
+            // Mesa's OpenGL draws through Vulkan (zink); GameNative's settings for the wrapper driver.
+            "GALLIUM_DRIVER" to "zink",
+            "LIBGL_KOPPER_DISABLE" to "true",
+            "DXVK_LOG_LEVEL" to "warn",
+            "DXVK_LOG_PATH" to "none",
             "WINE_NO_DUPLICATE_EXPLORER" to "1",
             "WINE_DISABLE_FULLSCREEN_HACK" to "1",
             "WINEESYNC" to "1",
@@ -172,11 +178,14 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
     }
 
     private fun launchWine() {
+        blackDesktop()
         val screen = "${xServer.screenInfo.width}x${xServer.screenInfo.height}"
-        // explorer /desktop gives Wine one desktop window the size of RetroForge's X screen; the game runs inside it.
+        // explorer /desktop gives Wine one desktop window the size of RetroForge's X screen; the game runs inside it
+        // (without it, SDL games such as CTR Native can't open a window). Naming it anything but "shell" leaves out
+        // the taskbar, and blackDesktop() makes it black, so nothing shows around a 4:3 game or while it loads.
         val command = listOf(
             "/system/bin/linker64", "${runtime.wineDir.path}/bin/wine",
-            "explorer", "/desktop=shell,$screen", "D:\\${exe.name}",
+            "explorer", "/desktop=RetroForge,$screen", "D:\\${exe.name}",
         ) + gameArguments(exe)
         log.delete()
         val builder = ProcessBuilder(command)
@@ -195,6 +204,14 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             Log.i(TAG, "Wine exited with $code")
             onExit?.invoke(code)
         }
+    }
+
+    /** Sets Wine's desktop colour (blue in the prefix as downloaded) to black in user.reg; Wine isn't running yet. */
+    private fun blackDesktop() = runCatching {
+        val reg = File(runtime.prefix, "user.reg")
+        val text = reg.readText()
+        val black = text.replace(Regex("(?m)^\"Background\"=\"[0-9 ]+\"$"), "\"Background\"=\"0 0 0\"")
+        if (black != text) reg.writeText(black)
     }
 
     /** Ends the game: asks wineserver to stop every Wine process, then stops the servers. */

@@ -53,7 +53,14 @@ class PcRuntime(context: Context) {
     val state: StateFlow<RuntimeState> = _state.asStateFlow()
     private val lock = Mutex()
 
-    fun isReady() = marker.isFile && marker.readText().trim() == VERSION
+    fun isReady() = marker.isFile && marker.readText().trim() == VERSION && EXTRAS.all { extraMarker(it).isFile }
+
+    /** True until the main runtime is installed; the small extras (DXVK, OpenGL) download without asking. */
+    fun needsBigDownload() = !baseReady()
+
+    private fun baseReady() = marker.isFile && marker.readText().trim() == VERSION
+
+    private fun extraMarker(extra: Part) = File(root, "extra-${extra.file}.installed")
 
     /** Downloads and unpacks whatever isn't there yet. True when the runtime is ready. */
     suspend fun ensure(): Boolean = withContext(Dispatchers.IO) {
@@ -63,7 +70,8 @@ class PcRuntime(context: Context) {
                 return@withLock true
             }
             try {
-                install()
+                if (!baseReady()) install()
+                installExtras()
                 _state.value = RuntimeState.Ready
                 true
             } catch (e: IOException) {
@@ -101,6 +109,25 @@ class PcRuntime(context: Context) {
         setUpPrefix()
         cache.deleteRecursively()
         marker.writeText(VERSION)
+    }
+
+    /**
+     * Smaller parts added after the runtime first shipped, each installed once on its own (so adding one doesn't
+     * download the whole runtime again).
+     */
+    private fun installExtras() {
+        for (extra in EXTRAS.filterNot { extraMarker(it).isFile }) {
+            cache.mkdirs()
+            val file = File(cache, extra.file)
+            if (!(file.isFile && file.length() == extra.size)) {
+                download(extra, file) { read -> progress("Downloading ${extra.label}", read * 90.0 / extra.size) }
+            }
+            val target = File(imageFs, extra.into).apply { mkdirs() }
+            progress("Installing ${extra.label}", 95.0)
+            unpack(file, extra.zstd, target) {}
+            file.delete()
+            extraMarker(extra).writeText(extra.url)
+        }
     }
 
     /** Wine's starting prefix (C: drive and registry) comes inside the Proton package; FEX's DLLs go in system32. */
@@ -160,6 +187,18 @@ class PcRuntime(context: Context) {
             Part("Wine (Proton 11)", "$SERVER/proton-11.0-2-arm64ec-9.wcp", "proton.wcp", 96_016_250, zstd = true, into = "opt/proton"),
             Part("FEX", "$SERVER/FEXCore-2610-gn-5.wcp", "fex.wcp", 1_332_620, zstd = false, into = "opt/fex"),
             Part("the Vulkan driver", "$SERVER/graphics_driver/wrapper-gamenative-20260925.tzst", "wrapper.tzst", 774_855, zstd = true, into = ""),
+        )
+
+        /**
+         * DXVK (zlib licence): Direct3D 8, 9, 10 and 11 on Vulkan. Mesa (MIT): OpenGL for Windows programs, drawn
+         * through Vulkan by its zink driver. 64-bit DLLs into system32 and 32-bit into syswow64; Wine is told to use
+         * them before its own (see PcSession's DLL overrides). GameNative's packaging.
+         */
+        private val EXTRAS = listOf(
+            Part("DXVK (Direct3D)", "$SERVER/dxwrapper/dxvk-2.7.1.tzst", "dxvk-2.7.1.tzst", 4_768_366, zstd = true,
+                into = "home/xuser/.wine/drive_c/windows"),
+            Part("OpenGL (Mesa)", "$SERVER/wincomponents/opengl.tzst", "opengl.tzst", 8_170_693, zstd = true,
+                into = "home/xuser/.wine/drive_c/windows"),
         )
 
         /** Unpacks a .tar.xz or .tar.zst into [into], keeping symlinks. Entries with absolute or ".." paths are skipped. */
