@@ -70,6 +70,9 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     fun start(game: PcGame) {
         if (game.source == PcSource.WINDOWS && com.retroforge.pcplayer.PcRuntime.deviceSupported &&
             !com.retroforge.pcplayer.PcRuntime(context).isReady()) needsRuntime = game
+        else if (game.source == PcSource.WINDOWS && game.appId.isNullOrBlank()) scope.launch {
+            status = pc.launch(withContext(Dispatchers.IO) { pc.withSteamAppId(game) })
+        }
         else status = pc.launch(game)
     }
 
@@ -207,7 +210,12 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                         "with a percentage, the first time ${game.title} starts.",
                 )
             },
-            confirmButton = { androidx.compose.material3.TextButton(onClick = { needsRuntime = null; status = pc.launch(game) }) { Text("Download and play") } },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    needsRuntime = null
+                    scope.launch { status = pc.launch(withContext(Dispatchers.IO) { pc.withSteamAppId(game) }) }
+                }) { Text("Download and play") }
+            },
             dismissButton = { androidx.compose.material3.TextButton(onClick = { needsRuntime = null }) { Text("Not now") } },
         )
     }

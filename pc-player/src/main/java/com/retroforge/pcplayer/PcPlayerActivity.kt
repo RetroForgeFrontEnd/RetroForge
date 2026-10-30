@@ -21,6 +21,8 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.retroforge.pcplayer.steam.SteamAccount
+import com.retroforge.pcplayer.steam.SteamGameSetup
 import com.winlator.cmod.widget.XServerView
 import com.winlator.cmod.xserver.Pointer
 import com.winlator.cmod.xserver.ScreenInfo
@@ -31,6 +33,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 /**
@@ -79,6 +82,22 @@ class PcPlayerActivity : Activity() {
             if (!runtime.ensure()) {
                 status.text = (runtime.state.value as? RuntimeState.Failed)?.reason ?: "The PC runtime couldn't be installed"
                 return@launch
+            }
+            val steam = SteamGameSetup(runtime.root, SteamAccount(this@PcPlayerActivity))
+            if (steam.steamDlls(exe.parentFile!!).isNotEmpty()) {
+                status.text = "Checking your Steam account…"
+                val appId = steam.appId(exe.parentFile!!, intent.getIntExtra(EXTRA_STEAM_APP_ID, 0))
+                val problem = if (appId == null) {
+                    "This game uses Steam, but RetroForge couldn't tell which Steam game it is."
+                } else {
+                    runCatching { withContext(Dispatchers.IO) { steam.prepare(exe.parentFile!!, appId) } }.exceptionOrNull()?.let {
+                        it.message ?: "Steam couldn't be set up for this game"
+                    }
+                }
+                if (problem != null) {
+                    status.text = problem
+                    return@launch
+                }
             }
             startGame(exe)
         }
@@ -264,10 +283,12 @@ class PcPlayerActivity : Activity() {
     companion object {
         const val EXTRA_EXE = "exe"
         const val EXTRA_TITLE = "title"
+        const val EXTRA_STEAM_APP_ID = "steam_app_id"
         private const val SCREEN_WIDTH = 1280
         private const val SCREEN_HEIGHT = 720
 
-        fun intent(context: Context, exe: File, title: String): Intent =
+        fun intent(context: Context, exe: File, title: String, steamAppId: Int? = null): Intent =
             Intent(context, PcPlayerActivity::class.java).putExtra(EXTRA_EXE, exe.path).putExtra(EXTRA_TITLE, title)
+                .apply { steamAppId?.let { putExtra(EXTRA_STEAM_APP_ID, it) } }
     }
 }

@@ -222,9 +222,29 @@ class PcLibrary(private val context: Context) {
                 }
             }
         }
-        val game = PcGame(name, PcSource.WINDOWS, shortcutPath = File(folder, exe).path)
+        val game = withSteamAppId(PcGame(name, PcSource.WINDOWS, shortcutPath = File(folder, exe).path))
         add(listOf(game))
         return game
+    }
+
+    /**
+     * A Windows game that uses Steam (its folder has steam_api DLLs) needs its Steam app id for RetroForge's PC
+     * player to get its ticket: from a steam_appid.txt in the folder, else Steam's store search by the game's name.
+     * Saves what it finds. Call off the main thread.
+     */
+    fun withSteamAppId(game: PcGame): PcGame {
+        if (game.source != PcSource.WINDOWS || !game.appId.isNullOrBlank()) return game
+        val folder = File(game.shortcutPath ?: return game).parentFile ?: return game
+        val files = folder.walkTopDown().maxDepth(6).filter { it.isFile }.toList()
+        if (files.none { it.name.equals("steam_api.dll", true) || it.name.equals("steam_api64.dll", true) }) return game
+        fun simple(s: String) = s.lowercase().filter { it.isLetterOrDigit() }
+        val title = game.title.removeSuffix(" (RetroForge)")
+        val appId = files.firstOrNull { it.name.equals("steam_appid.txt", true) }?.readText()?.trim()?.takeIf { it.toIntOrNull() != null }
+            ?: runCatching { searchSteam(title) }.getOrDefault(emptyList()).firstOrNull { simple(it.name) == simple(title) }?.appId
+            ?: return game
+        val updated = game.copy(appId = appId)
+        save(all().map { if (it.key == game.key) updated else it })
+        return updated
     }
 
     /**
@@ -236,7 +256,10 @@ class PcLibrary(private val context: Context) {
             if (!com.retroforge.pcplayer.PcRuntime.deviceSupported) return "RetroForge's PC player needs a 64-bit ARM device (most phones and handhelds); this one is ${android.os.Build.SUPPORTED_ABIS.firstOrNull()}."
             val exe = File(game.shortcutPath ?: return "This game has no .exe set.")
             if (!exe.isFile) return "${exe.name} isn't in RetroForge's PC games folder any more. Add the game's folder again."
-            context.startActivity(com.retroforge.pcplayer.PcPlayerActivity.intent(context, exe, game.title).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            context.startActivity(
+                com.retroforge.pcplayer.PcPlayerActivity.intent(context, exe, game.title, game.appId?.toIntOrNull())
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            )
             return null
         }
         val tries: List<Intent> = when (game.source) {

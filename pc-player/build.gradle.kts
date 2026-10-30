@@ -34,6 +34,9 @@ dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.commons.compress)
     implementation(libs.xz)
+    implementation(libs.javasteam)
+    implementation(libs.spongycastle)
+    implementation(libs.protobuf.java)
     implementation(libs.zstd.jni) { artifact { type = "aar" } }
     testImplementation(libs.junit)
 }
