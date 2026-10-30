@@ -169,9 +169,30 @@ lines for Wine's environment, e.g. `WINEDEBUG=+seh`), and Godot's own log in the
 (`drive_c/users/xuser/AppData/Roaming/Godot/app_userdata/<game>/logs`). The runtime and a Warside copy are still on
 the S22 (2.3 GB + 383 MB in RetroForge's storage).
 
+### Steam games (2026-10-30, later)
+
+Built and tested on the S22, GameNative's way:
+
+| Step | Result |
+|---|---|
+| Sign in from the PC tab's Steam card, QR code | **Works** with the Steam app on another screen (tested by mirroring the phone's QR to the PC monitor). The connection needs a ping every 15 s or Steam drops it while you approve; the sign-in has to live outside the card (it's lost if the card scrolls away while you're in the Steam app) |
+| QR on the same phone | **Not possible:** the Steam app refuses a sign-in link opened from another app ("For security purposes, please scan the Steam QR code again") and its scanner is camera-only. On one phone: password + approve in the Steam app (built, not yet tried) |
+| Ownership check at launch | **Works:** Steam's app ownership ticket for Warside (2368300) = OK |
+| Encrypted app ticket | Warside gets `Fail`: it doesn't use encrypted tickets. Like GameNative, RetroForge carries on without one once ownership is confirmed |
+| steam_api64.dll swapped for gbe_fork's (GameNative's pinned build, hash-checked), original kept as .orig; steam_settings written | **Works** |
+| Warside past its Steam check | **Yes**, no more "SteamApi_Init returned false"; it then **stays on the Lavabird splash**: Godot's main loop runs, the start-up task makes no progress, no exceptions, only local sockets (gbe's LAN listener). Not yet explained. GameNative's own Steam launch of Warside also fails on this phone (killed at ~670 MB, likely memory) |
+
+Valve emails a "new sign-in" alert (place guessed from the IP address) the first time; Steam app → Steam Guard → ⚙ →
+Authorized Devices lists RetroForge's sign-in under the phone's name.
+
 ### What's next
 
-1. **Steam games** need a signed-in Steam. How GameNative does it: sign-in in the app with JavaSteam (QR code
+0. **A game to its title screen:** DXVK in the prefix, then Max Payne 2 (DRM-free, D3D9) from the user's PC. Warside:
+   try gbe_fork's "regular" vs "experimental" DLLs and a Wine backtrace of its start-up task.
+0. **Steam library with artwork** from the signed-in account (owned games + Steam's 600x900 covers), then downloads
+   from Steam (JavaSteam's depot downloader, as GameNative).
+0. **On-screen controls overlay** for PC games (the user asked for it; stage 4).
+1. **Steam games** need a signed-in Steam (now built, see above). How GameNative does it: sign-in in the app with JavaSteam (QR code
    approved in the Steam app, or email/password + Steam Guard), library and downloads through JavaSteam's depot
    downloader; at launch it **replaces the game's `steam_api64.dll` with the Goldberg Steam emulator** (ColdClient
    loader) and gives it an encrypted app ticket from the real session. The sign-in and downloads are clean; the

@@ -39,8 +39,8 @@ import kotlin.concurrent.thread
  * name + password with Steam Guard, or a QR code for another device), done against Steam's own login service with
  * JavaSteam. RetroForge keeps only the refresh token Steam issues (in its private storage), never the password.
  *
- * At a game's start the player signs in with that token and asks Steam for the game's encrypted app ticket, which
- * only an account that owns the game gets (see [SteamGameSetup]).
+ * At a game's start the player signs in with that token and asks Steam whether the account owns the game, and for
+ * its encrypted app ticket where the game uses one (see [SteamGameSetup]).
  */
 class SteamAccount(private val context: Context) {
 
@@ -86,17 +86,28 @@ class SteamAccount(private val context: Context) {
         finish(client, result)
     }
 
-    /** The game's encrypted app ticket (base64), which proves this account owns [appId]; null if Steam gives none. */
-    suspend fun encryptedAppTicket(appId: Int): String? {
+    /** What Steam says about this account and a game: whether it owns it, and its encrypted app ticket if it has one. */
+    data class GameAccess(val owned: Boolean, val encryptedTicket: String?)
+
+    /**
+     * Asks Steam whether this account owns [appId] (its app ownership ticket) and for the game's encrypted app ticket
+     * (base64). Only games whose developers turned encrypted tickets on get one; the rest answer "Fail" and run
+     * without it. Null when not signed in.
+     */
+    suspend fun gameAccess(appId: Int): GameAccess? {
         val token = prefs.getString(KEY_TOKEN, null) ?: return null
         return session { client, _ ->
             logOn(client, accountName.orEmpty(), token)
             val apps = client.getHandler(SteamApps::class.java) ?: throw IOException("Steam's app handler is missing")
+            val ownership = withTimeoutOrNull(15_000) { apps.getAppOwnershipTicket(appId).await() }
+                ?: throw IOException("Steam didn't answer whether you own the game in time")
+            Log.i(TAG, "Ownership of $appId: ${ownership.result}")
+            if (ownership.result != EResult.OK) return@session GameAccess(owned = false, encryptedTicket = null)
             val reply = withTimeoutOrNull(15_000) { apps.requestEncryptedAppTicket(appId, null).await() }
-                ?: throw IOException("Steam didn't send the game's ticket in time")
-            Log.i(TAG, "Ticket for $appId: ${reply.result}")
-            if (reply.result != EResult.OK || reply.encryptedAppTicket == null) null
-            else Base64.encodeToString(reply.encryptedAppTicket!!.toByteArray(), Base64.NO_WRAP)
+            Log.i(TAG, "Encrypted ticket for $appId: ${reply?.result}")
+            val ticket = reply?.takeIf { it.result == EResult.OK }?.encryptedAppTicket
+                ?.let { Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP) }
+            GameAccess(owned = true, encryptedTicket = ticket)
         }
     }
 

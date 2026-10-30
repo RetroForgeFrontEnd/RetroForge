@@ -9,8 +9,9 @@ import java.security.MessageDigest
 /**
  * Gets a Steam game ready to start without the Steam client, the way GameNative does it: the game's steam_api DLLs
  * are swapped for the Goldberg Steam emulator's (gbe_fork, LGPL-3.0; the build GameNative ships), and its
- * steam_settings folder gets the signed-in account and the game's encrypted app ticket from Steam, which only an
- * account that owns the game receives. The original DLLs are kept beside them as `<name>.orig`.
+ * steam_settings folder gets the signed-in account and, where the game uses one, its encrypted app ticket from Steam.
+ * It only goes ahead when Steam confirms the account owns the game. The original DLLs are kept beside them as
+ * `<name>.orig`.
  *
  * DLC isn't unlocked: only what Steam's ticket says the account has.
  */
@@ -37,8 +38,9 @@ class SteamGameSetup(private val runtimeRoot: File, private val account: SteamAc
         val dlls = steamDlls(gameDir)
         if (dlls.isEmpty()) return
         if (!account.signedIn) throw IOException("This is a Steam game: sign in to Steam on RetroForge's PC tab first.")
-        val ticket = account.encryptedAppTicket(appId)
-            ?: throw IOException("Steam gave no ticket for app $appId: is it in this Steam account's library?")
+        val access = account.gameAccess(appId) ?: throw IOException("Sign in to Steam on RetroForge's PC tab first.")
+        if (!access.owned) throw IOException("Steam says this account doesn't own this game (app $appId).")
+        val ticket = access.encryptedTicket
         for (dll in dlls) {
             val is64 = dll.name.equals("steam_api64.dll", true)
             val ours = emulatorDll(is64)
@@ -60,7 +62,7 @@ class SteamGameSetup(private val runtimeRoot: File, private val account: SteamAc
         }
     }
 
-    private fun writeSettings(dir: File, appId: Int, ticket: String) {
+    private fun writeSettings(dir: File, appId: Int, ticket: String?) {
         File(dir, "steam_appid.txt").takeIf { !it.exists() }?.writeText(appId.toString())
         val settings = File(dir, "steam_settings").apply { mkdirs() }
         File(settings, "steam_appid.txt").writeText(appId.toString())
@@ -72,7 +74,7 @@ class SteamGameSetup(private val runtimeRoot: File, private val account: SteamAc
                 appendLine("account_name=${account.accountName.orEmpty()}")
                 appendLine("account_steamid=$steamId")
                 appendLine("language=english")
-                appendLine("ticket=$ticket")
+                if (ticket != null) appendLine("ticket=$ticket")
                 appendLine()
                 appendLine("[user::saves]")
                 appendLine("local_save_path=C:\\Program Files (x86)\\Steam\\userdata\\$accountId")
