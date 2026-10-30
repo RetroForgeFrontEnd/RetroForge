@@ -108,6 +108,10 @@ class PcPlayerActivity : ComponentActivity() {
 
     private var phase by mutableStateOf<Phase>(Phase.Loading("Starting"))
     private var menuOpen by mutableStateOf(false)
+    private enum class MenuPage { Main, PlayTogether }
+    private var menuPage by mutableStateOf(MenuPage.Main)
+    /** Playing this game's LAN mode with other devices (null until the runtime is ready). */
+    private var together: PlayTogether? = null
     // Both remembered per game.
     private var padShown by mutableStateOf(true)
     private var keyboardMode by mutableStateOf(false)
@@ -153,30 +157,58 @@ class PcPlayerActivity : ComponentActivity() {
                 phase = Phase.Failed((runtime.state.value as? RuntimeState.Failed)?.reason ?: "The PC runtime couldn't be installed")
                 return@launch
             }
-            val steam = SteamGameSetup(runtime.root, SteamAccount(this@PcPlayerActivity))
-            if (steam.steamDlls(exe.parentFile!!).isNotEmpty()) {
-                phase = Phase.Loading("Checking your Steam account")
-                val appId = steam.appId(exe.parentFile!!, intent.getIntExtra(EXTRA_STEAM_APP_ID, 0))
-                val problem = if (appId == null) {
-                    "This game uses Steam, but RetroForge couldn't tell which Steam game it is."
-                } else {
-                    runCatching { withContext(Dispatchers.IO) { steam.prepare(exe.parentFile!!, appId) } }.exceptionOrNull()?.let {
-                        it.message ?: "Steam couldn't be set up for this game"
-                    }
+            together = PlayTogether(this@PcPlayerActivity, scope, runtime.root) { lobbies -> restartGame(exe, lobbies) }
+            prepareAndStart(exe, lobbies = false)
+        }
+    }
+
+    /** Gets a Steam game ready (with Steam lobbies on for Play together when [lobbies]), then starts the game. */
+    private suspend fun prepareAndStart(exe: File, lobbies: Boolean) {
+        val steam = SteamGameSetup(runtime.root, SteamAccount(this@PcPlayerActivity))
+        if (steam.steamDlls(exe.parentFile!!).isNotEmpty()) {
+            together?.steamGame = true
+            phase = Phase.Loading("Checking your Steam account")
+            val appId = steam.appId(exe.parentFile!!, intent.getIntExtra(EXTRA_STEAM_APP_ID, 0))
+            val problem = if (appId == null) {
+                "This game uses Steam, but RetroForge couldn't tell which Steam game it is."
+            } else {
+                runCatching { withContext(Dispatchers.IO) { steam.prepare(exe.parentFile!!, appId, lobbies) } }.exceptionOrNull()?.let {
+                    it.message ?: "Steam couldn't be set up for this game"
                 }
-                if (problem != null) {
-                    phase = Phase.Failed(problem)
-                    return@launch
-                }
-                // Saves newer in Steam Cloud (from a PC, a Deck, another phone) come down before the game starts. If
-                // Steam can't be reached the game starts anyway with the saves already here.
-                val sync = SteamCloudSync(SteamAccount(this@PcPlayerActivity), runtime.root, File(runtime.prefix, "drive_c"), exe.parentFile!!, appId!!)
-                cloud = sync
-                phase = Phase.Loading("Checking Steam Cloud")
-                runCatching { withContext(Dispatchers.IO) { withTimeout(CLOUD_TIMEOUT_MS) { sync.download { phase = Phase.Loading(it) } } } }
-                    .onFailure { Log.w(TAG, "Steam Cloud download failed", it) }
             }
-            startGame(exe)
+            if (problem != null) {
+                phase = Phase.Failed(problem)
+                return
+            }
+            together?.lobbies = lobbies
+            // Saves newer in Steam Cloud (from a PC, a Deck, another phone) come down before the game starts. If
+            // Steam can't be reached the game starts anyway with the saves already here.
+            val sync = SteamCloudSync(SteamAccount(this@PcPlayerActivity), runtime.root, File(runtime.prefix, "drive_c"), exe.parentFile!!, appId!!)
+            cloud = sync
+            phase = Phase.Loading("Checking Steam Cloud")
+            runCatching { withContext(Dispatchers.IO) { withTimeout(CLOUD_TIMEOUT_MS) { sync.download { phase = Phase.Loading(it) } } } }
+                .onFailure { Log.w(TAG, "Steam Cloud download failed", it) }
+        }
+        startGame(exe)
+    }
+
+    /** Play together: restarts the game in this player (keeping its virtual LAN) with Steam lobbies on or off. */
+    private fun restartGame(exe: File, lobbies: Boolean) {
+        val ending = session ?: return
+        recordRun()
+        session = null
+        menuOpen = false
+        menuPage = MenuPage.Main
+        phase = Phase.Loading("Restarting $title")
+        view?.let { frame.removeView(it) }
+        controlsView?.let { frame.removeView(it) }
+        view = null
+        controlsView = null
+        scope.launch {
+            withContext(Dispatchers.IO) { Thread { ending.stop() }.apply { start() }.join(STOP_WAIT_MS) }
+            recorded = false
+            shownAt = null
+            prepareAndStart(exe, lobbies)
         }
     }
 
@@ -316,6 +348,7 @@ class PcPlayerActivity : ComponentActivity() {
 
     private fun closeMenu() {
         menuOpen = false
+        menuPage = MenuPage.Main
         session?.setPaused(false)
         hideSystemBars()
         view?.requestFocus()
@@ -437,9 +470,18 @@ class PcPlayerActivity : ComponentActivity() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     val wide = Modifier.fillMaxWidth()
+                    val play = together
+                    if (menuPage == MenuPage.PlayTogether && play != null) {
+                        play.Panel { onClick, content -> MenuButton(onClick = onClick, modifier = wide) { content() } }
+                        MenuButton(onClick = { menuPage = MenuPage.Main }, modifier = wide) { Text("Back") }
+                        return@Column
+                    }
                     Text(title, color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                     Text("Paused · PC game", color = Color(0xFFAAAAB4), fontSize = 13.sp)
                     MenuButton(onClick = { closeMenu() }, modifier = wide) { Text("Resume") }
+                    if (play != null) MenuButton(onClick = { menuPage = MenuPage.PlayTogether }, modifier = wide) {
+                        Text(if (play.active) "Play together: On" else "Play together")
+                    }
                     MenuButton(onClick = { chooseControls(shown = !padShown) }, modifier = wide) {
                         Text("On-screen controller: ${if (padShown) "Shown" else "Hidden"}" + if (padShown && controllerConnected()) " (hidden while a controller is connected)" else "")
                     }
@@ -481,7 +523,8 @@ class PcPlayerActivity : ComponentActivity() {
     }
 
     private fun onWineExit(code: Int, ended: PcSession) {
-        if (quitting || isFinishing) return
+        // (A game restarted for Play together ends without it meaning anything.)
+        if (quitting || isFinishing || ended !== session) return
         recordRun()
         // The game quit by itself: back to RetroForge (saving to Steam Cloud first). Anything else shows Wine's last
         // lines, which say what went wrong.
@@ -498,6 +541,7 @@ class PcPlayerActivity : ComponentActivity() {
     private fun quit() {
         if (quitting) return
         quitting = true
+        together?.close()
         if (session != null) recordRun()
         val ending = session
         session = null
@@ -601,6 +645,7 @@ class PcPlayerActivity : ComponentActivity() {
 
     override fun onDestroy() {
         scope.cancel()
+        together?.close()
         if (!quitting) session?.let { ending -> Thread { ending.stop() }.start() }
         session = null
         super.onDestroy()

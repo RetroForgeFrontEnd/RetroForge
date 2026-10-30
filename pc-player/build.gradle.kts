@@ -27,6 +27,10 @@ android {
         // The in-game menu matches the retro player's (Compose).
         compose = true
     }
+    testOptions {
+        // android.util.Log in code under test (PcLan) does nothing instead of throwing.
+        unitTests.isReturnDefaultValues = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
