@@ -123,6 +123,9 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             "FEX_MONOHACKS" to "1",
             // .NET games abort loading Windows' ICU, which this Wine only partly has; they don't need it.
             "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT" to "1",
+            // .NET 7+ writes compiled code through one mapping and runs it through another; FEX misses the change
+            // and spins on stale code (Warside hung loading). One mapping for both fixes it.
+            "DOTNET_EnableWriteXorExecute" to "0",
         ) + extraEnvironment()
     }
 
