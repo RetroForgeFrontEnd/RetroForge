@@ -137,8 +137,10 @@ months, as said before starting.
 
 ### Test result (2026-10-30)
 
-**Warside did not reach its title screen.** Furthest point: the game's window is open and Godot's Vulkan renderer
-is running on the Xclipse, but the game hangs while loading (dark grey window, no title screen).
+**Warside did not reach its title screen, but it runs as far as a legitimate copy can without Steam.** It draws
+its publisher splash (Lavabird logo) full screen through Vulkan on the Xclipse, its C# code runs, and it stops at
+its own Steam check: `SteamClient.Init` fails with "Steam isn't running … Don't own App ID". Getting past that
+needs a signed-in Steam (see "Steam games" below).
 
 What was tested, on what:
 
@@ -153,7 +155,9 @@ What was tested, on what:
 | Godot on OpenGL (its default here: ANGLE on Direct3D 11) | | Fails with Godot's own "OpenGL 3.3 or Direct3D 11" dialog: no Direct3D layer (DXVK) in the prefix yet |
 | Godot on Vulkan (RetroForge now starts Godot games with `--rendering-driver vulkan --rendering-method mobile`) | | **Works:** "Vulkan 1.3.279 – Forward Mobile – Wrapper(Samsung Xclipse 920)"; the window shows Godot's dark grey loading background |
 | .NET start-up | | Aborted loading Windows' ICU (`icuuc68` missing): fixed with `DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1` |
-| Loading to the title screen | | **Hangs.** One thread at 100% CPU, memory flat for minutes, other threads idle, nothing more in Godot's log after audio set-up. Same with and without GameNative's FEX settings (which did get it further: 820 MB loaded instead of 630 MB) |
+| Loading | | First hung (one thread spinning, memory flat). Cause: .NET 7+ writes JIT code through one mapping and runs it through another, and FEX kept running stale code. **Fixed** with `DOTNET_EnableWriteXorExecute=0` (now a default) |
+| Game's own frames on screen | | **Works:** the Lavabird splash, drawn by Godot through Vulkan → wrapper → X server |
+| Past the splash | | **Stops at the game's Steam check** (no Steam client running). GameNative's own Steam launch of Warside fails too (status 137, tested by the main session) |
 | Sound | | None yet (no sound server; Godot falls back to silence) |
 
 Things learned that the code now handles: native libraries stay inside the APK, so `libpcexec.so` is copied out
@@ -167,10 +171,13 @@ the S22 (2.3 GB + 383 MB in RetroForge's storage).
 
 ### What's next
 
-1. **Find the Warside hang.** Most likely FEX and .NET's JIT (Godot's C# side) or the S22 being short of memory
-   (227 MB free, 3.4 GB in swap during the test). Next checks: run GameNative's own Warside container with the same
-   Proton/FEX to see whether it loads there; try FEX's `FEX_SMCCHECKS=full`; get a Wine backtrace of the busy thread
-   (`winedbg --command "bt all"`); try with other apps closed.
+1. **Steam games** need a signed-in Steam. How GameNative does it: sign-in in the app with JavaSteam (QR code
+   approved in the Steam app, or email/password + Steam Guard), library and downloads through JavaSteam's depot
+   downloader; at launch it **replaces the game's `steam_api64.dll` with the Goldberg Steam emulator** (ColdClient
+   loader) and gives it an encrypted app ticket from the real session. The sign-in and downloads are clean; the
+   DLL swap works around the game's Steam check, which needs the project owner's decision (RetroForge's docs say it
+   doesn't bypass DRM). The alternative that needs no swap is running Valve's own Windows Steam client in the
+   player (heavy; its built-in browser often struggles under Wine on ARM).
 2. **DXVK and VKD3D-Proton in the prefix** (GameNative's `dxvk-2.x` / `vkd3d` packages, a few MB each). Needed by
    nearly every Direct3D game: Godot's default path, Max Payne 2 (D3D9), Snooker 19 (D3D11).
 3. **A non-.NET game next** to prove frames reach the screen end to end: Max Payne 2 (32-bit D3D9, also tests FEX's
