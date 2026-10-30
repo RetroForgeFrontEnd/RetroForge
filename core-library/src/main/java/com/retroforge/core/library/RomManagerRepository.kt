@@ -111,15 +111,30 @@ class RomManagerRepository(
         DuplicateReport(checked, skipped)
     }
 
-    suspend fun findCompressible(root: RootEntity): CompressReport = withContext(Dispatchers.IO) {
-        val games = dao.gamesIn(root.id).map { CompressCandidate(it.system, it.relativePath, systemFolder(root, it), it.title, it.sizeBytes) }
-        val (jobs, skipped) = CompressPlanner.plan(games, SafCollectionFiles(resolver, Uri.parse(root.treeUri)), library.rules)
+    /** Checked one system folder at a time, so [onProgress] (done, total) can show how far it has got. */
+    suspend fun findCompressible(root: RootEntity, onProgress: (Int, Int) -> Unit = { _, _ -> }): CompressReport = withContext(Dispatchers.IO) {
+        val bySystem = dao.gamesIn(root.id).map { CompressCandidate(it.system, it.relativePath, systemFolder(root, it), it.title, it.sizeBytes) }
+            .groupBy { it.systemFolder }.values.toList()
+        val files = SafCollectionFiles(resolver, Uri.parse(root.treeUri))
+        val jobs = mutableListOf<CompressJob>()
+        val skipped = mutableListOf<CompressSkip>()
+        bySystem.forEachIndexed { i, games ->
+            onProgress(i, bySystem.size)
+            CompressPlanner.plan(games, files, library.rules).let { (j, s) -> jobs += j; skipped += s }
+        }
         CompressReport(jobs.sortedWith(compareBy({ it.system }, { it.title.lowercase() })), skipped)
     }
 
-    suspend fun findMultiDisc(root: RootEntity): PlaylistReport = withContext(Dispatchers.IO) {
-        val games = dao.gamesIn(root.id).map { CompressCandidate(it.system, it.relativePath, systemFolder(root, it), it.title, it.sizeBytes) }
-        val (jobs, skipped) = MultiDiscPlanner.plan(games, SafCollectionFiles(resolver, Uri.parse(root.treeUri)), library.rules)
+    suspend fun findMultiDisc(root: RootEntity, onProgress: (Int, Int) -> Unit = { _, _ -> }): PlaylistReport = withContext(Dispatchers.IO) {
+        val bySystem = dao.gamesIn(root.id).map { CompressCandidate(it.system, it.relativePath, systemFolder(root, it), it.title, it.sizeBytes) }
+            .groupBy { it.systemFolder }.values.toList()
+        val files = SafCollectionFiles(resolver, Uri.parse(root.treeUri))
+        val jobs = mutableListOf<PlaylistJob>()
+        val skipped = mutableListOf<PlaylistSkip>()
+        bySystem.forEachIndexed { i, games ->
+            onProgress(i, bySystem.size)
+            MultiDiscPlanner.plan(games, files, library.rules).let { (j, s) -> jobs += j; skipped += s }
+        }
         PlaylistReport(jobs, skipped)
     }
 
