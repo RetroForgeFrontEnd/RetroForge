@@ -68,3 +68,17 @@ full screen in landscape in an Android WebView, with the **Better xCloud** users
   replacing `assets/xcloud/better-xcloud.user.js` (and the version in THIRD_PARTY_LICENCES.md).
 - Android 16+ ignores the fixed landscape orientation on large screens (tablets, foldables unfolded); xCloud works
   in either orientation, so this is cosmetic.
+
+## More cloud gaming (PC tab)
+
+Beside the Xbox card, "More cloud gaming" opens other services in their own official apps or sites; RetroForge
+doesn't embed them or touch their sign-in:
+
+| Service | Opens | When not installed |
+|---|---|---|
+| NVIDIA GeForce NOW | its app, `com.nvidia.geforcenow` | its Play Store page |
+| Boosteroid | its app, `com.boosteroid.streaming` | its Play Store page |
+| Amazon Luna | luna.amazon.com in the browser (Luna has no Play Store app for phones) | — |
+
+Tested on the emulator: "Get GeForce NOW" opens the Play Store page, "Open Amazon Luna" opens the site in Chrome.
+The button says Open instead of Get once the app is installed (checked again when RetroForge comes back to the front).

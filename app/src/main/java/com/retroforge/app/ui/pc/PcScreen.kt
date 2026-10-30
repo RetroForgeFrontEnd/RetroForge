@@ -35,11 +35,12 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
     val status by viewModel.status.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
 
-    ScreenFrame(title = "PC", subtitle = "Your PC games, Xbox Cloud Gaming, ports and free games.") {
+    ScreenFrame(title = "PC", subtitle = "Your PC games, cloud gaming, ports and free games.") {
         PcFold("Your PC games", "Steam, Epic, GOG and Amazon games through GameNative; Windows games through Winlator.", startOpen = true) {
             PcGamesSection(library)
         }
         XboxCloudCard()
+        CloudAppsCard()
         PcFold("Ports", "Games rebuilt for Android (and Windows-only ports) that use your own copy of the game.") {
             PortsSection(library)
         }
