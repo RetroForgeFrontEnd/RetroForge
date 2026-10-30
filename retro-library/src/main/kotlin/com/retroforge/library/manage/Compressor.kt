@@ -24,6 +24,7 @@ enum class CompressFormat(val label: String) {
     ZIP("ZIP"),
     CD_CHD("CHD (CD)"),
     DVD_CHD("CHD (DVD)"),
+    RVZ("RVZ"),
 }
 
 /** One conversion: [inputs] (all files of the game) become [output]; [playlists] are .m3u files naming [source]. */
@@ -47,7 +48,7 @@ object CompressPlanner {
     val dvdSystems = setOf("ps2", "psp")
     private val alreadyCompressed = setOf("zip", "7z", "chd", "cso", "pbp", "rvz", "gcz", "wbfs", "wia", "ciso", "gz", "squashfs", "rar", "xz", "zst")
     private val discFiles = setOf("cue", "gdi", "ccd", "toc", "m3u", "iso", "img", "bin", "mdf", "mds", "cdi")
-    private val dolphin = setOf("gamecube", "gc", "wii")
+    private val gameCube = setOf("gamecube", "gc")
     /**
      * Cartridge systems whose RetroArch cores load .zip (or RetroArch unpacks it for them). Not every system that
      * lists .zip: zipping Visual Pinball tables, 3DS games or ScummVM folders would break them.
@@ -71,8 +72,9 @@ object CompressPlanner {
             when {
                 game.extension in alreadyCompressed -> Unit
                 "msu" in game.system -> skip("MSU games need their original files.")
-                game.system in dolphin && game.extension in setOf("iso", "gcm") ->
-                    skip("Use Dolphin's own converter for RVZ: long-press the game in Dolphin and choose Convert File.")
+                game.system in gameCube && game.extension in setOf("iso", "gcm") -> rvzJob(game, files).fold(jobs::add) { skip(it.message ?: "") }
+                game.system == "wii" && game.extension in setOf("iso", "gcm") ->
+                    skip("Wii discs need Nintendo's key to convert, which RetroForge doesn't include. Use Dolphin's converter: long-press the game in Dolphin and choose Convert File.")
                 game.extension == "cue" && chd -> cdJob(game, files, emptyList()).fold(jobs::add) { skip(it.message ?: "") }
                 game.extension == "m3u" && chd -> {
                     val discs = runCatching { TextFiles.read(files, game.relativePath) }.getOrNull()
@@ -123,6 +125,14 @@ object CompressPlanner {
         val output = replaceExtension(game.relativePath, "chd")
         if (files.exists(output)) return Result.failure(IOException("${nameOf(output)} already exists."))
         return Result.success(CompressJob(game.system, game.title, CompressFormat.DVD_CHD, game.relativePath, game.systemFolder, listOf(game.relativePath), game.size, output))
+    }
+
+    private fun rvzJob(game: CompressCandidate, files: CollectionFiles): Result<CompressJob> {
+        val output = replaceExtension(game.relativePath, "rvz")
+        if (files.exists(output)) return Result.failure(IOException("${nameOf(output)} already exists."))
+        val header = runCatching { files.openRead(game.relativePath).use { Rvz.read(it, 0, 0x20) } }.getOrNull()
+        if (header == null || !Rvz.isGameCube(header)) return Result.failure(IOException("Not a GameCube disc (Wii discs need Dolphin's converter)."))
+        return Result.success(CompressJob(game.system, game.title, CompressFormat.RVZ, game.relativePath, game.systemFolder, listOf(game.relativePath), game.size, output))
     }
 
     fun replaceExtension(path: String, ext: String) = path.substringBeforeLast('.') + "." + ext
@@ -218,6 +228,9 @@ class Compressor(private val files: CollectionFiles) {
                 CompressFormat.DVD_CHD -> files.open(job.source).use { data ->
                     Chd.write(channel, data, job.inputBytes, Chd.DVD_HUNK, Chd.DVD_SECTOR, cd = false, listOf(Chd.dvdMetadata), onBytes, isCancelled)
                 }
+                CompressFormat.RVZ -> files.openRead(job.source).use { input ->
+                    Rvz.write(channel, input, job.inputBytes, onBytes, isCancelled)
+                }
             }
             channel.size()
         }
@@ -240,6 +253,9 @@ class Compressor(private val files: CollectionFiles) {
                 // The verifier recomputes the data SHA-1 from the compressed hunks and checks it against the header,
                 // which the writer filled from the original data.
                 files.openRead(partial).use { ChdVerifier.verify(it, onBytes) }
+            }
+            CompressFormat.RVZ -> files.openRead(partial).use { rvz ->
+                files.open(job.source).use { original -> RvzVerifier.verify(rvz, original, onBytes) }
             }
         }
     }

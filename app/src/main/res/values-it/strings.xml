@@ -322,6 +322,7 @@
     <string name="rom_manager_select_the_systems_to_compress">Seleziona i sistemi da comprimere.</string>
     <string name="rom_manager_a_zip_is_usually_30_60" formatted="false">Uno .zip di solito è più piccolo del 30–60%.</string>
     <string name="rom_manager_a_chd_is_usually_30_60" formatted="false">Un CHD di solito è più piccolo del 30–60%; le tracce audio CD si riducono meno.</string>
+    <string name="rom_manager_an_rvz_is_usually_30_70" formatted="false">Un RVZ di solito è più piccolo del 30–70%; Dolphin lo avvia direttamente.</string>
     <string name="rom_manager_sort_loose_games_into_system_folders">Sistema i giochi sparsi nelle cartelle dei sistemi</string>
     <string name="rom_manager_finds_games_outside_a_folder_for">Trova i giochi fuori dalla cartella del loro sistema (file sparsi, una cartella Downloads o Extras) e mostra dove andrebbe ciascuno: la cartella che usi già per quel sistema, o una nuova chiamata come in RetroBat ed ES-DE. Legge soltanto i tuoi file.</string>
     <string name="rom_manager_looking_for_loose_games">Ricerca di giochi sparsi …</string>

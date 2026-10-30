@@ -20,6 +20,9 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.commons.compress)
     implementation(libs.xz)
+    // On Android the zstd-jni AAR (with its native library) comes from pc-player.
+    compileOnly(libs.zstd.jni)
 
     testImplementation(libs.junit)
+    testImplementation(libs.zstd.jni)
 }
