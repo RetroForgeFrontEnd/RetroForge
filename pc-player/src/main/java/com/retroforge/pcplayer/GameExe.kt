@@ -6,7 +6,7 @@ import java.io.File
 /**
  * Which .exe in a Windows game's folder starts the game. In order:
  *  1. GOG's own answer: the primary play task in the folder's goggame-<id>.info.
- *  2. An .exe named like the folder (Snooker 19 Challenge Pack → Snooker19.exe counts).
+ *  2. An .exe named like the folder (Space Racer 2 Deluxe Edition → SpaceRacer2.exe counts).
  *  3. The biggest .exe in the folder itself, then in its subfolders.
  * Installers, uninstallers, crash reporters, redistributables and the like are never picked. (Unreal Engine's
  * starter .exes are fine to pick: the player runs the real game behind them, see [PcSession.unrealGame].)
@@ -50,7 +50,7 @@ object GameExe {
 
     private fun simple(s: String) = s.lowercase().filter { it.isLetterOrDigit() }
 
-    /** "snooker19" matches "snooker19challengepack"; very short names ("game") don't count. */
+    /** "spaceracer2" matches "spaceracer2deluxeedition"; very short names ("game") don't count. */
     private fun matchesName(exe: String, folder: String) =
         exe.length >= 4 && (exe == folder || folder.startsWith(exe) || exe.startsWith(folder))
 }
