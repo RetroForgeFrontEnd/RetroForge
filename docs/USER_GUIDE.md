@@ -11,6 +11,11 @@ The same guide as Settings → How to use RetroForge in the app.
 - Settings → Check my setup shows every system at once: its emulator, BIOS and games, and what's missing.
 - RetroForge comes with no games and no BIOS. Use your own.
 
+## USB drives and SD cards
+
+- A folder on a USB drive (through an OTG adapter or USB-C) or an SD card is added like any other: Retro tab → Game folders → Add a folder, then pick it in Android's folder picker.
+- Unplugging the drive is fine: its games stay in the library and say the drive isn't plugged in if you start one. Plug it back in and they play again; there's nothing to add again.
+
 ## Games and films on a network drive (PC or NAS)
 
 - What it does: plays games and films kept on a computer or NAS at home, over Wi-Fi, without copying them to the phone. Nothing extra to install on the phone. The phone and the computer must be on the same network.

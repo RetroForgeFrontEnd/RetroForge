@@ -481,9 +481,9 @@ class PlayerActivity : ComponentActivity() {
         val ok = try {
             loadContent(uri, fileName, info.needsFile, info.extensions, systemDir)
         } catch (e: IOException) {
-            return fail("Couldn't read the game: ${e.message}")
+            return fail(if (onUnpluggedDrive(uri)) UNPLUGGED else "Couldn't read the game: ${e.message}")
         } catch (e: SecurityException) {
-            return fail("RetroForge no longer has access to this game's folder. Add the folder again in Settings.")
+            return fail(if (onUnpluggedDrive(uri)) UNPLUGGED else "RetroForge no longer has access to this game's folder. Add the folder again in Settings.")
         }
         if (!ok) {
             // Arcade romsets made for another emulator version: name the files it couldn't find.
@@ -617,6 +617,19 @@ class PlayerActivity : ComponentActivity() {
         if (coreId == "b2") name.replace(Regex("""\s*\[[^\]]*\]"""), "").ifBlank { name } else name
 
     private fun fail(message: String) = runOnUiThread { phase = Phase.Failed(message) }
+
+    /**
+     * Whether [uri] is on a USB drive or SD card ("1A2B-3C4D:Roms/…" in Android's storage) that isn't plugged in
+     * right now: its folder access is still saved, so it works again as soon as the drive is back.
+     */
+    private fun onUnpluggedDrive(uri: Uri): Boolean {
+        if (uri.authority != "com.android.externalstorage.documents") return false
+        val volume = runCatching { android.provider.DocumentsContract.getDocumentId(uri) }.getOrNull()?.substringBefore(':') ?: return false
+        if (volume == "primary" || volume == "home") return false
+        val mounted = getSystemService(android.os.storage.StorageManager::class.java).storageVolumes
+            .filter { it.state == android.os.Environment.MEDIA_MOUNTED }.mapNotNull { it.uuid }
+        return mounted.none { it.equals(volume, ignoreCase = true) }
+    }
 
     private fun sram() = File(savesDir, "$saveBase.srm")
     // States belong to one emulator (another can't load them), so their names include it. In-game saves (.srm) are shared.
@@ -1724,6 +1737,8 @@ class PlayerActivity : ComponentActivity() {
             KeyEvent.KEYCODE_BUTTON_START, KeyEvent.KEYCODE_BUTTON_SELECT,
         )
 
+        private const val UNPLUGGED = "This game is on a USB drive or SD card that isn't plugged in. Plug it in and try again: " +
+            "RetroForge remembers the folder, so there's nothing to add again."
         private const val EXTRA_CORE_PATH = "core_path"
         private const val EXTRA_URI = "uri"
         private const val EXTRA_FILE_NAME = "file_name"
