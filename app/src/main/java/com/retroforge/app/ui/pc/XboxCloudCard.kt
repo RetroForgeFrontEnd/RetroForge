@@ -19,8 +19,8 @@ fun XboxCloudCard() {
     ) {
         CardTitle("Xbox Cloud Gaming")
         CardBody(
-            "Stream Xbox games from xbox.com/play, improved by Better xCloud. Needs Game Pass with cloud gaming; you sign " +
-                "in on Microsoft's own page. Not made or endorsed by Microsoft.",
+            "Stream Xbox games from xbox.com/play, improved by Better xCloud. Most games need Game Pass Premium or Ultimate; " +
+                "some free-to-play games such as Fortnite don't. You sign in on Microsoft's own page. Not made or endorsed by Microsoft.",
         )
     }
 }

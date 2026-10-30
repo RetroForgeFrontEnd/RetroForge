@@ -39,6 +39,7 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
         PcFold("Your PC games", "Steam, Epic, GOG and Amazon games through GameNative; Windows games through Winlator.", startOpen = true) {
             PcGamesSection(library)
         }
+        Text("Cloud gaming", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
         XboxCloudCard()
         CloudAppsCard()
         PcFold("Ports", "Games rebuilt for Android (and Windows-only ports) that use your own copy of the game.") {

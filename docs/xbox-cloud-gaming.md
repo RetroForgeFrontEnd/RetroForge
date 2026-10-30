@@ -49,14 +49,20 @@ full screen in landscape in an Android WebView, with the **Better xCloud** users
   xbox.com/play loads (Microsoft's cookie banner, Cloud Gaming home with game tiles), and Better xCloud is active:
   its "BETTER XCLOUD" settings button appears next to the profile picture. xCloud's own gamepad navigation starts
   ("[GamepadNavigation] Initializing" in the console), so the page sees the Gamepad API.
-- Problem: the first version ran in the main process and got "RetroForge isn't responding" while the page loaded; a
-  stack sample showed the main thread recomposing RetroForge's own screens behind it after the rotation to landscape.
-  The screen now runs in its own process (`:xcloud`) like the built-in player. Not re-tested on the emulator yet
-  because another session was installing its own build there at the same time.
-- Not tested: sign-in (needs the user's own Microsoft account, typed by them), streaming a game (needs Game Pass with
-  cloud gaming; the emulator has no hardware video decode worth testing on), a real controller, touch controls.
+- Problem: "RetroForge isn't responding" while xbox.com loads, both in the main process and in its own `:xcloud`
+  process. The emulator was overloaded at the time (software GPU, Play services updating); the S22 doesn't show it.
+- Not tested on the emulator: sign-in, streaming, controllers, touch.
 
-**Galaxy S22:** not tested yet (other sessions test on it; waiting for it to be free and for the user to sign in).
+**Galaxy S22 (SM-S901B), build d69d166, 2026-10-30** (tested by the PC player session, the user signing in):
+
+- Works: opens in landscape, full screen; xbox.com/play loads in about 20 s with no "isn't responding". Better xCloud
+  is active (its button next to the profile picture, and its server badge "UKS" after sign-in). The user signed in on
+  Microsoft's page and came back to xbox.com/play signed in; after leaving and restarting RetroForge they were still
+  signed in. Back shows "Leave Xbox Cloud Gaming?" (Leave / Previous page / Stay) and Leave returns to the PC tab.
+- Not tested: streaming a game. The user has no Game Pass (a game showed "Game Pass Premium or Ultimate required");
+  free-to-play games weren't tried. So controllers in game, touch controls and Back mid-game are also untested. No
+  controller was connected (xCloud's controller icon showed its slash).
+- Next test: a free-to-play game that streams without Game Pass (e.g. Fortnite), with a controller and with touch.
 
 ## What doesn't work / not done
 
