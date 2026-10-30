@@ -439,7 +439,8 @@ class PlayerActivity : ComponentActivity() {
         })
 
         setContent {
-            MaterialTheme(colorScheme = darkColorScheme()) {
+            // RetroForge cyan for the menu's labels and ripples, as in the Switch and PS3 players; the focus ring stays orange.
+            MaterialTheme(colorScheme = darkColorScheme(primary = Color(0xFF3ED6FF))) {
                 PlayerScreen(touchLayout(), extras.getString(EXTRA_TITLE).orEmpty())
             }
         }
@@ -1474,11 +1475,11 @@ class PlayerActivity : ComponentActivity() {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (menuPage != MenuPage.MAIN) {
-                    androidx.compose.material3.TextButton(onClick = { menuPage = MenuPage.MAIN }) { Text(stringResource(R.string.player_back), color = Color.White) }
+                    androidx.compose.material3.TextButton(onClick = { menuPage = MenuPage.MAIN }) { Text(stringResource(R.string.player_back), color = Color(0xFF3ED6FF)) }
                 } else {
                     androidx.compose.foundation.layout.Spacer(Modifier.width(1.dp))
                 }
-                androidx.compose.material3.TextButton(onClick = { closeMenu() }) { Text("✕", color = Color.White, fontSize = 20.sp) }
+                androidx.compose.material3.TextButton(onClick = { closeMenu() }) { Text("✕", color = Color(0xFF3ED6FF), fontSize = 20.sp) }
             }
             Column(
                 Modifier.verticalScroll(rememberScrollState()).padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
