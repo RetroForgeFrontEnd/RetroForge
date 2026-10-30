@@ -37,6 +37,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -173,7 +174,7 @@ class PcPlayerActivity : ComponentActivity() {
         newSession.xServer.setRenderer(xView.renderer)
         // The game's own window fills the screen (Wine's desktop stays behind it), and the console window some games
         // open (text output, warnings) isn't shown.
-        xView.renderer.setForceFullscreenWMClass(exe.name.lowercase())
+        xView.renderer.setForceFullscreenWMClass(newSession.program.name.lowercase())
         xView.renderer.setUnviewableWMClasses("conhost.exe", "wineconsole")
         blurredSides = prefs().getBoolean("blurred_sides", true)
         xView.renderer.setBlurredSides(blurredSides)
@@ -202,7 +203,7 @@ class PcPlayerActivity : ComponentActivity() {
         scope.launch {
             val started = System.currentTimeMillis()
             while (phase is Phase.Loading && System.currentTimeMillis() - started < LOADING_LIMIT_MS) {
-                if (gameWindowShown(newSession, exe.name.lowercase())) break
+                if (gameWindowShown(newSession, newSession.program.name.lowercase())) break
                 phase = Phase.Loading("Starting $title")
                 delay(300)
             }
@@ -310,7 +311,7 @@ class PcPlayerActivity : ComponentActivity() {
                     is Phase.Failed -> Centered {
                         Text("Couldn't start $title", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                         Text(p.message, color = Color(0xFFDDDDDD), textAlign = TextAlign.Center, modifier = Modifier.padding(vertical = 16.dp))
-                        Button(onClick = { quit() }) { Text("Back to RetroForge") }
+                        BackButton()
                     }
                     Phase.Playing -> {
                         if (!menuOpen) {
@@ -331,12 +332,21 @@ class PcPlayerActivity : ComponentActivity() {
                     Centered {
                         Text("The game closed", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                         Text(message, color = Color(0xFFDDDDDD), fontSize = 13.sp, textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(vertical = 16.dp).heightIn(max = 220.dp).verticalScroll(rememberScrollState()))
-                        Button(onClick = { quit() }) { Text("Back to RetroForge") }
+                            // Short enough that the button still fits on a phone held sideways (the log scrolls).
+                            modifier = Modifier.padding(vertical = 12.dp).heightIn(max = 140.dp).verticalScroll(rememberScrollState()))
+                        BackButton()
                     }
                 }
             }
         }
+    }
+
+    @Composable
+    private fun BackButton() {
+        Button(
+            onClick = { quit() },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF8A1F), contentColor = Color.Black),
+        ) { Text("Back to RetroForge", fontWeight = FontWeight.Bold) }
     }
 
     /** The loading screen: the game's name on black, so Wine starting up (a bare Windows desktop) isn't seen. */
@@ -432,6 +442,7 @@ class PcPlayerActivity : ComponentActivity() {
         if (quitting || isFinishing) return
         val tail = runCatching { ended.log.readLines().takeLast(12).joinToString("\n") }.getOrDefault("")
         menuOpen = false
+        controlsView?.visibility = View.GONE
         exitMessage = "Wine finished (code $code).\n\n$tail"
     }
 

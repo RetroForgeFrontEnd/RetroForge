@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -57,6 +58,9 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     var changes by remember { mutableIntStateOf(0) }
     val games = remember(changes) { pc.all() }
     var editing by remember { mutableStateOf(false) }
+    // Choosing which .exe starts a Windows game: the mode, then the game whose .exe files are listed.
+    var choosingExe by remember { mutableStateOf(false) }
+    var exeFor by remember { mutableStateOf<PcGame?>(null) }
     var status by remember { mutableStateOf<String?>(null) }
     var searching by remember { mutableStateOf(false) }
     var term by remember { mutableStateOf("") }
@@ -147,7 +151,10 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
             FocusChip("Look in my game folders", enabled = !busy, onClick = { scanGameFolders(say = true) })
             FocusChip("Add from another folder", enabled = !busy, onClick = { pickFolder.launch(null) })
             FocusChip("Add a Windows game folder", enabled = !busy, onClick = { pickWindowsGame.launch(null) })
-            if (games.isNotEmpty()) FocusChip(if (editing) "Done" else "Remove games", onClick = { editing = !editing })
+            if (games.isNotEmpty() && !choosingExe) FocusChip(if (editing) "Done" else "Remove games", onClick = { editing = !editing })
+            if (games.any { it.source == PcSource.WINDOWS } && !editing) {
+                FocusChip(if (choosingExe) "Done" else "Change a game's .exe", onClick = { choosingExe = !choosingExe })
+            }
         }
         if (searching) {
             ControllerTextField(
@@ -187,11 +194,58 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     if (games.isNotEmpty()) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
             games.forEach { game ->
-                PcGameTile(game, pc, editing, onClick = {
-                    if (editing) { pc.remove(game); changes++ } else start(game)
+                val hint = when {
+                    editing -> "Select to remove"
+                    choosingExe && game.source == PcSource.WINDOWS -> "Select to choose its .exe"
+                    else -> null
+                }
+                PcGameTile(game, pc, hint, onClick = {
+                    when {
+                        editing -> { pc.remove(game); changes++ }
+                        choosingExe && game.source == PcSource.WINDOWS -> exeFor = game
+                        else -> start(game)
+                    }
                 })
             }
         }
+    }
+
+    exeFor?.let { game ->
+        val choices by androidx.compose.runtime.produceState<List<java.io.File>?>(null, game.key) {
+            value = withContext(Dispatchers.IO) { pc.exeChoices(game) }
+        }
+        val folder = remember(game.key) { pc.windowsGameFolder(game) }
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { exeFor = null },
+            title = { Text("Which .exe starts ${game.title}?") },
+            text = {
+                androidx.compose.foundation.layout.Column(
+                    Modifier.verticalScroll(androidx.compose.foundation.rememberScrollState()),
+                ) {
+                    when {
+                        choices == null -> Text("Looking in the game's folder…")
+                        choices!!.isEmpty() -> Text("There's no .exe in the game's folder.")
+                        else -> choices!!.forEachIndexed { i, exe ->
+                            val name = folder?.let { exe.relativeTo(it).path } ?: exe.name
+                            val current = exe.path == game.shortcutPath
+                            androidx.compose.material3.TextButton(onClick = {
+                                pc.setExe(game, exe)
+                                status = "${game.title} now starts $name."
+                                exeFor = null
+                                choosingExe = false
+                                changes++
+                            }) {
+                                Text(
+                                    (if (current) "✓ " else "") + name + "  ·  ${exe.length() / (1024 * 1024)} MB" +
+                                        if (i == 0) "  (best guess)" else "",
+                                )
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = { androidx.compose.material3.TextButton(onClick = { exeFor = null }) { Text("Cancel") } },
+        )
     }
 
     needsRuntime?.let { game ->
@@ -217,7 +271,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
 }
 
 @Composable
-private fun PcGameTile(game: PcGame, pc: PcLibrary, editing: Boolean, onClick: () -> Unit) {
+private fun PcGameTile(game: PcGame, pc: PcLibrary, hint: String?, onClick: () -> Unit) {
     val cover by androidx.compose.runtime.produceState<java.io.File?>(null, game.key) { value = withContext(Dispatchers.IO) { pc.cover(game) } }
     FocusCard(modifier = Modifier.width(150.dp), onClick = onClick) {
         Box(Modifier.fillMaxWidth().aspectRatio(2f / 3f).clip(MaterialTheme.shapes.small)) {
@@ -234,7 +288,7 @@ private fun PcGameTile(game: PcGame, pc: PcLibrary, editing: Boolean, onClick: (
         }
         Text(game.title, style = MaterialTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(top = 6.dp))
-        Text(if (editing) "Select to remove" else game.source.label, style = MaterialTheme.typography.bodySmall,
-            color = if (editing) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary)
+        Text(hint ?: game.source.label, style = MaterialTheme.typography.bodySmall,
+            color = if (hint != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary)
     }
 }

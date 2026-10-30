@@ -39,6 +39,8 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
     private var sharedMemory: SysVSharedMemory? = null
     private var process: Process? = null
     val log = File(runtime.root, "last-run.log")
+    /** The program actually run: [exe], or the game an Unreal Engine starter .exe would start (see [unrealGame]). */
+    val program: File = unrealGame(exe) ?: exe
     /** The on-screen gamepad, seen by the game as an Xbox 360 controller once [VirtualPad.connected] is set. */
     val pad = VirtualPad(File(runtime.root, "pad.mem"))
 
@@ -193,11 +195,11 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
         // the taskbar, and blackDesktop() makes it black, so nothing shows around a 4:3 game or while it loads.
         val command = listOf(
             "/system/bin/linker64", "${runtime.wineDir.path}/bin/wine",
-            "explorer", "/desktop=RetroForge,$screen", "D:\\${exe.name}",
-        ) + gameArguments(exe)
+            "explorer", "/desktop=RetroForge,$screen", "D:\\" + program.relativeTo(exe.parentFile!!).path.replace('/', '\\'),
+        ) + gameArguments(program)
         log.delete()
         val builder = ProcessBuilder(command)
-            .directory(exe.parentFile)
+            .directory(program.parentFile)
             .redirectErrorStream(true)
             .redirectOutput(log)
         builder.environment().apply {
@@ -269,6 +271,18 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
          * Godot on Windows gets through ANGLE on Direct3D 11, and there's no Direct3D layer yet; Godot's own
          * Vulkan renderer works on the Vulkan wrapper, so they're started on that.
          */
+        /**
+         * Unreal Engine games ship a small starter .exe in the game's folder that starts the real one
+         * (<Project>/Binaries/Win64/<Project>-Win64-Shipping.exe) and exits at once, which would look like the game
+         * closing. The real one is run instead; the game's folder stays drive D: so its paths still work.
+         */
+        fun unrealGame(exe: File): File? {
+            if (exe.length() > 20L * 1024 * 1024) return null
+            return exe.parentFile?.listFiles { f -> f.isDirectory && f.name != "Engine" }.orEmpty()
+                .flatMap { File(it, "Binaries/Win64").listFiles { f -> f.name.endsWith("-Shipping.exe", true) }.orEmpty().asList() }
+                .firstOrNull()
+        }
+
         fun gameArguments(exe: File): List<String> =
             if (File(exe.parentFile, exe.nameWithoutExtension + ".pck").isFile) {
                 listOf("--rendering-driver", "vulkan", "--rendering-method", "mobile")

@@ -201,7 +201,7 @@ class PcLibrary(private val context: Context) {
         walk(top, "")
         val name = resolver.query(DocumentsContract.buildDocumentUriUsingTree(tree, top), arrayOf(Document.COLUMN_DISPLAY_NAME), null, null, null)
             ?.use { if (it.moveToFirst()) it.getString(0) else null } ?: top.substringAfterLast('/')
-        val exe = mainExe(name, files.filter { '/' !in it.path }.map { it.path to it.size }) ?: return null
+        if (files.none { it.path.endsWith(".exe", ignoreCase = true) }) return null
         val folder = File(windowsGamesDir(), name.replace(Regex("""[\/:*?"<>|]"""), "_"))
         val total = files.sumOf { it.size }.coerceAtLeast(1)
         var copied = 0L
@@ -222,9 +222,32 @@ class PcLibrary(private val context: Context) {
                 }
             }
         }
-        val game = withSteamAppId(PcGame(name, PcSource.WINDOWS, shortcutPath = File(folder, exe).path))
+        val exe = com.retroforge.pcplayer.GameExe.best(folder) ?: return null
+        val game = withSteamAppId(PcGame(name, PcSource.WINDOWS, shortcutPath = exe.path))
         add(listOf(game))
         return game
+    }
+
+    /** The .exe files in a Windows game's folder that might start it, likeliest first. */
+    fun exeChoices(game: PcGame): List<File> {
+        val folder = windowsGameFolder(game) ?: return emptyList()
+        return com.retroforge.pcplayer.GameExe.candidates(folder)
+    }
+
+    /** The game's own folder in [windowsGamesDir] (its .exe can be in a subfolder of it). */
+    fun windowsGameFolder(game: PcGame): File? {
+        val exe = File(game.shortcutPath ?: return null)
+        val root = windowsGamesDir().canonicalFile
+        var dir = exe.parentFile?.canonicalFile ?: return null
+        while (dir.parentFile != null && dir.parentFile != root) dir = dir.parentFile!!
+        return dir.takeIf { it.parentFile == root }
+    }
+
+    /** Starts [game] with [exe] from now on (the user's choice). Returns the updated game. */
+    fun setExe(game: PcGame, exe: File): PcGame {
+        val updated = game.copy(shortcutPath = exe.path)
+        save(all().map { if (it.key == game.key) updated else it })
+        return updated
     }
 
     /**
@@ -304,19 +327,6 @@ class PcLibrary(private val context: Context) {
             "com.winnative.cmod" to "com.winlator.cmod.runtime.display.XServerDisplayActivity",
         )
         private val GAMEHUB_LITE = listOf("gamehub.lite", "emuready.gamehub.lite")
-
-        private val NOT_THE_GAME = Regex("(?i)unins|setup|install|crash|redist|vcredist|dxsetup|dotnet|report|launcherhelper|ue4prereq")
-
-        /**
-         * The .exe that starts a game, from the files in its folder ([files]: name to size): one named like the folder,
-         * else the biggest that isn't an installer, uninstaller or crash reporter.
-         */
-        fun mainExe(folderName: String, files: List<Pair<String, Long>>): String? {
-            val exes = files.filter { it.first.endsWith(".exe", ignoreCase = true) && !NOT_THE_GAME.containsMatchIn(it.first) }
-            fun simple(s: String) = s.lowercase().filter { it.isLetterOrDigit() }
-            return exes.firstOrNull { simple(it.first.removeSuffix(".exe").removeSuffix(".EXE")) == simple(folderName) }?.first
-                ?: exes.maxByOrNull { it.second }?.first
-        }
 
         /** Game folder names that hold PC games (ES-DE's and RetroBat's). */
         private val PC_FOLDERS = setOf("windows", "steam", "epic", "gog", "pc", "pcwindows", "windows9x", "win")
