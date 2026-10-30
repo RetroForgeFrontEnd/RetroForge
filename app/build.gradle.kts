@@ -76,6 +76,8 @@ dependencies {
     implementation(project(":retro"))
     implementation(project(":retro-artwork"))
     implementation(project(":retro-player"))
+    implementation(project(":pc-player"))
+    implementation(libs.zxing.core)
     implementation(libs.commons.compress)
     implementation(libs.xz)
     implementation(libs.coil.compose)

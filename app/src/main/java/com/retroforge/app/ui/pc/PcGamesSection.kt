@@ -44,8 +44,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
- * Your PC games, in RetroForge's library: Steam, Epic, GOG and Amazon games started in GameNative, and Windows games
- * started from Winlator Cmod or WinNative shortcuts. Added by Steam search or from a folder of exported files.
+ * Your PC games, in RetroForge's library: Steam, Epic, GOG and Amazon games started in GameNative, Windows games
+ * started from Winlator Cmod or WinNative shortcuts, and Windows game folders played in RetroForge's own PC player.
+ * Added by Steam search, from a folder of exported files, or by copying a game's folder in.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -62,6 +63,35 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     var term by remember { mutableStateOf("") }
     var hits by remember { mutableStateOf<List<SteamHit>?>(null) }
     var busy by remember { mutableStateOf(false) }
+    var copying by remember { mutableStateOf<Int?>(null) }
+    // A RetroForge-player game waiting for the user to agree to the runtime download.
+    var needsRuntime by remember { mutableStateOf<PcGame?>(null) }
+
+    fun start(game: PcGame) {
+        if (game.source == PcSource.WINDOWS && com.retroforge.pcplayer.PcRuntime.deviceSupported &&
+            !com.retroforge.pcplayer.PcRuntime(context).isReady()) needsRuntime = game
+        else if (game.source == PcSource.WINDOWS && game.appId.isNullOrBlank()) scope.launch {
+            status = pc.launch(withContext(Dispatchers.IO) { pc.withSteamAppId(game) })
+        }
+        else status = pc.launch(game)
+    }
+
+    val pickWindowsGame = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
+        uri ?: return@rememberLauncherForActivityResult
+        busy = true
+        copying = 0
+        scope.launch {
+            status = withContext(Dispatchers.IO) {
+                runCatching {
+                    pc.addWindowsGame(uri) { copying = it }?.let { "Added ${it.title}. Select it to play it in RetroForge's PC player." }
+                        ?: "No Windows game in that folder: pick the folder that holds the game's .exe."
+                }.getOrElse { "Couldn't copy that folder: ${it.message}" }
+            }
+            copying = null
+            busy = false
+            changes++
+        }
+    }
 
     val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
         uri ?: return@rememberLauncherForActivityResult
@@ -114,12 +144,14 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                 "start from Winlator Cmod or WinNative: export a game's shortcut for frontends in Winlator. Put the files in a " +
                 "\"windows\" or \"steam\" folder in your game folders, beside snes, psx and the rest (ES-DE's layout), and " +
                 "they're found by themselves: .steam, .epic, .gog, .amazon and .pcgame files hold a game's id, .desktop " +
-                "files are Winlator shortcuts.",
+                "files are Winlator shortcuts. Or add a Windows game's folder to play it in RetroForge's own PC player " +
+                "(early test: it's copied into RetroForge, and the first game downloads the PC runtime, about 280 MB).",
         )
         ChipRow {
             FocusChip("Add a Steam game", onClick = { searching = !searching; hits = null })
             FocusChip("Look in my game folders", enabled = !busy, onClick = { scanGameFolders(say = true) })
             FocusChip("Add from another folder", enabled = !busy, onClick = { pickFolder.launch(null) })
+            FocusChip("Add a Windows game folder", enabled = !busy, onClick = { pickWindowsGame.launch(null) })
             if (games.isNotEmpty()) FocusChip(if (editing) "Done" else "Remove games", onClick = { editing = !editing })
         }
         if (searching) {
@@ -153,6 +185,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                 }
             }
         }
+        copying?.let { CardBody("Copying the game… $it%") }
         if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
         status?.let { CardBody(it) }
     }
@@ -160,10 +193,31 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
             games.forEach { game ->
                 PcGameTile(game, pc, editing, onClick = {
-                    if (editing) { pc.remove(game); changes++ } else status = pc.launch(game)
+                    if (editing) { pc.remove(game); changes++ } else start(game)
                 })
             }
         }
+    }
+
+    needsRuntime?.let { game ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { needsRuntime = null },
+            title = { Text("Download the PC player?") },
+            text = {
+                Text(
+                    "RetroForge's PC player needs its Windows runtime first: Wine (Proton 11), FEX and a Linux image built " +
+                        "for Android. That's about 280 MB to download and about 1.8 GB on this device. It downloads once, " +
+                        "with a percentage, the first time ${game.title} starts.",
+                )
+            },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    needsRuntime = null
+                    scope.launch { status = pc.launch(withContext(Dispatchers.IO) { pc.withSteamAppId(game) }) }
+                }) { Text("Download and play") }
+            },
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { needsRuntime = null }) { Text("Not now") } },
+        )
     }
 }
 

@@ -24,14 +24,20 @@ enum class PcSource(val extension: String, val label: String, val gameNative: St
     GOG("gog", "GOG", "GOG"),
     AMAZON("amazon", "Amazon", "AMAZON"),
     CUSTOM("pcgame", "GameNative", "CUSTOM_GAME"),
-    SHORTCUT("desktop", "Winlator shortcut", null);
+    SHORTCUT("desktop", "Winlator shortcut", null),
+
+    /** A Windows game folder copied into RetroForge, played in RetroForge's own PC player ([shortcutPath] is its .exe). */
+    WINDOWS("exe", "RetroForge PC player", null);
 
     companion object {
         fun ofExtension(ext: String) = entries.firstOrNull { it.extension.equals(ext, ignoreCase = true) }
     }
 }
 
-/** A PC game in RetroForge's PC library: a store's game id (started in GameNative) or a Winlator shortcut file. */
+/**
+ * A PC game in RetroForge's PC library: a store's game id (started in GameNative), a Winlator shortcut file, or a
+ * Windows game's .exe (started in RetroForge's own PC player).
+ */
 data class PcGame(val title: String, val source: PcSource, val appId: String? = null, val shortcutPath: String? = null) {
     val key get() = "${source.name}:${appId ?: shortcutPath}"
 
@@ -109,7 +115,7 @@ class PcLibrary(private val context: Context) {
                     val id = c.getString(0)
                     val name = c.getString(1)
                     if (c.getString(2) == Document.MIME_TYPE_DIR) { walk(id); continue }
-                    val source = PcSource.ofExtension(name.substringAfterLast('.', "")) ?: continue
+                    val source = PcSource.ofExtension(name.substringAfterLast('.', ""))?.takeIf { it != PcSource.WINDOWS } ?: continue
                     if (c.getLong(3) > 64 * 1024) continue
                     val text = runCatching {
                         resolver.openInputStream(DocumentsContract.buildDocumentUriUsingTree(tree, id))?.use { it.readBytes().decodeToString() }
@@ -168,11 +174,94 @@ class PcLibrary(private val context: Context) {
         }
     }
 
+    /** Where Windows games copied in for RetroForge's PC player live (on the phone's storage, visible over USB). */
+    fun windowsGamesDir(): File = File(context.getExternalFilesDir(null) ?: context.filesDir, "PC games")
+
+    /**
+     * Copies a Windows game folder the user picked into [windowsGamesDir] (RetroForge's PC player needs the files
+     * where it can open them directly) and adds it. [onProgress] gets 0–100. Returns the game, or null when the
+     * folder has no .exe to start.
+     */
+    fun addWindowsGame(tree: Uri, onProgress: (Int) -> Unit): PcGame? {
+        val resolver = context.contentResolver
+        val top = DocumentsContract.getTreeDocumentId(tree)
+        class Item(val id: String, val path: String, val size: Long)
+        val files = mutableListOf<Item>()
+        fun walk(parentId: String, path: String) {
+            val uri = DocumentsContract.buildChildDocumentsUriUsingTree(tree, parentId)
+            val columns = arrayOf(Document.COLUMN_DOCUMENT_ID, Document.COLUMN_DISPLAY_NAME, Document.COLUMN_MIME_TYPE, Document.COLUMN_SIZE)
+            resolver.query(uri, columns, null, null, null)?.use { c ->
+                while (c.moveToNext()) {
+                    val child = if (path.isEmpty()) c.getString(1) else "$path/${c.getString(1)}"
+                    if (c.getString(2) == Document.MIME_TYPE_DIR) walk(c.getString(0), child)
+                    else files += Item(c.getString(0), child, c.getLong(3))
+                }
+            }
+        }
+        walk(top, "")
+        val name = resolver.query(DocumentsContract.buildDocumentUriUsingTree(tree, top), arrayOf(Document.COLUMN_DISPLAY_NAME), null, null, null)
+            ?.use { if (it.moveToFirst()) it.getString(0) else null } ?: top.substringAfterLast('/')
+        val exe = mainExe(name, files.filter { '/' !in it.path }.map { it.path to it.size }) ?: return null
+        val folder = File(windowsGamesDir(), name.replace(Regex("""[\/:*?"<>|]"""), "_"))
+        val total = files.sumOf { it.size }.coerceAtLeast(1)
+        var copied = 0L
+        for (item in files) {
+            val out = File(folder, item.path)
+            if (out.isFile && out.length() == item.size) { copied += item.size; continue }
+            out.parentFile?.mkdirs()
+            resolver.openInputStream(DocumentsContract.buildDocumentUriUsingTree(tree, item.id))?.use { input ->
+                out.outputStream().use { output ->
+                    val buffer = ByteArray(1 shl 16)
+                    while (true) {
+                        val n = input.read(buffer)
+                        if (n < 0) break
+                        output.write(buffer, 0, n)
+                        copied += n
+                        onProgress((copied * 100 / total).toInt())
+                    }
+                }
+            }
+        }
+        val game = withSteamAppId(PcGame(name, PcSource.WINDOWS, shortcutPath = File(folder, exe).path))
+        add(listOf(game))
+        return game
+    }
+
+    /**
+     * A Windows game that uses Steam (its folder has steam_api DLLs) needs its Steam app id for RetroForge's PC
+     * player to get its ticket: from a steam_appid.txt in the folder, else Steam's store search by the game's name.
+     * Saves what it finds. Call off the main thread.
+     */
+    fun withSteamAppId(game: PcGame): PcGame {
+        if (game.source != PcSource.WINDOWS || !game.appId.isNullOrBlank()) return game
+        val folder = File(game.shortcutPath ?: return game).parentFile ?: return game
+        val files = folder.walkTopDown().maxDepth(6).filter { it.isFile }.toList()
+        if (files.none { it.name.equals("steam_api.dll", true) || it.name.equals("steam_api64.dll", true) }) return game
+        fun simple(s: String) = s.lowercase().filter { it.isLetterOrDigit() }
+        val title = game.title.removeSuffix(" (RetroForge)")
+        val appId = files.firstOrNull { it.name.equals("steam_appid.txt", true) }?.readText()?.trim()?.takeIf { it.toIntOrNull() != null }
+            ?: runCatching { searchSteam(title) }.getOrDefault(emptyList()).firstOrNull { simple(it.name) == simple(title) }?.appId
+            ?: return game
+        val updated = game.copy(appId = appId)
+        save(all().map { if (it.key == game.key) updated else it })
+        return updated
+    }
+
     /**
      * Starts [game] in the app that runs it. Returns null when it started, else what's missing for the player
      * (the app isn't installed, say).
      */
     fun launch(game: PcGame): String? {
+        if (game.source == PcSource.WINDOWS) {
+            if (!com.retroforge.pcplayer.PcRuntime.deviceSupported) return "RetroForge's PC player needs a 64-bit ARM device (most phones and handhelds); this one is ${android.os.Build.SUPPORTED_ABIS.firstOrNull()}."
+            val exe = File(game.shortcutPath ?: return "This game has no .exe set.")
+            if (!exe.isFile) return "${exe.name} isn't in RetroForge's PC games folder any more. Add the game's folder again."
+            context.startActivity(
+                com.retroforge.pcplayer.PcPlayerActivity.intent(context, exe, game.title, game.appId?.toIntOrNull())
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            )
+            return null
+        }
         val tries: List<Intent> = when (game.source) {
             PcSource.SHORTCUT -> WINLATORS.map { (pkg, activity) ->
                 Intent().setComponent(ComponentName(pkg, activity)).putExtra("shortcut_path", game.shortcutPath)
@@ -215,6 +304,19 @@ class PcLibrary(private val context: Context) {
             "com.winnative.cmod" to "com.winlator.cmod.runtime.display.XServerDisplayActivity",
         )
         private val GAMEHUB_LITE = listOf("gamehub.lite", "emuready.gamehub.lite")
+
+        private val NOT_THE_GAME = Regex("(?i)unins|setup|install|crash|redist|vcredist|dxsetup|dotnet|report|launcherhelper|ue4prereq")
+
+        /**
+         * The .exe that starts a game, from the files in its folder ([files]: name to size): one named like the folder,
+         * else the biggest that isn't an installer, uninstaller or crash reporter.
+         */
+        fun mainExe(folderName: String, files: List<Pair<String, Long>>): String? {
+            val exes = files.filter { it.first.endsWith(".exe", ignoreCase = true) && !NOT_THE_GAME.containsMatchIn(it.first) }
+            fun simple(s: String) = s.lowercase().filter { it.isLetterOrDigit() }
+            return exes.firstOrNull { simple(it.first.removeSuffix(".exe").removeSuffix(".EXE")) == simple(folderName) }?.first
+                ?: exes.maxByOrNull { it.second }?.first
+        }
 
         /** Game folder names that hold PC games (ES-DE's and RetroBat's). */
         private val PC_FOLDERS = setOf("windows", "steam", "epic", "gog", "pc", "pcwindows", "windows9x", "win")
