@@ -232,7 +232,12 @@ public class GLRenderer implements GLSurfaceView.Renderer, WindowManager.OnWindo
             if (forceFullscreen) {
                 short newHeight = (short)Math.min(xServer.screenInfo.height, ((float)xServer.screenInfo.width / drawable.width) * drawable.height);
                 short newWidth = (short)(((float)newHeight / drawable.height) * drawable.width);
-                XForm.set(tmpXForm1, (xServer.screenInfo.width - newWidth) * 0.5f, (xServer.screenInfo.height - newHeight) * 0.5f, newWidth, newHeight);
+                float left = (xServer.screenInfo.width - newWidth) * 0.5f;
+                float top = (xServer.screenInfo.height - newHeight) * 0.5f;
+                XForm.set(tmpXForm1, left, top, newWidth, newHeight);
+                if (material == windowMaterial) {
+                    drawnStretch = new Stretch(x, y, drawable.width, drawable.height, left, top, (float)newHeight / drawable.height);
+                }
             }
             else XForm.set(tmpXForm1, x, y, drawable.width, drawable.height);
 
@@ -253,6 +258,7 @@ public class GLRenderer implements GLSurfaceView.Renderer, WindowManager.OnWindo
         quadVertices.bind(windowMaterial.programId);
 
         boolean singleWindow = forceFullscreen;
+        drawnStretch = null;
         try (XLock lock = xServer.lock(XServer.Lockable.DRAWABLE_MANAGER)) {
             rootWindowDownsized = false;
             if (fullscreen && !renderableWindows.isEmpty()) {
@@ -273,6 +279,7 @@ public class GLRenderer implements GLSurfaceView.Renderer, WindowManager.OnWindo
         }
 
         quadVertices.disable();
+        stretch = drawnStretch;
 
         int error = GLES20.glGetError();
         if (error != GLES20.GL_NO_ERROR) {
@@ -291,6 +298,13 @@ public class GLRenderer implements GLSurfaceView.Renderer, WindowManager.OnWindo
             Cursor cursor = pointWindow != null ? pointWindow.attributes.getCursor() : null;
             short x = xServer.pointer.getClampedX();
             short y = xServer.pointer.getClampedY();
+            // RetroForge: over a stretched window, draw the cursor where that spot of the window is shown.
+            Stretch s = stretch;
+            if (s != null && s.contains(x, y)) {
+                short sx = (short)(s.left + (x - s.rootX) * s.scale);
+                y = (short)(s.top + (y - s.rootY) * s.scale);
+                x = sx;
+            }
 
             if (cursor != null) {
                 if (cursor.isVisible()) renderDrawable(cursor.cursorImage, x - cursor.hotSpotX, y - cursor.hotSpotY, cursorMaterial);
@@ -353,7 +367,13 @@ public class GLRenderer implements GLSurfaceView.Renderer, WindowManager.OnWindo
                         else {
                             short borderX = (short)(parent.getWidth() - width);
                             short borderY = (short)(parent.getHeight() - height);
-                            if (parent.getChildCount() == 1 && borderX > 0 && borderY > 0 && borderX <= 12) {
+                            // RetroForge: Wine draws Direct3D/OpenGL/Vulkan into a client window the size of the game's
+                            // window, inside it; that client window is the one shown stretched.
+                            if (parentHasWMClass && parent.getChildCount() == 1 && borderX == 0 && borderY == 0) {
+                                forceFullscreen = true;
+                                removeRenderableWindow(parent);
+                            }
+                            else if (parent.getChildCount() == 1 && borderX > 0 && borderY > 0 && borderX <= 12) {
                                 forceFullscreen = true;
                                 removeRenderableWindow(parent);
                             }
@@ -406,6 +426,41 @@ public class GLRenderer implements GLSurfaceView.Renderer, WindowManager.OnWindo
     public void setScreenOffsetYRelativeToCursor(boolean screenOffsetYRelativeToCursor) {
         this.screenOffsetYRelativeToCursor = screenOffsetYRelativeToCursor;
         xServerView.requestRender();
+    }
+
+    /**
+     * RetroForge: where a window drawn stretched to the screen (force fullscreen) really is on the X screen, and
+     * where and how big it's shown, so a touch on the picture can be sent to the X position under it.
+     */
+    private static final class Stretch {
+        final int rootX, rootY, width, height;
+        final float left, top, scale;
+
+        Stretch(int rootX, int rootY, int width, int height, float left, float top, float scale) {
+            this.rootX = rootX; this.rootY = rootY; this.width = width; this.height = height;
+            this.left = left; this.top = top; this.scale = scale;
+        }
+
+        boolean contains(int x, int y) {
+            return x >= rootX && y >= rootY && x < rootX + width && y < rootY + height;
+        }
+    }
+
+    private Stretch drawnStretch = null;
+    private volatile Stretch stretch = null;
+
+    /** RetroForge: turns a point on the shown picture (X screen units) into the X screen point under it. */
+    public int[] shownToScreen(int x, int y) {
+        Stretch s = stretch;
+        if (s == null) return new int[]{x, y};
+        float wx = (x - s.left) / s.scale;
+        float wy = (y - s.top) / s.scale;
+        if (wx < 0 || wy < 0 || wx >= s.width || wy >= s.height) {
+            // Outside the stretched window (the black bars): the nearest point of its edge.
+            wx = Math.max(0, Math.min(s.width - 1, wx));
+            wy = Math.max(0, Math.min(s.height - 1, wy));
+        }
+        return new int[]{s.rootX + (int)wx, s.rootY + (int)wy};
     }
 
     public String getForceFullscreenWMClass() {

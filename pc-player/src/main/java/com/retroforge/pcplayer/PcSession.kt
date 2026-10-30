@@ -39,6 +39,8 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
     private var sharedMemory: SysVSharedMemory? = null
     private var process: Process? = null
     val log = File(runtime.root, "last-run.log")
+    /** The on-screen gamepad, seen by the game as an Xbox 360 controller once [VirtualPad.connected] is set. */
+    val pad = VirtualPad(File(runtime.root, "pad.mem"))
 
     /** Called with Wine's exit code when the game's Wine process ends. */
     var onExit: ((Int) -> Unit)? = null
@@ -99,7 +101,9 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             "LANG" to "en_US.UTF-8",
             "PATH" to "$wine/bin:$imageFs/usr/bin:/system/bin",
             "LD_LIBRARY_PATH" to "$imageFs/usr/lib:$wine/lib:/system/lib64",
-            "LD_PRELOAD" to "$imageFs/usr/lib/libandroid-sysvshm.so:${execHelper().path}",
+            "LD_PRELOAD" to "$imageFs/usr/lib/libandroid-sysvshm.so:${preloadLibrary("libpcexec.so").path}:${preloadLibrary("libpcpad.so").path}",
+            // The on-screen gamepad's state, read by libpcpad.so in Wine's controller driver.
+            "PCPAD_FILE" to pad.file.path,
             "ANDROID_SYSVSHM_SERVER" to imageFs + UnixSocketConfig.SYSVSHM_SERVER_PATH,
             "ANDROID_ALSA_SERVER" to imageFs + UnixSocketConfig.ALSA_SERVER_PATH,
             "ALSA_CONFIG_PATH" to "$imageFs/usr/share/alsa/alsa.conf:$imageFs/usr/etc/alsa/conf.d/android_aserver.conf",
@@ -113,6 +117,10 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             // Mesa's OpenGL draws through Vulkan (zink); GameNative's settings for the wrapper driver.
             "GALLIUM_DRIVER" to "zink",
             "LIBGL_KOPPER_DISABLE" to "true",
+            // On the Xclipse wrapper zink's default descriptors fail to bind image memory (black screen), and its
+            // command reordering drops draws (CTR Native lost Crash's face).
+            "ZINK_DESCRIPTORS" to "lazy",
+            "ZINK_DEBUG" to "compact,noreorder",
             "DXVK_LOG_LEVEL" to "warn",
             "DXVK_LOG_PATH" to "none",
             "WINE_NO_DUPLICATE_EXPLORER" to "1",
@@ -158,23 +166,23 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
     }.getOrDefault(emptyMap())
 
     /**
-     * libpcexec.so as a file Wine's processes can preload. The app's native libraries stay inside the APK (they
-     * aren't unpacked on install), so it's copied out of the APK into the runtime folder, again whenever the app
-     * is updated.
+     * One of RetroForge's preloaded libraries (libpcexec.so, libpcpad.so) as a file Wine's processes can preload.
+     * The app's native libraries stay inside the APK (they aren't unpacked on install), so it's copied out of the
+     * APK into the runtime folder, again whenever the app is updated.
      */
-    private fun execHelper(): File {
-        val out = File(runtime.root, "libpcexec.so")
+    private fun preloadLibrary(name: String): File {
+        val out = File(runtime.root, name)
         val info = context.applicationInfo
         val apks = listOf(info.sourceDir) + info.splitSourceDirs.orEmpty()
         val newest = apks.maxOf { File(it).lastModified() }
         if (out.isFile && out.lastModified() >= newest) return out
-        File(info.nativeLibraryDir, "libpcexec.so").takeIf { it.isFile }?.let { return it.copyTo(out, overwrite = true) }
+        File(info.nativeLibraryDir, name).takeIf { it.isFile }?.let { return it.copyTo(out, overwrite = true) }
         for (apk in apks) ZipFile(apk).use { zip ->
-            val entry = Build.SUPPORTED_ABIS.firstNotNullOfOrNull { zip.getEntry("lib/$it/libpcexec.so") } ?: return@use
+            val entry = Build.SUPPORTED_ABIS.firstNotNullOfOrNull { zip.getEntry("lib/$it/$name") } ?: return@use
             zip.getInputStream(entry).use { input -> out.outputStream().use { input.copyTo(it) } }
             return out
         }
-        throw IOException("RetroForge's libpcexec.so is missing from the app")
+        throw IOException("RetroForge's $name is missing from the app")
     }
 
     private fun launchWine() {
@@ -214,8 +222,26 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
         if (black != text) reg.writeText(black)
     }
 
+    /**
+     * Pauses (or resumes) the game: its Windows processes (Wine's own services and the X server keep running) are
+     * stopped with SIGSTOP until resumed with SIGCONT.
+     */
+    fun setPaused(paused: Boolean) {
+        val signal = if (paused) SIGSTOP else SIGCONT
+        val me = android.os.Process.myPid()
+        File("/proc").listFiles()?.forEach { dir ->
+            val pid = dir.name.toIntOrNull() ?: return@forEach
+            if (pid == me) return@forEach
+            val cmdline = runCatching { File(dir, "cmdline").readText() }.getOrNull() ?: return@forEach
+            if (cmdline.contains(".exe", ignoreCase = true) && !cmdline.contains("C:\\windows\\", ignoreCase = true)) {
+                android.os.Process.sendSignal(pid, signal)
+            }
+        }
+    }
+
     /** Ends the game: asks wineserver to stop every Wine process, then stops the servers. */
     fun stop() {
+        setPaused(false)
         runCatching {
             val kill = ProcessBuilder("/system/bin/linker64", "${runtime.wineDir.path}/bin/wineserver", "-k")
             kill.environment().apply { clear(); putAll(environment()) }
@@ -235,6 +261,8 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
 
     companion object {
         private const val TAG = "PcPlayer"
+        private const val SIGCONT = 18
+        private const val SIGSTOP = 19
 
         /**
          * Extra arguments some engines need here. Godot games (an .exe with a .pck beside it) ask for OpenGL, which
