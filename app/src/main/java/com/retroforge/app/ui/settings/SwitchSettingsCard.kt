@@ -63,7 +63,8 @@ fun SwitchSettingsCard(title: String, setup: Boolean) {
 
     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = if (installed) ({ runCatching { open.launch(SwitchPlayer.settings(setup = setup)) } }) else null) {
         val r = ready
-        CardTitle(title) {
+        // No pill until the player has answered: CardTitle expects its status to draw something.
+        CardTitle(title, status = if (installed && r == null) null else ({
             when {
                 !installed -> StatusPill(stringResource(R.string.pc_not_installed), StatusTone.CAUTION)
                 r == null -> Unit
@@ -71,7 +72,7 @@ fun SwitchSettingsCard(title: String, setup: Boolean) {
                 !r.keys -> StatusPill(stringResource(R.string.switch_settings_keys_missing), StatusTone.CAUTION)
                 else -> StatusPill(stringResource(R.string.switch_settings_firmware_missing), StatusTone.CAUTION)
             }
-        }
+        }))
         CardBody(
             when {
                 !installed -> stringResource(R.string.switch_settings_install_player_first)
