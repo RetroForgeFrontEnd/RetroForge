@@ -36,7 +36,9 @@ object GpuDriver {
         NativePlayer.setGpuDriver(hooks.path, dir(context).path, library)
     }
 
-    private val HOOKS = listOf("libhook_impl.so", "libmain_hook.so", "libfile_redirect_hook.so", "libgsl_alloc_hook.so")
+    // libhook_impl.so is loaded again in the driver's own linker namespace, which only searches this folder: the shared
+    // C++ runtime it needs goes there too (without it Turnip never loaded and every core fell back to the device's driver).
+    private val HOOKS = listOf("libhook_impl.so", "libmain_hook.so", "libfile_redirect_hook.so", "libgsl_alloc_hook.so", "libc++_shared.so")
 
     private fun copyHooks(context: Context, into: File) {
         val info = context.applicationInfo

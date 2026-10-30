@@ -122,6 +122,9 @@ class PlayerActivity : ComponentActivity() {
     // Per system, shared with Settings: graphics.<system> = vulkan/opengl, scale.<system> = internal resolution 1-10.
     private lateinit var videoChoices: CoreChoices
     private var vulkanOn by mutableStateOf(false)
+    /** Whether this game runs on the Turnip driver from Settings → GPU and drivers (else the device's own). */
+    private var customDriverOn by mutableStateOf(false)
+    private var hasCustomDriver = false
     private var scale by mutableStateOf(1)
     // FPS counter (performance check), kept for all games; fps is null while it's off.
     private var showFps by mutableStateOf(false)
@@ -478,8 +481,15 @@ class PlayerActivity : ComponentActivity() {
         // Play! keeps its memory cards and settings under $EXTERNAL_STORAGE ("/sdcard/Play Data Files"), which apps can't
         // write to any more, and stops when it can't. This process is the player's alone, so point it at our own folder.
         if (coreId == "play") runCatching { android.system.Os.setenv("EXTERNAL_STORAGE", File(systemDir, "play").apply { mkdirs() }.path, true) }
-        // A Turnip driver chosen in Settings → GPU and drivers, for Vulkan cores (the device's own driver otherwise).
-        com.retroforge.player.GpuDriver.applyTo(this)
+        // A Turnip driver chosen in Settings → GPU and drivers, for Vulkan cores (the device's own driver otherwise):
+        // this system's choice, else what's recommended for this GPU and emulator.
+        customDriverOn = com.retroforge.pc.DriverRecommendations.useCustomDriver(
+            videoChoices.get(com.retroforge.pc.DriverRecommendations.choiceKey(system)),
+            com.retroforge.app.ui.settings.DeviceGpu.cached(this),
+            com.retroforge.pc.DriverTarget.builtIn(coreId, vulkanOn),
+            (com.retroforge.player.GpuDriver.current(this) != null).also { hasCustomDriver = it },
+        )
+        if (customDriverOn) com.retroforge.player.GpuDriver.applyTo(this) else NativePlayer.setGpuDriver("", "", "")
         val error = NativePlayer.openCore(corePath, systemDir.path, savesDir.path, options.keys.toTypedArray(), options.values.toTypedArray())
         if (error != null) return fail(error)
         applyScale()
@@ -712,6 +722,28 @@ class PlayerActivity : ComponentActivity() {
         videoChoices.set("graphics.$system", next)
         notice = "Restarting with ${if (next == "vulkan") "Vulkan" else "OpenGL"}…"
         restartWith(Intent(intent))
+    }
+
+    /**
+     * This system's GPU driver: recommended, the phone's own, then Turnip, then back to recommended. The game restarts
+     * with it (its place is saved first).
+     */
+    private fun chooseDriver() {
+        val key = com.retroforge.pc.DriverRecommendations.choiceKey(system)
+        val next = when (videoChoices.get(key)) {
+            null -> com.retroforge.pc.DriverRecommendations.CHOICE_PHONE
+            com.retroforge.pc.DriverRecommendations.CHOICE_PHONE -> com.retroforge.pc.DriverRecommendations.CHOICE_TURNIP
+            else -> null
+        }
+        videoChoices.set(key, next)
+        notice = getString(R.string.gpu_rec_restarting)
+        restartWith(Intent(intent))
+    }
+
+    /** "Recommended (Turnip)", "Phone's own driver" or "Turnip": this system's driver choice, as the menu shows it. */
+    private fun driverLabel(): String {
+        val using = getString(if (customDriverOn) R.string.gpu_rec_turnip else R.string.gpu_rec_phone)
+        return if (videoChoices.get(com.retroforge.pc.DriverRecommendations.choiceKey(system)) == null) getString(R.string.gpu_rec_choice_recommended, using) else using
     }
 
     /** The next internal resolution, 1x up to what the core offers, then back to 1x. */
@@ -1590,6 +1622,10 @@ class PlayerActivity : ComponentActivity() {
                         }
                         if (coreId in PlayerCores.vulkanCores) MenuButton(onClick = { chooseGraphics() }, modifier = wide) {
                             Text(stringResource(R.string.player_graphics, PlayerCores.graphicsLabel(coreId, vulkanOn)))
+                        }
+                        // Only where there's a choice: Vulkan, and a Turnip driver installed.
+                        if (vulkanOn && hasCustomDriver) MenuButton(onClick = { chooseDriver() }, modifier = wide) {
+                            Text(stringResource(R.string.gpu_rec_player_driver, driverLabel()))
                         }
                         MenuButton(onClick = { chooseVr(!vr) }, modifier = wide) {
                             Text("Cardboard VR: ${if (vr) "On" else "Off"}" + if (PlayerCores.sideBySide(coreId)) " (3D)" else "")
