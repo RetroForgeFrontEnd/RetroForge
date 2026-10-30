@@ -77,9 +77,9 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Time played per game | ✅ built-in player |
 | All built-in player systems tested on the emulator | ✅ 17 systems boot (plus NES, SNES, Mega Drive, PS1 earlier) |
 | Standalone apps for modern systems via Obtainium / Emulation Pack | ✅ "Get" opens Obtainium set up for 11 apps (Dolphin, PPSSPP, Eden, DuckStation, Play!, NetherSX2 …); ❌ Wii U (Cemu can't be started with a game) |
-| N64, PS2, Wii, Wii U, GameCube, Switch in the built-in player | 🟡 libretro builds exist for all but Switch; needs GPU rendering in the player (in progress); standalone apps stay offered |
+| N64, PS2, Wii, Wii U, GameCube, Switch in the built-in player | ✅ N64, PS2, GameCube and Wii in the built-in player (Vulkan for Dolphin and LRPS2); ✅ Switch in RetroForge's own Switch Player (separate APK, its own repository); ❌ Wii U (Cemu can't be started with a game) |
 | "Made by Darren Glancy, built with AI" credit | ✅ About page and Settings |
-| GPU detector, custom GPU driver support and downloads | ✅ GPU check + Turnip list/download for apps with a driver manager (tested on the emulator); ❌ our player loading them (needs Vulkan GPU rendering first) |
+| GPU detector, custom GPU driver support and downloads | ✅ GPU check, per-emulator driver recommendations, Turnip list/download; ✅ the built-in player loads Turnip on Snapdragon (tested on the Tab A9+); ✅ the Switch Player downloads its recommended Turnip in one tap |
 | Saturn in the built-in player | 🟡 experimental (Yabause: 1 of 2 test games boots); YabaSanshiro after GPU rendering; RetroArch and Yaba Sanshiro 2 offered |
 | Tester guide and email to Mr Sujano | ✅ docs/TESTER_GUIDE.md; email in Documents (Word) |
 | GPU rendering in the built-in player (N64, PSP, Dreamcast, GameCube, YabaSanshiro) | ✅ OpenGL ES: N64, PSP, Dreamcast, 3DS tested; 🟡 Vulkan experimental (see Vulkan row); GameCube/PS2 still crash or stall |
@@ -110,7 +110,7 @@ Evidence for each test is in [TESTING.md](TESTING.md); the brief's phases are in
 | Use RetroForge as the Android home screen (launcher), with Android apps and Android settings | ✅ Android apps screen (Home and Settings), settings shortcuts, launcher-mode switch; tested on the emulator (Home button opens RetroForge) |
 | Media section (films, Plex-style, artwork, Plex servers, network drives) | ✅ see the Media rows below |
 | Games from network drives, Google Drive, Dropbox | ✅ network drives (see above); cloud: guide explains a sync app (Android apps can't open Drive/Dropbox as folders) |
-| PC / iOS / Linux / Raspberry Pi versions | ❌ question |
+| PC / iOS / Linux / Raspberry Pi versions | 📋 looked at 30 October: see "PC, Linux, iOS and Google Play versions" in Future plans; Raspberry Pi not looked at yet |
 | How to fund updates when free | ❌ question (support links exist) |
 | Dual-screen option for games and the app | 🟡 DS games: top screen on the main display, touch screen on the second (automatic when a second display exists); picture split tested on a simulated display; touch on the second screen needs a real dual-screen device. App UI on two screens: not yet |
 | Compare with other frontends again and suggest more | ❌ after the above |
@@ -143,7 +143,7 @@ Requests that were never fully done, or only answered:
 | Migration from other frontends (ES-DE and others) | ✅ folders, gamelist.xml, theme colours, and ES-DE custom collections → playlists (tested) |
 | Remove the name DroidDeck from the app but still use it | 🟡 RetroBat removed; DroidDeck is still named because users install it themselves |
 | Original Xbox / Xbox 360 | ❌ research: no libretro core; xemu Android is experimental |
-| Weekly bug reports on GitHub | 🟡 Report a problem built; needs the GitHub repository |
+| Weekly bug reports on GitHub | 🟡 Report a problem built and the GitHub repository is public now; not yet checked end to end |
 | Mr Sujano nod: the subscribe part | ✅ "…don't forget to like and subscribe! …sorry, wrong YouTube channel." |
 | VR section | ✅ VR tab: how it works, start every game in Cardboard VR, Virtual Boy games, 3D films, Quest note |
 | Settings wording messed up | ✅ controller help moved to How to use; duplicate Carry on card removed; set-up and built-in player texts updated |
@@ -207,7 +207,24 @@ Requests that were never fully done, or only answered:
 
 | Request | Status |
 |---|---|
-| RetroForge PS3 Player (our own Android build of RPCS3, open source GPL-2.0, aiming to be more stable than the existing ports) | 🔨 started 2026-10-30 in `F:\PS3Player`; early preview at best for the 31 October update |
+| RetroForge PS3 Player (our own Android build of RPCS3, open source GPL-2.0, aiming to be more stable than the existing ports) | 🔨 in progress in `F:\PS3Player` (not in 0.7.1): firmware installs, Ultimate Marvel vs. Capcom 3 boots and draws on Turnip on the Tab A8 but far too slowly, title screen not reached; RetroForge sees the player (manifest query) but doesn't offer PS3 games to it yet |
 | PS4 | 📋 future. The open-source PS4 emulators (shadPS4, GPL-2.0, and others) are PC-only and early, and a PS4 game needs far more than today's phones have. Revisit once shadPS4 or a fork runs on ARM64 Android. RetroForge has no PS4 system yet |
 | VR light-gun games (VR tab) | 📋 future. Play retro light-gun games (Time Crisis, House of the Dead, Virtua Cop, Duck Hunt and the like) on a Meta Quest or another Android VR headset, with the VR controllers aimed as the light guns: the controller's pointing ray becomes the gun's screen position, the trigger fires. Built-in player first (libretro cores already take a light-gun or pointer position), shown on a big virtual screen |
 | PC, Linux, iOS and Google Play versions | 📋 future, looked at 30 October: Google Play first (RetroForge only, never the Switch or PS3 players; needs a real release key first), then Linux/Steam Deck and Windows with Compose Multiplatform, iOS last (needs a Mac; no JIT, so retro systems only) |
+
+## Still to do after 0.7.1 (30 October, evening)
+
+| Item | Status |
+|---|---|
+| Push the commits made after the 0.7.1 release (Switch Player links to its own page, setup wording, guide) | ⛔ waiting for the user's OK; they ship with the next update |
+| Switch Player: a retail game started without keys or firmware opens Switch settings in setup mode | 🟡 built, untested (no retail game on a free device) |
+| Switch Player: Install firmware from a folder of .nca files | 🟡 built, untested |
+| Switch Player: a real Bluetooth controller in game and in the pause menu | 🟡 only injected key presses tested; needs the user's controller |
+| Switch Player: the touch-control outline in a bright game | 🟡 untested |
+| Switch Player: the Turnip download button on a Snapdragon device | 🟡 recommended driver tested on the Tab A8; the in-player button after the settings rework untested |
+| Compress 3DS, Dreamcast, Wii and GameCube games (user request) | ✅ Dreamcast GDI/CDI to CHD already in the ROM Manager; ❌ GameCube/Wii to RVZ (the ROM Manager says to use Dolphin's converter); ❌ 3DS (zip breaks it; check Azahar's compressed format first) |
+| Keys and firmware backups on the devices (/sdcard/rf-switch-backup on the S22 and the Tab A8, about 330 MB each) | ⛔ delete once the user is happy the Switch Player keeps its keys |
+| GitHub two-factor authentication for RetroForgeFrontEnd | ⛔ the user enrols on github.com before 14 December 2026 |
+| Big logo export (for the GitHub page and posts) | 📋 optional |
+| PS3 games offered to the PS3 Player from RetroForge | ❌ after the player runs a game properly |
+| Promotion: Reddit post, sharing guide | 🟡 r/EmulationOnAndroid post drafted; where-to-share.md in the release folder |
