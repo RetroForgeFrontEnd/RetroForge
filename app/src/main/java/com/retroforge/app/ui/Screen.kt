@@ -67,7 +67,8 @@ fun ScreenFrame(title: String?, subtitle: String? = null, compact: Boolean = fal
                 verticalArrangement = Arrangement.spacedBy(if (compact) 10.dp else 16.dp),
             ) {
                 if (title != null) {
-                    Text(title, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
+                    // The end padding keeps long titles (and translations) clear of the red ✕ in the top corner.
+                    Text(title, style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground, modifier = Modifier.padding(end = 40.dp))
                 }
                 if (subtitle != null) {
                     Text(subtitle, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)

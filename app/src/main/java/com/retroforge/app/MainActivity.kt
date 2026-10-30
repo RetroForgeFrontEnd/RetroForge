@@ -20,6 +20,9 @@ class MainActivity : ComponentActivity() {
     /** Start + Select + L1 + R1 + L2 + R2 held: the language and factory-reset escape hatch. */
     private val resetCombo = ResetCombo(this)
 
+    // ComponentActivity marks its dispatchKeyEvent as library-internal, but overriding Activity's is how every app
+    // reads controller keys.
+    @android.annotation.SuppressLint("RestrictedApi")
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         resetCombo.onKey(event)
         return super.dispatchKeyEvent(event)
