@@ -115,6 +115,7 @@ private val topics = listOf(
         "Your own image: any picture on the device. Edit details changes a game's name, year and description.",
     )),
     Topic("Favourites, playlists and backups", listOf(
+        "Save syncing (Settings → Playing → Save syncing): your in-game saves and save states kept the same on every device. Choose a folder on a network drive (your PC), or a folder on this device that a cloud app keeps in step (Syncthing, FolderSync, Autosync for Google Drive, Nextcloud, OneDrive …). A game's saves come in when it starts and go back when you quit; Sync now does everything at once. If a save changed on two devices, the newer is kept and the other goes in the \"sync conflicts\" folder. Nothing is deleted.",
         "On a game's page: \"Add to favourites\", or \"Add to a playlist\" to tick playlists or make a new one. Open a playlist to reorder, rename or delete it; the games themselves are never touched.",
         "Coming from ES-DE: Settings → Import collections from ES-DE turns its custom collections into playlists.",
         "Settings → Back up saves and settings: one zip with in-game saves, save states, cheats, settings, favourites and playlists. On a new phone, add your game folders first, then Restore from a backup.",

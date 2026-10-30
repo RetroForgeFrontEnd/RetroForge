@@ -448,6 +448,7 @@ class PlayerActivity : ComponentActivity() {
 
     private fun load(corePath: String, uri: Uri, fileName: String, systemDir: File) {
         coreId = File(corePath).name.substringBefore("_libretro")
+        syncSaves(SaveSync.Direction.PULL)
         if (com.retroforge.player.CoreAssets.needed(coreId, systemDir)) {
             runOnUiThread { loadingDetail = "Getting the emulator's data files (first time only)…" }
             runCatching { com.retroforge.player.CoreAssets.fetch(coreId, systemDir, "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}") }
@@ -834,9 +835,26 @@ class PlayerActivity : ComponentActivity() {
                 persist()
                 NativePlayer.close()
                 loaded = false
+                syncSaves(SaveSync.Direction.PUSH)
             }
             runOnUiThread { finish() }
         }
+    }
+
+    /**
+     * Save syncing (Settings → Playing → Save syncing): this system's saves and states come in from the sync folder
+     * before the game starts, and go back when it's quit. On the worker thread. A failure never stops the game.
+     */
+    private fun syncSaves(direction: SaveSync.Direction) {
+        val sync = SaveSync.of(this) ?: return
+        runOnUiThread { loadingDetail = if (direction == SaveSync.Direction.PULL) "Getting your saves…" else "Saving to your sync folder…" }
+        runCatching { sync.sync(direction, only = listOf("saves/$system/", "states/$system/")) }
+            .onSuccess { android.util.Log.i("RetroForgePlayer", "save sync $direction: $it") }
+            .onFailure {
+                android.util.Log.w("RetroForgePlayer", "save sync $direction: ${it.message}")
+                if (direction == SaveSync.Direction.PULL) runOnUiThread { notice = "Couldn't reach your save sync folder (${it.message}). Playing with this device's saves." }
+            }
+        runOnUiThread { loadingDetail = null }
     }
 
     // Rotating can change the picture itself (the DS's screens go side by side); the new shape is picked up once

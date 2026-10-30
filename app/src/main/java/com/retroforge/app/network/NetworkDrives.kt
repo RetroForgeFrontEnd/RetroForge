@@ -242,6 +242,31 @@ object NetworkDrives {
     fun openRead(share: NetworkShare, path: String): File = connect(share).openFile(
         smbPath(share, path), EnumSet.of(AccessMask.GENERIC_READ), null, SMB2ShareAccess.ALL, SMB2CreateDisposition.FILE_OPEN, null,
     )
+
+    /** Every file under [path] (in all its folders); empty when the folder isn't there yet. */
+    fun listAll(share: NetworkShare, path: String): List<NetworkEntry> {
+        val here = runCatching { list(share, path) }.getOrElse { return emptyList() }
+        return here.flatMap { if (it.isFolder) listAll(share, it.path) else listOf(it) }
+    }
+
+    fun readBytes(share: NetworkShare, path: String): ByteArray = openRead(share, path).use { it.inputStream.readBytes() }
+
+    /**
+     * Writes [bytes] to [path] (save syncing, the one place RetroForge writes to a share), making its folders first.
+     * Returns the file's modified time on the share afterwards.
+     */
+    fun writeBytes(share: NetworkShare, path: String, bytes: ByteArray): Long {
+        val disk = connect(share)
+        var folder = ""
+        for (part in path.split('/').dropLast(1)) {
+            folder = if (folder.isEmpty()) part else "$folder/$part"
+            if (!disk.folderExists(smbPath(share, folder))) disk.mkdir(smbPath(share, folder))
+        }
+        disk.openFile(
+            smbPath(share, path), EnumSet.of(AccessMask.GENERIC_WRITE), null, SMB2ShareAccess.ALL, SMB2CreateDisposition.FILE_OVERWRITE_IF, null,
+        ).use { file -> file.outputStream.use { it.write(bytes) } }
+        return stat(share, path).modified
+    }
 }
 
 /** A computer on the local network that shares files (answers on SMB's port 445). */
