@@ -721,7 +721,6 @@
     <string name="gpu_rec_why_unknown">No se pudo leer el chip gráfico, así que el driver propio del teléfono es la opción segura.</string>
     <string name="gpu_rec_why_opengl">Este emulador dibuja aquí con OpenGL, y los otros drivers solo cambian Vulkan.</string>
     <string name="gpu_rec_why_app_cant">Esta app no puede cargar otro driver.</string>
-    <string name="gpu_rec_why_tested_no_gpu">En nuestra tableta de prueba con Adreno 619, Turnip ocultó la GPU a este emulador, así que usó el driver del teléfono de todos modos.</string>
     <string name="gpu_rec_why_tested_renders">En nuestra tableta de prueba con Adreno 619, los juegos se ven bien con Turnip.</string>
     <string name="gpu_rec_why_turnip_complete">Turnip admite más de lo que necesita este emulador que el driver del teléfono, según sus desarrolladores y quienes compilan los drivers.</string>
     <string name="gpu_rec_why_turnip_likely">Aún sin probar: Turnip suele ayudar a emuladores como este en Adreno 6xx y 7xx. Si los juegos van peor, elige el driver propio del teléfono.</string>

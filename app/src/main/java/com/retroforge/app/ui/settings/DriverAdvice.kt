@@ -76,7 +76,6 @@ fun reasonText(reason: DriverReason) = stringResource(
         DriverReason.UNKNOWN_GPU -> R.string.gpu_rec_why_unknown
         DriverReason.OPENGL_ONLY -> R.string.gpu_rec_why_opengl
         DriverReason.APP_CANT_LOAD -> R.string.gpu_rec_why_app_cant
-        DriverReason.TESTED_NO_GPU -> R.string.gpu_rec_why_tested_no_gpu
         DriverReason.TESTED_RENDERS -> R.string.gpu_rec_why_tested_renders
         DriverReason.TURNIP_MORE_COMPLETE -> R.string.gpu_rec_why_turnip_complete
         DriverReason.TURNIP_LIKELY -> R.string.gpu_rec_why_turnip_likely

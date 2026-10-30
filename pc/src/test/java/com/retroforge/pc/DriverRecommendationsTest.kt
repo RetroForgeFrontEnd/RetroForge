@@ -32,9 +32,9 @@ class DriverRecommendationsTest {
 
     @Test
     fun tabA9PlusFindings() {
-        // Adreno 619 with Turnip T30: PPSSPP and LRPS2 see no GPU, Dolphin draws.
-        assertEquals(DriverRecommendation(DriverPick.PHONE, Confidence.TESTED, DriverReason.TESTED_NO_GPU), rec(GpuFamily.ADRENO_6XX, DriverTarget.BUILT_IN_PPSSPP))
-        assertEquals(DriverRecommendation(DriverPick.PHONE, Confidence.TESTED, DriverReason.TESTED_NO_GPU), rec(GpuFamily.ADRENO_6XX, DriverTarget.BUILT_IN_PCSX2))
+        // Adreno 619 with Turnip T30: PPSSPP, LRPS2 and Dolphin all draw; PPSSPP gains little, so the phone's driver.
+        assertEquals(DriverRecommendation(DriverPick.PHONE, Confidence.COMMUNITY, DriverReason.SMALL_GAIN), rec(GpuFamily.ADRENO_6XX, DriverTarget.BUILT_IN_PPSSPP))
+        assertEquals(DriverRecommendation(DriverPick.TURNIP, Confidence.TESTED, DriverReason.TESTED_RENDERS), rec(GpuFamily.ADRENO_6XX, DriverTarget.BUILT_IN_PCSX2))
         assertEquals(DriverRecommendation(DriverPick.TURNIP, Confidence.TESTED, DriverReason.TESTED_RENDERS), rec(GpuFamily.ADRENO_6XX, DriverTarget.BUILT_IN_DOLPHIN))
     }
 

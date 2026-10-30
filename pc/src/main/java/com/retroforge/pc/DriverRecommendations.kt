@@ -79,15 +79,14 @@ enum class Confidence {
 /** Why, in a word the app turns into a sentence. */
 enum class DriverReason {
     NOT_ADRENO, OLD_ADRENO, UNKNOWN_GPU, OPENGL_ONLY, APP_CANT_LOAD,
-    TESTED_NO_GPU, TESTED_RENDERS, TURNIP_MORE_COMPLETE, TURNIP_LIKELY, SMALL_GAIN, A8XX_NEW, PC_NEEDS_TURNIP,
+    TESTED_RENDERS, TURNIP_MORE_COMPLETE, TURNIP_LIKELY, SMALL_GAIN, A8XX_NEW, PC_NEEDS_TURNIP,
 }
 
 data class DriverRecommendation(val pick: DriverPick, val confidence: Confidence, val reason: DriverReason)
 
 /**
  * The GPU driver to use for each emulator on each kind of GPU. Sources (October 2026):
- * - RetroForge's own tests on a Galaxy Tab A9+ (Adreno 619, Turnip T30): PPSSPP and LRPS2 see no GPU on Turnip (the
- *   player falls back to the phone's driver); Dolphin draws properly.
+ * - RetroForge's own tests on a Galaxy Tab A9+ (Adreno 619, Turnip T30): PPSSPP, LRPS2 and Dolphin all draw on Turnip.
  * - Dolphin's progress report (May–July 2023): Turnip is "by far the most complete Vulkan driver" for Adreno.
  * - PPSSPP's custom-driver page: PPSSPP uses few GPU features, so gains are small ("don't expect miracles").
  * - Eden's driver manager fetches and suggests a Turnip build; Qualcomm never shipped Vulkan 1.3 for Adreno 6xx.
@@ -111,12 +110,9 @@ object DriverRecommendations {
         val a6 = family == GpuFamily.ADRENO_6XX
         val a8 = family == GpuFamily.ADRENO_8XX
         return when (target) {
-            DriverTarget.BUILT_IN_PPSSPP ->
-                if (a6) DriverRecommendation(phone, Confidence.TESTED, DriverReason.TESTED_NO_GPU)
-                else DriverRecommendation(phone, Confidence.COMMUNITY, DriverReason.SMALL_GAIN)
-            DriverTarget.PPSSPP_APP -> DriverRecommendation(phone, Confidence.COMMUNITY, DriverReason.SMALL_GAIN)
+            DriverTarget.BUILT_IN_PPSSPP, DriverTarget.PPSSPP_APP -> DriverRecommendation(phone, Confidence.COMMUNITY, DriverReason.SMALL_GAIN)
             DriverTarget.BUILT_IN_PCSX2 -> when {
-                a6 -> DriverRecommendation(phone, Confidence.TESTED, DriverReason.TESTED_NO_GPU)
+                a6 -> DriverRecommendation(turnip, Confidence.TESTED, DriverReason.TESTED_RENDERS)
                 a8 -> DriverRecommendation(phone, Confidence.GUESS, DriverReason.A8XX_NEW)
                 else -> DriverRecommendation(turnip, Confidence.GUESS, DriverReason.TURNIP_LIKELY)
             }

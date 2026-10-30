@@ -721,7 +721,6 @@
     <string name="gpu_rec_why_unknown">Der Grafikchip konnte nicht gelesen werden, daher ist der eigene Treiber des Handys die sichere Wahl.</string>
     <string name="gpu_rec_why_opengl">Dieser Emulator zeichnet hier mit OpenGL, und andere Treiber ändern nur Vulkan.</string>
     <string name="gpu_rec_why_app_cant">Diese App kann keinen anderen Treiber laden.</string>
-    <string name="gpu_rec_why_tested_no_gpu">Auf unserem Test-Tablet mit Adreno 619 hat Turnip die GPU vor diesem Emulator versteckt, er nutzte also ohnehin den Treiber des Handys.</string>
     <string name="gpu_rec_why_tested_renders">Auf unserem Test-Tablet mit Adreno 619 werden Spiele mit Turnip richtig dargestellt.</string>
     <string name="gpu_rec_why_turnip_complete">Turnip unterstützt mehr von dem, was dieser Emulator braucht, als der Treiber des Handys, sagen seine Entwickler und die Treiber-Ersteller.</string>
     <string name="gpu_rec_why_turnip_likely">Noch nicht getestet: Turnip hilft Emulatoren wie diesem auf Adreno 6xx und 7xx meistens. Wenn Spiele schlechter laufen, wähle den eigenen Treiber des Handys.</string>

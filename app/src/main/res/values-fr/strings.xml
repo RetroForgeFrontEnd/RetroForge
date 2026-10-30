@@ -721,7 +721,6 @@
     <string name="gpu_rec_why_unknown">La puce graphique n\'a pas pu être lue : le pilote du téléphone est le choix sûr.</string>
     <string name="gpu_rec_why_opengl">Cet émulateur dessine ici avec OpenGL, et les autres pilotes ne changent que Vulkan.</string>
     <string name="gpu_rec_why_app_cant">Cette app ne peut pas charger un autre pilote.</string>
-    <string name="gpu_rec_why_tested_no_gpu">Sur notre tablette de test Adreno 619, Turnip cachait le GPU à cet émulateur, qui a donc utilisé le pilote du téléphone.</string>
     <string name="gpu_rec_why_tested_renders">Sur notre tablette de test Adreno 619, les jeux s\'affichent correctement avec Turnip.</string>
     <string name="gpu_rec_why_turnip_complete">Turnip prend en charge davantage de ce dont cet émulateur a besoin que le pilote du téléphone, selon ses développeurs et les créateurs de pilotes.</string>
     <string name="gpu_rec_why_turnip_likely">Pas encore testé : Turnip aide généralement les émulateurs de ce type sur Adreno 6xx et 7xx. Si les jeux fonctionnent moins bien, choisissez le pilote du téléphone.</string>
