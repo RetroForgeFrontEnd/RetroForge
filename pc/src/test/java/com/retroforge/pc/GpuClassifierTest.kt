@@ -1,10 +1,16 @@
 package com.retroforge.pc
 
+import com.retroforge.core.ui.AppStrings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Before
 import org.junit.Test
 
 class GpuClassifierTest {
+    // No Android resources in unit tests: messages are looked up as placeholders.
+    @Before
+    fun placeholderTexts() { AppStrings.testLookup = { id, _, _ -> "#$id" } }
+
 
     private fun gl(renderer: String?) = GpuIdentity(glRenderer = renderer, kgslModel = null, socModel = null)
 

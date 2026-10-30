@@ -1,11 +1,17 @@
 package com.retroforge.pc
 
+import com.retroforge.core.ui.AppStrings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
 class GpuDriversTest {
+    // No Android resources in unit tests: messages are looked up as placeholders.
+    @Before
+    fun placeholderTexts() { AppStrings.testLookup = { id, _, _ -> "#$id" } }
+
     @Test
     fun keepsOnlyTurnipZips() {
         val releases = """

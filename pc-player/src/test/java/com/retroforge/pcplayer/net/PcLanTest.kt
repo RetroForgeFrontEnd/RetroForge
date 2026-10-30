@@ -1,5 +1,6 @@
 package com.retroforge.pcplayer.net
 
+import com.retroforge.core.ui.AppStrings
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -26,6 +27,7 @@ class PcLanTest {
 
     @Before
     fun setUp() {
+        AppStrings.testLookup = { id, _, _ -> "#$id" }
         dir = Files.createTempDirectory("pclan").toFile()
         val port = ServerSocket(0).use { it.localPort }
         host = PcLan.host(File(dir, "host.cfg"), "Host", port)
