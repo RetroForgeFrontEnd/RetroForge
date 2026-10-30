@@ -199,3 +199,29 @@ What had to be fixed to build on this PC:
 Commits on `switchplayer`: `6aef147` build tooling, `0e1dd82` ffmpeg, `9f5a766` + `3a03d74` RetroForge identity
 (app id `com.retroforge.switchplayer`, name "RetroForge Switch Player", Forge Neon colours, dark by default,
 Eden/yuzu credit on About, `FileUtil.getFilename` fallback + honest log text).
+
+## Turnip drivers (2026-10-30)
+
+The GPU driver manager now starts with a **"Recommended for your GPU"** card (`utils/RecommendedDriver.kt`,
+`fragments/DriverManagerFragment.kt`, commit `1dc7850` on `switchplayer`):
+
+- **Adreno 6xx / 7xx:** "Download and use" fetches the newest Mr. Purple Turnip build from
+  github.com/MrPurple666/purple-turnip (K11MCH1's regular Turnip as fallback), installs it and selects it, in one tap.
+  If that file is already installed it is just reselected.
+- **Adreno 8xx:** K11MCH1's `turnip_a8xx` build, with a note that a8xx Turnip is new.
+- **"Use phone's own driver":** one tap back to the system driver.
+- **Mali / Xclipse (S22) / PowerVR / old Adreno:** the card explains that Turnip only works on Snapdragon (Adreno 600+)
+  GPUs, and the Fetch/Install buttons are hidden.
+- Only open-source Mesa Turnip builds are recommended, never the repackaged Qualcomm drivers Eden's "Fetch" list also
+  offers. Same GPU families as RetroForge's advice on `claude/gpu-driver-recs` (`pc/DriverRecommendations.kt`).
+  RetroForge recommends the phone's driver for Eden on Adreno 8xx; the player still offers a8xx Turnip there, marked new.
+
+Tested on the Galaxy Tab A9+ (Adreno 619): the card recommended Turnip; one tap downloaded
+`turnip_mrpurple_T30-toasted.adpkg.zip`, installed and selected it ("Turnip Adreno Driver T30 26.3.0-T30"). Starting
+homebrew (hbmenu.nro, no keys needed) logged `loading custom driver: …/gpu_driver/vulkan.purple.so` and
+`Driver: PurpleVK public driver 26.2.99, Device: PurpleVK-public Adreno (TM) 619, Vulkan: 1.3.359` and ran at ~60 FPS.
+"Use phone's own driver" switched back in one tap. Not yet tested with a real game (the tablet has no keys).
+
+Later, from RetroForge: RetroForge could pass a driver choice when it starts a game (an intent extra read in
+`EmulationActivity`, setting `DRIVER_PATH` for that run). That needs a change on RetroForge's side too, so it is
+left for later.
