@@ -33,6 +33,8 @@ fun FocusCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     selected: Boolean = false,
+    /** Space inside the card; null for the usual (smaller with compact cards). Cover tiles use a thin edge. */
+    contentPadding: androidx.compose.ui.unit.Dp? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val interaction = remember { MutableInteractionSource() }
@@ -54,7 +56,7 @@ fun FocusCard(
         .shadow(glow, shape, ambientColor = forge.focusRing, spotColor = forge.focusRing)
     // Over a gradient background, cards let a little of it through.
     val cardColor = MaterialTheme.colorScheme.surface.copy(alpha = if (theme.background.style == BackgroundStyle.SOLID) 1f else 0.86f)
-    val padding = if (LocalCompactCards.current) 14.dp else 20.dp
+    val padding = contentPadding ?: if (LocalCompactCards.current) 14.dp else 20.dp
     val body: @Composable () -> Unit = { Column(Modifier.padding(padding), content = content) }
     if (onClick != null) {
         Surface(

@@ -18,6 +18,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -65,6 +66,20 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     var showLibrary by remember { mutableStateOf(false) }
     var library by remember { mutableStateOf<List<com.retroforge.pcplayer.steam.SteamOwnedGame>?>(null) }
     var libraryBusy by remember { mutableStateOf(false) }
+    // Downloading a Steam game into RetroForge's PC games: the game asked about, its size, and the running download.
+    var downloadFor by remember { mutableStateOf<com.retroforge.pcplayer.steam.SteamOwnedGame?>(null) }
+    val download by com.retroforge.pcplayer.steam.SteamDownloadService.state.collectAsState()
+    val askNotifications = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    androidx.compose.runtime.DisposableEffect(Unit) {
+        // A finished download joins the PC games, started by the .exe RetroForge picks (changeable as usual).
+        com.retroforge.pcplayer.steam.SteamDownloadService.onFinished = { appId, name, folder ->
+            com.retroforge.pcplayer.GameExe.best(folder)?.let { exe ->
+                pc.add(listOf(PcGame(name, PcSource.WINDOWS, appId = appId.toString(), shortcutPath = exe.path)))
+            }
+        }
+        onDispose { }
+    }
+    androidx.compose.runtime.LaunchedEffect(download?.finished) { if (download?.finished == true) changes++ }
     var editing by remember { mutableStateOf(false) }
     // Choosing which .exe starts a Windows game: the mode, then the game whose .exe files are listed.
     var choosingExe by remember { mutableStateOf(false) }
@@ -228,37 +243,87 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
             },
             style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface,
         )
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            list.forEach { owned ->
+        CoverGrid(list) { owned, tileModifier ->
                 val installed = onDevice[owned.appId]
+                val active = download?.takeIf { it.appId == owned.appId }
+                val downloading = active != null && !active.finished && active.error == null
+                val hint = when {
+                    installed != null -> "On this device"
+                    active?.error != null -> "Download stopped"
+                    downloading -> "Downloading"
+                    else -> "Get"
+                }
+                val badge = when {
+                    installed != null -> "✓"
+                    downloading -> "${(active!!.progress * 100).toInt()}%"
+                    active?.error != null -> "!"
+                    else -> "⬇"
+                }
                 PcGameTile(
-                    PcGame(owned.name, PcSource.STEAM, appId = owned.appId.toString()), pc,
-                    if (installed != null) "On this device" else "Not downloaded",
-                    onClick = {
-                        if (installed != null) start(installed)
-                        else status = "Downloading ${owned.name} from Steam is coming next. For now, add its folder from a PC."
-                    },
+                    PcGame(owned.name, PcSource.STEAM, appId = owned.appId.toString()), pc, hint, tileModifier, badge,
+                    onClick = { if (installed != null) start(installed) else downloadFor = owned },
                 )
-            }
         }
     }
     if (games.isNotEmpty()) {
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(14.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            games.forEach { game ->
+        CoverGrid(games) { game, tileModifier ->
                 val hint = when {
                     editing -> "Select to remove"
                     choosingExe && game.source == PcSource.WINDOWS -> "Select to choose its .exe"
                     else -> null
                 }
-                PcGameTile(game, pc, hint, onClick = {
+                PcGameTile(game, pc, hint, tileModifier, onClick = {
                     when {
                         editing -> { pc.remove(game); changes++ }
                         choosingExe && game.source == PcSource.WINDOWS -> exeFor = game
                         else -> start(game)
                     }
                 })
+        }
+    }
+
+    downloadFor?.let { owned ->
+        // On the phone or the SD card, whichever has the most room (a part-downloaded game carries on where it is).
+        val folder = remember(owned.appId) {
+            pc.windowsGamesDirs().map { java.io.File(it, owned.name.replace(Regex("""[\\/:*?"<>|™®]"""), "").trim()) }.firstOrNull { it.isDirectory }
+                ?: java.io.File(pc.roomiestGamesDir(), owned.name.replace(Regex("""[\\/:*?"<>|™®]"""), "").trim()) }
+        val size by androidx.compose.runtime.produceState<Long?>(null, owned.appId) {
+            value = withContext(Dispatchers.IO) {
+                runCatching { com.retroforge.pcplayer.steam.SteamDownloads(steamAccount).size(owned.appId) }.getOrNull() ?: -1L
             }
         }
+        val free = remember(owned.appId) { folder.parentFile!!.apply { mkdirs() }.usableSpace }
+        val where = if (pc.onSdCard(folder)) "the SD card" else "this device"
+        val active = download?.takeIf { it.appId == owned.appId }
+        fun gb(bytes: Long) = "%.1f GB".format(bytes / 1_000_000_000.0)
+        // Room for the game plus a little to spare (saves, shader caches).
+        val fits = size?.let { it in 1..(free - 1_000_000_000L) } == true
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { downloadFor = null },
+            title = { Text(owned.name) },
+            text = {
+                Text(
+                    when {
+                        active != null && !active.finished && active.error == null ->
+                            "Downloading from Steam: ${(active.progress * 100).toInt()}% (${active.step}). It carries on in the background; the notification shows how it's going."
+                        size == null -> "Asking Steam how big it is…"
+                        size == -1L -> "Steam didn't say how big this game is. Try again in a moment."
+                        !fits -> "It needs ${gb(size!!)} and $where has ${gb(free)} free. Free up some space first."
+                        else -> "Download it from Steam to play in RetroForge's PC player: ${gb(size!!)}, to $where (${gb(free)} free). " +
+                            "It carries on in the background, and a game you've part-downloaded carries on from where it stopped." +
+                            (active?.error?.let { "\n\nLast try stopped: $it" } ?: "")
+                    },
+                )
+            },
+            confirmButton = {
+                if (fits && (active == null || active.finished || active.error != null)) androidx.compose.material3.TextButton(onClick = {
+                    if (android.os.Build.VERSION.SDK_INT >= 33) askNotifications.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                    com.retroforge.pcplayer.steam.SteamDownloadService.start(context, owned.appId, owned.name, folder)
+                    downloadFor = null
+                }) { Text("Download ${gb(size!!)}") }
+            },
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { downloadFor = null }) { Text("Close") } },
+        )
     }
 
     exeFor?.let { game ->
@@ -321,25 +386,69 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     }
 }
 
+/**
+ * Game covers in a grid, like a store's library: as many columns as fit (tiles about 120 dp wide, never fewer than
+ * three), each the same width.
+ */
 @Composable
-private fun PcGameTile(game: PcGame, pc: PcLibrary, hint: String?, onClick: () -> Unit) {
+private fun <T> CoverGrid(items: List<T>, tile: @Composable (T, Modifier) -> Unit) {
+    androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val gap = 10.dp
+        val columns = maxOf(3, ((maxWidth + gap) / (120.dp + gap)).toInt())
+        androidx.compose.foundation.layout.Column(verticalArrangement = Arrangement.spacedBy(gap)) {
+            items.chunked(columns).forEach { row ->
+                androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(gap)) {
+                    row.forEach { item -> tile(item, Modifier.weight(1f)) }
+                    // Keep the last row's tiles the same width as the rest.
+                    repeat(columns - row.size) { androidx.compose.foundation.layout.Spacer(Modifier.weight(1f)) }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PcGameTile(
+    game: PcGame,
+    pc: PcLibrary,
+    hint: String?,
+    modifier: Modifier = Modifier.width(150.dp),
+    badge: String? = null,
+    onClick: () -> Unit,
+) {
     val cover by androidx.compose.runtime.produceState<java.io.File?>(null, game.key) { value = withContext(Dispatchers.IO) { pc.cover(game) } }
-    FocusCard(modifier = Modifier.width(150.dp), onClick = onClick) {
+    // Older games only have Steam's wide banner: shown whole, centred, rather than cropped to a sliver.
+    val wide = remember(cover) {
+        cover?.let { f -> android.graphics.BitmapFactory.Options().apply { inJustDecodeBounds = true }.also { android.graphics.BitmapFactory.decodeFile(f.path, it) } }
+            ?.let { it.outWidth > it.outHeight } == true
+    }
+    // A cover tile: the box art fills it, the name and a short status underneath, a small badge on the art.
+    FocusCard(modifier = modifier, onClick = onClick, contentPadding = 6.dp) {
         Box(Modifier.fillMaxWidth().aspectRatio(2f / 3f).clip(MaterialTheme.shapes.small)) {
             val placeholder: @Composable () -> Unit = {
-                Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant).padding(8.dp), contentAlignment = Alignment.Center) {
-                    Text(game.title, textAlign = TextAlign.Center, maxLines = 4, overflow = TextOverflow.Ellipsis, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant).padding(6.dp), contentAlignment = Alignment.Center) {
+                    Text(game.title, textAlign = TextAlign.Center, maxLines = 4, overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
             if (cover == null) placeholder()
             else SubcomposeAsyncImage(
-                model = cover, contentDescription = null, contentScale = ContentScale.Crop,
-                loading = { placeholder() }, error = { placeholder() }, modifier = Modifier.fillMaxSize(),
+                model = cover, contentDescription = null, contentScale = if (wide) ContentScale.Fit else ContentScale.Crop,
+                loading = { placeholder() }, error = { placeholder() },
+                modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surfaceVariant),
             )
+            badge?.let {
+                Text(
+                    it, style = MaterialTheme.typography.labelSmall, color = androidx.compose.ui.graphics.Color.White,
+                    modifier = Modifier.align(Alignment.TopEnd).padding(4.dp)
+                        .background(androidx.compose.ui.graphics.Color(0xCC000000), MaterialTheme.shapes.small)
+                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                )
+            }
         }
-        Text(game.title, style = MaterialTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(top = 6.dp))
-        Text(hint ?: game.source.label, style = MaterialTheme.typography.bodySmall,
-            color = if (hint != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary)
+        Text(game.title, style = MaterialTheme.typography.labelLarge, maxLines = 1, overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colorScheme.onSurface, modifier = Modifier.padding(top = 5.dp))
+        Text(hint ?: game.source.label, style = MaterialTheme.typography.labelSmall, maxLines = 1, overflow = TextOverflow.Ellipsis,
+            color = if (hint != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary)
     }
 }

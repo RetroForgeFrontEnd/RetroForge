@@ -79,23 +79,56 @@ class PcLibrary(private val context: Context) {
 
     fun remove(game: PcGame) = save(all().filter { it.key != game.key })
 
-    /** The game's box art, downloaded once and kept (Steam's own art; null for other stores or when it can't be had). */
+    /**
+     * The game's box art, downloaded once and kept: Steam's own art for Steam games, and for Windows games from
+     * elsewhere the art of the same game on Steam's store, found by name. Steam's tall library art where the game
+     * has it, else its wide store banner (older games). Null when there's none (other stores, no match).
+     */
     fun cover(game: PcGame): File? {
-        val url = game.coverUrl ?: return null
-        val file = File(context.filesDir, "pc_covers/${game.appId}.jpg")
-        if (file.isFile) return file
-        return runCatching {
-            val connection = (URL(url).openConnection() as HttpURLConnection).apply { connectTimeout = 15_000; readTimeout = 20_000 }
-            try {
-                if (connection.responseCode != 200) return null
-                val bytes = connection.inputStream.use { it.readBytes() }
-                file.parentFile?.mkdirs()
-                File(file.path + ".part").apply { writeBytes(bytes) }.renameTo(file)
-                file
-            } finally {
-                connection.disconnect()
-            }
-        }.getOrNull()
+        val appId = when {
+            game.source == PcSource.STEAM -> game.appId
+            game.source == PcSource.WINDOWS -> game.appId?.takeIf { it.toIntOrNull() != null } ?: storeMatch(game.title)
+            else -> null
+        } ?: return null
+        val dir = File(context.filesDir, "pc_covers")
+        File(dir, "$appId.jpg").takeIf { it.isFile }?.let { return it }
+        if (File(dir, "$appId.none").isFile) return null
+        for (image in listOf("library_600x900.jpg", "header.jpg")) {
+            val bytes = runCatching { download("https://cdn.cloudflare.steamstatic.com/steam/apps/$appId/$image") }.getOrNull() ?: continue
+            dir.mkdirs()
+            val file = File(dir, "$appId.jpg")
+            File(file.path + ".part").apply { writeBytes(bytes) }.renameTo(file)
+            return file
+        }
+        // Steam has no art for it (a developer tool, say): don't ask again every time the tab opens.
+        dir.mkdirs()
+        File(dir, "$appId.none").createNewFile()
+        return null
+    }
+
+    /** The Steam store's app id for a game by this name (its box art), found once and remembered; null if none. */
+    private fun storeMatch(title: String): String? {
+        fun simple(s: String) = s.lowercase().filter { it.isLetterOrDigit() }
+        val name = title.replace(Regex("""\s*\((RetroForge|GOG|Steam)\)\s*$"""), "").trim()
+        val memo = File(context.filesDir, "pc_covers/match-${simple(name)}.txt")
+        if (memo.isFile) return memo.readText().trim().takeIf { it.isNotEmpty() }
+        val hits = runCatching { searchSteam(name) }.getOrNull() ?: return null
+        val wanted = simple(name)
+        val hit = hits.firstOrNull { simple(it.name) == wanted }
+            ?: hits.firstOrNull { simple(it.name).startsWith(wanted) || wanted.startsWith(simple(it.name)) && simple(it.name).length >= 4 }
+        memo.parentFile?.mkdirs()
+        memo.writeText(hit?.appId.orEmpty())
+        return hit?.appId
+    }
+
+    private fun download(url: String): ByteArray? {
+        val connection = (URL(url).openConnection() as HttpURLConnection).apply { connectTimeout = 15_000; readTimeout = 20_000 }
+        try {
+            if (connection.responseCode != 200) return null
+            return connection.inputStream.use { it.readBytes() }
+        } finally {
+            connection.disconnect()
+        }
     }
 
     /**
@@ -178,6 +211,21 @@ class PcLibrary(private val context: Context) {
     fun windowsGamesDir(): File = File(context.getExternalFilesDir(null) ?: context.filesDir, "PC games")
 
     /**
+     * Every place Windows games can live: the phone's storage and each SD card in (Android gives the app a folder
+     * on each, with real paths the PC player can use).
+     */
+    fun windowsGamesDirs(): List<File> = context.getExternalFilesDirs(null).filterNotNull()
+        .filter { android.os.Environment.getExternalStorageState(it) == android.os.Environment.MEDIA_MOUNTED }
+        .map { File(it, "PC games") }
+        .ifEmpty { listOf(windowsGamesDir()) }
+
+    /** Where a new game goes: the storage (phone or SD card) with the most free space. */
+    fun roomiestGamesDir(): File = windowsGamesDirs().maxBy { it.apply { mkdirs() }.usableSpace }
+
+    /** Whether [dir] is on an SD card rather than the phone's own storage. */
+    fun onSdCard(dir: File): Boolean = !dir.canonicalPath.startsWith(windowsGamesDir().canonicalFile.parentFile!!.canonicalPath)
+
+    /**
      * Copies a Windows game folder the user picked into [windowsGamesDir] (RetroForge's PC player needs the files
      * where it can open them directly) and adds it. [onProgress] gets 0–100. Returns the game, or null when the
      * folder has no .exe to start.
@@ -237,10 +285,10 @@ class PcLibrary(private val context: Context) {
     /** The game's own folder in [windowsGamesDir] (its .exe can be in a subfolder of it). */
     fun windowsGameFolder(game: PcGame): File? {
         val exe = File(game.shortcutPath ?: return null)
-        val root = windowsGamesDir().canonicalFile
+        val roots = windowsGamesDirs().map { it.canonicalFile }.toSet()
         var dir = exe.parentFile?.canonicalFile ?: return null
-        while (dir.parentFile != null && dir.parentFile != root) dir = dir.parentFile!!
-        return dir.takeIf { it.parentFile == root }
+        while (dir.parentFile != null && dir.parentFile !in roots) dir = dir.parentFile!!
+        return dir.takeIf { it.parentFile in roots }
     }
 
     /** Starts [game] with [exe] from now on (the user's choice). Returns the updated game. */

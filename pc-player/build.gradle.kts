@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.commons.compress)
     implementation(libs.xz)
     implementation(libs.javasteam)
+    implementation(libs.javasteam.depotdownloader)
     implementation(libs.spongycastle)
     implementation(libs.okhttp)
     implementation(libs.protobuf.java)
