@@ -123,6 +123,11 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             // command reordering drops draws (CTR Native lost Crash's face).
             "ZINK_DESCRIPTORS" to "lazy",
             "ZINK_DEBUG" to "compact,noreorder",
+            // Games' own SDL2 reads Xbox pads through Raw Input / HIDAPI / Windows.Gaming.Input when it can, none of
+            // which carry the virtual pad under Wine; XInput does (Wine's winexinput driver feeds it).
+            "SDL_JOYSTICK_RAWINPUT" to "0",
+            "SDL_JOYSTICK_HIDAPI" to "0",
+            "SDL_JOYSTICK_WGI" to "0",
             "DXVK_LOG_LEVEL" to "warn",
             "DXVK_LOG_PATH" to "none",
             "WINE_NO_DUPLICATE_EXPLORER" to "1",

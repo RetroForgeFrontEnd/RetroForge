@@ -142,11 +142,8 @@ class PcPlayerActivity : ComponentActivity() {
         }
         scope.launch {
             padShown = prefs().getBoolean("pad_shown:${exe.path}", true)
-            // Keyboard & mouse unless the player chose the Xbox controller: games don't yet receive the virtual
-            // Xbox pad's input through Wine's XInput (the pad reaches Wine's controller driver, and stops there).
-            // usesXInput() picks the default again once that works.
-            keyboardMode = if (prefs().contains("keyboard_mode:${exe.path}")) prefs().getBoolean("keyboard_mode:${exe.path}", true)
-            else XINPUT_PAD_WORKS.not() || withContext(Dispatchers.IO) { !usesXInput(exe) }
+            keyboardMode = if (prefs().contains("keyboard_mode:${exe.path}")) prefs().getBoolean("keyboard_mode:${exe.path}", false)
+            else withContext(Dispatchers.IO) { !usesXInput(exe) }
             launch {
                 runtime.state.collectLatest { state ->
                     if (state is RuntimeState.Working) phase = Phase.Loading("${state.step}… ${state.percent}%")
@@ -254,7 +251,21 @@ class PcPlayerActivity : ComponentActivity() {
     private fun applyControls() {
         val pad = controlsView ?: return
         pad.keyboardMode = keyboardMode
-        pad.visibility = if (padShown) View.VISIBLE else View.INVISIBLE
+        // A real controller connected (Bluetooth, USB, a handheld's own): the on-screen one gets out of the way.
+        pad.visibility = if (padShown && !controllerConnected()) View.VISIBLE else View.INVISIBLE
+    }
+
+    /** Whether a real game controller is connected (not the phone's own keys). */
+    private fun controllerConnected(): Boolean = InputDevice.getDeviceIds().any { id ->
+        val device = InputDevice.getDevice(id) ?: return@any false
+        !device.isVirtual && (device.supportsSource(InputDevice.SOURCE_GAMEPAD) || device.supportsSource(InputDevice.SOURCE_JOYSTICK))
+    }
+
+    /** Shows or hides the on-screen controller as controllers come and go. */
+    private val controllerWatcher = object : android.hardware.input.InputManager.InputDeviceListener {
+        override fun onInputDeviceAdded(deviceId: Int) = applyControls()
+        override fun onInputDeviceRemoved(deviceId: Int) = applyControls()
+        override fun onInputDeviceChanged(deviceId: Int) = applyControls()
     }
 
     private fun prefs() = getSharedPreferences("pc_player", Context.MODE_PRIVATE)
@@ -430,7 +441,7 @@ class PcPlayerActivity : ComponentActivity() {
                     Text("Paused · PC game", color = Color(0xFFAAAAB4), fontSize = 13.sp)
                     MenuButton(onClick = { closeMenu() }, modifier = wide) { Text("Resume") }
                     MenuButton(onClick = { chooseControls(shown = !padShown) }, modifier = wide) {
-                        Text("On-screen controller: ${if (padShown) "Shown" else "Hidden"}")
+                        Text("On-screen controller: ${if (padShown) "Shown" else "Hidden"}" + if (padShown && controllerConnected()) " (hidden while a controller is connected)" else "")
                     }
                     MenuButton(onClick = { chooseControls(keyboard = !keyboardMode) }, modifier = wide) {
                         Text("Controller works as: ${if (keyboardMode) "Keyboard & mouse" else "Xbox controller"}")
@@ -576,11 +587,14 @@ class PcPlayerActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         view?.onResume()
+        getSystemService(android.hardware.input.InputManager::class.java).registerInputDeviceListener(controllerWatcher, null)
+        applyControls()
     }
 
     override fun onPause() {
         // Leaving the app (home, notification) opens the menu, so the game waits paused.
         if (!quitting) openMenu()
+        getSystemService(android.hardware.input.InputManager::class.java).unregisterInputDeviceListener(controllerWatcher)
         view?.onPause()
         super.onPause()
     }
@@ -660,8 +674,6 @@ class PcPlayerActivity : ComponentActivity() {
         private const val LOADING_LIMIT_MS = 90_000L
         private const val CLOUD_TIMEOUT_MS = 90_000L
         private const val STOP_WAIT_MS = 8_000L
-        /** Whether games receive the virtual Xbox pad yet (see where keyboardMode is chosen). */
-        private const val XINPUT_PAD_WORKS = false
         private const val TAG = "PcPlayer"
 
         fun intent(context: Context, exe: File, title: String, steamAppId: Int? = null): Intent =
