@@ -1,10 +1,7 @@
 package com.retroforge.app.ui.pc
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -35,9 +32,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
- * Signing in to Steam for RetroForge's own PC player, so Steam games you own can start. Three ways, best first on a
- * phone: approve in the Steam app on this phone (no QR to scan), account name + password with Steam Guard (approve
- * in the Steam app, or type its code or the emailed one), or a QR code for the Steam app on another device.
+ * Signing in to Steam for RetroForge's own PC player, so Steam games you own can start. On a phone: account name +
+ * password with Steam Guard (approve in the Steam app, or type its code or the emailed one). With the Steam app on
+ * another device: a QR code. (Opening the QR code's link in the Steam app on the same phone doesn't work: the app
+ * refuses links that weren't scanned, "for security purposes".)
  */
 @Composable
 fun SteamSignInSection() {
@@ -105,21 +103,6 @@ fun SteamSignInSection() {
                 "sign-in token Steam gives it.",
         )
         ChipRow {
-            FocusChip("Sign in with the Steam app", enabled = job == null, onClick = {
-                run {
-                    account.signInWithQr(object : SteamAccount.SignInPrompts by prompts {
-                        override fun qrLink(url: String) {
-                            prompts.qrLink(url)
-                            // The QR code's link, opened on this phone: the Steam app asks to approve the sign-in.
-                            message = "Approve the sign-in in the Steam app. If it didn't open, scan the QR code with the Steam app on another device."
-                            try {
-                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-                            } catch (_: ActivityNotFoundException) {
-                            }
-                        }
-                    })
-                }
-            })
             FocusChip("Sign in with password", enabled = job == null, onClick = { askPassword = !askPassword })
             FocusChip("Show a QR code", enabled = job == null, onClick = {
                 run {
