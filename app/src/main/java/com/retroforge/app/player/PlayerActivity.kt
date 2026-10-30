@@ -1625,6 +1625,22 @@ class PlayerActivity : ComponentActivity() {
                         )
                         cheatStatus?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
                         MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text("‹ Back") }
+                        // Games with their own cheat codes (Doom's id codes): the emulator takes the code as a cheat.
+                        TypedCheats.forSystem(system).takeIf { it.isNotEmpty() }?.let { codes ->
+                            Text("Cheat codes", color = Color.White, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 4.dp))
+                            Text("Works in a level (picked elsewhere, it waits for the next one). Can't be turned off until the game is restarted.", color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
+                            codes.forEach { code ->
+                                MenuButton(onClick = {
+                                    NativePlayer.applyCheats((cheats.filter { it.enabled }.map { it.code } + code.code).toTypedArray())
+                                    closeMenu()
+                                }, modifier = wide) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Text(code.name, textAlign = TextAlign.Center, fontSize = 14.sp)
+                                        Text(code.code, color = Color(0xFFFF8A1F), fontSize = 13.sp)
+                                    }
+                                }
+                            }
+                        }
                         if (!fetchingCheats) cheats.forEachIndexed { i, cheat ->
                             MenuButton(onClick = {
                                 updateCheats(cheats.toMutableList().also { it[i] = cheat.copy(enabled = !cheat.enabled) })
