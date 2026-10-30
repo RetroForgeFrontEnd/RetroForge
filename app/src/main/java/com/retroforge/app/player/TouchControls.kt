@@ -62,8 +62,26 @@ data class PadLayout(
     val rightStickLabel: String? = null,
     /** Where each face button sits when it isn't the libretro/SNES diamond (the GameCube's Y top, X right, A low, B left). */
     val facePlaces: Map<Int, Alignment>? = null,
+    /** Fixed places for the face buttons, by index: kept when the user changes what they press. */
+    private val spots: List<Alignment>? = null,
 ) {
+    /** Where each face button sits in a four-button diamond, in [face] order. */
+    val faceSpots: List<Alignment>
+        get() = spots ?: face.map { (_, button) -> (facePlaces ?: DIAMOND)[button] ?: Alignment.Center }
+
+    /**
+     * The same pad with the user's on-screen choices ([choices]: label → game button) applied. Each button stays where
+     * it is on the controller; only what it presses changes.
+     */
+    fun remapped(choices: Map<String, Int>): PadLayout {
+        fun List<Pair<String, Int>>.mapped() = map { (label, button) -> label to (choices[label] ?: button) }
+        return copy(face = face.mapped(), shoulders = shoulders.mapped(), triggers = triggers.mapped(), spots = faceSpots)
+    }
+
     companion object {
+        /** Diamond by button position (libretro/SNES): X top, Y left, A right, B bottom. PlayStation: △ ○ ✕ □. */
+        private val DIAMOND = mapOf(Pad.X to Alignment.TopCenter, Pad.Y to Alignment.CenterStart, Pad.A to Alignment.CenterEnd, Pad.B to Alignment.BottomCenter)
+
         private val twoButton = PadLayout(listOf("B" to Pad.B, "A" to Pad.A))
 
         /**
@@ -266,7 +284,7 @@ fun TouchControls(
                             PadButton(label, RoundedCornerShape(10.dp), 52.dp * k, 28.dp * k, small = true, faint = true, role = ButtonRole.SHOULDER) { down -> set(13, if (down) Pad.bit(button) else 0) }
                         }
                     }
-                    FaceButtons(layout.face, places = layout.facePlaces, size = // Fewer buttons get bigger ones (GBA's two are easy to miss at the four-button size).
+                    FaceButtons(layout.face, spots = layout.faceSpots, size = // Fewer buttons get bigger ones (GBA's two are easy to miss at the four-button size).
                         when {
                             layout.sticks -> 38.dp * k
                             layout.face.size <= 2 -> 58.dp * k
@@ -300,7 +318,7 @@ fun TouchControls(
                 layout.shoulders.getOrNull(1)?.let { (label, button) ->
                     PadButton(label, RoundedCornerShape(10.dp), 64.dp, 32.dp, small = true, role = ButtonRole.SHOULDER) { down -> set(11, if (down) Pad.bit(button) else 0) }
                 }
-                FaceButtons(layout.face, places = layout.facePlaces, size = 46.dp) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
+                FaceButtons(layout.face, spots = layout.faceSpots, size = 46.dp) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
             }
         }
         return
@@ -335,7 +353,7 @@ fun TouchControls(
             val k = ((maxWidth - gaps - 24.dp) / (168.dp + 64.dp * faceSpan)).coerceAtMost(1f)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 DPad(168.dp * k) { set(0, it) }
-                FaceButtons(layout.face, places = layout.facePlaces, size = 64.dp * k) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
+                FaceButtons(layout.face, spots = layout.faceSpots, size = 64.dp * k) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
             }
         }
         if (layout.sticks) {
@@ -365,13 +383,11 @@ fun TouchControls(
 }
 
 @Composable
-private fun FaceButtons(face: List<Pair<String, Int>>, size: Dp, faint: Boolean = false, places: Map<Int, Alignment>? = null, onPress: (Int, Boolean) -> Unit) {
+private fun FaceButtons(face: List<Pair<String, Int>>, size: Dp, faint: Boolean = false, spots: List<Alignment>, onPress: (Int, Boolean) -> Unit) {
     when (face.size) {
         4 -> Box(Modifier.size(size * 3)) {
-            // Diamond by button position (libretro/SNES): X top, Y left, A right, B bottom. PlayStation: △ ○ ✕ □.
-            val at = places ?: mapOf(Pad.X to Alignment.TopCenter, Pad.Y to Alignment.CenterStart, Pad.A to Alignment.CenterEnd, Pad.B to Alignment.BottomCenter)
-            face.forEachIndexed { i, (label, button) ->
-                Box(Modifier.align(at[button] ?: Alignment.Center)) { PadButton(label, CircleShape, size, size, faint = faint) { onPress(i, it) } }
+            face.forEachIndexed { i, (label, _) ->
+                Box(Modifier.align(spots[i])) { PadButton(label, CircleShape, size, size, faint = faint) { onPress(i, it) } }
             }
         }
         // Six-button pads (Saturn): a row of three over a row of three, the bottom row nudged right like the real pad.
