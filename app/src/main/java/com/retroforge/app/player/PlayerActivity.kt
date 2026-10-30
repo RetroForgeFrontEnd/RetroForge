@@ -182,11 +182,7 @@ class PlayerActivity : ComponentActivity() {
     }
 
     /** The system's pad with the user's on-screen choices applied. */
-    private fun touchLayout(): PadLayout {
-        val base = padLayout()
-        fun List<Pair<String, Int>>.mapped() = map { (label, button) -> label to (touchMap[label] ?: button) }
-        return base.copy(face = base.face.mapped(), shoulders = base.shoulders.mapped(), triggers = base.triggers.mapped())
-    }
+    private fun touchLayout(): PadLayout = padLayout().remapped(touchMap)
 
     /** The system's game buttons, named as on its controller. */
     private fun gameButtons(): List<Pair<String, Int>> {
