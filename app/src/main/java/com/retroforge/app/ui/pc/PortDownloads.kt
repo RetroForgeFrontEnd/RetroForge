@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -68,7 +70,7 @@ object PortDownloads {
 
     /** Downloads the Windows zip and unpacks it into Download/RetroForge/Ports/<port>. Returns where. */
     fun unpackWindows(context: Context, port: GamePort, file: ReleaseFile, onProgress: (Int) -> Unit): String {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) throw IOException("needs Android 10 or newer")
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) throw IOException(str(R.string.port_downloads_needs_android_10_or_newer))
         val zip = File(context.cacheDir, "ports/${file.name.replace(Regex("""[^\w.-]"""), "_")}")
         download(file, zip, onProgress)
         val folder = "${Environment.DIRECTORY_DOWNLOADS}/RetroForge/Ports/${port.name.replace(":", " -").replace(Regex("""[\\/*?"<>|]"""), "_")} (Windows)"
@@ -98,7 +100,7 @@ object PortDownloads {
     fun download(file: ReleaseFile, target: File, onProgress: (Int) -> Unit) {
         val connection = open(file.url)
         try {
-            if (connection.responseCode != 200) throw IOException("the download answered ${connection.responseCode}")
+            if (connection.responseCode != 200) throw IOException(str(R.string.port_downloads_the_download_answered, connection.responseCode))
             val total = connection.contentLengthLong.takeIf { it > 0 } ?: file.size
             target.parentFile?.mkdirs()
             val part = File(target.path + ".part")
@@ -116,7 +118,7 @@ object PortDownloads {
                 }
             }
             target.delete()
-            if (!part.renameTo(target)) throw IOException("couldn't save ${target.name}")
+            if (!part.renameTo(target)) throw IOException(str(R.string.bezels_couldn_t_save, target.name))
         } finally {
             connection.disconnect()
         }
@@ -125,7 +127,7 @@ object PortDownloads {
     private fun get(url: String): ByteArray {
         val connection = open(url).apply { setRequestProperty("Accept", "application/vnd.github+json") }
         try {
-            if (connection.responseCode != 200) throw IOException("GitHub answered ${connection.responseCode}")
+            if (connection.responseCode != 200) throw IOException(str(R.string.bezels_github_answered, connection.responseCode))
             return connection.inputStream.use { it.readBytes() }
         } finally {
             connection.disconnect()

@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -48,16 +49,16 @@ fun FavouriteAndPlaylists(game: GameEntity, viewModel: LibraryViewModel) {
     val scope = rememberCoroutineScope()
 
     ChipRow {
-        FocusChip(if (favourite) "★ Favourite" else "☆ Add to favourites", onClick = { viewModel.setFavourite(game, !favourite) })
+        FocusChip(if (favourite) stringResource(R.string.playlists_favourite) else stringResource(R.string.playlists_add_to_favourites), onClick = { viewModel.setFavourite(game, !favourite) })
         FocusChip(
-            if (containing.isEmpty()) "Add to a playlist" else "In ${plural(containing.size, "playlist")}",
+            if (containing.isEmpty()) str(R.string.playlists_add_to_a_playlist) else str(R.string.library_in, plural(containing.size, "playlist")),
             onClick = { showPlaylists = !showPlaylists },
         )
     }
     if (showPlaylists) {
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle(stringResource(R.string.playlists_playlists))
-            CardBody(if (playlists.isEmpty()) "No playlists yet. Name one below." else "Select a playlist to add or remove this game.")
+            CardBody(if (playlists.isEmpty()) stringResource(R.string.playlists_no_playlists_yet_name_one_below) else stringResource(R.string.playlists_select_a_playlist_to_add_or))
         }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             playlists.forEach { p ->
@@ -126,7 +127,7 @@ fun PlaylistScreen(viewModel: LibraryViewModel, playlistId: Long, onOpenGame: (L
         return
     }
 
-    ScreenFrame(title = p.name, subtitle = plural(games.size, "game") + ". Add games from any game's page.") {
+    ScreenFrame(title = p.name, subtitle = plural(games.size, "game") + str(R.string.playlists_add_games_from_any_game_s)) {
         if (games.isEmpty()) CardBody(stringResource(R.string.playlists_empty_so_far_open_a_game))
         games.forEachIndexed { i, game ->
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {

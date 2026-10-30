@@ -1,5 +1,7 @@
 package com.retroforge.pcplayer.net
 
+import com.retroforge.pcplayer.R
+import com.retroforge.core.ui.str
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -26,7 +28,7 @@ class PlayTogetherService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val manager = getSystemService(NotificationManager::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            manager.createNotificationChannel(NotificationChannel(CHANNEL, "Playing together", NotificationManager.IMPORTANCE_LOW))
+            manager.createNotificationChannel(NotificationChannel(CHANNEL, str(R.string.play_together_service_playing_together), NotificationManager.IMPORTANCE_LOW))
         }
         val open = PendingIntent.getActivity(
             this, 0,
@@ -38,7 +40,7 @@ class PlayTogetherService : Service() {
         val notification = builder
             .setSmallIcon(android.R.drawable.stat_sys_upload_done)
             .setContentTitle(intent?.getStringExtra(EXTRA_TITLE) ?: "Playing together")
-            .setContentText("Still connected to the other players. Tap to go back to the game.")
+            .setContentText(str(R.string.play_together_service_still_connected_to_the_other_players))
             .setContentIntent(open)
             .setOngoing(true)
             .build()

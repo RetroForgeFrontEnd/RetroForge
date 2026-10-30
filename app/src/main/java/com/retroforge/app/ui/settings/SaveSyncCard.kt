@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -60,16 +61,16 @@ fun SaveSyncCard() {
     fun syncNow() {
         val sync = SaveSync.of(context) ?: return
         progress = 0f
-        status = "Syncing your saves…"
+        status = str(R.string.save_sync_syncing_your_saves)
         scope.launch {
             status = withContext(Dispatchers.IO) {
                 runCatching { sync.sync(onProgress = { p -> progress = p }) }.fold(
                     onSuccess = { r ->
-                        if (r.pulled + r.pushed == 0) "Everything's already in step."
-                        else "Done: ${r.pulled} brought to this device, ${r.pushed} sent to the sync folder." +
-                            if (r.conflicts > 0) " ${r.conflicts} had changed on both sides: the newer was kept, the other is in the \"sync conflicts\" folder." else ""
+                        if (r.pulled + r.pushed == 0) str(R.string.save_sync_everything_s_already_in_step)
+                        else str(R.string.save_sync_done_brought_to_this_device_sent, r.pulled, r.pushed) +
+                            if (r.conflicts > 0) str(R.string.save_sync_had_changed_on_both_sides_the, r.conflicts) else ""
                     },
-                    onFailure = { "Couldn't sync: ${it.message}" },
+                    onFailure = { str(R.string.save_sync_couldn_t_sync, it.message) },
                 )
             }
             progress = null
@@ -86,7 +87,7 @@ fun SaveSyncCard() {
     }
 
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle(stringResource(R.string.save_sync_save_syncing)) { StatusPill(if (on) "On" else "Off", if (on) StatusTone.GOOD else StatusTone.NEUTRAL) }
+        CardTitle(stringResource(R.string.save_sync_save_syncing)) { StatusPill(if (on) stringResource(R.string.settings_on) else stringResource(R.string.player_off), if (on) StatusTone.GOOD else StatusTone.NEUTRAL) }
         CardBody(
             stringResource(R.string.save_sync_keeps_your_in_game_saves_and),
         )
@@ -120,10 +121,10 @@ fun SaveSyncCard() {
             }
         }
         ChipRow {
-            FocusChip(if (kind == "folder" && on) "Choose a different folder" else "Use a folder on this device", onClick = { pickFolder.launch(null) })
+            FocusChip(if (kind == "folder" && on) stringResource(R.string.free_games_choose_a_different_folder) else stringResource(R.string.save_sync_use_a_folder_on_this_device), onClick = { pickFolder.launch(null) })
             if (on) {
                 FocusChip(stringResource(R.string.save_sync_sync_now), enabled = progress == null, onClick = ::syncNow)
-                FocusChip(if (states) "Save states too: on" else "Save states too: off", onClick = { edit { putBoolean("states", !states) } })
+                FocusChip(if (states) stringResource(R.string.save_sync_save_states_too_on) else stringResource(R.string.save_sync_save_states_too_off), onClick = { edit { putBoolean("states", !states) } })
                 FocusChip(stringResource(R.string.save_sync_turn_off), onClick = { edit { putBoolean("on", false) }; status = null })
             }
         }

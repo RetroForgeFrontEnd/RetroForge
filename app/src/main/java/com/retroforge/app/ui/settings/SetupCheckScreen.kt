@@ -1,5 +1,8 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.ui.countOf
+import com.retroforge.core.ui.pluralStr
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -55,37 +58,37 @@ fun SetupCheckScreen(library: LibraryRepository, cores: CoreManager, biosDir: Fi
         val missingOther = missing - missingRequired.toSet()
         val name = library.systemName(count.system)
         when {
-            core == null -> Line(count.system, name, count.games, StatusTone.NEUTRAL, "Plays in another app",
-                "Not in the built-in player yet: RetroArch or a standalone emulator (on each game's page).", null)
-            coreState is CoreState.Failed -> Line(count.system, name, count.games, StatusTone.BAD, "Emulator didn't download",
-                "${core.name}: ${coreState.reason}. Select Download again.", core.id)
-            coreState is CoreState.Downloading -> Line(count.system, name, count.games, StatusTone.CAUTION, "Emulator downloading",
+            core == null -> Line(count.system, name, count.games, StatusTone.NEUTRAL, str(R.string.setup_check_plays_in_another_app),
+                str(R.string.setup_check_not_in_the_built_in_player), null)
+            coreState is CoreState.Failed -> Line(count.system, name, count.games, StatusTone.BAD, str(R.string.setup_check_emulator_didn_t_download),
+                str(R.string.setup_check_select_download_again, core.name, coreState.reason), core.id)
+            coreState is CoreState.Downloading -> Line(count.system, name, count.games, StatusTone.CAUTION, str(R.string.setup_check_emulator_downloading),
                 "${core.name}: ${coreState.percent}%", core.id)
-            coreState == CoreState.Missing -> Line(count.system, name, count.games, StatusTone.CAUTION, "Emulator not downloaded yet",
-                "${core.name} downloads in the background, or select Download now.", core.id)
-            missingRequired.isNotEmpty() -> Line(count.system, name, count.games, StatusTone.BAD, "BIOS missing",
-                "Needs one of: " + missingRequired.flatMap { it.files.map { f -> f.baseName } }.distinct().joinToString() +
-                    ". Put it in your BIOS folder and run Set up RetroForge, which copies it across.", null)
-            missingOther.isNotEmpty() -> Line(count.system, name, count.games, StatusTone.GOOD, "Ready",
-                "${core.name}. Optional BIOS for better results: " + missingOther.flatMap { it.files.map { f -> f.baseName } }.distinct().joinToString() + ".", null)
-            else -> Line(count.system, name, count.games, StatusTone.GOOD, "Ready", "${core.name}, everything in place.", null)
+            coreState == CoreState.Missing -> Line(count.system, name, count.games, StatusTone.CAUTION, str(R.string.setup_check_emulator_not_downloaded_yet),
+                str(R.string.setup_check_downloads_in_the_background_or_select, core.name), core.id)
+            missingRequired.isNotEmpty() -> Line(count.system, name, count.games, StatusTone.BAD, str(R.string.setup_check_bios_missing),
+                str(R.string.setup_check_needs_one_of) + missingRequired.flatMap { it.files.map { f -> f.baseName } }.distinct().joinToString() +
+                    str(R.string.setup_check_put_it_in_your_bios_folder), null)
+            missingOther.isNotEmpty() -> Line(count.system, name, count.games, StatusTone.GOOD, str(R.string.pc_stream_ready),
+                str(R.string.setup_check_optional_bios_for_better_results, core.name) + missingOther.flatMap { it.files.map { f -> f.baseName } }.distinct().joinToString() + ".", null)
+            else -> Line(count.system, name, count.games, StatusTone.GOOD, str(R.string.pc_stream_ready), str(R.string.setup_check_everything_in_place, core.name), null)
         }
     }.sortedWith(compareBy({ it.tone != StatusTone.BAD }, { it.tone != StatusTone.CAUTION }, { it.name }))
 
     ScreenFrame(title = stringResource(R.string.settings_check_my_setup), subtitle = stringResource(R.string.setup_check_every_system_you_have_games_for)) {
         val problems = lines.count { it.tone == StatusTone.BAD || it.tone == StatusTone.CAUTION }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle(if (problems == 0) "All set" else "$problems ${if (problems == 1) "system needs" else "systems need"} a look")
-            CardBody("${lines.size} systems, ${lines.sumOf { it.games }} games.")
+            CardTitle(if (problems == 0) stringResource(R.string.setup_check_all_set) else pluralStr(R.plurals.setup_check_systems_need_a_look, problems, problems))
+            CardBody(stringResource(R.string.setup_check_systems_games, lines.size, lines.sumOf { it.games }))
         }
         lines.forEach { line ->
             FocusCard(modifier = Modifier.fillMaxWidth()) {
                 CardTitle(line.name) { StatusPill(line.verdict, line.tone) }
-                CardBody("${line.games} ${if (line.games == 1) "game" else "games"}. ${line.detail}")
+                CardBody(countOf(line.games, "game") + ". " + line.detail)
                 line.coreId?.let { id ->
                     FocusChip(stringResource(R.string.setup_check_download_now), onClick = { scope.launch { cores.ensure(id); refresh++ } })
                 }
-                if (line.verdict == "BIOS missing") FocusChip(stringResource(R.string.settings_set_up_retroforge), onClick = onOpenSetup)
+                if (line.verdict == stringResource(R.string.setup_check_bios_missing)) FocusChip(stringResource(R.string.settings_set_up_retroforge), onClick = onOpenSetup)
             }
         }
     }

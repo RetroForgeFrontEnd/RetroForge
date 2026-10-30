@@ -20,10 +20,7 @@ class Upnp private constructor(private val controlUrl: String, private val servi
     /** Sends [port] ([protocol]: TCP or UDP) from the internet to [localAddress]. True when the router agreed. */
     fun open(port: Int, localAddress: String, protocol: String = "TCP"): Boolean = soap(
         "AddPortMapping",
-        "<NewRemoteHost></NewRemoteHost><NewExternalPort>$port</NewExternalPort><NewProtocol>$protocol</NewProtocol>" +
-            "<NewInternalPort>$port</NewInternalPort><NewInternalClient>$localAddress</NewInternalClient>" +
-            "<NewEnabled>1</NewEnabled><NewPortMappingDescription>RetroForge netplay</NewPortMappingDescription>" +
-            "<NewLeaseDuration>7200</NewLeaseDuration>",
+        "<NewRemoteHost></NewRemoteHost><NewExternalPort>$port</NewExternalPort><NewProtocol>$protocol</NewProtocol><NewInternalPort>$port</NewInternalPort><NewInternalClient>$localAddress</NewInternalClient><NewEnabled>1</NewEnabled><NewPortMappingDescription>RetroForge netplay</NewPortMappingDescription><NewLeaseDuration>7200</NewLeaseDuration>",
     ) != null
 
     fun close(port: Int, protocol: String = "TCP") {
@@ -55,8 +52,7 @@ class Upnp private constructor(private val controlUrl: String, private val servi
         fun find(): Upnp? = runCatching {
             val location = DatagramSocket().use { s ->
                 s.soTimeout = 1500
-                val ask = ("M-SEARCH * HTTP/1.1\r\nHOST: 239.255.255.250:1900\r\nMAN: \"ssdp:discover\"\r\nMX: 1\r\n" +
-                    "ST: urn:schemas-upnp-org:device:InternetGatewayDevice:1\r\n\r\n").toByteArray()
+                val ask = ("M-SEARCH * HTTP/1.1\r\nHOST: 239.255.255.250:1900\r\nMAN: \"ssdp:discover\"\r\nMX: 1\r\nST: urn:schemas-upnp-org:device:InternetGatewayDevice:1\r\n\r\n").toByteArray()
                 s.send(DatagramPacket(ask, ask.size, InetAddress.getByName("239.255.255.250"), 1900))
                 val buffer = ByteArray(2048)
                 var found: String? = null

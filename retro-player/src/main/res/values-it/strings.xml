@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_assets_libretro_answered">libretro ha risposto %1$s</string>
+    <string name="core_assets_couldn_t_write">impossibile scrivere %1$s</string>
+    <string name="core_manager_download_failed">Download non riuscito</string>
+    <string name="core_manager_libretro_has_no_cores_for_this">libretro non ha core per il processore di questo dispositivo (%1$s)</string>
+    <string name="core_manager_libretro_s_server_answered_for">Il server di libretro ha risposto %1$s per %2$s</string>
+    <string name="core_manager_the_download_for_had_no_core">Il download di %1$s non conteneva nessun core</string>
+    <string name="core_manager_couldn_t_save">Impossibile salvare %1$s</string>
+    <string name="gpu_driver_isn_t_in_the_app">%1$s non è nell\'app</string>
+    <string name="viewport_original">Originale</string>
+    <string name="viewport_4_3">4:3</string>
+    <string name="viewport_16_9">16:9</string>
+    <string name="viewport_stretch">Allunga a tutto schermo</string>
+    <string name="viewport_pixel_perfect">Pixel perfect</string>
+    <string name="filter_sharp">Pixel nitidi</string>
+    <string name="filter_smooth">Morbido</string>
+    <string name="filter_crt">Scanline CRT</string>
+    <string name="filter_lcd">Griglia LCD</string>
+    <string name="filter_crt_curved">CRT, schermo curvo</string>
+    <string name="filter_lcd_ghosting">LCD, con scia</string>
+    <string name="filter_scale2x">Pixel art morbida (Scale2x)</string>
+</resources>

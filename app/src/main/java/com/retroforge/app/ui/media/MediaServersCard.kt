@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.media
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -68,11 +69,11 @@ fun MediaServersCard(prefs: SharedPreferences) {
         server = target
         if (!back) path += id to title
         entries = null
-        status = "Opening $title…"
+        status = str(R.string.media_servers_opening, title)
         scope.launch {
             runCatching { MediaServers.browse(target, id) }
-                .onSuccess { entries = it; status = if (it.isEmpty()) "Nothing to watch in here." else null }
-                .onFailure { status = "${target.name} didn't answer. Is it switched on, on the same network?" }
+                .onSuccess { entries = it; status = if (it.isEmpty()) str(R.string.media_servers_nothing_to_watch_in_here) else null }
+                .onFailure { status = str(R.string.media_servers_didn_t_answer_is_it_switched, target.name) }
         }
     }
 
@@ -93,7 +94,7 @@ fun MediaServersCard(prefs: SharedPreferences) {
             )
             ChipRow {
                 FocusChip(stringResource(R.string.media_servers_find_media_servers), onClick = {
-                    status = "Looking on your network (a few seconds)…"
+                    status = str(R.string.media_servers_looking_on_your_network_a_few)
                     scope.launch {
                         val found = MediaServers.find(context)
                         if (found.isNotEmpty()) {
@@ -101,8 +102,8 @@ fun MediaServersCard(prefs: SharedPreferences) {
                             saveServers(prefs, servers)
                         }
                         status = when {
-                            found.isEmpty() -> "No media servers answered. Check the server is on and sharing by DLNA, and that this phone is on the same network."
-                            else -> "Found ${found.size}: ${found.joinToString { it.name }}."
+                            found.isEmpty() -> str(R.string.media_servers_no_media_servers_answered_check_the)
+                            else -> str(R.string.media_servers_found, found.size, found.joinToString { it.name })
                         }
                     }
                 })

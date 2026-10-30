@@ -1,5 +1,8 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.app.R
+import androidx.compose.ui.res.stringResource
+import com.retroforge.core.ui.str
 import android.content.Intent
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.LinearProgressIndicator
@@ -51,21 +54,18 @@ fun SteamClientSection() {
     var confirmRemove by remember { mutableStateOf(false) }
 
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("Steam method 2: Steam client")
+        CardTitle(stringResource(R.string.steam_client_steam_method_2_steam_client))
         CardBody(
-            "For games that won't start without Valve's own Steam: their copy protection (like XCOM: Enemy Unknown's) " +
-                "asks Steam itself to start them, and they quit. RetroForge spots this and uses this method for them from then on; " +
-                "you can also choose it per game with \"Steam method for a game\" above.",
+            str(R.string.steam_client_for_games_that_won_t_start),
         )
         CardBody(
-            "It runs Valve's Windows Steam quietly in the background, so these games take a few minutes longer to start " +
-                "and need plenty of memory (8 GB devices manage; close other apps first).",
+            str(R.string.steam_client_it_runs_valve_s_windows_steam),
         )
         val (label, tone) = when {
-            ClientSetup.job != null -> "Setting up…" to StatusTone.NEUTRAL
-            signedIn -> "Ready, signed in" to StatusTone.GOOD
-            installed -> "Set up, not signed in yet" to StatusTone.CAUTION
-            else -> "Not set up" to StatusTone.NEUTRAL
+            ClientSetup.job != null -> str(R.string.steam_client_setting_up) to StatusTone.NEUTRAL
+            signedIn -> str(R.string.steam_client_ready_signed_in) to StatusTone.GOOD
+            installed -> str(R.string.steam_client_set_up_not_signed_in_yet) to StatusTone.CAUTION
+            else -> str(R.string.steam_client_not_set_up) to StatusTone.NEUTRAL
         }
         StatusPill(label, tone)
         if (ClientSetup.job != null) {
@@ -75,24 +75,24 @@ fun SteamClientSection() {
             ClientSetup.step?.let { CardBody(it) }
             ChipRow {
                 if (!installed) {
-                    FocusChip("Set up the Steam client (about 360 MB from Valve)", onClick = {
+                    FocusChip(stringResource(R.string.steam_client_set_up_the_steam_client_about), onClick = {
                         ClientSetup.step = null
                         ClientSetup.job = ClientSetup.scope.launch {
                             ClientSetup.step = runCatching {
                                 client.install { progress, step -> ClientSetup.progress = progress; ClientSetup.step = step }
-                            }.fold({ "Steam client set up. Now sign in once." }, { "Couldn't set it up: ${it.message}" })
+                            }.fold({ str(R.string.steam_client_steam_client_set_up_now_sign) }, { str(R.string.steam_client_couldn_t_set_it_up, it.message) })
                             ClientSetup.job = null
                             changes++
                         }
                     })
                 } else {
-                    if (!signedIn) FocusChip("Open Steam to sign in", onClick = {
+                    if (!signedIn) FocusChip(stringResource(R.string.steam_client_open_steam_to_sign_in), onClick = {
                         context.startActivity(
-                            com.retroforge.pcplayer.PcPlayerActivity.intent(context, client.exe, "Steam client")
+                            com.retroforge.pcplayer.PcPlayerActivity.intent(context, client.exe, str(R.string.steam_client_steam_client))
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                         )
                     })
-                    FocusChip(if (confirmRemove) "Remove it? Select again" else "Remove the Steam client", onClick = {
+                    FocusChip(if (confirmRemove) stringResource(R.string.steam_client_remove_it_select_again) else stringResource(R.string.steam_client_remove_the_steam_client), onClick = {
                         if (!confirmRemove) {
                             confirmRemove = true
                         } else {
@@ -105,8 +105,7 @@ fun SteamClientSection() {
             }
             if (installed && !signedIn) {
                 CardBody(
-                    "Steam's sign-in window takes a few minutes to appear. Scan its QR code with the Steam app on another device " +
-                        "(it can't scan its own screen), or type with ☰ → Keyboard, and keep Remember me ticked.",
+                    str(R.string.steam_client_steam_s_sign_in_window_takes),
                 )
             }
         }

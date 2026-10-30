@@ -1,5 +1,7 @@
 package com.retroforge.pc
 
+import com.retroforge.core.ui.str
+
 /**
  * What RetroForge knows about the device GPU, from whichever probes succeeded.
  * Each field is null when its probe was unavailable or refused (e.g. SELinux blocks kgsl sysfs).
@@ -35,27 +37,27 @@ object GpuClassifier {
     fun classify(identity: GpuIdentity): PcSupport {
         val model = adrenoModel(identity)
             ?: return if (identity.glRenderer.isNullOrBlank() && identity.kgslModel.isNullOrBlank()) {
-                PcSupport(PcSupportLevel.UNKNOWN, null, "The GPU model could not be read on this device.")
+                PcSupport(PcSupportLevel.UNKNOWN, null, str(R.string.gpu_support_the_gpu_model_could_not_be))
             } else {
-                PcSupport(PcSupportLevel.UNSUPPORTED, null, "DroidDeck needs a Qualcomm Adreno GPU, and this device does not have one.")
+                PcSupport(PcSupportLevel.UNSUPPORTED, null, str(R.string.gpu_support_droiddeck_needs_a_qualcomm_adreno_gpu))
             }
         return when {
-            model == 850 -> PcSupport(PcSupportLevel.EXPERIMENTAL, model, "Adreno 850 support is experimental.")
-            model in 800..899 -> PcSupport(PcSupportLevel.SUPPORTED, model, "Adreno 8xx is supported.")
-            model in 730..799 -> PcSupport(PcSupportLevel.SUPPORTED, model, "Adreno 730 and newer are supported.")
+            model == 850 -> PcSupport(PcSupportLevel.EXPERIMENTAL, model, str(R.string.gpu_support_adreno_850_support_is_experimental))
+            model in 800..899 -> PcSupport(PcSupportLevel.SUPPORTED, model, str(R.string.gpu_support_adreno_8xx_is_supported))
+            model in 730..799 -> PcSupport(PcSupportLevel.SUPPORTED, model, str(R.string.gpu_support_adreno_730_and_newer_are_supported))
             model in 725..729 -> PcSupport(
                 PcSupportLevel.EXPERIMENTAL, model,
-                "Adreno $model has been tested but is below the official 730 minimum.",
+                str(R.string.gpu_support_adreno_has_been_tested_but_is, model),
             )
             model == 720 || model == 722 -> PcSupport(
-                PcSupportLevel.EXPERIMENTAL, model, "Adreno $model only has test drivers.",
+                PcSupportLevel.EXPERIMENTAL, model, str(R.string.gpu_support_adreno_only_has_test_drivers, model),
             )
-            model in 700..719 -> PcSupport(PcSupportLevel.UNSUPPORTED, model, "Adreno 710 is not supported.")
+            model in 700..719 -> PcSupport(PcSupportLevel.UNSUPPORTED, model, str(R.string.gpu_support_adreno_710_is_not_supported))
             model in 600..699 -> PcSupport(
                 PcSupportLevel.EXPERIMENTAL, model,
-                "Adreno 6xx is experimental: DirectX 11 games may run, DirectX 12 games may crash.",
+                str(R.string.gpu_support_adreno_6xx_is_experimental_directx_11),
             )
-            else -> PcSupport(PcSupportLevel.UNSUPPORTED, model, "Adreno $model is older than the PC runtime supports.")
+            else -> PcSupport(PcSupportLevel.UNSUPPORTED, model, str(R.string.gpu_support_adreno_is_older_than_the_pc, model))
         }
     }
 }

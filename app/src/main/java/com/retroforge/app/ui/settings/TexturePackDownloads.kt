@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.content.Context
 import com.retroforge.app.ui.pc.PortDownloads
 import org.apache.commons.compress.archivers.sevenz.SevenZFile
@@ -30,11 +32,11 @@ object TexturePackDownloads {
 
     /** Downloads and unpacks the pack; returns the .hts files' names. */
     fun install(context: Context, pack: Pack, cacheDir: File, onProgress: (String) -> Unit): List<String> {
-        val release = file(pack) ?: throw IOException("its release has no GLideN64 pack")
+        val release = file(pack) ?: throw IOException(str(R.string.texture_pack_downloads_its_release_has_no_gliden64_pack))
         val archive = File(context.cacheDir, "textures/${release.name.replace(Regex("""[^\w.-]"""), "_")}")
         try {
-            PortDownloads.download(release, archive) { onProgress("Downloading ${pack.game}… $it% of ${release.size / 1_000_000} MB") }
-            onProgress("Unpacking ${pack.game}…")
+            PortDownloads.download(release, archive) { onProgress(str(R.string.texture_pack_downloads_downloading_of_mb, pack.game, it, release.size / 1_000_000)) }
+            onProgress(str(R.string.texture_pack_downloads_unpacking, pack.game))
             cacheDir.mkdirs()
             val names = mutableListOf<String>()
             SevenZFile.builder().setFile(archive).get().use { seven ->
@@ -44,11 +46,11 @@ object TexturePackDownloads {
                     val part = File(cacheDir, "$name.part")
                     seven.getInputStream(entry).use { input -> part.outputStream().use { input.copyTo(it, 1 shl 20) } }
                     File(cacheDir, name).delete()
-                    if (!part.renameTo(File(cacheDir, name))) throw IOException("couldn't save $name")
+                    if (!part.renameTo(File(cacheDir, name))) throw IOException(str(R.string.bezels_couldn_t_save, name))
                     names += name
                 }
             }
-            if (names.isEmpty()) throw IOException("the download had no .hts file in it")
+            if (names.isEmpty()) throw IOException(str(R.string.texture_pack_downloads_the_download_had_no_hts_file))
             return names
         } finally {
             archive.delete()

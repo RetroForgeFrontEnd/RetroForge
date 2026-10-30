@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.home
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -76,8 +77,8 @@ private fun categories(library: LibraryViewModel): List<Category> {
     val playlists by library.playlists.collectAsStateWithLifecycle()
     val systems by library.systems.collectAsStateWithLifecycle()
     return buildList {
-        if (recent.isNotEmpty()) add(Category("recent", "Recently played", { recent }))
-        if (favourites.isNotEmpty()) add(Category("fav", "Favourites", { favourites }))
+        if (recent.isNotEmpty()) add(Category("recent", str(R.string.library_recently_played), { recent }))
+        if (favourites.isNotEmpty()) add(Category("fav", str(R.string.playlists_favourites), { favourites }))
         playlists.forEach { p -> add(Category("pl-${p.id}", p.name, { flowGames(library.playlistGames(p.id)) })) }
         systems.forEach { s -> add(Category("sys-${s.id}", s.name, { flowGames(library.games(s.id)) }, systemId = s.id)) }
     }
@@ -152,7 +153,7 @@ fun CrossBarHome(library: LibraryViewModel, onOpenGame: (Long) -> Unit, onOpenSy
             LazyColumn(contentPadding = PaddingValues(24.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 items(games.take(60), key = { it.id }) { g -> GameRow(g, art(library, g), onClick = { onOpenGame(g.id) }) }
                 if (current.systemId != null && games.size > 60) {
-                    item { FocusChip("All ${plural(games.size, "game")}", onClick = { onOpenSystem(current.systemId) }) }
+                    item { FocusChip(stringResource(R.string.home_layouts_all, plural(games.size, "game")), onClick = { onOpenSystem(current.systemId) }) }
                 }
                 if (games.isEmpty()) item { CardBody(stringResource(R.string.home_layouts_nothing_here_yet)) }
             }
@@ -217,7 +218,7 @@ fun BladesHome(library: LibraryViewModel, onOpenGame: (Long) -> Unit, onOpenSyst
     val favourites by library.favourites.collectAsStateWithLifecycle()
     val systems by library.systems.collectAsStateWithLifecycle()
     val playlists by library.playlists.collectAsStateWithLifecycle()
-    val blades = listOf("Home", "Favourites", "Systems", "Playlists")
+    val blades = listOf(str(R.string.home_layouts_home), str(R.string.playlists_favourites), str(R.string.home_layouts_systems), str(R.string.playlists_playlists))
     val pager = rememberPagerState { blades.size }
     val scope = rememberCoroutineScope()
     val colors = MaterialTheme.colorScheme

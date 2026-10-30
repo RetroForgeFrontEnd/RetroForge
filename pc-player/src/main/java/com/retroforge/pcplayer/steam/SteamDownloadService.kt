@@ -1,5 +1,7 @@
 package com.retroforge.pcplayer.steam
 
+import com.retroforge.pcplayer.R
+import com.retroforge.core.ui.str
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -64,7 +66,7 @@ class SteamDownloadService : Service() {
         downloading = true
 
         createChannel()
-        val first = State(appId, name, folder.path, 0f, "Starting")
+        val first = State(appId, name, folder.path, 0f, str(R.string.pc_player_starting))
         save(first)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(NOTIFICATION_ID, notification(first), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
@@ -78,7 +80,7 @@ class SteamDownloadService : Service() {
                 // drops mid-way it stops and waits, then carries on from where it was once Wi-Fi is back.
                 while (true) {
                     while (!allowMobile && !onWifi()) {
-                        update(State(appId, name, folder.path, lastProgress, "Waiting for Wi-Fi"))
+                        update(State(appId, name, folder.path, lastProgress, str(R.string.steam_download_service_waiting_for_wi_fi)))
                         delay(NETWORK_CHECK_MS)
                     }
                     var wifiLost = false
@@ -87,7 +89,7 @@ class SteamDownloadService : Service() {
                             SteamDownloads(SteamAccount(this@SteamDownloadService)).download(appId, folder) { progress, step, total ->
                                 totalBytes = total
                                 update(State(appId, name, folder.path, progress, step))
-                            } ?: throw IllegalStateException("Sign in to Steam first")
+                            } ?: throw IllegalStateException(str(R.string.steam_download_service_sign_in_to_steam_first))
                         }
                         val watcher = if (allowMobile) null else launch {
                             while (true) {
@@ -106,13 +108,13 @@ class SteamDownloadService : Service() {
                 }
             }
             val end = result.fold(
-                onSuccess = { State(appId, name, folder.path, 1f, "Ready to play", finished = true) },
+                onSuccess = { State(appId, name, folder.path, 1f, str(R.string.steam_download_service_ready_to_play), finished = true) },
                 onFailure = {
                     if (it is kotlinx.coroutines.CancellationException) {
-                        return@fold State(appId, name, folder.path, lastProgress, "Stopped", error = "Cancelled. Select the game to carry on.")
+                        return@fold State(appId, name, folder.path, lastProgress, str(R.string.steam_download_service_stopped), error = str(R.string.steam_download_service_cancelled_select_the_game_to_carry))
                     }
                     Log.w(TAG, "Download of $appId failed", it)
-                    State(appId, name, folder.path, lastProgress, "Stopped", error = it.message ?: "The download failed")
+                    State(appId, name, folder.path, lastProgress, str(R.string.steam_download_service_stopped), error = it.message ?: str(R.string.steam_download_service_the_download_failed))
                 },
             )
             save(end)
@@ -171,8 +173,8 @@ class SteamDownloadService : Service() {
             .setSmallIcon(if (s.finished || s.error != null) android.R.drawable.stat_sys_download_done else android.R.drawable.stat_sys_download)
             .setContentTitle(s.name)
             .setContentText(
-                s.error?.let { "Download stopped: $it" } ?: if (s.finished) "Downloaded from Steam. Ready to play."
-                else "${s.step} · $percent%" + (totalBytes.takeIf { it > 0 }?.let { " of %.1f GB".format(it / 1_000_000_000.0) } ?: ""),
+                s.error?.let { str(R.string.steam_download_service_download_stopped, it) } ?: if (s.finished) str(R.string.steam_download_service_downloaded_from_steam_ready_to_play)
+                else "${s.step} · $percent%" + (totalBytes.takeIf { it > 0 }?.let { str(R.string.steam_download_service_of_1f_gb).format(it / 1_000_000_000.0) } ?: ""),
             )
             .setOnlyAlertOnce(true)
             .setOngoing(!s.finished && s.error == null)
@@ -182,7 +184,7 @@ class SteamDownloadService : Service() {
                     val cancel = Intent(this@SteamDownloadService, SteamDownloadService::class.java).setAction(ACTION_CANCEL)
                     addAction(
                         Notification.Action.Builder(
-                            null, "Cancel",
+                            null, str(R.string.steam_download_service_cancel),
                             android.app.PendingIntent.getService(this@SteamDownloadService, 1, cancel, android.app.PendingIntent.FLAG_IMMUTABLE),
                         ).build(),
                     )
@@ -204,7 +206,7 @@ class SteamDownloadService : Service() {
     private fun createChannel() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
         getSystemService(NotificationManager::class.java)
-            .createNotificationChannel(NotificationChannel(CHANNEL, "Steam downloads", NotificationManager.IMPORTANCE_LOW))
+            .createNotificationChannel(NotificationChannel(CHANNEL, str(R.string.steam_download_service_steam_downloads), NotificationManager.IMPORTANCE_LOW))
     }
 
     /** Keeps the CPU and Wi-Fi awake while downloading, so it doesn't stall when the screen goes off. */

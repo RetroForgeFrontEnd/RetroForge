@@ -1,5 +1,6 @@
 package com.retroforge.app
 
+import com.retroforge.core.ui.str
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
@@ -39,28 +40,25 @@ class ResetCombo(private val activity: Activity) {
     private fun offer() {
         held.clear()
         AlertDialog.Builder(activity)
-            .setTitle("Reset RetroForge")
+            .setTitle(str(R.string.reset_combo_reset_retroforge))
             .setMessage(
-                "Use the phone's language: puts RetroForge back in your phone's language. Nothing else changes.\n\n" +
-                    "Factory reset: every RetroForge setting back to how it was when installed. Your games, saves and save states are kept.",
+                str(R.string.reset_combo_use_the_phone_s_language_puts),
             )
-            .setPositiveButton("Use the phone's language") { _, _ -> AppLanguage.set(activity, ""); activity.recreate() }
-            .setNegativeButton("Factory reset…") { _, _ -> confirmFactoryReset() }
-            .setNeutralButton("Cancel", null)
+            .setPositiveButton(str(R.string.reset_combo_use_the_phone_s_language)) { _, _ -> AppLanguage.set(activity, ""); activity.recreate() }
+            .setNegativeButton(str(R.string.reset_combo_factory_reset)) { _, _ -> confirmFactoryReset() }
+            .setNeutralButton(str(R.string.network_drives_cancel), null)
             .show()
             .getButton(AlertDialog.BUTTON_POSITIVE)?.requestFocus()
     }
 
     private fun confirmFactoryReset() {
         AlertDialog.Builder(activity)
-            .setTitle("Factory reset: are you sure?")
+            .setTitle(str(R.string.reset_combo_factory_reset_are_you_sure))
             .setMessage(
-                "This resets ALL of RetroForge's settings: language, theme, emulator choices, remapped buttons, hotkeys, " +
-                    "covers chosen, save syncing, accounts and network drive sign-ins. It can't be undone.\n\n" +
-                    "Kept: your game folders and library, your games, saves and save states.",
+                str(R.string.reset_combo_this_resets_all_of_retroforge_s),
             )
-            .setPositiveButton("Cancel", null)
-            .setNegativeButton("Reset everything") { _, _ -> factoryReset() }
+            .setPositiveButton(str(R.string.network_drives_cancel), null)
+            .setNegativeButton(str(R.string.reset_combo_reset_everything)) { _, _ -> factoryReset() }
             .show()
             .getButton(AlertDialog.BUTTON_POSITIVE)?.requestFocus()
     }

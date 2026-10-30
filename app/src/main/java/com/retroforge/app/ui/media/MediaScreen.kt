@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.media
 
+import com.retroforge.core.ui.pluralStr
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -90,7 +92,7 @@ fun MediaScreen(prefs: SharedPreferences) {
     ScreenFrame(title = stringResource(R.string.media_media), subtitle = stringResource(R.string.media_your_films_with_artwork_played_right)) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             FocusChip(stringResource(R.string.media_use_retroforge_s_film_folders), onClick = { pick.launch(makeFilmFolders()) })
-            FocusChip(if (folder == null) "Choose another folder" else "Change folder", onClick = { pick.launch(null) })
+            FocusChip(if (folder == null) stringResource(R.string.media_choose_another_folder) else stringResource(R.string.media_change_folder), onClick = { pick.launch(null) })
             if (folder != null) FocusChip(stringResource(R.string.player_look_again), onClick = { refresh++ })
         }
         if (folder == null) {
@@ -110,14 +112,14 @@ fun MediaScreen(prefs: SharedPreferences) {
             else -> {
                 // All films, or just the 3D ones (for watching in a Cardboard viewer).
                 com.retroforge.app.ui.ChipRow {
-                    FocusChip((if (!only3d) "● " else "") + "All films (${list.size})", onClick = { only3d = false })
-                    FocusChip((if (only3d) "● " else "") + "3D films (${list.count { it.is3d }})", onClick = { only3d = true })
+                    FocusChip((if (!only3d) "● " else "") + stringResource(R.string.media_all_films, list.size), onClick = { only3d = false })
+                    FocusChip((if (only3d) "● " else "") + stringResource(R.string.media_3d_films, list.count { it.is3d }), onClick = { only3d = true })
                 }
                 if (only3d && list.none { it.is3d }) {
                     CardBody(stringResource(R.string.media_no_3d_films_yet_films_with))
                 }
                 // 3D films first, in their own row, then the rest.
-                list.partition { it.is3d }.toList().zip(listOf("3D films", "Films")).filter { !only3d || it.second == "3D films" }.forEach { (group, title) ->
+                list.partition { it.is3d }.toList().zip(listOf(str(R.string.vr_3d_films), str(R.string.media_films))).filter { !only3d || it.second == str(R.string.vr_3d_films) }.forEach { (group, title) ->
                     if (group.isEmpty()) return@forEach
                     Text("$title (${group.size})", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -131,12 +133,12 @@ fun MediaScreen(prefs: SharedPreferences) {
             key = new
             refresh++
         }
-        com.retroforge.app.ui.NetworkDrivesCard("Films", onUse = { uri, progress ->
-            progress("Looking for films…", null)
+        com.retroforge.app.ui.NetworkDrivesCard(str(R.string.media_films), onUse = { uri, progress ->
+            progress(str(R.string.media_looking_for_films), null)
             prefs.edit().putString(FOLDER, uri.toString()).apply()
             folder = uri.toString()
             val count = withContext(Dispatchers.IO) { runCatching { scan(context, uri).size }.getOrDefault(0) }
-            if (count == 0) "Added, but no films were found there." else "Added: $count film${if (count == 1) "" else "s"} found. They're above."
+            if (count == 0) str(R.string.media_added_but_no_films_were_found) else pluralStr(R.plurals.media_added_films_found, count, count)
         })
         MediaServersCard(prefs)
     }
@@ -208,14 +210,14 @@ private fun FilmDetails(film: Film, art: File?, onPlay: () -> Unit, onClose: () 
                     CardTitle(film.title)
                     val facts = listOfNotNull(
                         (info?.released?.take(4)?.takeIf { it.isNotBlank() } ?: film.year?.toString()),
-                        info?.runtime?.let { "${it / 60} h ${it % 60} min" },
+                        info?.runtime?.let { str(R.string.playtime_h_min, it / 60, it % 60) },
                         info?.rating?.takeIf { it > 0 }?.let { "★ %.1f".format(it) },
                     )
                     if (facts.isNotEmpty()) Text(facts.joinToString(" · "), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     if (film.is3d) StatusPill(stringResource(R.string.media_3d_side_by_side), StatusTone.GOOD)
                 }
             }
-            CardBody(info?.overview?.takeIf { it.isNotBlank() } ?: "No description. Save a .nfo file next to the film (Media Companion or tinyMediaManager make them) for its story and rating.")
+            CardBody(info?.overview?.takeIf { it.isNotBlank() } ?: stringResource(R.string.media_no_description_save_a_nfo_file))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 FocusChip(stringResource(R.string.play_play), onClick = onPlay)
                 // A link to the film's IMDb page (from TMDB's record); nothing is read from IMDb itself.
@@ -236,7 +238,7 @@ private fun TmdbCard(saved: String?, onSave: (String?) -> Unit) {
     var show by remember { mutableStateOf(false) }
     val context = LocalContext.current
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle(stringResource(R.string.media_film_posters_and_stories)) { StatusPill(if (saved.isNullOrBlank()) "Using frames from the films" else "TMDB key saved", if (saved.isNullOrBlank()) StatusTone.NEUTRAL else StatusTone.GOOD) }
+        CardTitle(stringResource(R.string.media_film_posters_and_stories)) { StatusPill(if (saved.isNullOrBlank()) stringResource(R.string.media_using_frames_from_the_films) else stringResource(R.string.media_tmdb_key_saved), if (saved.isNullOrBlank()) StatusTone.NEUTRAL else StatusTone.GOOD) }
         CardBody(
             stringResource(R.string.media_retroforge_uses_the_poster_and_nfo),
         )
@@ -249,7 +251,7 @@ private fun TmdbCard(saved: String?, onSave: (String?) -> Unit) {
             modifier = Modifier.fillMaxWidth(),
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            FocusChip(if (show) "Hide key" else "Show key", onClick = { show = !show })
+            FocusChip(if (show) stringResource(R.string.media_hide_key) else stringResource(R.string.media_show_key), onClick = { show = !show })
             FocusChip(stringResource(R.string.settings_save_key), onClick = { onSave(draft.ifBlank { null }); draft = "" }, enabled = draft.length >= 16)
             FocusChip(stringResource(R.string.settings_get_a_free_key), onClick = {
                 runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, "https://www.themoviedb.org/settings/api".toUri()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }

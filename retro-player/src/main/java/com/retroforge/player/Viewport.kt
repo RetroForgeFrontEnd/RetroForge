@@ -1,18 +1,21 @@
 package com.retroforge.player
 
+import com.retroforge.core.ui.str
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
 /** How the game picture fills the screen; chosen per system in the in-game menu. */
-enum class ScreenShape(val label: String) {
-    ORIGINAL("Original"),
-    FOUR_THREE("4:3"),
-    SIXTEEN_NINE("16:9"),
-    STRETCH("Stretch to fill"),
-    PIXEL_PERFECT("Pixel perfect"),
+enum class ScreenShape(private val labelId: Int) {
+    ORIGINAL(R.string.viewport_original),
+    FOUR_THREE(R.string.viewport_4_3),
+    SIXTEEN_NINE(R.string.viewport_16_9),
+    STRETCH(R.string.viewport_stretch),
+    PIXEL_PERFECT(R.string.viewport_pixel_perfect),
     ;
+
+    val label: String get() = str(labelId)
 
     fun next(): ScreenShape = entries[(ordinal + 1) % entries.size]
 
@@ -22,15 +25,17 @@ enum class ScreenShape(val label: String) {
 }
 
 /** How the console's pixels are drawn (player.cpp's fragment shader); chosen per system in the pause menu. */
-enum class ScreenFilter(val label: String) {
-    SHARP("Sharp pixels"),
-    SMOOTH("Smooth"),
-    CRT("CRT scanlines"),
-    LCD("LCD grid"),
-    CRT_CURVED("CRT, curved screen"),
-    LCD_GHOSTING("LCD, with ghosting"),
-    SCALE2X("Smooth pixel art (Scale2x)"),
+enum class ScreenFilter(private val labelId: Int) {
+    SHARP(R.string.filter_sharp),
+    SMOOTH(R.string.filter_smooth),
+    CRT(R.string.filter_crt),
+    LCD(R.string.filter_lcd),
+    CRT_CURVED(R.string.filter_crt_curved),
+    LCD_GHOSTING(R.string.filter_lcd_ghosting),
+    SCALE2X(R.string.filter_scale2x),
     ;
+
+    val label: String get() = str(labelId)
 
     fun next(): ScreenFilter = entries[(ordinal + 1) % entries.size]
 

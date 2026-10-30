@@ -1,0 +1,5 @@
+<resources>
+
+    <!-- ThemeStore.kt -->
+    <string name="theme_store_couldn_t_save_the_theme">couldn\'t save the theme</string>
+</resources>

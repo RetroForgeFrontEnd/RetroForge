@@ -1,5 +1,7 @@
 package com.retroforge.app.player
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.DocumentsContract
@@ -23,7 +25,7 @@ class GameFiles(private val resolver: ContentResolver, private val dir: File) {
         val opened = mutableListOf<Pair<String, android.os.ParcelFileDescriptor>>()
         try {
             sources(game, fileName, optional, fallback).forEach { (name, uri) ->
-                opened += name to (resolver.openFileDescriptor(uri, "r") ?: throw IOException("couldn't open $name"))
+                opened += name to (resolver.openFileDescriptor(uri, "r") ?: throw IOException(str(R.string.game_files_couldn_t_open, name)))
             }
         } catch (e: Exception) {
             opened.forEach { it.second.close() }
@@ -57,8 +59,8 @@ class GameFiles(private val resolver: ContentResolver, private val dir: File) {
                         onProgress((done * 100 / total).toInt())
                     }
                 }
-            } ?: throw IOException("couldn't open $name")
-            if (!part.renameTo(target)) throw IOException("couldn't save $name")
+            } ?: throw IOException(str(R.string.game_files_couldn_t_open, name))
+            if (!part.renameTo(target)) throw IOException(str(R.string.bezels_couldn_t_save, name))
         }
         dir.setLastModified(System.currentTimeMillis())
         return File(dir, fileName).path
@@ -94,7 +96,7 @@ class GameFiles(private val resolver: ContentResolver, private val dir: File) {
     }
 
     private fun readText(uri: Uri) = resolver.openInputStream(uri)?.use { it.readBytes().take(256 * 1024).toByteArray().decodeToString() }
-        ?: throw IOException("couldn't open the game")
+        ?: throw IOException(str(R.string.game_files_couldn_t_open_the_game))
 
     private fun size(uri: Uri): Long = runCatching { resolver.openFileDescriptor(uri, "r")?.use { it.statSize } }.getOrNull() ?: 0L
 

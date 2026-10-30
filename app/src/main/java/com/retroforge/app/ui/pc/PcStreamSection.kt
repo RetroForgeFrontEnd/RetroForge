@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -54,11 +55,11 @@ fun PcStreamSection() {
     var message by remember { mutableStateOf<String?>(null) }
 
     fun add(text: String) {
-        message = "Asking $text…"
+        message = str(R.string.pc_stream_asking, text)
         scope.launch {
             message = runCatching { streaming.add(text) }.fold(
-                onSuccess = { "Added ${it.name}. Pair it next." },
-                onFailure = { "Nothing answered at $text. Is Sunshine running on the PC, on the same network? (${it.message})" },
+                onSuccess = { str(R.string.pc_stream_added_pair_it_next, it.name) },
+                onFailure = { str(R.string.pc_stream_nothing_answered_at_is_sunshine_running, text, it.message) },
             )
             changes++
         }
@@ -71,7 +72,7 @@ fun PcStreamSection() {
             stringResource(R.string.pc_stream_play_games_running_on_your_own),
         )
         ChipRow {
-            FocusChip(if (looking) "Looking…" else "Look for PCs", enabled = !looking, onClick = {
+            FocusChip(if (looking) stringResource(R.string.library_looking) else stringResource(R.string.pc_stream_look_for_pcs), enabled = !looking, onClick = {
                 looking = true
                 scope.launch {
                     found = runCatching { streaming.discover() }.getOrDefault(emptyList())
@@ -124,7 +125,7 @@ private fun HostCard(host: StreamHost, streaming: PcStreaming, onChanged: () -> 
                 else -> StatusPill(stringResource(R.string.pc_stream_not_paired), StatusTone.NEUTRAL)
             }
         }
-        CardBody("Address: ${host.address}${if (host.port != 47989) ":${host.port}" else ""}")
+        CardBody(stringResource(R.string.pc_stream_address_else, host.address, if (host.port != 47989) ":${host.port}" else ""))
         if (s != null && !s.online) CardBody(stringResource(R.string.pc_stream_it_didn_t_answer_check_the))
         pin?.let {
             CardBody(
@@ -142,28 +143,28 @@ private fun HostCard(host: StreamHost, streaming: PcStreaming, onChanged: () -> 
                     note = result.fold(
                         onSuccess = { state ->
                             when (state) {
-                                PairState.PAIRED -> "Paired."
-                                PairState.PIN_WRONG -> "The PC says the PIN was wrong. Try again."
-                                PairState.ALREADY_IN_PROGRESS -> "The PC is already pairing with something. Finish or cancel that, then try again."
-                                else -> "Pairing didn't work. On the PC, check Sunshine is running and try again."
+                                PairState.PAIRED -> str(R.string.pc_stream_paired)
+                                PairState.PIN_WRONG -> str(R.string.pc_stream_the_pc_says_the_pin_was)
+                                PairState.ALREADY_IN_PROGRESS -> str(R.string.pc_stream_the_pc_is_already_pairing_with)
+                                else -> str(R.string.pc_stream_pairing_didn_t_work_on_the)
                             }
                         },
-                        onFailure = { "Pairing stopped: ${it.message}" },
+                        onFailure = { str(R.string.pc_stream_pairing_stopped, it.message) },
                     )
                     onChanged()
                 }
             })
-            if (s?.paired == true) FocusChip(if (apps == null) "Show games" else "Refresh games", onClick = {
+            if (s?.paired == true) FocusChip(if (apps == null) stringResource(R.string.pc_stream_show_games) else stringResource(R.string.pc_stream_refresh_games), onClick = {
                 scope.launch {
                     note = null
-                    apps = runCatching { streaming.apps(host) }.onFailure { note = "Couldn't get the list: ${it.message}" }.getOrNull()
+                    apps = runCatching { streaming.apps(host) }.onFailure { note = str(R.string.pc_stream_couldn_t_get_the_list, it.message) }.getOrNull()
                 }
             })
             if (s?.online == true && s.runningAppId != 0) FocusChip(stringResource(R.string.pc_stream_quit_the_running_game), onClick = {
                 scope.launch {
                     note = runCatching { streaming.quit(host) }.fold(
-                        onSuccess = { if (it) "The game on the PC was closed." else "The PC didn't close it." },
-                        onFailure = { "The PC didn't close it: ${it.message}" },
+                        onSuccess = { if (it) str(R.string.pc_stream_the_game_on_the_pc_was) else str(R.string.pc_stream_the_pc_didn_t_close_it) },
+                        onFailure = { str(R.string.pc_stream_the_pc_didn_t_close_it_2, it.message) },
                     )
                     refresh++
                 }
@@ -180,9 +181,9 @@ private fun HostCard(host: StreamHost, streaming: PcStreaming, onChanged: () -> 
                 ChipRow {
                     list.forEach { app ->
                         val running = s?.runningAppId == app.id
-                        FocusChip(if (running) "Resume ${app.name}" else app.name, onClick = {
+                        FocusChip(if (running) stringResource(R.string.pc_stream_resume, app.name) else app.name, onClick = {
                             runCatching { context.startActivity(streaming.streamIntent(host, app)) }
-                                .onFailure { note = "Couldn't start the stream: ${it.message}" }
+                                .onFailure { note = str(R.string.pc_stream_couldn_t_start_the_stream, it.message) }
                         })
                     }
                 }

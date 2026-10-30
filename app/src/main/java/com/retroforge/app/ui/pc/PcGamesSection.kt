@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -128,9 +129,9 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
         scope.launch {
             status = withContext(Dispatchers.IO) {
                 runCatching {
-                    pc.addWindowsGame(uri) { copying = it }?.let { "Added ${it.title}. Select it to play it in RetroForge's PC player." }
-                        ?: "No Windows game in that folder: pick the folder that holds the game's .exe."
-                }.getOrElse { "Couldn't copy that folder: ${it.message}" }
+                    pc.addWindowsGame(uri) { copying = it }?.let { str(R.string.pc_games_added_select_it_to_play_it, it.title) }
+                        ?: str(R.string.pc_games_no_windows_game_in_that_folder)
+                }.getOrElse { str(R.string.pc_games_couldn_t_copy_that_folder, it.message) }
             }
             copying = null
             busy = false
@@ -147,10 +148,10 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                     val (found, unusable) = pc.scan(uri)
                     val added = pc.add(found)
                     buildString {
-                        append(if (found.isEmpty()) "No PC game files in that folder." else "Added $added of ${found.size} games found.")
-                        if (unusable > 0) append(" $unusable Winlator shortcuts were skipped: they need to be on the phone's storage or SD card.")
+                        append(if (found.isEmpty()) str(R.string.pc_games_no_pc_game_files_in_that) else str(R.string.pc_games_added_of_games_found, added, found.size))
+                        if (unusable > 0) append(str(R.string.pc_games_winlator_shortcuts_were_skipped_they_need, unusable))
                     }
-                }.getOrElse { "Couldn't read that folder: ${it.message}" }
+                }.getOrElse { str(R.string.pc_games_couldn_t_read_that_folder, it.message) }
             }
             busy = false
             changes++
@@ -160,21 +161,23 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     // PC games in the game folders ("windows", "steam" … beside the other systems) are picked up by themselves.
     fun scanGameFolders(say: Boolean) {
         val trees = roots.orEmpty().mapNotNull { runCatching { Uri.parse(it.treeUri) }.getOrNull() }
-        if (trees.isEmpty()) { if (say) status = "Add your game folders first (Retro tab → Game folders)."; return }
+        if (trees.isEmpty()) { if (say) status = str(R.string.pc_games_add_your_game_folders_first_retro); return }
         busy = true
         scope.launch {
+            var addedAny = false
             val note = withContext(Dispatchers.IO) {
                 runCatching {
                     val (found, unusable) = pc.scanGameFolders(trees)
                     val added = pc.add(found)
+                    addedAny = added > 0
                     when {
-                        found.isEmpty() -> "No PC games in your game folders yet: put .steam, .epic, .gog, .pcgame or Winlator .desktop files in a \"windows\" or \"steam\" folder beside your other systems."
-                        added == 0 -> "Your game folders' PC games are all here."
-                        else -> "Found ${added} new PC games in your game folders."
-                    } + if (unusable > 0) " $unusable Winlator shortcuts on a network drive were skipped: Winlator needs them on this device." else ""
-                }.getOrElse { "Couldn't look in your game folders: ${it.message}" }
+                        found.isEmpty() -> str(R.string.pc_games_no_pc_games_in_your_game)
+                        added == 0 -> str(R.string.pc_games_your_game_folders_pc_games_are)
+                        else -> str(R.string.pc_games_found_new_pc_games_in_your, added)
+                    } + if (unusable > 0) str(R.string.pc_games_winlator_shortcuts_on_a_network_drive, unusable) else ""
+                }.getOrElse { str(R.string.pc_games_couldn_t_look_in_your_game, it.message) }
             }
-            if (say || note.startsWith("Found")) status = note
+            if (say || addedAny) status = note
             busy = false
             changes++
         }
@@ -186,11 +189,11 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
             stringResource(R.string.pc_games_install_games_in_gamenative_steam_epic),
         )
         ChipRow {
-            FocusChip(if (showLibrary) "Hide my Steam library" else "My Steam library", onClick = {
+            FocusChip(if (showLibrary) stringResource(R.string.pc_games_hide_my_steam_library) else stringResource(R.string.pc_games_my_steam_library), onClick = {
                 showLibrary = !showLibrary
                 if (showLibrary && !libraryBusy) {
                     if (!steamAccount.signedIn) {
-                        status = "Sign in to Steam first (Steam sign-in on this tab)."
+                        status = str(R.string.pc_games_sign_in_to_steam_first_steam)
                         showLibrary = false
                         return@FocusChip
                     }
@@ -199,7 +202,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                     scope.launch {
                         val result = withContext(Dispatchers.IO) { runCatching { steamLibrary.refresh() } }
                         result.getOrNull()?.let { library = it }
-                        result.exceptionOrNull()?.let { status = "Couldn't get your Steam library: ${it.message}" }
+                        result.exceptionOrNull()?.let { status = str(R.string.pc_games_couldn_t_get_your_steam_library, it.message) }
                         libraryBusy = false
                     }
                 }
@@ -208,12 +211,12 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
             FocusChip(stringResource(R.string.pc_games_look_in_my_game_folders), enabled = !busy, onClick = { scanGameFolders(say = true) })
             FocusChip(stringResource(R.string.pc_games_add_from_another_folder), enabled = !busy, onClick = { pickFolder.launch(null) })
             FocusChip(stringResource(R.string.pc_games_add_a_windows_game_folder), enabled = !busy, onClick = { pickWindowsGame.launch(null) })
-            if (games.isNotEmpty() && !choosingExe) FocusChip(if (editing) "Done" else "Remove games", onClick = { editing = !editing })
+            if (games.isNotEmpty() && !choosingExe) FocusChip(if (editing) stringResource(R.string.setup_done) else stringResource(R.string.pc_games_remove_games), onClick = { editing = !editing })
             if (games.any { it.source == PcSource.WINDOWS } && !editing && !choosingSteam) {
-                FocusChip(if (choosingExe) "Done" else "Change a game's .exe", onClick = { choosingExe = !choosingExe })
+                FocusChip(if (choosingExe) stringResource(R.string.setup_done) else "Change a game's .exe", onClick = { choosingExe = !choosingExe })
             }
             if (games.any { it.source == PcSource.WINDOWS && it.appId?.toIntOrNull() != null } && !editing && !choosingExe) {
-                FocusChip(if (choosingSteam) "Done" else "Steam method for a game", onClick = { choosingSteam = !choosingSteam })
+                FocusChip(if (choosingSteam) stringResource(R.string.setup_done) else stringResource(R.string.pc_games_steam_method_for_a_game), onClick = { choosingSteam = !choosingSteam })
             }
         }
         if (searching) {
@@ -226,8 +229,8 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                 scope.launch {
                     val result = withContext(Dispatchers.IO) { runCatching { PcLibrary.searchSteam(term.trim()) } }
                     hits = result.getOrNull()
-                    status = result.exceptionOrNull()?.let { "Couldn't search Steam: ${it.message}" }
-                        ?: if (hits.isNullOrEmpty()) "Steam has nothing called that." else null
+                    status = result.exceptionOrNull()?.let { str(R.string.pc_games_couldn_t_search_steam, it.message) }
+                        ?: if (hits.isNullOrEmpty()) str(R.string.pc_games_steam_has_nothing_called_that) else null
                     busy = false
                 }
             })
@@ -237,7 +240,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                     list.take(8).forEach { hit ->
                         FocusChip(hit.name, onClick = {
                             pc.add(listOf(PcGame(hit.name, PcSource.STEAM, appId = hit.appId)))
-                            status = "Added ${hit.name}. Install it in GameNative to play it from here."
+                            status = str(R.string.pc_games_added_install_it_in_gamenative_to, hit.name)
                             searching = false
                             hits = null
                             term = ""
@@ -256,9 +259,9 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
         val list = library.orEmpty().filter { it.windows }
         Text(
             when {
-                library == null -> "Getting your Steam library…"
-                libraryBusy -> "Your Steam library (${list.size} games, checking for changes…)"
-                else -> "Your Steam library (${list.size} games)"
+                library == null -> str(R.string.pc_games_getting_your_steam_library)
+                libraryBusy -> str(R.string.pc_games_your_steam_library_games_checking_for, list.size)
+                else -> str(R.string.pc_games_your_steam_library_games, list.size)
             },
             style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface,
         )
@@ -267,10 +270,10 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                 val active = download?.takeIf { it.appId == owned.appId }
                 val downloading = active?.running == true
                 val hint = when {
-                    active?.error != null -> "Download stopped"
-                    downloading -> "Downloading"
+                    active?.error != null -> str(R.string.pc_games_download_stopped)
+                    downloading -> str(R.string.pc_games_downloading)
                     else -> PcCompatibility.tested(owned.name, owned.appId.toString())?.rating?.label
-                        ?: if (installed != null) "On this device" else "Get"
+                        ?: if (installed != null) str(R.string.pc_games_on_this_device) else str(R.string.pc_games_get)
                 }
                 val badge = when {
                     installed != null -> "✓"
@@ -289,12 +292,12 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                 val steamId = game.appId?.toIntOrNull()?.takeIf { game.source == PcSource.WINDOWS }
                 val throughClient = steamId != null && com.retroforge.pcplayer.steam.SteamMethod.usesClient(context, steamId)
                 val hint = when {
-                    editing -> "Select to remove"
+                    editing -> str(R.string.pc_games_select_to_remove)
                     choosingExe && game.source == PcSource.WINDOWS -> "Select to choose its .exe"
-                    choosingSteam && steamId != null -> if (throughClient) "Steam method 2 · select for 1" else "Steam method 1 · select for 2"
+                    choosingSteam && steamId != null -> if (throughClient) str(R.string.pc_games_steam_method_2_select_for_1) else str(R.string.pc_games_steam_method_1_select_for_2)
                     steamId != null && com.retroforge.pcplayer.steam.SteamMethod.needsClient(context, steamId) &&
-                        !com.retroforge.pcplayer.steam.WindowsSteamClient(context).signedIn -> "⚠ Needs Steam method 2"
-                    throughClient -> "Steam method 2"
+                        !com.retroforge.pcplayer.steam.WindowsSteamClient(context).signedIn -> str(R.string.pc_games_needs_steam_method_2)
+                    throughClient -> str(R.string.pc_games_steam_method_2)
                     game.source == PcSource.WINDOWS -> PcCompatibility.label(game.title, game.appId, history[game.shortcutPath])
                     else -> null
                 }
@@ -323,7 +326,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
             }
         }
         val free = remember(owned.appId) { folder.parentFile!!.apply { mkdirs() }.usableSpace }
-        val where = if (pc.onSdCard(folder)) "the SD card" else "this device"
+        val where = if (pc.onSdCard(folder)) str(R.string.pc_games_the_sd_card) else str(R.string.pc_games_this_device)
         val active = download?.takeIf { it.appId == owned.appId }
         // Notifications show a download's progress. Android is asked once, explained here first; a no is left alone.
         val tabPrefs = remember { context.getSharedPreferences("pc_tab", android.content.Context.MODE_PRIVATE) }
@@ -344,14 +347,13 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                 Text(
                     when {
                         active?.running == true ->
-                            "Downloading from Steam: ${(active.progress * 100).toInt()}% (${active.step}). It carries on in the background; the notification shows how it's going."
-                        size == null -> "Asking Steam how big it is…"
-                        size == -1L -> "Steam didn't say how big this game is. Try again in a moment."
-                        !fits -> "It needs ${gb(size!!)} and $where has ${gb(free)} free. Free up some space first."
-                        else -> "Download it from Steam to play in RetroForge's PC player: ${gb(size!!)}, to $where (${gb(free)} free). " +
-                            "It carries on in the background, and a game you've part-downloaded carries on from where it stopped." +
-                            (active?.error?.let { "\n\nLast try stopped: $it" } ?: "") +
-                            if (askNotificationsFirst) "\n\nRetroForge will ask once to show the download's progress in your notifications (you can say no)." else ""
+                            str(R.string.pc_games_downloading_from_steam_it_carries_on, (active.progress * 100).toInt(), active.step)
+                        size == null -> str(R.string.pc_games_asking_steam_how_big_it_is)
+                        size == -1L -> str(R.string.pc_games_steam_didn_t_say_how_big)
+                        !fits -> str(R.string.pc_games_it_needs_and_has_free_free, gb(size!!), where, gb(free))
+                        else -> str(R.string.pc_games_download_it_from_steam_to_play, gb(size!!), where, gb(free)) +
+                            (active?.error?.let { str(R.string.pc_games_last_try_stopped, it) } ?: "") +
+                            if (askNotificationsFirst) str(R.string.pc_games_retroforge_will_ask_once_to_show) else ""
                     },
                 )
                 if (fits && active?.running != true) {
@@ -364,8 +366,8 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                             tabPrefs.edit().putBoolean("download_mobile_data", it).apply()
                         })
                         Text(
-                            if (useMobileData) "Uses mobile data when there's no Wi-Fi (this download is ${gb(size!!)})"
-                            else "Wi-Fi only: waits for Wi-Fi if there's none",
+                            if (useMobileData) str(R.string.pc_games_uses_mobile_data_when_there_s, gb(size!!))
+                            else str(R.string.pc_games_wi_fi_only_waits_for_wi),
                             modifier = Modifier.padding(start = 12.dp),
                         )
                     }
@@ -406,14 +408,14 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                             val current = exe.path == game.shortcutPath
                             androidx.compose.material3.TextButton(onClick = {
                                 pc.setExe(game, exe)
-                                status = "${game.title} now starts $name."
+                                status = str(R.string.pc_games_now_starts, game.title, name)
                                 exeFor = null
                                 choosingExe = false
                                 changes++
                             }) {
                                 Text(
-                                    (if (current) "✓ " else "") + name + "  ·  ${exe.length() / (1024 * 1024)} MB" +
-                                        if (i == 0) "  (best guess)" else "",
+                                    (if (current) "✓ " else "") + name + str(R.string.pc_games_mb, exe.length() / (1024 * 1024)) +
+                                        if (i == 0) str(R.string.pc_games_best_guess) else "",
                                 )
                             }
                         }

@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.content.ContentResolver
 import android.net.Uri
 import com.retroforge.app.player.FolderTarget
@@ -27,8 +29,8 @@ object FreeGames {
     const val BASE = "https://buildbot.libretro.com/assets/cores/"
 
     private fun dos(title: String, year: Int, about: String) =
-        FreeGame(title, "dos", "Shareware", about, "DOS/$title ($year).zip", "$title ($year).zip")
-    private fun cart(title: String, folder: String, system: String, file: String, about: String, kind: String = "Homebrew") =
+        FreeGame(title, "dos", str(R.string.free_games_shareware), about, "DOS/$title ($year).zip", "$title ($year).zip")
+    private fun cart(title: String, folder: String, system: String, file: String, about: String, kind: String = str(R.string.free_games_homebrew)) =
         FreeGame(title, system, kind, about, "$folder/$file", file)
 
     private const val NES = "Nintendo - Nintendo Entertainment System"
@@ -37,29 +39,29 @@ object FreeGames {
     private const val GB = "Nintendo - GameBoy"
     private const val GBA = "Nintendo - GameBoy Advance"
 
-    val all = listOf(
-        FreeGame("Doom (shareware)", "doom", "Shareware", "Knee-Deep in the Dead, the first episode, as id Software gave it away.",
+    val all get() = listOf(
+        FreeGame("Doom (shareware)", "doom", str(R.string.free_games_shareware), str(R.string.free_games_knee_deep_in_the_dead_the),
             "DOOM/Doom (Shareware).zip", "Doom (Shareware).wad", extract = "doom1.wad"),
-        dos("Wolfenstein 3D", 1991, "Escape from Castle Wolfenstein: the shareware episode."),
-        dos("Commander Keen 1 - Marooned on Mars", 1990, "Billy Blaze's first adventure, the shareware episode."),
-        dos("Commander Keen 4 - Secret of the Oracle", 1991, "Keen's best-loved episode, given away as shareware."),
-        dos("Raptor - Call of the Shadows", 1999, "The vertical shooter's shareware episode."),
-        cart("Nova the Squirrel", NES, "nes", "Nova the Squirrel.nes", "A modern platformer for the NES."),
-        cart("Twin Dragons", NES, "nes", "Twin Dragons.nes", "Two-player platformer made for the NES."),
-        cart("Super Tilt Bro", NES, "nes", "Super Tilt Bro (Europe).nes", "A platform fighter on the NES."),
-        cart("Alter Ego", NES, "nes", "Alter Ego.nes", "Puzzle platformer: swap places with your mirror self."),
-        cart("Spacegulls", NES, "nes", "Spacegulls (v1.1).nes", "Co-op space platformer."),
-        cart("N-Warp Daisakusen", SNES, "snes", "N-Warp Daisakusen (Europe).zip", "A shoot-'em-up made for the SNES."),
-        cart("Super Boss Gaiden", SNES, "snes", "Super Boss Gaiden (Japan).zip", "Beat-'em-up homebrew for the Super Famicom."),
-        cart("Cave Story (Mega Drive)", MD, "megadrive", "Cave Story (v0.7.0).zip", "Cave Story ported to the Mega Drive by fans."),
-        cart("Break An Egg", MD, "megadrive", "Break An Egg.md", "Mega Drive puzzle homebrew."),
-        cart("Ultimate Tetris", MD, "megadrive", "Ultimate Tetris.md", "Falling blocks on the Mega Drive."),
-        cart("Deadeus", GB, "gb", "Deadeus.gb", "A horror adventure for the Game Boy."),
-        cart("Mona and the Witch Hat", GB, "gb", "Mona And The Witch Hat.zip", "Game Boy platformer."),
-        cart("Gunman Clive (demo)", GB, "gb", "Gunman Clive (USA) (Demo).zip", "The demo of the hand-drawn platformer.", kind = "Demo"),
-        cart("Celeste Classic", GBA, "gba", "Celeste Classic (v1.0).zip", "The original PICO-8 Celeste, on the GBA."),
-        FreeGame("8 Bit Panda", "tic80", "Freeware", "Cute TIC-80 platformer.", "TIC-80/8 Bit Panda.zip", "8 Bit Panda.tic", extract = ".tic"),
-        FreeGame("Shadow Over the Twelve Lands", "tic80", "Freeware", "A TIC-80 adventure.", "TIC-80/Shadow Over the Twelve Lands.zip",
+        dos("Wolfenstein 3D", 1991, str(R.string.free_games_escape_from_castle_wolfenstein_the_shareware)),
+        dos("Commander Keen 1 - Marooned on Mars", 1990, str(R.string.free_games_billy_blaze_s_first_adventure_the)),
+        dos("Commander Keen 4 - Secret of the Oracle", 1991, str(R.string.free_games_keen_s_best_loved_episode_given)),
+        dos("Raptor - Call of the Shadows", 1999, str(R.string.free_games_the_vertical_shooter_s_shareware_episode)),
+        cart("Nova the Squirrel", NES, "nes", "Nova the Squirrel.nes", str(R.string.free_games_a_modern_platformer_for_the_nes)),
+        cart("Twin Dragons", NES, "nes", "Twin Dragons.nes", str(R.string.free_games_two_player_platformer_made_for_the)),
+        cart("Super Tilt Bro", NES, "nes", "Super Tilt Bro (Europe).nes", str(R.string.free_games_a_platform_fighter_on_the_nes)),
+        cart("Alter Ego", NES, "nes", "Alter Ego.nes", str(R.string.free_games_puzzle_platformer_swap_places_with_your)),
+        cart("Spacegulls", NES, "nes", "Spacegulls (v1.1).nes", str(R.string.free_games_co_op_space_platformer)),
+        cart("N-Warp Daisakusen", SNES, "snes", "N-Warp Daisakusen (Europe).zip", str(R.string.free_games_a_shoot_em_up_made_for)),
+        cart("Super Boss Gaiden", SNES, "snes", "Super Boss Gaiden (Japan).zip", str(R.string.free_games_beat_em_up_homebrew_for_the)),
+        cart("Cave Story (Mega Drive)", MD, "megadrive", "Cave Story (v0.7.0).zip", str(R.string.free_games_cave_story_ported_to_the_mega)),
+        cart("Break An Egg", MD, "megadrive", "Break An Egg.md", str(R.string.free_games_mega_drive_puzzle_homebrew)),
+        cart("Ultimate Tetris", MD, "megadrive", "Ultimate Tetris.md", str(R.string.free_games_falling_blocks_on_the_mega_drive)),
+        cart("Deadeus", GB, "gb", "Deadeus.gb", str(R.string.free_games_a_horror_adventure_for_the_game)),
+        cart("Mona and the Witch Hat", GB, "gb", "Mona And The Witch Hat.zip", str(R.string.free_games_game_boy_platformer)),
+        cart("Gunman Clive (demo)", GB, "gb", "Gunman Clive (USA) (Demo).zip", str(R.string.free_games_the_demo_of_the_hand_drawn), kind = str(R.string.free_games_demo)),
+        cart("Celeste Classic", GBA, "gba", "Celeste Classic (v1.0).zip", str(R.string.free_games_the_original_pico_8_celeste_on)),
+        FreeGame("8 Bit Panda", "tic80", str(R.string.free_games_freeware), str(R.string.free_games_cute_tic_80_platformer), "TIC-80/8 Bit Panda.zip", "8 Bit Panda.tic", extract = ".tic"),
+        FreeGame("Shadow Over the Twelve Lands", "tic80", str(R.string.free_games_freeware), str(R.string.free_games_a_tic_80_adventure), "TIC-80/Shadow Over the Twelve Lands.zip",
             "Shadow Over the Twelve Lands.tic", extract = ".tic"),
     )
 
@@ -70,7 +72,7 @@ object FreeGames {
     fun install(game: FreeGame, resolver: ContentResolver, folder: Uri, prefix: String = "", onProgress: (Float?) -> Unit = {}) {
         val url = BASE + game.path.split('/').joinToString("/") { Uri.encode(it) }
         val bytes = com.retroforge.app.Downloads.bytes(url, onProgress = onProgress)
-        val content = game.extract?.let { want -> unzip(bytes, want) ?: throw IOException("the download didn't have the game file in it") } ?: bytes
+        val content = game.extract?.let { want -> unzip(bytes, want) ?: throw IOException(str(R.string.free_games_the_download_didn_t_have_the)) } ?: bytes
         FolderTarget(resolver, folder).write("$prefix${game.system}/${game.fileName}", content)
     }
 

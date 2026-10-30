@@ -52,7 +52,7 @@ fun VrScreen(prefs: SharedPreferences, library: LibraryRepository, onOpenGame: (
             byDefault = !byDefault
             prefs.edit().putBoolean(VR_BY_DEFAULT, byDefault).apply()
         }) {
-            CardTitle(stringResource(R.string.vr_start_every_game_in_cardboard_vr)) { StatusPill(if (byDefault) "On" else "Off", if (byDefault) StatusTone.GOOD else StatusTone.NEUTRAL) }
+            CardTitle(stringResource(R.string.vr_start_every_game_in_cardboard_vr)) { StatusPill(if (byDefault) stringResource(R.string.settings_on) else stringResource(R.string.player_off), if (byDefault) StatusTone.GOOD else StatusTone.NEUTRAL) }
             CardBody(stringResource(R.string.vr_for_a_session_in_the_viewer))
         }
         FocusCard(modifier = Modifier.fillMaxWidth()) {

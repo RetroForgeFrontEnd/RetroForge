@@ -1,5 +1,7 @@
 package com.retroforge.pcplayer.steam
 
+import com.retroforge.pcplayer.R
+import com.retroforge.core.ui.str
 import android.content.Context
 import android.provider.Settings
 import android.util.Base64
@@ -100,9 +102,9 @@ class SteamAccount(private val context: Context) {
         val token = prefs.getString(KEY_TOKEN, null) ?: return null
         return session { client, _ ->
             logOn(client, accountName.orEmpty(), token)
-            val apps = client.getHandler(SteamApps::class.java) ?: throw IOException("Steam's app handler is missing")
+            val apps = client.getHandler(SteamApps::class.java) ?: throw IOException(str(R.string.steam_account_steam_s_app_handler_is_missing))
             val ownership = withTimeoutOrNull(15_000) { apps.getAppOwnershipTicket(appId).await() }
-                ?: throw IOException("Steam didn't answer whether you own the game in time")
+                ?: throw IOException(str(R.string.steam_account_steam_didn_t_answer_whether_you))
             Log.i(TAG, "Ownership of $appId: ${ownership.result}")
             if (ownership.result != EResult.OK) return@session GameAccess(owned = false, encryptedTicket = null)
             val reply = withTimeoutOrNull(15_000) { apps.requestEncryptedAppTicket(appId, null).await() }
@@ -134,8 +136,8 @@ class SteamAccount(private val context: Context) {
             try {
                 logOn(client, accountName.orEmpty(), token)
                 val list = withTimeoutOrNull(30_000) { licenses.await() }
-                    ?: throw IOException("Steam didn't send your library in time")
-                if (list.result != EResult.OK) throw IOException("Steam couldn't list your library (${list.result})")
+                    ?: throw IOException(str(R.string.steam_account_steam_didn_t_send_your_library))
+                if (list.result != EResult.OK) throw IOException(str(R.string.steam_account_steam_couldn_t_list_your_library, list.result))
                 block(client, list.licenseList)
             } finally {
                 subscription.close()
@@ -160,7 +162,7 @@ class SteamAccount(private val context: Context) {
                 scope.future { prompts.code(null, previousCodeWasIncorrect) }
 
             override fun getEmailCode(email: String?, previousCodeWasIncorrect: Boolean): CompletableFuture<String> =
-                scope.future { prompts.code(email ?: "your email", previousCodeWasIncorrect) }
+                scope.future { prompts.code(email ?: str(R.string.steam_account_your_email), previousCodeWasIncorrect) }
 
             // Prefer approving in the Steam app: no code to type, and it works with the app on the same phone.
             override fun acceptDeviceConfirmation(): CompletableFuture<Boolean> {
@@ -184,7 +186,7 @@ class SteamAccount(private val context: Context) {
     }
 
     private suspend fun logOn(client: SteamClient, name: String, refreshToken: String): Long {
-        val user = client.getHandler(SteamUser::class.java) ?: throw IOException("Steam's user handler is missing")
+        val user = client.getHandler(SteamUser::class.java) ?: throw IOException(str(R.string.steam_account_steam_s_user_handler_is_missing))
         val loggedOn = CompletableDeferred<LoggedOnCallback>()
         val subscription = manager!!.subscribe(LoggedOnCallback::class.java) { loggedOn.complete(it) }
         try {
@@ -198,11 +200,11 @@ class SteamAccount(private val context: Context) {
                 ),
             )
             val result = withTimeoutOrNull(30_000) { loggedOn.await() }
-                ?: throw IOException("Steam didn't answer the sign-in in time")
+                ?: throw IOException(str(R.string.steam_account_steam_didn_t_answer_the_sign))
             Log.i(TAG, "Logon result ${result.result}")
             if (result.result != EResult.OK) {
                 if (result.result == EResult.AccessDenied || result.result == EResult.Expired || result.result == EResult.InvalidPassword) signOut()
-                throw IOException("Steam refused the sign-in (${result.result})")
+                throw IOException(str(R.string.steam_account_steam_refused_the_sign_in, result.result))
             }
             return result.clientSteamID?.convertToUInt64() ?: 0
         } finally {
@@ -223,7 +225,7 @@ class SteamAccount(private val context: Context) {
         val subscriptions = mutableListOf<Closeable>(
             callbacks.subscribe(ConnectedCallback::class.java) { connected.complete(Unit) },
             callbacks.subscribe(DisconnectedCallback::class.java) {
-                if (!connected.isCompleted) connected.completeExceptionally(IOException("Couldn't reach Steam"))
+                if (!connected.isCompleted) connected.completeExceptionally(IOException(str(R.string.steam_account_couldn_t_reach_steam)))
             },
         )
         var running = true
@@ -232,7 +234,7 @@ class SteamAccount(private val context: Context) {
         }
         try {
             client.connect()
-            withTimeoutOrNull(30_000) { connected.await() } ?: throw IOException("Couldn't reach Steam's servers")
+            withTimeoutOrNull(30_000) { connected.await() } ?: throw IOException(str(R.string.steam_account_couldn_t_reach_steam_s_servers))
             Log.i(TAG, "Connected to Steam")
             block(client, scope)
         } finally {

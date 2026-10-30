@@ -1,5 +1,6 @@
 package com.retroforge.pc
 
+import com.retroforge.core.ui.str
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -29,26 +30,23 @@ object GpuDrivers {
     )
 
     fun advice(identity: GpuIdentity): DriverAdvice {
-        val name = identity.glRenderer ?: identity.kgslModel ?: identity.socModel ?: "Unknown GPU"
+        val name = identity.glRenderer ?: identity.kgslModel ?: identity.socModel ?: str(R.string.gpu_drivers_unknown_gpu)
         val adreno = GpuClassifier.adrenoModel(identity)
         return when {
             adreno == null -> DriverAdvice(
                 false, name,
-                "Custom drivers (Turnip) only work on Qualcomm Adreno GPUs. This GPU uses the driver that came with the phone; " +
-                    "system updates are the way to get a newer one. Emulators still run, using that driver.",
+                str(R.string.gpu_drivers_custom_drivers_turnip_only_work_on),
             )
             adreno >= 800 -> DriverAdvice(
                 true, name,
-                "Adreno $adreno: Turnip support for 8xx GPUs is new. Use builds marked a8xx, and keep the phone's own driver " +
-                    "if a game runs worse.",
+                str(R.string.gpu_drivers_adreno_turnip_support_for_8xx_gpus, adreno),
                 preferA8xx = true,
             )
             adreno >= 600 -> DriverAdvice(
                 true, name,
-                "Adreno $adreno: Turnip often runs Switch, PS2, GameCube and PC games better than the phone's own driver. " +
-                    "If a game breaks, switch back to the system driver in that emulator.",
+                str(R.string.gpu_drivers_adreno_turnip_often_runs_switch_ps2, adreno),
             )
-            else -> DriverAdvice(false, name, "Adreno $adreno is older than Turnip supports (Adreno 6xx and newer).")
+            else -> DriverAdvice(false, name, str(R.string.gpu_drivers_adreno_is_older_than_turnip_supports, adreno))
         }
     }
 
@@ -81,7 +79,7 @@ object GpuDrivers {
             setRequestProperty("User-Agent", userAgent)
         }
         try {
-            if (connection.responseCode != 200) throw IOException("the download answered ${connection.responseCode}")
+            if (connection.responseCode != 200) throw IOException(str(R.string.gpu_drivers_the_download_answered, connection.responseCode))
             val total = connection.contentLengthLong.takeIf { it > 0 } ?: file.size
             target.parentFile?.mkdirs()
             val part = File(target.path + ".part")
@@ -99,7 +97,7 @@ object GpuDrivers {
                 }
             }
             target.delete()
-            if (!part.renameTo(target)) throw IOException("couldn't save ${target.name}")
+            if (!part.renameTo(target)) throw IOException(str(R.string.gpu_drivers_couldn_t_save, target.name))
         } finally {
             connection.disconnect()
         }
@@ -113,7 +111,7 @@ object GpuDrivers {
             setRequestProperty("Accept", "application/vnd.github+json")
         }
         try {
-            if (connection.responseCode != 200) throw IOException("GitHub answered ${connection.responseCode}")
+            if (connection.responseCode != 200) throw IOException(str(R.string.gpu_drivers_github_answered, connection.responseCode))
             return connection.inputStream.use { it.readBytes().decodeToString() }
         } finally {
             connection.disconnect()

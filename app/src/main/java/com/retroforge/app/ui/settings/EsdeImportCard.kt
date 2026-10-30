@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.core.ui.pluralStr
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -36,9 +38,9 @@ fun EsdeImportCard(library: LibraryRepository) {
     var status by remember { mutableStateOf<String?>(null) }
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { tree ->
         tree ?: return@rememberLauncherForActivityResult
-        status = "Reading collections…"
+        status = str(R.string.esde_import_reading_collections)
         scope.launch {
-            status = withContext(Dispatchers.IO) { runCatching { import(context.contentResolver, tree, library) }.getOrElse { "Couldn't read them: ${it.message}" } }
+            status = withContext(Dispatchers.IO) { runCatching { import(context.contentResolver, tree, library) }.getOrElse { str(R.string.esde_import_couldn_t_read_them, it.message) } }
         }
     }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
@@ -61,7 +63,7 @@ private suspend fun import(resolver: android.content.ContentResolver, tree: Uri,
     val top = children(DocumentsContract.getTreeDocumentId(tree))
     val folder = top.firstOrNull { it.third == DocumentsContract.Document.MIME_TYPE_DIR && it.second.equals("collections", ignoreCase = true) }
     val files = (folder?.let { children(it.first) } ?: top).filter { EsdeCollections.nameOf(it.second) != null }
-    if (files.isEmpty()) return "No custom collections (custom-…cfg) found there."
+    if (files.isEmpty()) return str(R.string.esde_import_no_custom_collections_custom_cfg_found)
     val games = library.roots.first().flatMap { library.gamesIn(it.id) }
     var made = 0
     var added = 0
@@ -77,7 +79,7 @@ private suspend fun import(resolver: android.content.ContentResolver, tree: Uri,
         made++
         added += found.size
     }
-    fun n(count: Int, word: String) = "$count $word" + if (count == 1) "" else "s"
-    return "Made ${n(made, "playlist")} with ${n(added, "game")}." +
-        if (missed > 0) " ${n(missed, "game")} in them ${if (missed == 1) "isn't" else "aren't"} in your RetroForge library." else ""
+    fun n(count: Int, word: String) = com.retroforge.app.ui.countOf(count, word)
+    return str(R.string.esde_import_made_with, n(made, "playlist"), n(added, "game")) +
+        if (missed > 0) pluralStr(R.plurals.esde_import_missed, missed, n(missed, "game")) else ""
 }

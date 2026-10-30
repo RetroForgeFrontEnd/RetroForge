@@ -1,5 +1,6 @@
 package com.retroforge.app.ui
 
+import com.retroforge.core.ui.str
 import androidx.compose.ui.res.stringResource
 
 import androidx.annotation.DrawableRes
@@ -99,16 +100,18 @@ import com.retroforge.core.ui.SectionTab
 import com.retroforge.core.ui.Wordmark
 import kotlinx.coroutines.flow.Flow
 
-enum class Section(val route: String, val label: String, @DrawableRes val icon: Int) {
-    HOME("home", "Home", R.drawable.ic_section_home),
-    RETRO("retro", "Retro", R.drawable.ic_section_retro),
-    HACKS("hacks", "Hacks", R.drawable.ic_section_hacks),
-    PC("pc", "PC", R.drawable.ic_section_pc),
-    MEDIA("media", "Media", R.drawable.ic_section_media),
-    VR("vr", "VR", R.drawable.ic_section_vr),
-    APPS("apps", "Android", R.drawable.ic_section_apps),
-    LINKS("links", "Links", R.drawable.ic_section_links),
-    SETTINGS("settings", "Settings", R.drawable.ic_section_settings),
+enum class Section(val route: String, private val labelId: Int, @DrawableRes val icon: Int) {
+    HOME("home", R.string.section_home, R.drawable.ic_section_home),
+    RETRO("retro", R.string.section_retro, R.drawable.ic_section_retro),
+    HACKS("hacks", R.string.section_hacks, R.drawable.ic_section_hacks),
+    PC("pc", R.string.section_pc, R.drawable.ic_section_pc),
+    MEDIA("media", R.string.section_media, R.drawable.ic_section_media),
+    VR("vr", R.string.section_vr, R.drawable.ic_section_vr),
+    APPS("apps", R.string.section_apps, R.drawable.ic_section_apps),
+    LINKS("links", R.string.section_links, R.drawable.ic_section_links),
+    SETTINGS("settings", R.string.section_settings, R.drawable.ic_section_settings);
+
+    val label: String get() = str(labelId)
 }
 
 private const val PATCHER_ROUTE = "retro/patcher"
@@ -467,8 +470,8 @@ private fun CloseButton(modifier: Modifier, onClick: () -> Unit) {
             .background(Color(0xFFD9363E))
             .border(if (focused) 3.dp else 0.dp, Color.White, CircleShape)
             .onFocusChanged { focused = it.isFocused }
-            .clickable(onClickLabel = "Back", onClick = onClick)
-            .semantics { contentDescription = "Back" },
+            .clickable(onClickLabel = str(R.string.retro_forge_root_back), onClick = onClick)
+            .semantics { contentDescription = str(R.string.retro_forge_root_back) },
         contentAlignment = Alignment.Center,
     ) {
         Text("✕", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)

@@ -23,6 +23,7 @@ room {
 }
 
 dependencies {
+    implementation(project(":core-ui"))
     implementation(libs.kotlinx.serialization.json)
     api(project(":retro-library"))
     api(project(":retro-artwork"))

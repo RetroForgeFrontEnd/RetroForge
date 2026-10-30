@@ -1,11 +1,16 @@
 package com.retroforge.app.player
 
+import com.retroforge.app.EnglishStrings
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
 class ArcadeRomsetsTest {
+    @Before
+    fun englishTexts() = EnglishStrings.install()
+
     @Test
     fun `missing files named by the emulator are picked out`() {
         val log = listOf(

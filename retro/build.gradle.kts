@@ -16,6 +16,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core-ui"))
     implementation(project(":retro-library"))
     testImplementation(libs.junit)
 }

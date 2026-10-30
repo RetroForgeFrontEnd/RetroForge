@@ -1,5 +1,7 @@
 package com.retroforge.pcplayer
 
+import androidx.compose.ui.res.stringResource
+import com.retroforge.core.ui.str
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -108,7 +110,7 @@ class PcPlayerActivity : ComponentActivity() {
     /** Steam Cloud saves for a Steam game (null for other games). */
     private var cloud: SteamCloudSync? = null
 
-    private var phase by mutableStateOf<Phase>(Phase.Loading("Starting"))
+    private var phase by mutableStateOf<Phase>(Phase.Loading(str(R.string.pc_player_starting)))
     private var menuOpen by mutableStateOf(false)
     private enum class MenuPage { Main, PlayTogether }
     private var menuPage by mutableStateOf(MenuPage.Main)
@@ -145,7 +147,7 @@ class PcPlayerActivity : ComponentActivity() {
         val exe = intent.getStringExtra(EXTRA_EXE)?.let(::File)
         title = intent.getStringExtra(EXTRA_TITLE) ?: exe?.nameWithoutExtension ?: "PC game"
         if (exe == null || !exe.isFile) {
-            phase = Phase.Failed("The game's .exe wasn't found:\n${exe?.path ?: "(none given)"}")
+            phase = Phase.Failed(str(R.string.pc_player_the_game_s_exe_wasn_t, exe?.path ?: str(R.string.pc_player_none_given)))
             return
         }
         scope.launch {
@@ -160,7 +162,7 @@ class PcPlayerActivity : ComponentActivity() {
                 }
             }
             if (!runtime.ensure()) {
-                phase = Phase.Failed((runtime.state.value as? RuntimeState.Failed)?.reason ?: "The PC runtime couldn't be installed")
+                phase = Phase.Failed((runtime.state.value as? RuntimeState.Failed)?.reason ?: str(R.string.pc_player_the_pc_runtime_couldn_t_be))
                 return@launch
             }
             together = PlayTogether(
@@ -183,12 +185,12 @@ class PcPlayerActivity : ComponentActivity() {
             val appId = steam.appId(exe.parentFile!!, intent.getIntExtra(EXTRA_STEAM_APP_ID, 0))
             if (!client.installed || appId == null) {
                 phase = Phase.Failed(
-                    if (appId == null) "RetroForge couldn't tell which Steam game this is."
-                    else "Set up the Steam client on the PC tab first (Steam method 2).",
+                    if (appId == null) str(R.string.pc_player_retroforge_couldn_t_tell_which_steam)
+                    else str(R.string.pc_player_set_up_the_steam_client_on),
                 )
                 return
             }
-            phase = Phase.Loading("Getting the game ready for the Steam client")
+            phase = Phase.Loading(str(R.string.pc_player_getting_the_game_ready_for_the))
             withContext(Dispatchers.IO) {
                 val folder = PcSession.gameFolder(exe)
                 steam.restore(folder) // the game's own Steam DLLs, not Goldberg's stand-in
@@ -199,13 +201,13 @@ class PcPlayerActivity : ComponentActivity() {
         }
         if (steam.steamDlls(exe.parentFile!!).isNotEmpty()) {
             together?.steamGame = true
-            phase = Phase.Loading("Checking your Steam account")
+            phase = Phase.Loading(str(R.string.pc_player_checking_your_steam_account))
             val appId = steam.appId(exe.parentFile!!, intent.getIntExtra(EXTRA_STEAM_APP_ID, 0))
             val problem = if (appId == null) {
-                "This game uses Steam, but RetroForge couldn't tell which Steam game it is."
+                str(R.string.pc_player_this_game_uses_steam_but_retroforge)
             } else {
                 runCatching { withContext(Dispatchers.IO) { steam.prepare(exe.parentFile!!, appId, lobbies) } }.exceptionOrNull()?.let {
-                    it.message ?: "Steam couldn't be set up for this game"
+                    it.message ?: str(R.string.pc_player_steam_couldn_t_be_set_up)
                 }
             }
             if (problem != null) {
@@ -217,7 +219,7 @@ class PcPlayerActivity : ComponentActivity() {
             // Steam can't be reached the game starts anyway with the saves already here.
             val sync = SteamCloudSync(SteamAccount(this@PcPlayerActivity), runtime.root, File(runtime.prefix, "drive_c"), exe.parentFile!!, appId!!)
             cloud = sync
-            phase = Phase.Loading("Checking Steam Cloud")
+            phase = Phase.Loading(str(R.string.pc_player_checking_steam_cloud))
             runCatching { withContext(Dispatchers.IO) { withTimeout(CLOUD_TIMEOUT_MS) { sync.download { phase = Phase.Loading(it) } } } }
                 .onFailure { Log.w(TAG, "Steam Cloud download failed", it) }
         }
@@ -231,7 +233,7 @@ class PcPlayerActivity : ComponentActivity() {
         session = null
         menuOpen = false
         menuPage = MenuPage.Main
-        phase = Phase.Loading("Restarting $title")
+        phase = Phase.Loading(str(R.string.pc_player_restarting, title))
         view?.let { frame.removeView(it) }
         controlsView?.let { frame.removeView(it) }
         view = null
@@ -252,7 +254,7 @@ class PcPlayerActivity : ComponentActivity() {
     /** Starts [exe] (with [extraArgs]); [windowExe] is the program whose window fills the screen. */
     private fun startGame(exe: File, extraArgs: List<String> = emptyList(), windowExe: File = exe) {
         startedAt = System.currentTimeMillis()
-        phase = Phase.Loading("Starting Windows")
+        phase = Phase.Loading(str(R.string.pc_player_starting_windows))
         val newSession = PcSession(this, runtime, exe, screenSize(), extraArgs)
         val xView = XServerView(this, newSession.xServer)
         newSession.xServer.setRenderer(xView.renderer)
@@ -281,7 +283,7 @@ class PcPlayerActivity : ComponentActivity() {
         } catch (e: Exception) {
             newSession.stop()
             session = null
-            phase = Phase.Failed("The game couldn't be started: ${e.message}")
+            phase = Phase.Failed(str(R.string.pc_player_the_game_couldn_t_be_started, e.message))
             return
         }
         // Keep the loading screen up until the game's window is showing (Wine's start-up is just a black desktop).
@@ -292,7 +294,7 @@ class PcPlayerActivity : ComponentActivity() {
                     shownAt = System.currentTimeMillis()
                     break
                 }
-                phase = Phase.Loading("Starting $title")
+                phase = Phase.Loading(str(R.string.pc_player_starting_2, title))
                 delay(300)
             }
             if (phase is Phase.Loading) phase = Phase.Playing
@@ -411,7 +413,7 @@ class PcPlayerActivity : ComponentActivity() {
                 when (val p = phase) {
                     is Phase.Loading -> Loading(p.step)
                     is Phase.Failed -> Centered {
-                        Text("Couldn't start $title", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.pc_player_couldn_t_start, title), color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                         Text(p.message, color = Color(0xFFDDDDDD), textAlign = TextAlign.Center, modifier = Modifier.padding(vertical = 16.dp))
                         BackButton()
                     }
@@ -432,7 +434,7 @@ class PcPlayerActivity : ComponentActivity() {
                 }
                 exitMessage?.let { message ->
                     Centered {
-                        Text("The game closed", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.pc_player_the_game_closed), color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                         Text(message, color = Color(0xFFDDDDDD), fontSize = 13.sp, textAlign = TextAlign.Center,
                             // Short enough that the button still fits on a phone held sideways (the log scrolls).
                             modifier = Modifier.padding(vertical = 12.dp).heightIn(max = 140.dp).verticalScroll(rememberScrollState()))
@@ -448,7 +450,7 @@ class PcPlayerActivity : ComponentActivity() {
         Button(
             onClick = { quit() },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF8A1F), contentColor = Color.Black),
-        ) { Text("Back to RetroForge", fontWeight = FontWeight.Bold) }
+        ) { Text(stringResource(R.string.pc_player_back_to_retroforge), fontWeight = FontWeight.Bold) }
     }
 
     /** The loading screen: the game's name on black, so Wine starting up (a bare Windows desktop) isn't seen. */
@@ -457,7 +459,7 @@ class PcPlayerActivity : ComponentActivity() {
         Box(Modifier.fillMaxSize().background(Color.Black), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(title, color = Color.White, fontSize = 28.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-                Text("PC game", color = Color(0xFFFF8A1F), fontSize = 13.sp, modifier = Modifier.padding(top = 4.dp, bottom = 28.dp))
+                Text(stringResource(R.string.pc_player_pc_game), color = Color(0xFFFF8A1F), fontSize = 13.sp, modifier = Modifier.padding(top = 4.dp, bottom = 28.dp))
                 CircularProgressIndicator(color = Color(0xFFFF8A1F), modifier = Modifier.size(36.dp))
                 Text(step, color = Color(0xFFBBBBC4), fontSize = 13.sp, modifier = Modifier.padding(top = 16.dp))
             }
@@ -510,35 +512,34 @@ class PcPlayerActivity : ComponentActivity() {
                     val play = together
                     if (menuPage == MenuPage.PlayTogether && play != null) {
                         play.Panel { onClick, content -> MenuButton(onClick = onClick, modifier = wide) { content() } }
-                        MenuButton(onClick = { menuPage = MenuPage.Main }, modifier = wide) { Text("Back") }
+                        MenuButton(onClick = { menuPage = MenuPage.Main }, modifier = wide) { Text(stringResource(R.string.pc_player_back)) }
                         return@Column
                     }
                     Text(title, color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-                    Text("Paused · PC game", color = Color(0xFFAAAAB4), fontSize = 13.sp)
-                    MenuButton(onClick = { closeMenu() }, modifier = wide) { Text("Resume") }
+                    Text(stringResource(R.string.pc_player_paused_pc_game), color = Color(0xFFAAAAB4), fontSize = 13.sp)
+                    MenuButton(onClick = { closeMenu() }, modifier = wide) { Text(stringResource(R.string.pc_player_resume)) }
                     if (play != null) MenuButton(onClick = { menuPage = MenuPage.PlayTogether }, modifier = wide) {
-                        Text(if (play.active) "Play together: On" else "Play together")
+                        Text(if (play.active) stringResource(R.string.pc_player_play_together_on) else stringResource(R.string.pc_player_play_together))
                     }
                     MenuButton(onClick = { chooseControls(shown = !padShown) }, modifier = wide) {
-                        Text("On-screen controller: ${if (padShown) "Shown" else "Hidden"}" + if (padShown && controllerConnected()) " (hidden while a controller is connected)" else "")
+                        Text(stringResource(R.string.pc_player_on_screen_controller, if (padShown) stringResource(R.string.pc_player_shown) else stringResource(R.string.pc_player_hidden)) + if (padShown && controllerConnected()) stringResource(R.string.pc_player_hidden_while_a_controller_is_connected) else "")
                     }
                     MenuButton(onClick = { chooseControls(keyboard = !keyboardMode) }, modifier = wide) {
-                        Text("Controller works as: ${if (keyboardMode) "Keyboard & mouse" else "Xbox controller"}")
+                        Text(stringResource(R.string.pc_player_controller_works_as, if (keyboardMode) stringResource(R.string.pc_player_keyboard_mouse) else stringResource(R.string.pc_player_xbox_controller)))
                     }
                     MenuButton(onClick = {
                         blurredSides = !blurredSides
                         prefs().edit().putBoolean("blurred_sides", blurredSides).apply()
                         view?.renderer?.setBlurredSides(blurredSides)
-                    }, modifier = wide) { Text("Sides of 4:3 games: ${if (blurredSides) "Blurred" else "Black"}") }
+                    }, modifier = wide) { Text(stringResource(R.string.pc_player_sides_of_4_3_games, if (blurredSides) stringResource(R.string.pc_player_blurred) else stringResource(R.string.pc_player_black))) }
                     if (keyboardMode) Text(
-                        "For games without controller support. Sticks: move (WASD) and mouse. RT/LT: left/right click. " +
-                            "A Space · B Ctrl · X R · Y E · LB Q · RB next weapon · Start Esc · Back Tab · L3 Shift.",
+                        str(R.string.pc_player_for_games_without_controller_support_sticks),
                         color = Color(0xFFAAAAB4), fontSize = 12.sp, textAlign = TextAlign.Center,
                     )
-                    MenuButton(onClick = { showKeyboard() }, modifier = wide) { Text("Keyboard") }
-                    MenuButton(onClick = { closeMenu(); tapKey(XKeycode.KEY_ESC) }, modifier = wide) { Text("Press Esc") }
-                    MenuButton(onClick = { closeMenu(); tapKey(XKeycode.KEY_ENTER) }, modifier = wide) { Text("Press Enter") }
-                    MenuButton(onClick = { quit() }, modifier = wide) { Text("Quit to RetroForge") }
+                    MenuButton(onClick = { showKeyboard() }, modifier = wide) { Text(stringResource(R.string.pc_player_keyboard)) }
+                    MenuButton(onClick = { closeMenu(); tapKey(XKeycode.KEY_ESC) }, modifier = wide) { Text(stringResource(R.string.pc_player_press_esc)) }
+                    MenuButton(onClick = { closeMenu(); tapKey(XKeycode.KEY_ENTER) }, modifier = wide) { Text(stringResource(R.string.pc_player_press_enter)) }
+                    MenuButton(onClick = { quit() }, modifier = wide) { Text(stringResource(R.string.pc_player_quit_to_retroforge)) }
                 }
             }
         }
@@ -579,9 +580,7 @@ class PcPlayerActivity : ComponentActivity() {
             com.retroforge.pcplayer.steam.SteamMethod.markNeedsClient(this, appId)
             menuOpen = false
             controlsView?.visibility = View.GONE
-            exitMessage = "This game needs the Steam client: its copy protection asks Steam itself to start it.\n\n" +
-                "RetroForge will start it with Steam method 2 from now on. Set up the Steam client on the PC tab " +
-                "(Steam method 2), sign in once, then play it again."
+            exitMessage = str(R.string.pc_player_this_game_needs_the_steam_client)
             return
         }
         // The game quit by itself: back to RetroForge (saving to Steam Cloud first). Anything else shows Wine's last
@@ -593,7 +592,7 @@ class PcPlayerActivity : ComponentActivity() {
         val tail = runCatching { ended.log.readLines().takeLast(12).joinToString("\n") }.getOrDefault("")
         menuOpen = false
         controlsView?.visibility = View.GONE
-        exitMessage = "Wine finished (code $code).\n\n$tail"
+        exitMessage = str(R.string.pc_player_wine_finished_code, code, tail)
     }
 
     private fun quit() {
@@ -614,7 +613,7 @@ class PcPlayerActivity : ComponentActivity() {
         menuOpen = false
         exitMessage = null
         controlsView?.visibility = View.GONE
-        phase = Phase.Loading("Saving to Steam Cloud")
+        phase = Phase.Loading(str(R.string.pc_player_saving_to_steam_cloud))
         scope.launch {
             withContext(Dispatchers.IO) {
                 // Wine's processes end within seconds; the rest of the shutdown isn't worth waiting on longer.

@@ -1,5 +1,6 @@
 package com.retroforge.pcplayer
 
+import com.retroforge.core.ui.str
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
@@ -239,7 +240,7 @@ class PcSession(
             zip.getInputStream(entry).use { input -> out.outputStream().use { input.copyTo(it) } }
             return out
         }
-        throw IOException("RetroForge's $name is missing from the app")
+        throw IOException(str(R.string.pc_session_retroforge_s_is_missing_from_the, name))
     }
 
     private fun launchWine() {

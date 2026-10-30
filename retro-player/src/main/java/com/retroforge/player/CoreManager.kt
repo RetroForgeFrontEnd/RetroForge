@@ -1,5 +1,6 @@
 package com.retroforge.player
 
+import com.retroforge.core.ui.str
 import android.os.Build
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,7 +56,7 @@ class CoreManager(private val dir: File, private val userAgent: String) {
                 set(id, CoreState.Ready)
                 true
             } catch (e: IOException) {
-                set(id, CoreState.Failed(e.message ?: "Download failed"))
+                set(id, CoreState.Failed(e.message ?: str(R.string.core_manager_download_failed)))
                 false
             }
         }
@@ -64,14 +65,14 @@ class CoreManager(private val dir: File, private val userAgent: String) {
     private fun set(id: String, state: CoreState) = _states.update { it + (id to state) }
 
     private fun download(id: String) {
-        val abi = abi() ?: throw IOException("libretro has no cores for this device's processor (${Build.SUPPORTED_ABIS.joinToString()})")
+        val abi = abi() ?: throw IOException(str(R.string.core_manager_libretro_has_no_cores_for_this, Build.SUPPORTED_ABIS.joinToString()))
         val connection = (URL("$BUILDBOT/$abi/${id}_libretro_android.so.zip").openConnection() as HttpURLConnection).apply {
             connectTimeout = 15_000
             readTimeout = 30_000
             setRequestProperty("User-Agent", userAgent)
         }
         try {
-            if (connection.responseCode != 200) throw IOException("libretro's server answered ${connection.responseCode} for $id")
+            if (connection.responseCode != 200) throw IOException(str(R.string.core_manager_libretro_s_server_answered_for, connection.responseCode, id))
             val total = connection.contentLengthLong
             dir.mkdirs()
             val part = File(dir, "$id.part")
@@ -84,9 +85,9 @@ class CoreManager(private val dir: File, private val userAgent: String) {
                     }
                 }
             }
-            if (!found) throw IOException("The download for $id had no core in it")
+            if (!found) throw IOException(str(R.string.core_manager_the_download_for_had_no_core, id))
             val target = file(id)
-            if (!part.renameTo(target)) throw IOException("Couldn't save $id")
+            if (!part.renameTo(target)) throw IOException(str(R.string.core_manager_couldn_t_save, id))
             // Code loaded at run time shouldn't be writable.
             target.setWritable(false)
         } finally {

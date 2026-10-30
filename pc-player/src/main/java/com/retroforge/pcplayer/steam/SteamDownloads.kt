@@ -1,5 +1,7 @@
 package com.retroforge.pcplayer.steam
 
+import com.retroforge.pcplayer.R
+import com.retroforge.core.ui.str
 import android.util.Log
 import `in`.dragonbra.javasteam.depotdownloader.DepotDownloader
 import `in`.dragonbra.javasteam.depotdownloader.IDownloadListener
@@ -36,12 +38,12 @@ class SteamDownloads(private val account: SteamAccount) {
             var failure: Throwable? = null
             val listener = object : IDownloadListener {
                 override fun onStatusUpdate(message: String) {
-                    if (message.startsWith("Downloading manifest")) onProgress(progress(done, total), "Getting the file list", total)
+                    if (message.startsWith("Downloading manifest")) onProgress(progress(done, total), str(R.string.steam_downloads_getting_the_file_list), total)
                 }
 
                 override fun onChunkCompleted(depotId: Int, depotPercentComplete: Float, compressedBytes: Long, uncompressedBytes: Long) {
                     done[depotId] = uncompressedBytes
-                    onProgress(progress(done, total), "Downloading", total)
+                    onProgress(progress(done, total), str(R.string.steam_downloads_downloading), total)
                 }
 
                 override fun onDepotCompleted(depotId: Int, compressedBytes: Long, uncompressedBytes: Long) {
@@ -66,7 +68,7 @@ class SteamDownloads(private val account: SteamAccount) {
                 downloader.finishAdding()
                 downloader.getCompletion().await()
             }
-            failure?.let { throw IOException(it.message ?: "The download failed", it) }
+            failure?.let { throw IOException(it.message ?: str(R.string.steam_download_service_the_download_failed), it) }
             Log.i(TAG, "App $appId downloaded into $folder")
             Unit
         }
@@ -75,10 +77,10 @@ class SteamDownloads(private val account: SteamAccount) {
 
     /** Total size of the depots a Windows, English, 64-bit download takes (public branch manifests). */
     private suspend fun windowsDepotsSize(client: SteamClient, appId: Int): Long {
-        val apps = client.getHandler(SteamApps::class.java) ?: throw IOException("Steam's app handler is missing")
+        val apps = client.getHandler(SteamApps::class.java) ?: throw IOException(str(R.string.steam_account_steam_s_app_handler_is_missing))
         val token = runCatching { withTimeout(TIMEOUT) { apps.picsGetAccessTokens(appId, null).await() }.appTokens[appId] }.getOrNull() ?: 0L
         val info = withTimeout(TIMEOUT) { apps.picsGetProductInfo(PICSRequest(appId, token), null, false).await() }
-            .results.firstNotNullOfOrNull { it.apps[appId] }?.keyValues ?: throw IOException("Steam has no app info for $appId")
+            .results.firstNotNullOfOrNull { it.apps[appId] }?.keyValues ?: throw IOException(str(R.string.steam_downloads_steam_has_no_app_info_for, appId))
         return info["depots"].children.filter { it.name?.toIntOrNull() != null }.sumOf { depot ->
             val config = depot["config"]
             val os = config["oslist"].value.orEmpty().lowercase()

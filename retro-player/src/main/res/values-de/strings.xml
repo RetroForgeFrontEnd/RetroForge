@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_assets_libretro_answered">libretro antwortete %1$s</string>
+    <string name="core_assets_couldn_t_write">%1$s konnte nicht geschrieben werden</string>
+    <string name="core_manager_download_failed">Download fehlgeschlagen</string>
+    <string name="core_manager_libretro_has_no_cores_for_this">libretro hat keine Cores für den Prozessor dieses Geräts (%1$s)</string>
+    <string name="core_manager_libretro_s_server_answered_for">Der Server von libretro antwortete %1$s für %2$s</string>
+    <string name="core_manager_the_download_for_had_no_core">Im Download für %1$s war kein Core</string>
+    <string name="core_manager_couldn_t_save">%1$s konnte nicht gespeichert werden</string>
+    <string name="gpu_driver_isn_t_in_the_app">%1$s ist nicht in der App</string>
+    <string name="viewport_original">Original</string>
+    <string name="viewport_4_3">4:3</string>
+    <string name="viewport_16_9">16:9</string>
+    <string name="viewport_stretch">Strecken</string>
+    <string name="viewport_pixel_perfect">Pixelgenau</string>
+    <string name="filter_sharp">Scharfe Pixel</string>
+    <string name="filter_smooth">Weich</string>
+    <string name="filter_crt">CRT-Scanlines</string>
+    <string name="filter_lcd">LCD-Raster</string>
+    <string name="filter_crt_curved">CRT, gewölbter Bildschirm</string>
+    <string name="filter_lcd_ghosting">LCD, mit Nachzieheffekt</string>
+    <string name="filter_scale2x">Weiche Pixel-Art (Scale2x)</string>
+</resources>

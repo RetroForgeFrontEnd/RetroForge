@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.media
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.opengl.GLSurfaceView
@@ -57,9 +59,9 @@ class VideoActivity : ComponentActivity() {
             // Some films use formats this phone can't decode: say so, and offer another installed player.
             override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
                 android.app.AlertDialog.Builder(this@VideoActivity)
-                    .setTitle("Can't play this film here")
-                    .setMessage("This phone can't decode it (${error.errorCodeName}). Another video app such as VLC may play it.")
-                    .setPositiveButton("Open in another app") { _, _ ->
+                    .setTitle(str(R.string.video_can_t_play_this_film_here))
+                    .setMessage(str(R.string.video_this_phone_can_t_decode_it, error.errorCodeName))
+                    .setPositiveButton(str(R.string.video_open_in_another_app)) { _, _ ->
                         runCatching {
                             startActivity(
                                 android.content.Intent(android.content.Intent.ACTION_VIEW).setDataAndType(uri, "video/*")
@@ -68,7 +70,7 @@ class VideoActivity : ComponentActivity() {
                         }
                         finish()
                     }
-                    .setNegativeButton("Close") { _, _ -> finish() }
+                    .setNegativeButton(str(R.string.retro_forge_root_close)) { _, _ -> finish() }
                     .show()
             }
         })

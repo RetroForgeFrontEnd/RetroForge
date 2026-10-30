@@ -1,0 +1,24 @@
+<resources>
+
+    <!-- GpuDrivers.kt -->
+    <string name="gpu_drivers_unknown_gpu">Unknown GPU</string>
+    <string name="gpu_drivers_custom_drivers_turnip_only_work_on">Custom drivers (Turnip) only work on Qualcomm Adreno GPUs. This GPU uses the driver that came with the phone; system updates are the way to get a newer one. Emulators still run, using that driver.</string>
+    <string name="gpu_drivers_adreno_turnip_support_for_8xx_gpus">Adreno %1$s: Turnip support for 8xx GPUs is new. Use builds marked a8xx, and keep the phone\'s own driver if a game runs worse.</string>
+    <string name="gpu_drivers_adreno_turnip_often_runs_switch_ps2">Adreno %1$s: Turnip often runs Switch, PS2, GameCube and PC games better than the phone\'s own driver. If a game breaks, switch back to the system driver in that emulator.</string>
+    <string name="gpu_drivers_adreno_is_older_than_turnip_supports">Adreno %1$s is older than Turnip supports (Adreno 6xx and newer).</string>
+    <string name="gpu_drivers_the_download_answered">the download answered %1$s</string>
+    <string name="gpu_drivers_couldn_t_save">couldn\'t save %1$s</string>
+    <string name="gpu_drivers_github_answered">GitHub answered %1$s</string>
+
+    <!-- GpuSupport.kt -->
+    <string name="gpu_support_the_gpu_model_could_not_be">The GPU model could not be read on this device.</string>
+    <string name="gpu_support_droiddeck_needs_a_qualcomm_adreno_gpu">DroidDeck needs a Qualcomm Adreno GPU, and this device does not have one.</string>
+    <string name="gpu_support_adreno_850_support_is_experimental">Adreno 850 support is experimental.</string>
+    <string name="gpu_support_adreno_8xx_is_supported">Adreno 8xx is supported.</string>
+    <string name="gpu_support_adreno_730_and_newer_are_supported">Adreno 730 and newer are supported.</string>
+    <string name="gpu_support_adreno_has_been_tested_but_is">Adreno %1$s has been tested but is below the official 730 minimum.</string>
+    <string name="gpu_support_adreno_only_has_test_drivers">Adreno %1$s only has test drivers.</string>
+    <string name="gpu_support_adreno_710_is_not_supported">Adreno 710 is not supported.</string>
+    <string name="gpu_support_adreno_6xx_is_experimental_directx_11">Adreno 6xx is experimental: DirectX 11 games may run, DirectX 12 games may crash.</string>
+    <string name="gpu_support_adreno_is_older_than_the_pc">Adreno %1$s is older than the PC runtime supports.</string>
+</resources>

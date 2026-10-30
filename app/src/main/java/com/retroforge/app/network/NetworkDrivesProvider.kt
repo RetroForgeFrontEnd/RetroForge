@@ -1,5 +1,6 @@
 package com.retroforge.app.network
 
+import com.retroforge.core.ui.str
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.os.CancellationSignal
@@ -33,7 +34,7 @@ class NetworkDrivesProvider : DocumentsProvider() {
     }
 
     private fun share(documentId: String) =
-        NetworkDrives.byId(context!!, documentId.substringBefore('/')) ?: throw FileNotFoundException("That network drive was removed")
+        NetworkDrives.byId(context!!, documentId.substringBefore('/')) ?: throw FileNotFoundException(str(R.string.network_drives_provider_that_network_drive_was_removed))
 
     private fun path(documentId: String) = documentId.substringAfter('/', "")
 
@@ -64,7 +65,7 @@ class NetworkDrivesProvider : DocumentsProvider() {
         val cursor = MatrixCursor(projection ?: DOCUMENT_COLUMNS)
         val share = share(parentDocumentId)
         val entries = runCatching { onNetwork { NetworkDrives.list(share, path(parentDocumentId)) } }
-            .getOrElse { throw FileNotFoundException("Couldn't open ${share.address}: ${it.message}") }
+            .getOrElse { throw FileNotFoundException(str(R.string.network_drives_provider_couldn_t_open, share.address, it.message)) }
         entries.sortedWith(compareBy({ !it.isFolder }, { it.name.lowercase() })).forEach { addRow(cursor, share.id, it) }
         return cursor
     }
@@ -108,7 +109,7 @@ class NetworkDrivesProvider : DocumentsProvider() {
             (path(parentDocumentId).isEmpty() || path(documentId).startsWith(path(parentDocumentId) + "/"))
 
     override fun openDocument(documentId: String, mode: String, signal: CancellationSignal?): ParcelFileDescriptor {
-        if (mode != "r") throw FileNotFoundException("Network drives are read-only in RetroForge")
+        if (mode != "r") throw FileNotFoundException(str(R.string.network_drives_provider_network_drives_are_read_only_in))
         val share = share(documentId)
         val path = path(documentId)
         val size = runCatching { onNetwork { NetworkDrives.stat(share, path).size } }.getOrElse { throw notFound(it) }

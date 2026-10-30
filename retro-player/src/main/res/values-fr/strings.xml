@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_assets_libretro_answered">libretro a répondu %1$s</string>
+    <string name="core_assets_couldn_t_write">impossible d\'écrire %1$s</string>
+    <string name="core_manager_download_failed">Échec du téléchargement</string>
+    <string name="core_manager_libretro_has_no_cores_for_this">libretro n\'a pas de cœurs pour le processeur de cet appareil (%1$s)</string>
+    <string name="core_manager_libretro_s_server_answered_for">Le serveur de libretro a répondu %1$s pour %2$s</string>
+    <string name="core_manager_the_download_for_had_no_core">Le téléchargement de %1$s ne contenait aucun cœur</string>
+    <string name="core_manager_couldn_t_save">Impossible d\'enregistrer %1$s</string>
+    <string name="gpu_driver_isn_t_in_the_app">%1$s n\'est pas dans l\'appli</string>
+    <string name="viewport_original">Original</string>
+    <string name="viewport_4_3">4:3</string>
+    <string name="viewport_16_9">16:9</string>
+    <string name="viewport_stretch">Étirer pour remplir</string>
+    <string name="viewport_pixel_perfect">Pixel parfait</string>
+    <string name="filter_sharp">Pixels nets</string>
+    <string name="filter_smooth">Lissé</string>
+    <string name="filter_crt">Lignes CRT</string>
+    <string name="filter_lcd">Grille LCD</string>
+    <string name="filter_crt_curved">CRT, écran incurvé</string>
+    <string name="filter_lcd_ghosting">LCD, avec rémanence</string>
+    <string name="filter_scale2x">Pixel art lissé (Scale2x)</string>
+
+</resources>

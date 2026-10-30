@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -20,29 +21,20 @@ import com.retroforge.core.ui.FocusCard
 private class Notice(val name: String, val licence: String, val detail: String, val asset: String? = null)
 
 /** Shout-outs: the projects and people RetroForge uses, opens or features. Kept in step with the README's Thanks. */
-private val thanks = listOf(
-    "Windows games on Android" to "GameNative (utkarshdalal), Winlator (brunodev85) and DroidDeck: the apps that make PC games " +
-        "play on a phone. RetroForge opens them; all the hard work is theirs.",
-    "libretro and RetroArch" to "The libretro API and the team and core authors behind every emulator the built-in player runs: " +
-        "mGBA, Snes9x, Genesis Plus GX, FCEUmm, Mupen64Plus-Next, PCSX ReARMed, SwanStation, PPSSPP, Flycast, Dolphin, LRPS2, " +
-        "FinalBurn Neo, MAME and many more. Also the libretro thumbnails and cheat database.",
-    "Standalone emulators" to "Dolphin, NetherSX2, ARMSX2, Azahar, Eden, M64Plus FZ, melonDS, MAME4droid, SkyEmu, NooDS, " +
-        "EX Emulators, aPS3e, J2ME Loader and the rest of the list RetroForge offers.",
-    "PC ports and recompilations" to "Ship of Harkinian, 2 Ship 2 Harkinian, Starship, SpaghettiKart, Ghostship, Zelda64Recomp, " +
-        "Unleashed Recompiled, OpenGOAL, DevilutionX, OpenMW, OpenBOR, the Perfect Dark and zelda3 ports, and everyone who " +
-        "brought them to Android.",
-    "Collections and frontends" to "RetroBat and ES-DE, whose folder layouts RetroForge reads as they are; Obtainium (ImranR98) " +
-        "and the Obtainium Emulation Pack (RJNY) for keeping emulators up to date; canvas-es by Siddy212 for the system artwork.",
-    "Artwork and game data" to "SteamGridDB, ScreenScraper and libretro thumbnails for covers; Romhacking.net and every hack " +
-        "author for the ROM hack catalogue.",
-    "GPU drivers" to "The Mesa Turnip developers, K11MCH1 (AdrenoToolsDrivers) and MrPurple (Purple Turnip).",
-    "The community" to "The YouTube channels and sites in the Links tab, for the guides, reviews and handheld coverage that " +
-        "got so many people into retro handhelds.",
-    "Built with Claude" to "RetroForge was made by Darren Glancy with a lot of help from Anthropic's Claude.",
+private val thanks get() = listOf(
+    str(R.string.licences_windows_games_on_android) to str(R.string.licences_gamenative_utkarshdalal_winlator_brunodev85_and_droiddeck),
+    str(R.string.licences_libretro_and_retroarch) to str(R.string.licences_the_libretro_api_and_the_team),
+    str(R.string.hotkeys_standalone_emulators) to str(R.string.licences_dolphin_nethersx2_armsx2_azahar_eden_m64plus),
+    str(R.string.licences_pc_ports_and_recompilations) to str(R.string.licences_ship_of_harkinian_2_ship_2),
+    str(R.string.licences_collections_and_frontends) to str(R.string.licences_retrobat_and_es_de_whose_folder),
+    str(R.string.licences_artwork_and_game_data) to str(R.string.licences_steamgriddb_screenscraper_and_libretro_thumbnails_for),
+    str(R.string.licences_gpu_drivers) to str(R.string.licences_the_mesa_turnip_developers_k11mch1_adrenotoolsdrivers),
+    str(R.string.licences_the_community) to str(R.string.licences_the_youtube_channels_and_sites_in),
+    str(R.string.licences_built_with_claude) to str(R.string.licences_retroforge_was_made_by_darren_glancy),
 )
 
 /** Kept in step with docs/THIRD_PARTY_LICENCES.md. */
-private val notices = listOf(
+private val notices get() = listOf(
     Notice("Android Jetpack (Compose, Navigation, Lifecycle, Room, DataStore, Core)", "Apache License 2.0", "Copyright The Android Open Source Project."),
     Notice("Kotlin, kotlinx.coroutines, kotlinx.serialization", "Apache License 2.0", "Copyright JetBrains s.r.o. and contributors."),
     Notice("Coil", "Apache License 2.0", "Copyright Coil Contributors."),
@@ -50,54 +42,41 @@ private val notices = listOf(
     Notice("XZ for Java", "0BSD", "By Lasse Collin and contributors."),
     Notice(
         "ES-DE Frontend data (emulator launch commands, package names, ScreenScraper system ids)", "MIT",
-        "Copyright (c) 2024-2026 Northwestern Software AB, (c) 2020-2024 Leon Styhre, (c) 2014 Alec Lofquist. " +
-            "Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files, " +
-            "to deal in the Software without restriction, subject to including this notice. THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND.",
+        "Copyright (c) 2024-2026 Northwestern Software AB, (c) 2020-2024 Leon Styhre, (c) 2014 Alec Lofquist. Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files, to deal in the Software without restriction, subject to including this notice. THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND.",
     ),
     Notice(
-        "libretro API header (libretro.h), used by the built-in player", "MIT",
-        "Copyright (C) 2010-2024 The RetroArch team. Permission is hereby granted, free of charge, to any person obtaining a copy of this " +
-            "software and associated documentation files, to deal in the Software without restriction, subject to including this notice. " +
-            "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND.",
+        str(R.string.licences_libretro_api_header_libretro_h_used), "MIT",
+        "Copyright (C) 2010-2024 The RetroArch team. Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files, to deal in the Software without restriction, subject to including this notice. THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND.",
     ),
     Notice(
-        "libadrenotools and linkernsbypass (loading Turnip drivers in the built-in player)", "BSD 2-Clause",
-        "Copyright (c) 2021, Billy Laws. Redistribution and use in source and binary forms, with or without modification, are permitted " +
-            "provided that: redistributions of source code retain the above copyright notice, this list of conditions and the following " +
-            "disclaimer; redistributions in binary form reproduce them in the documentation and/or other materials provided with the " +
-            "distribution. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND ANY EXPRESS OR IMPLIED " +
-            "WARRANTIES ARE DISCLAIMED; IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DAMAGES ARISING IN ANY WAY " +
-            "OUT OF THE USE OF THIS SOFTWARE.",
+        str(R.string.licences_libadrenotools_and_linkernsbypass_loading_turnip_drivers), "BSD 2-Clause",
+        "Copyright (c) 2021, Billy Laws. Redistribution and use in source and binary forms, with or without modification, are permitted provided that: redistributions of source code retain the above copyright notice, this list of conditions and the following disclaimer; redistributions in binary form reproduce them in the documentation and/or other materials provided with the distribution. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES ARE DISCLAIMED; IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE.",
     ),
     Notice(
-        "Better xCloud userscript (PC tab → Xbox Cloud Gaming)", "MIT",
-        "Copyright (c) 2023 redphx, (c) 2020 Phosphor Icons. github.com/redphx/better-xcloud, bundled unchanged and added to " +
-            "Microsoft's xbox.com/play page. Not affiliated with Xbox.",
+        str(R.string.licences_better_xcloud_userscript_pc_tab_xbox), "MIT",
+        "Copyright (c) 2023 redphx, (c) 2020 Phosphor Icons. github.com/redphx/better-xcloud, bundled unchanged and added to Microsoft's xbox.com/play page. Not affiliated with Xbox.",
         "licences/better-xcloud-MIT.txt",
     ),
     Notice(
-        "Emulator cores (mGBA, Snes9x, Genesis Plus GX, FCEUmm, Gambatte, DeSmuME and others)", "Each core's own licence",
-        "Not part of RetroForge: downloaded from libretro's build server (buildbot.libretro.com) when needed and loaded by the built-in player. " +
-            "Some are licensed for non-commercial use only, one reason RetroForge is free.",
+        str(R.string.licences_emulator_cores_mgba_snes9x_genesis_plus), str(R.string.licences_each_core_s_own_licence),
+        str(R.string.licences_not_part_of_retroforge_downloaded_from),
     ),
     Notice(
-        "canvas-es system artwork (Retro tab)", "CC0 1.0",
-        "By Siddy212, github.com/Siddy212/canvas-es. Not part of RetroForge: downloaded from that repository for the systems in your " +
-            "library. Console and game names, logos and characters shown in it belong to their owners.",
+        str(R.string.licences_canvas_es_system_artwork_retro_tab), "CC0 1.0",
+        str(R.string.licences_by_siddy212_github_com_siddy212_canvas),
     ),
     Notice(
-        "The Bezel Project bezels (Settings → Covers and bezels → Bezels)", "The Bezel Project's own terms",
-        "Bezel artwork by The Bezel Project, github.com/thebezelproject. Not part of RetroForge: a system's bezels are downloaded " +
-            "from their GitHub repositories when you ask, for your own use. Console and game names, logos and art shown in them belong to their owners.",
+        str(R.string.licences_the_bezel_project_bezels_settings_covers), str(R.string.licences_the_bezel_project_s_own_terms),
+        str(R.string.licences_bezel_artwork_by_the_bezel_project),
     ),
     Notice(
-        "libretro cheat database (pause menu → Cheats)", "CC BY-SA 4.0",
-        "github.com/libretro/libretro-database. Not part of RetroForge: a game's cheat file is downloaded from there when you open its Cheats page.",
+        str(R.string.licences_libretro_cheat_database_pause_menu_cheats), "CC BY-SA 4.0",
+        str(R.string.licences_github_com_libretro_libretro_database_not),
     ),
-    Notice("Press Start 2P font", "SIL Open Font License 1.1", "Copyright 2012 The Press Start 2P Project Authors.", "licences/font-pressstart2p-OFL.txt"),
-    Notice("Orbitron font", "SIL Open Font License 1.1", "Copyright The Orbitron Project Authors.", "licences/font-orbitron-OFL.txt"),
-    Notice("Rajdhani font", "SIL Open Font License 1.1", "Copyright Indian Type Foundry.", "licences/font-rajdhani-OFL.txt"),
-    Notice("Exo 2 font", "SIL Open Font License 1.1", "Copyright The Exo 2 Project Authors.", "licences/font-exo2-OFL.txt"),
+    Notice(str(R.string.licences_press_start_2p_font), "SIL Open Font License 1.1", "Copyright 2012 The Press Start 2P Project Authors.", "licences/font-pressstart2p-OFL.txt"),
+    Notice(str(R.string.licences_orbitron_font), "SIL Open Font License 1.1", "Copyright The Orbitron Project Authors.", "licences/font-orbitron-OFL.txt"),
+    Notice(str(R.string.licences_rajdhani_font), "SIL Open Font License 1.1", "Copyright Indian Type Foundry.", "licences/font-rajdhani-OFL.txt"),
+    Notice(str(R.string.licences_exo_2_font), "SIL Open Font License 1.1", "Copyright The Exo 2 Project Authors.", "licences/font-exo2-OFL.txt"),
 )
 
 @Composable
@@ -120,7 +99,7 @@ fun LicencesScreen() {
                 CardBody("${n.licence}. ${n.detail}")
                 if (expanded && n.asset != null) {
                     val text = remember(n.asset) { runCatching { context.assets.open(n.asset).bufferedReader().use { it.readText() } }.getOrNull() }
-                    CardBody(text ?: "Licence text unavailable.")
+                    CardBody(text ?: stringResource(R.string.licences_licence_text_unavailable))
                 }
             }
         }

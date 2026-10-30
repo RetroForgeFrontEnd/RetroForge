@@ -222,9 +222,7 @@ interface LibraryDao {
     // Whole-title, then title-start, then word-start matches first, so a short word ("rez") still finds its game among
     // the hundreds of titles that merely contain it before the limit cuts the list.
     @Query(
-        "SELECT * FROM games WHERE title LIKE '%' || :query || '%' ESCAPE '\\' ORDER BY " +
-            "CASE WHEN title LIKE :query ESCAPE '\\' THEN 0 WHEN title LIKE :query || '%' ESCAPE '\\' THEN 1 " +
-            "WHEN title LIKE '% ' || :query || '%' ESCAPE '\\' THEN 2 ELSE 3 END, sortKey LIMIT 300",
+        "SELECT * FROM games WHERE title LIKE '%' || :query || '%' ESCAPE '\\' ORDER BY CASE WHEN title LIKE :query ESCAPE '\\' THEN 0 WHEN title LIKE :query || '%' ESCAPE '\\' THEN 1 WHEN title LIKE '% ' || :query || '%' ESCAPE '\\' THEN 2 ELSE 3 END, sortKey LIMIT 300",
     )
     fun search(query: String): Flow<List<GameEntity>>
 
@@ -244,8 +242,7 @@ interface LibraryDao {
     }
 
     @Query(
-        "SELECT games.* FROM games JOIN play_history ON games.rootId = play_history.rootId " +
-            "AND games.relativePath = play_history.relativePath ORDER BY play_history.lastPlayedAt DESC LIMIT :limit",
+        "SELECT games.* FROM games JOIN play_history ON games.rootId = play_history.rootId AND games.relativePath = play_history.relativePath ORDER BY play_history.lastPlayedAt DESC LIMIT :limit",
     )
     fun recentlyPlayed(limit: Int): Flow<List<GameEntity>>
 
@@ -283,14 +280,12 @@ interface LibraryDao {
     suspend fun deleteProblems(rootId: Long)
 
     @Query(
-        "UPDATE roots SET lastScanAt = :at, layout = :layout, gameCount = :games, problemCount = :problems, " +
-            "unrecognisedFolders = :unrecognised WHERE id = :rootId",
+        "UPDATE roots SET lastScanAt = :at, layout = :layout, gameCount = :games, problemCount = :problems, unrecognisedFolders = :unrecognised WHERE id = :rootId",
     )
     suspend fun updateScan(rootId: Long, at: Long, layout: String, games: Int, problems: Int, unrecognised: String)
 
     @Query(
-        "SELECT games.* FROM games JOIN favourites ON games.rootId = favourites.rootId " +
-            "AND games.relativePath = favourites.relativePath ORDER BY favourites.addedAt DESC",
+        "SELECT games.* FROM games JOIN favourites ON games.rootId = favourites.rootId AND games.relativePath = favourites.relativePath ORDER BY favourites.addedAt DESC",
     )
     fun favouriteGames(): Flow<List<GameEntity>>
 
@@ -304,10 +299,7 @@ interface LibraryDao {
     suspend fun removeFavourite(rootId: Long, path: String)
 
     @Query(
-        "SELECT playlists.id AS id, playlists.name AS name, COUNT(games.id) AS games FROM playlists " +
-            "LEFT JOIN playlist_items ON playlist_items.playlistId = playlists.id " +
-            "LEFT JOIN games ON games.rootId = playlist_items.rootId AND games.relativePath = playlist_items.relativePath " +
-            "GROUP BY playlists.id ORDER BY playlists.name COLLATE NOCASE",
+        "SELECT playlists.id AS id, playlists.name AS name, COUNT(games.id) AS games FROM playlists LEFT JOIN playlist_items ON playlist_items.playlistId = playlists.id LEFT JOIN games ON games.rootId = playlist_items.rootId AND games.relativePath = playlist_items.relativePath GROUP BY playlists.id ORDER BY playlists.name COLLATE NOCASE",
     )
     fun playlists(): Flow<List<PlaylistSummary>>
 
@@ -315,8 +307,7 @@ interface LibraryDao {
     fun playlist(id: Long): Flow<PlaylistEntity?>
 
     @Query(
-        "SELECT games.* FROM games JOIN playlist_items ON games.rootId = playlist_items.rootId " +
-            "AND games.relativePath = playlist_items.relativePath WHERE playlist_items.playlistId = :id ORDER BY playlist_items.position",
+        "SELECT games.* FROM games JOIN playlist_items ON games.rootId = playlist_items.rootId AND games.relativePath = playlist_items.relativePath WHERE playlist_items.playlistId = :id ORDER BY playlist_items.position",
     )
     fun playlistGames(id: Long): Flow<List<GameEntity>>
 

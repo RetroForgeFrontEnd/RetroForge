@@ -754,4 +754,1221 @@
     <string name="gpu_rec_group">%1$s: %2$s</string>
     <string name="gpu_rec_why">Why?</string>
     <string name="gpu_rec_hide_why">Hide reasons</string>
+
+    <!-- Downloads.kt -->
+    <string name="downloads_the_server_answered">the server answered %1$s</string>
+    <string name="downloads_the_file_is_over_mb">the file is over %1$s MB</string>
+
+    <!-- ResetCombo.kt -->
+    <string name="reset_combo_reset_retroforge">Reset RetroForge</string>
+    <string name="reset_combo_use_the_phone_s_language_puts">Use the phone\'s language: puts RetroForge back in your phone\'s language. Nothing else changes.\n\nFactory reset: every RetroForge setting back to how it was when installed. Your games, saves and save states are kept.</string>
+    <string name="reset_combo_use_the_phone_s_language">Use the phone\'s language</string>
+    <string name="reset_combo_factory_reset">Factory reset…</string>
+    <string name="reset_combo_factory_reset_are_you_sure">Factory reset: are you sure?</string>
+    <string name="reset_combo_this_resets_all_of_retroforge_s">This resets ALL of RetroForge\'s settings: language, theme, emulator choices, remapped buttons, hotkeys, covers chosen, save syncing, accounts and network drive sign-ins. It can\'t be undone.\n\nKept: your game folders and library, your games, saves and save states.</string>
+    <string name="reset_combo_reset_everything">Reset everything</string>
+
+    <!-- MediaServers.kt -->
+    <string name="media_servers_didn_t_answer">%1$s didn\'t answer</string>
+    <string name="media_servers_untitled">Untitled</string>
+
+    <!-- NetworkDrives.kt -->
+    <string name="network_drives_can_t_reach_is_the_pc">Can\'t reach %1$s. Is the PC switched on and on the same network as this device?</string>
+    <string name="network_drives_isn_t_a_shared_folder">%1$s isn\'t a shared folder</string>
+    <string name="network_drives_this_computer_doesn_t_allow_guests">This computer doesn\'t allow guests (Windows switches its Guest account off). Enter the username and password you sign in to that computer with.</string>
+    <string name="network_drives_the_username_or_password_wasn_t">The username or password wasn\'t accepted by %1$s.</string>
+    <string name="network_drives_that_account_has_no_password_and">That account has no password, and Windows won\'t share with it over the network. Give the account a password, or use another one.</string>
+    <string name="network_drives_couldn_t_sign_in">Couldn\'t sign in.</string>
+    <string name="network_drives_can_t_be_read_on_the">%1$s can\'t be read. On the PC: right-click that folder → Properties → Security → Edit → Add Everyone → tick Read &amp; execute → OK. Or pick a folder inside it that\'s readable (e.g. %2$s/roms).</string>
+
+    <!-- NetworkDrivesProvider.kt -->
+    <string name="network_drives_provider_that_network_drive_was_removed">That network drive was removed</string>
+    <string name="network_drives_provider_couldn_t_open">Couldn\'t open %1$s: %2$s</string>
+    <string name="network_drives_provider_network_drives_are_read_only_in">Network drives are read-only in RetroForge</string>
+
+    <!-- ArcadeRomsets.kt -->
+    <string name="arcade_romsets_this_arcade_game_s_files_don">This arcade game\'s files don\'t match %1$s: it couldn\'t find %2$s. Arcade romsets only work with the emulator version they were made for (FinalBurn Neo needs FinalBurn Neo sets, MAME 2003-Plus needs MAME 0.78 sets, and so on). Try the game with another emulator (on its page), or use a romset made for this one.</string>
+
+    <!-- Bezels.kt -->
+    <string name="bezels_the_bezel_project_has_no_bezels">The Bezel Project has no bezels for this system</string>
+    <string name="bezels_this_pack_has_no_system_bezel">this pack has no system bezel</string>
+    <string name="bezels_couldn_t_read_the_bezel_list">couldn\'t read the bezel list</string>
+    <string name="bezels_this_pack_has_no_folder">this pack has no %1$s folder</string>
+    <string name="bezels_couldn_t_save">couldn\'t save %1$s</string>
+    <string name="bezels_github_answered">GitHub answered %1$s</string>
+
+    <!-- Cheats.kt -->
+    <string name="cheats_the_cheat_database_answered">the cheat database answered %1$s</string>
+    <string name="cheats_cheat">Cheat %1$s</string>
+
+    <!-- FolderGame.kt -->
+    <string name="folder_game_couldn_t_read">couldn\'t read %1$s</string>
+    <string name="folder_game_no_program_to_start_in_a">no program to start in %1$s (a .bat, .exe or .com)</string>
+
+    <!-- GameFiles.kt -->
+    <string name="game_files_couldn_t_open">couldn\'t open %1$s</string>
+    <string name="game_files_couldn_t_open_the_game">couldn\'t open the game</string>
+
+    <!-- MemoryCard.kt -->
+    <string name="memory_not_a_playstation_memory_card_bytes">not a PlayStation memory card (%1$s bytes)</string>
+    <string name="memory_not_a_playstation_memory_card">not a PlayStation memory card</string>
+
+    <!-- PlayerActivity.kt -->
+    <string name="player_this_emulator_doesn_t_support_cheats">This emulator doesn\'t support cheats.</string>
+    <string name="player_looking_for_cheats_for_this_game">Looking for cheats for this game…</string>
+    <string name="player_libretro_s_cheat_database_has_no">libretro\'s cheat database has no cheats for this game. You can add your own code below.</string>
+    <string name="player_couldn_t_get_cheats_check_the">Couldn\'t get cheats (%1$s). Check the internet connection.</string>
+    <string name="player_checking_whether_friends_on_the_internet">Checking whether friends on the internet can join…</string>
+    <string name="player_friends_on_the_internet_can_join">Friends on the internet can join at %1$s (your router opened the port).</string>
+    <string name="player_your_router_opened_the_port_for">Your router opened the port for friends on the internet.</string>
+    <string name="player_for_friends_on_the_internet_your">For friends on the internet, your router needs port %1$s (TCP) sent to %2$s: it didn\'t allow RetroForge to do it. Players on the same Wi-Fi can join anyway.</string>
+    <string name="player_getting_the_emulator_s_data_files">Getting the emulator\'s data files (first time only)…</string>
+    <string name="player_couldn_t_read_the_game">Couldn\'t read the game: %1$s</string>
+    <string name="player_retroforge_no_longer_has_access_to">RetroForge no longer has access to this game\'s folder. Add the folder again in Settings.</string>
+    <string name="player_couldn_t_start_this_game_the">%1$s couldn\'t start this game. The file may be damaged, or it may need BIOS files.</string>
+    <string name="player_preparing_the_game_for_the_first">Preparing the game for the first time… %1$s%%</string>
+    <string name="player_the_zip_has_no_file_this">the zip has no file this emulator can open</string>
+    <string name="player_couldn_t_open_it">couldn\'t open it</string>
+    <string name="player_the_7z_has_no_file_this">the 7z has no file this emulator can open</string>
+    <string name="player_restarting_in">Restarting in %1$s…</string>
+    <string name="player_restarting_with">Restarting with %1$s…</string>
+    <string name="player_restarting_at">Restarting at %1$s×…</string>
+    <string name="player_getting">Getting %1$s…</string>
+    <string name="player_couldn_t_download_check_the_internet">Couldn\'t download %1$s. Check the internet connection.</string>
+    <string name="player_couldn_t_take_a_screenshot">Couldn\'t take a screenshot</string>
+    <string name="player_screenshot_saved_to_pictures_retroforge">Screenshot saved to Pictures/RetroForge</string>
+    <string name="player_couldn_t_save_the_screenshot">Couldn\'t save the screenshot</string>
+    <string name="player_getting_your_saves">Getting your saves…</string>
+    <string name="player_saving_to_your_sync_folder">Saving to your sync folder…</string>
+    <string name="player_couldn_t_reach_your_save_sync">Couldn\'t reach your save sync folder (%1$s). Playing with this device\'s saves.</string>
+    <string name="player_downloading_bezels_from_the_bezel_project">Downloading bezels from The Bezel Project…</string>
+    <string name="player_bezels_downloaded_they_show_in_landscape">Bezels downloaded. They show in landscape.</string>
+    <string name="player_couldn_t_download_bezels">Couldn\'t download bezels: %1$s</string>
+    <string name="player_state_saved">State saved</string>
+    <string name="player_this_emulator_can_t_save_states">This emulator can\'t save states</string>
+    <string name="player_during_netplay_only_player_1_can">During netplay only player 1 can load a state.</string>
+    <string name="player_no_saved_state_yet">No saved state yet</string>
+    <string name="player_fast_forward_is_off_during_netplay">Fast-forward is off during netplay: both players run at the same speed.</string>
+    <string name="player_disc_inserted">Disc %1$s inserted</string>
+    <string name="player_couldn_t_change_disc">Couldn\'t change disc</string>
+    <string name="player_netplay_player">Netplay: player %1$s ›</string>
+    <string name="player_netplay_2">Netplay ›</string>
+    <string name="player_during_netplay_only_player_1_can_2">During netplay only player 1 can restart the game.</string>
+    <string name="player_on_the_same_wi_fi_player">On the same Wi-Fi, player 2 opens this game and picks Netplay → your device. Or they join by address: %1$s (port %2$s).</string>
+    <string name="player_is_playing_open_that_game_to">%1$s is playing %2$s. Open that game to join.</string>
+    <string name="player_join">Join %1$s</string>
+    <string name="player_console_look">Console look: %1$s</string>
+    <string name="player_bezel_landscape">Bezel (landscape): %1$s</string>
+    <string name="player_downloading_bezels">Downloading bezels…</string>
+    <string name="player_download_bezels_the_bezel_project">Download bezels (The Bezel Project)</string>
+    <string name="player_resolution">Resolution: %1$s×</string>
+    <string name="player_cardboard_vr">Cardboard VR: %1$s</string>
+    <string name="player_show_fps">Show FPS: %1$s</string>
+    <string name="player_touch_controls">Touch controls: %1$s</string>
+    <string name="player_cheats_2">Cheats ›</string>
+    <string name="player_on">"  (%1$s on)"</string>
+    <string name="player_off">Off</string>
+    <string name="player_my_code_1">My code %1$s</string>
+    <string name="player_press_a_controller_button">Press a controller button…</string>
+    <string name="player_needs_bios">" (needs BIOS)"</string>
+
+    <!-- Playtime.kt -->
+    <string name="playtime_under_a_minute">under a minute</string>
+    <string name="playtime_h_min">%1$s h %2$s min</string>
+
+    <!-- SaveBackup.kt -->
+    <string name="save_backup_couldn_t_write">couldn\'t write %1$s</string>
+
+    <!-- SaveSync.kt -->
+    <string name="save_sync_couldn_t_make_the_folder">couldn\'t make the folder %1$s</string>
+    <string name="save_sync_couldn_t_make">couldn\'t make %1$s</string>
+
+    <!-- TypedCheats.kt -->
+    <string name="typed_cheats_god_mode">God mode</string>
+    <string name="typed_cheats_all_weapons_ammo_keys_and_armour">All weapons, ammo, keys and armour</string>
+    <string name="typed_cheats_all_weapons_and_ammo_no_keys">All weapons and ammo (no keys)</string>
+    <string name="typed_cheats_walk_through_walls">Walk through walls</string>
+    <string name="typed_cheats_whole_map_on_the_automap_again">Whole map (on the automap; again for things)</string>
+    <string name="typed_cheats_berserk">Berserk</string>
+    <string name="typed_cheats_invisibility">Invisibility</string>
+    <string name="typed_cheats_light_amplification">Light amplification</string>
+
+    <!-- LegalNotice.kt -->
+    <string name="legal_notice_retroforge_does_not_include_sell_or">RetroForge does not include, sell or download any games (ROMs or disc images), BIOS or firmware files.</string>
+    <string name="legal_notice_to_play_you_need_your_own">To play, you need your own copies, obtained legally: for example, made from cartridges, discs or consoles you own. The rules differ from country to country, and you are responsible for the files you use.</string>
+    <string name="legal_notice_retroforge_only_reads_the_folders_you">RetroForge only reads the folders you choose. Emulators such as RetroArch are separate apps from their own developers.</string>
+    <string name="legal_notice_nintendo_sony_sega_and_other_names">Nintendo, Sony, Sega and other names are trademarks of their owners. RetroForge is not affiliated with or endorsed by them.</string>
+
+    <!-- NetworkDrivesCard.kt -->
+    <string name="network_drives_looking_for_shared_folders_on">Looking for shared folders on %1$s…</string>
+    <string name="network_drives_doesn_t_share_any_folders_yet">%1$s doesn\'t share any folders yet. Share one first (Settings → How to use RetroForge → network drives).</string>
+    <string name="network_drives_couldn_t_reach_check_it_s">Couldn\'t reach %1$s. Check it\'s on, and on the same network as this device.</string>
+    <string name="network_drives_couldn_t_list_its_folders_enter">Couldn\'t list its folders: %1$s Enter the username and password, then Show shared folders.</string>
+    <string name="network_drives_searching_your_network">Searching your network…</string>
+    <string name="network_drives_find_on_my_network">Find on my network</string>
+    <string name="network_drives_hide_password">Hide password</string>
+    <string name="network_drives_show_password">Show password</string>
+    <string name="network_drives_add_to_my">Add to my %1$s</string>
+    <string name="network_drives_test_and_save">Test and save</string>
+    <string name="network_drives_connecting_to">Connecting to %1$s…</string>
+    <string name="network_drives_connected_to_looking_for_your_a">Connected to %1$s. Looking for your %2$s… (a big collection can take a few minutes)</string>
+    <string name="network_drives_connected_has_items_choose_it_in">Connected: %1$s has %2$s items. Choose it in the folder picker now.</string>
+    <string name="network_drives_less_than_a_minute_left">Less than a minute left</string>
+    <string name="network_drives_couldn_t_connect">Couldn\'t connect: %1$s</string>
+    <string name="network_drives_working_out_how_long">Working out how long…</string>
+
+    <!-- RetroForgeRoot.kt -->
+    <string name="retro_forge_root_back">Back</string>
+
+    <!-- Screen.kt -->
+    <string name="screen_less">Less</string>
+    <string name="screen_more">More</string>
+
+    <!-- AppsScreen.kt -->
+    <string name="apps_offered_to_android">Offered to Android</string>
+
+    <!-- CatalogueFetcher.kt -->
+    <string name="catalogue_fetcher_that_isn_t_a_valid_link">That isn\'t a valid link.</string>
+    <string name="catalogue_fetcher_the_link_redirects_elsewhere_http_use">The link redirects elsewhere (HTTP %1$s). Use the final address of the catalogue file.</string>
+    <string name="catalogue_fetcher_the_site_refused_the_request_http">The site refused the request (HTTP 403). It may not allow apps to download from it.</string>
+    <string name="catalogue_fetcher_the_site_answered_http">The site answered HTTP %1$s.</string>
+    <string name="catalogue_fetcher_couldn_t_download_the_catalogue">Couldn\'t download the catalogue: %1$s</string>
+    <string name="catalogue_fetcher_the_file_is_larger_than_2">The file is larger than 2 MB, so it isn\'t a catalogue.</string>
+
+    <!-- HackDownloads.kt -->
+    <string name="hack_downloads_no_files_in_the_latest_release">no files in the latest release</string>
+    <string name="hack_downloads_no_patch_file_in_the_latest">no patch file in the latest release</string>
+    <string name="hack_downloads_the_patch_is_over_64_mb">the patch is over 64 MB</string>
+
+    <!-- HacksScreens.kt -->
+    <string name="hacks_all">All</string>
+    <string name="hacks_this_hack_is_no_longer_in">This hack is no longer in your catalogues.</string>
+    <string name="hacks_listed_in">Listed in: %1$s</string>
+    <string name="hacks_getting_the_latest_patch">Getting the latest patch…</string>
+    <string name="hacks_couldn_t_download_it">Couldn\'t download it: %1$s</string>
+    <string name="hacks_once_you_ve_downloaded_the_patch">Once you\'ve downloaded the patch from the official page, open the ROM Patcher, pick your ROM and add the patch</string>
+    <string name="hacks_after_the_ones_listed_above">" after the ones listed above."</string>
+    <string name="hacks_your_original_rom_is_never_changed">" Your original ROM is never changed."</string>
+    <string name="hacks_no_browser_is_installed_open_on">No browser is installed. Open %1$s on another device.</string>
+    <string name="hacks_maintained_by">" · maintained by %1$s"</string>
+    <string name="hacks_added_from_a_file_on_this">Added from a file on this device</string>
+    <string name="hacks_added">Added %1$s</string>
+    <string name="hacks_updated">, updated %1$s</string>
+    <string name="hacks_1_entry_skipped_as_invalid">1 entry skipped as invalid.</string>
+    <string name="hacks_entries_skipped_as_invalid">%1$s entries skipped as invalid.</string>
+
+    <!-- HacksViewModel.kt -->
+    <string name="hacks_couldn_t_read_that_file_or">Couldn\'t read that file, or it\'s larger than 2 MB.</string>
+    <string name="hacks_catalogue_removed">Catalogue removed.</string>
+    <string name="hacks_added_2">Added \"%1$s\".</string>
+    <string name="hacks_1_entry_was_skipped">" 1 entry was skipped: "</string>
+    <string name="hacks_entries_were_skipped">" %1$s entries were skipped: "</string>
+
+    <!-- HomeLayouts.kt -->
+    <string name="home_layouts_all">All %1$s</string>
+    <string name="home_layouts_home">Home</string>
+
+    <!-- HomeScreen.kt -->
+    <string name="home_retroforge_merging_the_past_building_the">RetroForge: merging the past, building the future</string>
+    <string name="home_jump_back_in">Jump back in</string>
+
+    <!-- CoverPicker.kt -->
+    <string name="cover_picker_cover_saved">Cover saved.</string>
+    <string name="cover_picker_couldn_t_use_that_image">Couldn\'t use that image: %1$s</string>
+    <string name="cover_picker_couldn_t_save_that_cover">Couldn\'t save that cover: %1$s</string>
+    <string name="cover_picker_no_box_art_found_for_this">No box art found for this game.</string>
+    <string name="cover_picker_no_free_box_art_source_for">No free box art source for this system yet.</string>
+    <string name="cover_picker_box">"Box "</string>
+    <string name="cover_picker_screenscraper_lookup_failed">ScreenScraper lookup failed.</string>
+    <string name="cover_picker_preview_unavailable">Preview unavailable</string>
+    <string name="cover_picker_cover_from_steamgriddb">Cover from SteamGridDB</string>
+    <string name="cover_picker_box_art_from_libretro_thumbnails">Box art from libretro thumbnails</string>
+
+    <!-- GameExtras.kt -->
+    <string name="game_extras_page">Page %1$s</string>
+
+    <!-- GameViews.kt -->
+    <string name="game_views_1_disc">1 disc</string>
+    <string name="game_views_also_another_copy">Also another copy</string>
+
+    <!-- LibraryScreens.kt -->
+    <string name="library_use_my_own_theme_folder">Use my own theme folder</string>
+    <string name="library_artwork_change">Artwork: %1$s · change</string>
+    <string name="library_game_in_from">%1$s in %2$s from %3$s.</string>
+    <string name="library_scanning_2">Scanning %1$s%2$s</string>
+    <string name="library_system_of_games_found_so_far">%1$sSystem %2$s of %3$s: %4$s · %5$s games found so far</string>
+    <string name="library_with_no_games_retroforge_recognises_not">%1$s with no games RetroForge recognises (not named after a system, nothing playable inside): %2$s%3$s</string>
+    <string name="library_games_2">Games (%1$s)</string>
+    <string name="library_rom_hacks">ROM hacks (%1$s)</string>
+    <string name="library_show_as">Show as: %1$s</string>
+    <string name="library_showing_one_copy_of_each_game">• Showing one copy of each game</string>
+    <string name="library_show_one_copy_of_each_game">Show one copy of each game</string>
+    <string name="library_rating_5">Rating: %1$s / 5</string>
+    <string name="library_from_your_folder">From your \"%1$s\" folder.</string>
+    <string name="library_marked_as_a_hack_in_its">Marked as a hack in its file name.</string>
+    <string name="library_in_2">In %1$s: %2$s</string>
+    <string name="library_downloading_box_art_of_found">Downloading box art: %1$s of %2$s · %3$s found</string>
+    <string name="library_box_art_added">Box art: %1$s added</string>
+    <string name="library_not_found">, %1$s not found</string>
+    <string name="library_failed">, %1$s failed</string>
+    <string name="library_download_box_art_for_without_artwork">Download box art for %1$s without artwork</string>
+    <string name="library_looking">Looking…</string>
+    <string name="library_find_games_on_this_wi_fi">Find games on this Wi-Fi</string>
+    <string name="library_isn_t_in_your_library_you">%1$s isn\'t in your library. You need the same game file to join.</string>
+    <string name="library_getting_3d_boxes">Getting 3D boxes…</string>
+    <string name="library_3d_boxes_from_screenscraper">3D boxes from ScreenScraper</string>
+    <string name="library_3d_boxes_come_from_screenscraper_which">3D boxes come from ScreenScraper, which needs RetroForge\'s developer ID from ScreenScraper. It isn\'t in this version yet. Until then, the shelf draws a case round each cover. (SteamGridDB has no 3D boxes.)</string>
+    <string name="library_screenscraper_had_no_new_3d_boxes">ScreenScraper had no new 3D boxes for these games.</string>
+    <string name="library_added">Added %1$s.</string>
+    <string name="library_couldn_t_get_3d_boxes">Couldn\'t get 3D boxes: %1$s</string>
+
+    <!-- LibraryViewModel.kt -->
+    <string name="library_isn_t_installed">%1$s isn\'t installed.</string>
+    <string name="library_can_t_open_this_game">%1$s can\'t open this game: %2$s.</string>
+
+    <!-- PlaySection.kt -->
+    <string name="play_play_in_retroarch_with">Play in RetroArch with %1$s</string>
+    <string name="play_played_last_on">Played %1$s, last on %2$s.</string>
+    <string name="play_no_browser_installed_get_retroarch_from">No browser installed. Get RetroArch from %1$s</string>
+    <string name="play_couldn_t_download_the_emulator_check">Couldn\'t download the %1$s emulator. Check the internet connection and try again.</string>
+    <string name="play_play_in_retroforge">Play in RetroForge</string>
+    <string name="play_in_retroforge_s_built_in_player">In RetroForge\'s built-in player, with %1$s.</string>
+    <string name="play_getting_the_emulator">Getting the %1$s emulator… %2$s%%</string>
+    <string name="play_in_retroforge_s_built_in_player_2">In RetroForge\'s built-in player. The %1$s emulator (under 2 MB) downloads first.</string>
+    <string name="play_couldn_t_download_the_emulator_last">Couldn\'t download the %1$s emulator last time (%2$s). Select to try again.</string>
+    <string name="play_retroforge_plays_games_through_retroarch_a">RetroForge plays games through RetroArch, a free app installed separately. Select to open RetroArch\'s official download page (%1$s).</string>
+    <string name="play_retroarch_can_t_start_games_from">RetroArch can\'t start %1$s games from RetroForge. Use one of the emulator apps below (Get installs it), or Settings → Help and about → How to use RetroForge → Other emulators.</string>
+    <string name="play_this_game_is_in_a_location">This game is in a location RetroArch can\'t open directly (for example a cloud drive). Games on internal storage, an SD card or a USB drive work.</string>
+    <string name="play_couldn_t_open">Couldn\'t open %1$s</string>
+
+    <!-- Playlists.kt -->
+    <string name="playlists_favourite">★ Favourite</string>
+    <string name="playlists_add_to_favourites">☆ Add to favourites</string>
+    <string name="playlists_add_to_a_playlist">Add to a playlist</string>
+    <string name="playlists_no_playlists_yet_name_one_below">No playlists yet. Name one below.</string>
+    <string name="playlists_select_a_playlist_to_add_or">Select a playlist to add or remove this game.</string>
+    <string name="playlists_add_games_from_any_game_s">. Add games from any game\'s page.</string>
+
+    <!-- LinksScreen.kt -->
+    <string name="links_youtube_handhelds_and_emulation">YouTube: handhelds and emulation</string>
+    <string name="links_russ_s_in_depth_handheld_reviews">Russ\'s in-depth handheld reviews and emulation setup guides.</string>
+    <string name="links_emulation_and_gaming_on_android_pcs">Emulation and gaming on Android, PCs, Raspberry Pi and single-board computers.</string>
+    <string name="links_retro_handheld_reviews_and_comparisons_from">Retro handheld reviews and comparisons, from budget emulation devices to the latest Android handhelds.</string>
+    <string name="links_easy_to_follow_handheld_gaming_guides">Easy-to-follow handheld gaming guides for beginners and experienced players.</string>
+    <string name="links_retro_handheld_reviews_guides_and_joey">Retro handheld reviews, guides, and Joey\'s Retro Newscast every week.</string>
+    <string name="links_handheld_mods_and_fpga_hardware_from">Handheld mods and FPGA hardware, from the MiSTer Pi to the SuperStation One.</string>
+    <string name="links_news_reviews_and_guides_for_retro">News, reviews and guides for retro handhelds, from the Retro Handhelds community (retrohandhelds.gg).</string>
+    <string name="links_gaming_and_tech_news_with_handhelds">Gaming and tech news, with handhelds, controllers and consoles.</string>
+    <string name="links_retro_hardware_games_emulation_and_arcade">Retro hardware, games, emulation and arcade.</string>
+    <string name="links_how_classic_games_and_consoles_work">How classic games and consoles work, homebrew and emulation history.</string>
+    <string name="links_in_depth_technical_analysis_including_retro">In-depth technical analysis, including retro games, remasters and emulation.</string>
+    <string name="links_retro_gaming_hardware_best_ways_to">Retro gaming hardware, best ways to play old games, and RGB video guides.</string>
+    <string name="links_well_researched_documentaries_on_video_game">Well-researched documentaries on video game history.</string>
+    <string name="links_gadgets_and_handhelds_from_aliexpress_amazon">Gadgets and handhelds from AliExpress, Amazon and other Chinese stores.</string>
+    <string name="links_no_app_on_this_device_can">No app on this device can open links. Visit %1$s on another device.</string>
+
+    <!-- RomManagerScreen.kt -->
+    <string name="rom_manager_move_copies">Move %1$s?</string>
+    <string name="rom_manager_compress">Compress %1$s (%2$s)?</string>
+    <string name="rom_manager_files_move_to_the_folder_and">%1$s to the %2$s folder and its gamelist.xml entry is removed. You can undo this from History until you empty %3$s with Free up space.</string>
+    <string name="rom_manager_will_be_deleted_for_good_history">%1$s (%2$s) will be deleted for good. History entries that would need them can no longer be undone.</string>
+    <string name="rom_manager_move_into_system_folders">Move %1$s into system folders?</string>
+    <string name="rom_manager_make">Make %1$s?</string>
+    <string name="rom_manager_delete_permanently_3">Delete permanently</string>
+    <string name="rom_manager_yes_go_ahead">Yes, go ahead</string>
+    <string name="rom_manager_looking_for_duplicates">Looking for duplicates …</string>
+    <string name="rom_manager_checking_set_of">Checking set %1$s of %2$s …</string>
+    <string name="rom_manager_of_duplicates_ticked_sets_hold_identical">%1$s of duplicates. Ticked sets hold identical data. Select a file to keep it instead.</string>
+    <string name="rom_manager_keep_most_compatible">Keep most compatible</string>
+    <string name="rom_manager_keep_smallest">Keep smallest</string>
+    <string name="rom_manager_left_alone">Left alone: %1$s</string>
+    <string name="rom_manager_move_to">Move %1$s to %2$s</string>
+    <string name="rom_manager_to">"To "</string>
+    <string name="rom_manager_and_more_2">" and %1$s more"</string>
+    <string name="rom_manager_compress_2">Compress %1$s</string>
+    <string name="rom_manager_into">Into %1$s: %2$s</string>
+    <string name="rom_manager_from">"%1$s  (from %2$s)"</string>
+    <string name="rom_manager_move">Move %1$s</string>
+    <string name="rom_manager_make_2">Make %1$s</string>
+    <string name="rom_manager_compressed">Compressed</string>
+    <string name="rom_manager_deleted">Deleted</string>
+    <string name="rom_manager_playlists_made">Playlists made</string>
+    <string name="rom_manager_duplicates_tidied">Duplicates tidied</string>
+    <string name="rom_manager_interrupted">" · interrupted"</string>
+
+    <!-- RomManagerViewModel.kt -->
+    <string name="rom_manager_duplicates">Duplicates</string>
+    <string name="rom_manager_compress_3">Compress</string>
+    <string name="rom_manager_sort">Sort</string>
+    <string name="rom_manager_history">History</string>
+    <string name="rom_manager_couldn_t_look_for_multi_disc">Couldn\'t look for multi-disc games</string>
+    <string name="rom_manager_couldn_t_look">Couldn\'t look</string>
+    <string name="rom_manager_couldn_t_check_for_duplicates">Couldn\'t check for duplicates</string>
+    <string name="rom_manager_couldn_t_look_for_games_to">Couldn\'t look for games to compress</string>
+
+    <!-- MediaScreen.kt -->
+    <string name="media_choose_another_folder">Choose another folder</string>
+    <string name="media_change_folder">Change folder</string>
+    <string name="media_all_films">All films (%1$s)</string>
+    <string name="media_3d_films">3D films (%1$s)</string>
+    <string name="media_films">Films</string>
+    <string name="media_added_but_no_films_were_found">Added, but no films were found there.</string>
+    <string name="media_no_description_save_a_nfo_file">No description. Save a .nfo file next to the film (Media Companion or tinyMediaManager make them) for its story and rating.</string>
+    <string name="media_using_frames_from_the_films">Using frames from the films</string>
+    <string name="media_tmdb_key_saved">TMDB key saved</string>
+    <string name="media_hide_key">Hide key</string>
+    <string name="media_show_key">Show key</string>
+
+    <!-- MediaServersCard.kt -->
+    <string name="media_servers_opening">Opening %1$s…</string>
+    <string name="media_servers_nothing_to_watch_in_here">Nothing to watch in here.</string>
+    <string name="media_servers_didn_t_answer_is_it_switched">%1$s didn\'t answer. Is it switched on, on the same network?</string>
+    <string name="media_servers_looking_on_your_network_a_few">Looking on your network (a few seconds)…</string>
+    <string name="media_servers_no_media_servers_answered_check_the">No media servers answered. Check the server is on and sharing by DLNA, and that this phone is on the same network.</string>
+    <string name="media_servers_found">Found %1$s: %2$s.</string>
+
+    <!-- StereoRenderer.kt -->
+    <string name="stereo_renderer_normal">Normal</string>
+    <string name="stereo_renderer_cardboard_cinema_2d">Cardboard cinema (2D)</string>
+    <string name="stereo_renderer_cardboard_3d_side_by_side">Cardboard 3D, side by side</string>
+    <string name="stereo_renderer_cardboard_3d_top_and_bottom">Cardboard 3D, top and bottom</string>
+
+    <!-- VideoActivity.kt -->
+    <string name="video_can_t_play_this_film_here">Can\'t play this film here</string>
+    <string name="video_this_phone_can_t_decode_it">This phone can\'t decode it (%1$s). Another video app such as VLC may play it.</string>
+    <string name="video_open_in_another_app">Open in another app</string>
+
+    <!-- PatcherScreen.kt -->
+    <string name="patcher_from">%1$s (from %2$s)</string>
+    <string name="patcher_2_patches_applied_top_to_bottom">2. Patches, applied top to bottom</string>
+    <string name="patcher_2_patch">2. Patch</string>
+    <string name="patcher_add_a_patch">Add a patch</string>
+    <string name="patcher_add_another_patch_on_top">Add another patch on top</string>
+    <string name="patcher_select_to_choose_a_ips_bps">Select to choose a .ips, .bps or .ups file, or a .zip containing one.</string>
+    <string name="patcher_for_add_on_hacks_whose_readme">For add-on hacks whose readme says to apply another patch first.</string>
+    <string name="patcher_choose_a_rom_and_at_least">Choose a ROM and at least one patch first.</string>
+    <string name="patcher_unavailable_the_first_patch_needs_a">Unavailable: the first patch needs a different ROM.</string>
+    <string name="patcher_select_to_apply_all_patches_in">Select to apply all %1$s patches in order, then choose where to save.</string>
+    <string name="patcher_select_to_patch_then_choose_where">Select to patch, then choose where to save the new file.</string>
+    <string name="patcher_from_2">" · from %1$s"</string>
+    <string name="patcher_select_to_collapse_the_readme">Select to collapse the readme.</string>
+    <string name="patcher_readme_select_to_read_all_of">Readme: %1$s. Select to read all of it.</string>
+
+    <!-- PatcherViewModel.kt -->
+    <string name="patcher_patch">"Patch %1$s (%2$s): "</string>
+    <string name="patcher_it_may_need_a_different_order">" It may need a different order or a different patch before it; check its readme."</string>
+    <string name="patcher_not_saved_select_create_patched_copy">Not saved. Select \"Create patched copy\" again to choose a location.</string>
+    <string name="patcher_could_not_open_the_file_for">could not open the file for writing</string>
+    <string name="patcher_your_rom_s_512_byte_copier">Your ROM\'s 512-byte copier header was removed so the patch could apply.</string>
+    <string name="patcher_ips_patches_can_t_confirm_the">IPS patches can\'t confirm the base ROM; if the game misbehaves, check the readme for the exact ROM and patch order.</string>
+    <string name="patcher_saved_if_it_s_in_one">Saved %1$s. If it\'s in one of your game folders it appears in the library in a moment.</string>
+    <string name="patcher_couldn_t_save_the_patched_rom">Couldn\'t save the patched ROM: %1$s</string>
+    <string name="patcher_couldn_t_read_it_may_be">Couldn\'t read %1$s. It may be too large (over 256 MB) or no longer accessible.</string>
+    <string name="patcher_this_isn_t_an_ips_bps">This isn\'t an IPS, BPS or UPS patch.</string>
+    <string name="patcher_the_patch_file_is_malformed">The patch file is malformed (%1$s).</string>
+    <string name="patcher_the_patch_file_is_damaged_or">The patch file is damaged or incomplete (its checksum doesn\'t match). Try downloading it again.</string>
+    <string name="patcher_this_patch_was_made_for_a">This patch was made for a different ROM (expected CRC32 %1$s, %2$s bytes; got %3$s).</string>
+    <string name="patcher_the_patch_applied_but_the_result">The patch applied but the result failed its checksum, so it wasn\'t saved.</string>
+    <string name="patcher_the_result_would_be_too_large">The result would be too large (%1$s bytes).</string>
+    <string name="patcher_doesn_t_contain_a_file">%1$s doesn\'t contain a %2$s file.</string>
+    <string name="patcher_contains_several_possible_s_extract_the">%1$s contains several possible %2$ss (%3$s). Extract the one you want and pick it directly.</string>
+    <string name="patcher_is_too_large_to_open_over">%1$s is too large to open (over 256 MB).</string>
+
+    <!-- CloudAppsCard.kt -->
+    <string name="cloud_apps_open">Open %1$s</string>
+    <string name="cloud_apps_get">Get %1$s</string>
+
+    <!-- FreeGames.kt -->
+    <string name="free_games_shareware">Shareware</string>
+    <string name="free_games_homebrew">Homebrew</string>
+    <string name="free_games_knee_deep_in_the_dead_the">Knee-Deep in the Dead, the first episode, as id Software gave it away.</string>
+    <string name="free_games_escape_from_castle_wolfenstein_the_shareware">Escape from Castle Wolfenstein: the shareware episode.</string>
+    <string name="free_games_billy_blaze_s_first_adventure_the">Billy Blaze\'s first adventure, the shareware episode.</string>
+    <string name="free_games_keen_s_best_loved_episode_given">Keen\'s best-loved episode, given away as shareware.</string>
+    <string name="free_games_the_vertical_shooter_s_shareware_episode">The vertical shooter\'s shareware episode.</string>
+    <string name="free_games_a_modern_platformer_for_the_nes">A modern platformer for the NES.</string>
+    <string name="free_games_two_player_platformer_made_for_the">Two-player platformer made for the NES.</string>
+    <string name="free_games_a_platform_fighter_on_the_nes">A platform fighter on the NES.</string>
+    <string name="free_games_puzzle_platformer_swap_places_with_your">Puzzle platformer: swap places with your mirror self.</string>
+    <string name="free_games_co_op_space_platformer">Co-op space platformer.</string>
+    <string name="free_games_a_shoot_em_up_made_for">A shoot-\'em-up made for the SNES.</string>
+    <string name="free_games_beat_em_up_homebrew_for_the">Beat-\'em-up homebrew for the Super Famicom.</string>
+    <string name="free_games_cave_story_ported_to_the_mega">Cave Story ported to the Mega Drive by fans.</string>
+    <string name="free_games_mega_drive_puzzle_homebrew">Mega Drive puzzle homebrew.</string>
+    <string name="free_games_falling_blocks_on_the_mega_drive">Falling blocks on the Mega Drive.</string>
+    <string name="free_games_a_horror_adventure_for_the_game">A horror adventure for the Game Boy.</string>
+    <string name="free_games_game_boy_platformer">Game Boy platformer.</string>
+    <string name="free_games_the_demo_of_the_hand_drawn">The demo of the hand-drawn platformer.</string>
+    <string name="free_games_demo">Demo</string>
+    <string name="free_games_the_original_pico_8_celeste_on">The original PICO-8 Celeste, on the GBA.</string>
+    <string name="free_games_freeware">Freeware</string>
+    <string name="free_games_cute_tic_80_platformer">Cute TIC-80 platformer.</string>
+    <string name="free_games_a_tic_80_adventure">A TIC-80 adventure.</string>
+    <string name="free_games_the_download_didn_t_have_the">the download didn\'t have the game file in it</string>
+
+    <!-- FreeGamesSection.kt -->
+    <string name="free_games_free_games_will_go_in_that">Free games will go in that folder, each in its system\'s folder.</string>
+    <string name="free_games_downloading">Downloading %1$s…</string>
+    <string name="free_games_is_in_your_library_folder_find">%1$s is in your library (%2$s folder). Find it on the Retro tab.</string>
+    <string name="free_games_couldn_t_get">Couldn\'t get %1$s: %2$s</string>
+    <string name="free_games_saving_to_the_folder_you_chose">Saving to: %1$s</string>
+
+    <!-- PcCompatibility.kt -->
+    <string name="pc_compatibility_plays_well">✓ Plays well</string>
+    <string name="pc_compatibility_runs_with_issues">⚠ Runs with issues</string>
+    <string name="pc_compatibility_doesn_t_run_yet">✕ Doesn\'t run yet</string>
+    <string name="pc_compatibility_godot_vulkan_net_tested_on_a">Godot (Vulkan), .NET. Tested on a Galaxy S22, with Steam Cloud saves.</string>
+    <string name="pc_compatibility_direct3d_8_9_through_dxvk_tested">Direct3D 8/9 through DXVK. Tested on a Galaxy S22.</string>
+    <string name="pc_compatibility_gamemaker_direct3d_9_tested_on_a">GameMaker, Direct3D 9. Tested on a Galaxy S22.</string>
+    <string name="pc_compatibility_opengl_through_zink_plays_but_some">OpenGL through zink: plays, but some textures (text, eyes) are missing on Samsung Xclipse GPUs.</string>
+    <string name="pc_compatibility_didn_t_start_last_time">⚠ Didn\'t start last time</string>
+    <string name="pc_compatibility_played">▶ Played %1$s</string>
+
+    <!-- PcGamesSection.kt -->
+    <string name="pc_games_added_select_it_to_play_it">Added %1$s. Select it to play it in RetroForge\'s PC player.</string>
+    <string name="pc_games_no_windows_game_in_that_folder">No Windows game in that folder: pick the folder that holds the game\'s .exe.</string>
+    <string name="pc_games_couldn_t_copy_that_folder">Couldn\'t copy that folder: %1$s</string>
+    <string name="pc_games_no_pc_game_files_in_that">No PC game files in that folder.</string>
+    <string name="pc_games_added_of_games_found">Added %1$s of %2$s games found.</string>
+    <string name="pc_games_winlator_shortcuts_were_skipped_they_need">" %1$s Winlator shortcuts were skipped: they need to be on the phone\'s storage or SD card."</string>
+    <string name="pc_games_couldn_t_read_that_folder">Couldn\'t read that folder: %1$s</string>
+    <string name="pc_games_add_your_game_folders_first_retro">Add your game folders first (Retro tab → Game folders).</string>
+    <string name="pc_games_no_pc_games_in_your_game">No PC games in your game folders yet: put .steam, .epic, .gog, .pcgame or Winlator .desktop files in a \"windows\" or \"steam\" folder beside your other systems.</string>
+    <string name="pc_games_your_game_folders_pc_games_are">Your game folders\' PC games are all here.</string>
+    <string name="pc_games_found_new_pc_games_in_your">Found %1$s new PC games in your game folders.</string>
+    <string name="pc_games_winlator_shortcuts_on_a_network_drive">" %1$s Winlator shortcuts on a network drive were skipped: Winlator needs them on this device."</string>
+    <string name="pc_games_couldn_t_look_in_your_game">Couldn\'t look in your game folders: %1$s</string>
+    <string name="pc_games_hide_my_steam_library">Hide my Steam library</string>
+    <string name="pc_games_my_steam_library">My Steam library</string>
+    <string name="pc_games_sign_in_to_steam_first_steam">Sign in to Steam first (Steam sign-in on this tab).</string>
+    <string name="pc_games_couldn_t_get_your_steam_library">Couldn\'t get your Steam library: %1$s</string>
+    <string name="pc_games_remove_games">Remove games</string>
+    <string name="pc_games_steam_method_for_a_game">Steam method for a game</string>
+    <string name="pc_games_couldn_t_search_steam">Couldn\'t search Steam: %1$s</string>
+    <string name="pc_games_steam_has_nothing_called_that">Steam has nothing called that.</string>
+    <string name="pc_games_added_install_it_in_gamenative_to">Added %1$s. Install it in GameNative to play it from here.</string>
+    <string name="pc_games_getting_your_steam_library">Getting your Steam library…</string>
+    <string name="pc_games_your_steam_library_games_checking_for">Your Steam library (%1$s games, checking for changes…)</string>
+    <string name="pc_games_your_steam_library_games">Your Steam library (%1$s games)</string>
+    <string name="pc_games_download_stopped">Download stopped</string>
+    <string name="pc_games_downloading">Downloading</string>
+    <string name="pc_games_on_this_device">On this device</string>
+    <string name="pc_games_get">Get</string>
+    <string name="pc_games_select_to_remove">Select to remove</string>
+    <string name="pc_games_steam_method_2_select_for_1">Steam method 2 · select for 1</string>
+    <string name="pc_games_steam_method_1_select_for_2">Steam method 1 · select for 2</string>
+    <string name="pc_games_needs_steam_method_2">⚠ Needs Steam method 2</string>
+    <string name="pc_games_steam_method_2">Steam method 2</string>
+    <string name="pc_games_the_sd_card">the SD card</string>
+    <string name="pc_games_this_device">this device</string>
+    <string name="pc_games_downloading_from_steam_it_carries_on">Downloading from Steam: %1$s%% (%2$s). It carries on in the background; the notification shows how it\'s going.</string>
+    <string name="pc_games_asking_steam_how_big_it_is">Asking Steam how big it is…</string>
+    <string name="pc_games_steam_didn_t_say_how_big">Steam didn\'t say how big this game is. Try again in a moment.</string>
+    <string name="pc_games_it_needs_and_has_free_free">It needs %1$s and %2$s has %3$s free. Free up some space first.</string>
+    <string name="pc_games_download_it_from_steam_to_play">Download it from Steam to play in RetroForge\'s PC player: %1$s, to %2$s (%3$s free). It carries on in the background, and a game you\'ve part-downloaded carries on from where it stopped.</string>
+    <string name="pc_games_last_try_stopped">\n\nLast try stopped: %1$s</string>
+    <string name="pc_games_retroforge_will_ask_once_to_show">\n\nRetroForge will ask once to show the download\'s progress in your notifications (you can say no).</string>
+    <string name="pc_games_uses_mobile_data_when_there_s">Uses mobile data when there\'s no Wi-Fi (this download is %1$s)</string>
+    <string name="pc_games_wi_fi_only_waits_for_wi">Wi-Fi only: waits for Wi-Fi if there\'s none</string>
+    <string name="pc_games_now_starts">%1$s now starts %2$s.</string>
+    <string name="pc_games_mb">"  ·  %1$s MB"</string>
+    <string name="pc_games_best_guess">"  (best guess)"</string>
+
+    <!-- PcLibrary.kt -->
+    <string name="pc_library_winlator_shortcut">Winlator shortcut</string>
+    <string name="pc_library_retroforge_pc_player">RetroForge PC player</string>
+    <string name="pc_library_retroforge_s_pc_player_needs_a">RetroForge\'s PC player needs a 64-bit ARM device (most phones and handhelds); this one is %1$s.</string>
+    <string name="pc_library_this_game_has_no_exe_set">This game has no .exe set.</string>
+    <string name="pc_library_isn_t_in_retroforge_s_pc">%1$s isn\'t in RetroForge\'s PC games folder any more. Add the game\'s folder again.</string>
+    <string name="pc_library_needs_the_steam_client_set_it">%1$s needs the Steam client: set it up on the PC tab (Steam method 2), then sign in once.</string>
+    <string name="pc_library_sign_in_to_the_steam_client">Sign in to the Steam client first (PC tab → Steam method 2 → Open Steam to sign in).</string>
+    <string name="pc_library_winlator_cmod_or_winnative_isn_t">Winlator Cmod (or WinNative) isn\'t installed. Get it from the PC tab, then try again.</string>
+    <string name="pc_library_gamenative_isn_t_installed_get_it">GameNative isn\'t installed. Get it from the PC tab, sign in to %1$s there and install the game, then try again.</string>
+    <string name="pc_library_steam_answered">Steam answered %1$s</string>
+
+    <!-- PcScreen.kt -->
+    <string name="pc_your_pc_games">Your PC games</string>
+    <string name="pc_steam_epic_gog_and_amazon_games">Steam, Epic, GOG and Amazon games through GameNative; Windows games through Winlator.</string>
+    <string name="pc_play_the_games_on_your_own">Play the games on your own PC from this device, with Moonlight and Sunshine.</string>
+    <string name="pc_ports">Ports</string>
+    <string name="pc_games_rebuilt_for_android_and_windows">Games rebuilt for Android (and Windows-only ports) that use your own copy of the game.</string>
+    <string name="pc_free_games">Free games</string>
+    <string name="pc_shareware_freeware_and_homebrew_games_to">%1$s shareware, freeware and homebrew games to download and play.</string>
+    <string name="pc_windows_games_runtime">Windows games runtime</string>
+    <string name="pc_whether_this_device_can_run_windows">Whether this device can run Windows games, and the DroidDeck app.</string>
+    <string name="pc_supported_gpu">Supported GPU</string>
+    <string name="pc_experimental_gpu">Experimental GPU</string>
+    <string name="pc_droiddeck_not_supported">DroidDeck not supported</string>
+    <string name="pc_gpu_not_identified">GPU not identified</string>
+    <string name="pc_installed">Installed %1$s</string>
+    <string name="pc_it_accepts_game_launch_requests_from">It accepts game launch requests from other apps.</string>
+    <string name="pc_this_version_does_not_accept_launch">This version does not accept launch requests from other apps.</string>
+
+    <!-- PcStreamSection.kt -->
+    <string name="pc_stream_asking">Asking %1$s…</string>
+    <string name="pc_stream_added_pair_it_next">Added %1$s. Pair it next.</string>
+    <string name="pc_stream_nothing_answered_at_is_sunshine_running">Nothing answered at %1$s. Is Sunshine running on the PC, on the same network? (%2$s)</string>
+    <string name="pc_stream_look_for_pcs">Look for PCs</string>
+    <string name="pc_stream_address_else">Address: %1$s%2$s</string>
+    <string name="pc_stream_paired">Paired.</string>
+    <string name="pc_stream_the_pc_says_the_pin_was">The PC says the PIN was wrong. Try again.</string>
+    <string name="pc_stream_the_pc_is_already_pairing_with">The PC is already pairing with something. Finish or cancel that, then try again.</string>
+    <string name="pc_stream_pairing_didn_t_work_on_the">Pairing didn\'t work. On the PC, check Sunshine is running and try again.</string>
+    <string name="pc_stream_pairing_stopped">Pairing stopped: %1$s</string>
+    <string name="pc_stream_show_games">Show games</string>
+    <string name="pc_stream_refresh_games">Refresh games</string>
+    <string name="pc_stream_couldn_t_get_the_list">Couldn\'t get the list: %1$s</string>
+    <string name="pc_stream_the_game_on_the_pc_was">The game on the PC was closed.</string>
+    <string name="pc_stream_the_pc_didn_t_close_it">The PC didn\'t close it.</string>
+    <string name="pc_stream_the_pc_didn_t_close_it_2">The PC didn\'t close it: %1$s</string>
+    <string name="pc_stream_resume">Resume %1$s</string>
+    <string name="pc_stream_couldn_t_start_the_stream">Couldn\'t start the stream: %1$s</string>
+
+    <!-- PortDownloads.kt -->
+    <string name="port_downloads_needs_android_10_or_newer">needs Android 10 or newer</string>
+    <string name="port_downloads_the_download_answered">the download answered %1$s</string>
+
+    <!-- PortsSection.kt -->
+    <string name="ports_android_ports">Android ports</string>
+    <string name="ports_windows_ports">Windows ports</string>
+    <string name="ports_games_rebuilt_to_run_natively_on">Games rebuilt to run natively on Android, from decompiled code or PC source ports. They run better than emulation and add widescreen and higher frame rates. Each needs your own copy of the game; RetroForge never supplies game files.</string>
+    <string name="ports_ports_with_only_a_windows_version">Ports with only a Windows version. They run through GameNative or Winlator, so they need a strong Snapdragon phone and may not run well; all are experimental. Each needs your own copy of the game.</string>
+    <string name="ports_looking_for_the_windows_version">Looking for the Windows version…</string>
+    <string name="ports_no_windows_download_in_the_latest">No Windows download in the latest release. Use Project page.</string>
+    <string name="ports_downloading">Downloading %1$s… %2$s%%</string>
+    <string name="ports_unpacked_into_in_gamenative_add_it">Unpacked into %1$s. In GameNative, add it as a custom game and pick its .exe.</string>
+    <string name="ports_didn_t_download">Didn\'t download: %1$s</string>
+    <string name="ports_open_gamenative">Open GameNative</string>
+    <string name="ports_get_gamenative">Get GameNative</string>
+    <string name="ports_download_and_install">Download and install</string>
+    <string name="ports_looking_for_the_latest_version">Looking for the latest version…</string>
+    <string name="ports_no_android_download_in_the_latest">No Android download in the latest release. Use Project page.</string>
+    <string name="ports_downloaded_confirm_the_install_in_android">Downloaded %1$s. Confirm the install in Android\'s window (the first time, allow RetroForge to install apps).</string>
+    <string name="ports_copying">Copying…</string>
+    <string name="ports_couldn_t_copy_the_game">Couldn\'t copy the game: %1$s</string>
+    <string name="ports_its_game_folder_isn_t_available">its game folder isn\'t available</string>
+    <string name="ports_android_refused_to_create_the_file">Android refused to create the file</string>
+    <string name="ports_couldn_t_write_the_file">couldn\'t write the file</string>
+    <string name="ports_the_zip_is_empty">the zip is empty</string>
+    <string name="ports_copied_to_download_retroforge_ports_your">Copied %1$s to Download/RetroForge/Ports. Your original stays in your game folder. In the port, choose this file when it asks for the game.</string>
+
+    <!-- SteamClientSection.kt -->
+    <string name="steam_client_steam_method_2_steam_client">Steam method 2: Steam client</string>
+    <string name="steam_client_for_games_that_won_t_start">For games that won\'t start without Valve\'s own Steam: their copy protection (like XCOM: Enemy Unknown\'s) asks Steam itself to start them, and they quit. RetroForge spots this and uses this method for them from then on; you can also choose it per game with \"Steam method for a game\" above.</string>
+    <string name="steam_client_it_runs_valve_s_windows_steam">It runs Valve\'s Windows Steam quietly in the background, so these games take a few minutes longer to start and need plenty of memory (8 GB devices manage; close other apps first).</string>
+    <string name="steam_client_setting_up">Setting up…</string>
+    <string name="steam_client_ready_signed_in">Ready, signed in</string>
+    <string name="steam_client_set_up_not_signed_in_yet">Set up, not signed in yet</string>
+    <string name="steam_client_not_set_up">Not set up</string>
+    <string name="steam_client_set_up_the_steam_client_about">Set up the Steam client (about 360 MB from Valve)</string>
+    <string name="steam_client_steam_client_set_up_now_sign">Steam client set up. Now sign in once.</string>
+    <string name="steam_client_couldn_t_set_it_up">Couldn\'t set it up: %1$s</string>
+    <string name="steam_client_open_steam_to_sign_in">Open Steam to sign in</string>
+    <string name="steam_client_steam_client">Steam client</string>
+    <string name="steam_client_remove_it_select_again">Remove it? Select again</string>
+    <string name="steam_client_remove_the_steam_client">Remove the Steam client</string>
+    <string name="steam_client_steam_s_sign_in_window_takes">Steam\'s sign-in window takes a few minutes to appear. Scan its QR code with the Steam app on another device (it can\'t scan its own screen), or type with ☰ → Keyboard, and keep Remember me ticked.</string>
+
+    <!-- SteamSignInSection.kt -->
+    <string name="steam_sign_in_that_code_wasn_t_right_try">That code wasn\'t right. Try the newest one.</string>
+    <string name="steam_sign_in_steam_emailed_a_code_to">Steam emailed a code to %1$s.</string>
+    <string name="steam_sign_in_type_the_code_from_the_steam">Type the code from the Steam app (Steam Guard).</string>
+    <string name="steam_sign_in_open_the_steam_app_and_approve">Open the Steam app and approve the sign-in (it may show as a notification).</string>
+    <string name="steam_sign_in_connecting_to_steam">Connecting to Steam…</string>
+    <string name="steam_sign_in_couldn_t_sign_in">Couldn\'t sign in: %1$s</string>
+    <string name="steam_sign_in_steam_method_1_retroforge_steam">Steam method 1: RetroForge Steam</string>
+    <string name="steam_sign_in_for_most_steam_games_retroforge_signs">For most Steam games. RetroForge signs in to Steam itself and starts the game straight away, with a small Steam stand-in beside it: quick, light, and it does your library, downloads and Steam Cloud saves. Games that insist on Valve\'s own Steam use Steam method 2 below.</string>
+    <string name="steam_sign_in_scan_this_with_the_steam_app">Scan this with the Steam app on another device (Steam Guard → Scan a QR code).</string>
+    <string name="steam_sign_in_steam_sign_in_qr_code">Steam sign-in QR code</string>
+
+    <!-- XboxCloudActivity.kt -->
+    <string name="xbox_cloud_leave_xbox_cloud_gaming">Leave Xbox Cloud Gaming?</string>
+    <string name="xbox_cloud_a_game_you_re_streaming_stops">A game you\'re streaming stops when you leave. You stay signed in.</string>
+    <string name="xbox_cloud_leave">Leave</string>
+    <string name="xbox_cloud_previous_page">Previous page</string>
+
+    <!-- BezelsCard.kt -->
+    <string name="bezels_bezels_the_bezel_project">Bezels (The Bezel Project)</string>
+    <string name="bezels_no_systems_downloaded_yet">No systems downloaded yet.</string>
+    <string name="bezels_downloading_bezels_of">Downloading bezels… %1$s (%2$s of %3$s)</string>
+    <string name="bezels_added_bezels_for_all_systems_their">Added bezels for all %1$s systems. Their games show bezels in landscape.</string>
+    <string name="bezels_added_systems_couldn_t_get_try">Added %1$s systems. Couldn\'t get: %2$s. Try those again below.</string>
+    <string name="bezels_downloading_s_bezels">Downloading %1$s\'s bezels…</string>
+    <string name="bezels_added_its_games_show_bezels_in">Added %1$s. Its games show bezels in landscape.</string>
+    <string name="bezels_couldn_t_get_s_bezels">Couldn\'t get %1$s\'s bezels: %2$s</string>
+
+    <!-- BuiltInPlayerCard.kt -->
+    <string name="built_in_player_copy_first">Copy first</string>
+    <string name="built_in_player_play_straight_away">Play straight away</string>
+    <string name="built_in_player_working">Working…</string>
+    <string name="built_in_player_that_didn_t_work">That didn\'t work: %1$s</string>
+    <string name="built_in_player_couldn_t_open_the_file">couldn\'t open the file</string>
+    <string name="built_in_player_backed_up_files">Backed up %1$s files.</string>
+    <string name="built_in_player_favourites_and_playlists_games_found">" Favourites and playlists: %1$s games found"</string>
+    <string name="built_in_player_not_in_your_library_add_their">, %1$s not in your library (add their folder, then restore again).</string>
+    <string name="built_in_player_no_retroforge_saves_found_in_that">No RetroForge saves found in that file.</string>
+    <string name="built_in_player_restored_files_retroforge_restarts_to_load">Restored %1$s files.%2$s RetroForge restarts to load the settings.</string>
+    <string name="built_in_player_under_1_mb">under 1 MB</string>
+    <string name="built_in_player_emulators_copied_games_the_last_two">Emulators: %1$s. Copied games: %2$s (the last two disc or arcade games copied to the phone).</string>
+    <string name="built_in_player_working_out_sizes">Working out sizes…</string>
+
+    <!-- EsdeImportCard.kt -->
+    <string name="esde_import_reading_collections">Reading collections…</string>
+    <string name="esde_import_couldn_t_read_them">Couldn\'t read them: %1$s</string>
+    <string name="esde_import_no_custom_collections_custom_cfg_found">No custom collections (custom-…cfg) found there.</string>
+    <string name="esde_import_made_with">Made %1$s with %2$s.</string>
+
+    <!-- GpuDriversScreen.kt -->
+    <string name="gpu_drivers_custom_drivers_can_be_used">Custom drivers can be used</string>
+    <string name="gpu_drivers_custom_drivers_can_t_be_used">Custom drivers can\'t be used</string>
+    <string name="gpu_drivers_using">Using %1$s</string>
+    <string name="gpu_drivers_using_the_phone_s_own_driver">Using the phone\'s own driver</string>
+    <string name="gpu_drivers_choose_use_in_retroforge_on_a">Choose Use in RetroForge on a driver below.</string>
+    <string name="gpu_drivers_if_games_get_worse_go_back">If games get worse, go back to the phone\'s driver.</string>
+    <string name="gpu_drivers_looking_for_the_latest_turnip_builds">Looking for the latest Turnip builds…</string>
+    <string name="gpu_drivers_couldn_t_get_the_list_check">Couldn\'t get the list. Check the internet connection and try again.</string>
+    <string name="gpu_drivers_find_turnip_drivers">Find Turnip drivers</string>
+    <string name="gpu_drivers_turnip_is_the_open_source_vulkan">"Turnip is the open-source Vulkan driver for Adreno GPUs from the Mesa project (MIT licence), built by "</string>
+    <string name="gpu_drivers_retroforge_lists_their_github_releases_and">. RetroForge lists their GitHub releases and downloads only what you pick.</string>
+    <string name="gpu_drivers_saved_to">Saved to %1$s</string>
+    <string name="gpu_drivers_mb">%1$s · %2$s · %3$s · %4$s MB</string>
+    <string name="gpu_drivers_downloading">Downloading… %1$s</string>
+    <string name="gpu_drivers_select_to_download">Select to download.</string>
+    <string name="gpu_drivers_retroforge_s_players_now_use_it">RetroForge\'s players now use it</string>
+    <string name="gpu_drivers_couldn_t_use_it">Couldn\'t use it: %1$s</string>
+    <string name="gpu_drivers_it_has_no_meta_json_not">it has no meta.json (not an adrenotools driver)</string>
+    <string name="gpu_drivers_is_missing_from_it">%1$s is missing from it</string>
+    <string name="gpu_drivers_couldn_t_put_it_in_place">couldn\'t put it in place</string>
+
+    <!-- HotkeysScreen.kt -->
+    <string name="hotkeys_in_retroforge">In RetroForge</string>
+    <string name="hotkeys_d_pad_or_stick">D-pad or stick</string>
+    <string name="hotkeys_move">Move</string>
+    <string name="hotkeys_select">Select</string>
+    <string name="hotkeys_previous_next_section">Previous / next section</string>
+    <string name="hotkeys_in_games_retroarch_set_by_retroforge">In games (RetroArch, set by RetroForge)</string>
+    <string name="hotkeys_quit_the_game_and_return_to">Quit the game and return to RetroForge</string>
+    <string name="hotkeys_open_retroarch_s_menu">Open RetroArch\'s menu</string>
+    <string name="hotkeys_hold_r2">Hold R2</string>
+    <string name="hotkeys_fast_forward_gba_snes_mega_drive">Fast-forward (GBA, SNES, Mega Drive and other systems without R2)</string>
+    <string name="hotkeys_in_retroarch_s_menu_quick_menu">In RetroArch\'s menu (Quick Menu)</string>
+    <string name="hotkeys_save_or_load_a_state">Save or load a state</string>
+    <string name="hotkeys_eject_choose_the_next_disc_insert">Eject, choose the next disc, insert</string>
+    <string name="hotkeys_reset_the_game">Reset the game</string>
+    <string name="hotkeys_crt_and_other_screen_effects">CRT and other screen effects</string>
+    <string name="hotkeys_leave_the_game_without_quitting_retroarch">Leave the game without quitting RetroArch</string>
+    <string name="hotkeys_retroarch_keyboard_defaults">RetroArch keyboard defaults</string>
+    <string name="hotkeys_menu">Menu</string>
+    <string name="hotkeys_quit">Quit</string>
+    <string name="hotkeys_save_load_state">Save / load state</string>
+    <string name="hotkeys_next_state_slot">Next state slot</string>
+    <string name="hotkeys_reset">Reset</string>
+    <string name="hotkeys_space_l_hold">Space / L (hold)</string>
+    <string name="hotkeys_fast_forward_toggle_hold">Fast-forward (toggle / hold)</string>
+    <string name="hotkeys_e_hold">E (hold)</string>
+    <string name="hotkeys_slow_motion">Slow motion</string>
+    <string name="hotkeys_r_hold">R (hold)</string>
+    <string name="hotkeys_rewind_when_rewind_support_is_on">Rewind (when Rewind Support is on)</string>
+    <string name="hotkeys_pause">Pause</string>
+    <string name="hotkeys_frame_advance">Frame advance</string>
+    <string name="hotkeys_mute">Mute</string>
+
+    <!-- LicencesScreen.kt -->
+    <string name="licences_windows_games_on_android">Windows games on Android</string>
+    <string name="licences_gamenative_utkarshdalal_winlator_brunodev85_and_droiddeck">GameNative (utkarshdalal), Winlator (brunodev85) and DroidDeck: the apps that make PC games play on a phone. RetroForge opens them; all the hard work is theirs.</string>
+    <string name="licences_libretro_and_retroarch">libretro and RetroArch</string>
+    <string name="licences_the_libretro_api_and_the_team">The libretro API and the team and core authors behind every emulator the built-in player runs: mGBA, Snes9x, Genesis Plus GX, FCEUmm, Mupen64Plus-Next, PCSX ReARMed, SwanStation, PPSSPP, Flycast, Dolphin, LRPS2, FinalBurn Neo, MAME and many more. Also the libretro thumbnails and cheat database.</string>
+    <string name="licences_dolphin_nethersx2_armsx2_azahar_eden_m64plus">Dolphin, NetherSX2, ARMSX2, Azahar, Eden, M64Plus FZ, melonDS, MAME4droid, SkyEmu, NooDS, EX Emulators, aPS3e, J2ME Loader and the rest of the list RetroForge offers.</string>
+    <string name="licences_pc_ports_and_recompilations">PC ports and recompilations</string>
+    <string name="licences_ship_of_harkinian_2_ship_2">Ship of Harkinian, 2 Ship 2 Harkinian, Starship, SpaghettiKart, Ghostship, Zelda64Recomp, Unleashed Recompiled, OpenGOAL, DevilutionX, OpenMW, OpenBOR, the Perfect Dark and zelda3 ports, and everyone who brought them to Android.</string>
+    <string name="licences_collections_and_frontends">Collections and frontends</string>
+    <string name="licences_retrobat_and_es_de_whose_folder">RetroBat and ES-DE, whose folder layouts RetroForge reads as they are; Obtainium (ImranR98) and the Obtainium Emulation Pack (RJNY) for keeping emulators up to date; canvas-es by Siddy212 for the system artwork.</string>
+    <string name="licences_artwork_and_game_data">Artwork and game data</string>
+    <string name="licences_steamgriddb_screenscraper_and_libretro_thumbnails_for">SteamGridDB, ScreenScraper and libretro thumbnails for covers; Romhacking.net and every hack author for the ROM hack catalogue.</string>
+    <string name="licences_gpu_drivers">GPU drivers</string>
+    <string name="licences_the_mesa_turnip_developers_k11mch1_adrenotoolsdrivers">The Mesa Turnip developers, K11MCH1 (AdrenoToolsDrivers) and MrPurple (Purple Turnip).</string>
+    <string name="licences_the_community">The community</string>
+    <string name="licences_the_youtube_channels_and_sites_in">The YouTube channels and sites in the Links tab, for the guides, reviews and handheld coverage that got so many people into retro handhelds.</string>
+    <string name="licences_built_with_claude">Built with Claude</string>
+    <string name="licences_retroforge_was_made_by_darren_glancy">RetroForge was made by Darren Glancy with a lot of help from Anthropic\'s Claude.</string>
+    <string name="licences_libretro_api_header_libretro_h_used">libretro API header (libretro.h), used by the built-in player</string>
+    <string name="licences_libadrenotools_and_linkernsbypass_loading_turnip_drivers">libadrenotools and linkernsbypass (loading Turnip drivers in the built-in player)</string>
+    <string name="licences_better_xcloud_userscript_pc_tab_xbox">Better xCloud userscript (PC tab → Xbox Cloud Gaming)</string>
+    <string name="licences_emulator_cores_mgba_snes9x_genesis_plus">Emulator cores (mGBA, Snes9x, Genesis Plus GX, FCEUmm, Gambatte, DeSmuME and others)</string>
+    <string name="licences_each_core_s_own_licence">Each core\'s own licence</string>
+    <string name="licences_not_part_of_retroforge_downloaded_from">Not part of RetroForge: downloaded from libretro\'s build server (buildbot.libretro.com) when needed and loaded by the built-in player. Some are licensed for non-commercial use only, one reason RetroForge is free.</string>
+    <string name="licences_canvas_es_system_artwork_retro_tab">canvas-es system artwork (Retro tab)</string>
+    <string name="licences_by_siddy212_github_com_siddy212_canvas">By Siddy212, github.com/Siddy212/canvas-es. Not part of RetroForge: downloaded from that repository for the systems in your library. Console and game names, logos and characters shown in it belong to their owners.</string>
+    <string name="licences_the_bezel_project_bezels_settings_covers">The Bezel Project bezels (Settings → Covers and bezels → Bezels)</string>
+    <string name="licences_the_bezel_project_s_own_terms">The Bezel Project\'s own terms</string>
+    <string name="licences_bezel_artwork_by_the_bezel_project">Bezel artwork by The Bezel Project, github.com/thebezelproject. Not part of RetroForge: a system\'s bezels are downloaded from their GitHub repositories when you ask, for your own use. Console and game names, logos and art shown in them belong to their owners.</string>
+    <string name="licences_libretro_cheat_database_pause_menu_cheats">libretro cheat database (pause menu → Cheats)</string>
+    <string name="licences_github_com_libretro_libretro_database_not">github.com/libretro/libretro-database. Not part of RetroForge: a game\'s cheat file is downloaded from there when you open its Cheats page.</string>
+    <string name="licences_press_start_2p_font">Press Start 2P font</string>
+    <string name="licences_orbitron_font">Orbitron font</string>
+    <string name="licences_rajdhani_font">Rajdhani font</string>
+    <string name="licences_exo_2_font">Exo 2 font</string>
+    <string name="licences_licence_text_unavailable">Licence text unavailable.</string>
+
+    <!-- MemoryCardsCard.kt -->
+    <string name="memory_cards_card_file">Card file</string>
+    <string name="memory_cards_that_file_isn_t_a_playstation">That file isn\'t a PlayStation memory card.</string>
+    <string name="memory_cards_couldn_t_write">couldn\'t write</string>
+    <string name="memory_cards_saved_s_card_as_a_file">Saved %1$s\'s card as a file.</string>
+    <string name="memory_cards_no_other_game_has_a_card">No other game has a card yet: play it once first.</string>
+    <string name="memory_cards_copy_to">Copy \"%1$s\" to:</string>
+    <string name="memory_cards_s_card_is_full_blocks_free">%1$s\'s card is full (%2$s blocks free, %3$s needed).</string>
+    <string name="memory_cards_copied_to">Copied to %1$s.</string>
+    <string name="memory_cards_deleted">Deleted.</string>
+
+    <!-- SaveSyncCard.kt -->
+    <string name="save_sync_syncing_your_saves">Syncing your saves…</string>
+    <string name="save_sync_everything_s_already_in_step">Everything\'s already in step.</string>
+    <string name="save_sync_done_brought_to_this_device_sent">Done: %1$s brought to this device, %2$s sent to the sync folder.</string>
+    <string name="save_sync_had_changed_on_both_sides_the">" %1$s had changed on both sides: the newer was kept, the other is in the \"sync conflicts\" folder."</string>
+    <string name="save_sync_couldn_t_sync">Couldn\'t sync: %1$s</string>
+    <string name="save_sync_use_a_folder_on_this_device">Use a folder on this device</string>
+    <string name="save_sync_save_states_too_on">Save states too: on</string>
+    <string name="save_sync_save_states_too_off">Save states too: off</string>
+
+    <!-- SettingsScreen.kt -->
+    <string name="settings_games_and_library">Games and library</string>
+    <string name="settings_game_folders_and_network_drives_es">Game folders and network drives, ES-DE collections, texture packs, scanning, the Retro and PC tabs.</string>
+    <string name="settings_playing">Playing</string>
+    <string name="settings_the_built_in_player_saves_backups">The built-in player, saves, backups and save syncing, emulator apps, dual screens, GPU drivers, netplay, RetroArch hotkeys.</string>
+    <string name="settings_covers_and_bezels">Covers and bezels</string>
+    <string name="settings_steamgriddb_and_screenscraper_accounts_for_box">SteamGridDB and ScreenScraper accounts for box art, and Bezel Project bezels round the game.</string>
+    <string name="settings_looks_and_sounds">Looks and sounds</string>
+    <string name="settings_themes_interface_sounds_android_apps_and">Themes, interface sounds, Android apps and the home screen.</string>
+    <string name="settings_help_and_about">Help and about</string>
+    <string name="settings_how_to_use_retroforge_updates_set">How to use RetroForge, updates, set up, check my setup, report a problem, about, licences.</string>
+    <string name="settings_settings">Settings</string>
+    <string name="settings_games">Games</string>
+    <string name="settings_of_systems">" (%1$s%%, %2$s of %3$s systems)"</string>
+    <string name="settings_looking_in_files_checked">Looking in%1$s… %2$s files checked%3$s</string>
+    <string name="settings_added_it_s_still_scanning_see">Added. It\'s still scanning: see Retro → Game folders for progress.</string>
+    <string name="settings_added_but_no_games_were_found">Added %1$s, but no games were found. Pick the folder holding your system folders (snes, psx …).</string>
+    <string name="settings_paste_api_key">Paste API key</string>
+    <string name="settings_replace_api_key">Replace API key</string>
+    <string name="settings_turn_hotkeys_off">Turn hotkeys off</string>
+    <string name="settings_turn_hotkeys_on">Turn hotkeys on</string>
+    <string name="settings_send_the_report_with">Send the report with…</string>
+    <string name="settings_opens_a_bug_report_on_github">Opens a bug report on GitHub with your RetroForge version and device model filled in. Nothing else is sent; you see everything before posting.</string>
+    <string name="settings_writes_a_short_report_with_your">Writes a short report with your RetroForge version and phone model, for you to send by email or message. Nothing is sent until you send it.</string>
+    <string name="settings_second_screen_found">Second screen found: %1$s</string>
+    <string name="settings_no_second_screen_on_this_device">No second screen on this device</string>
+    <string name="settings_ds_games_on_both_screens">DS games on both screens: %1$s</string>
+    <string name="settings_game_box_on_the_second_screen">Game box on the second screen while browsing (experimental): %1$s</string>
+
+    <!-- SetupCheckScreen.kt -->
+    <string name="setup_check_plays_in_another_app">Plays in another app</string>
+    <string name="setup_check_not_in_the_built_in_player">Not in the built-in player yet: RetroArch or a standalone emulator (on each game\'s page).</string>
+    <string name="setup_check_emulator_didn_t_download">Emulator didn\'t download</string>
+    <string name="setup_check_select_download_again">%1$s: %2$s. Select Download again.</string>
+    <string name="setup_check_emulator_downloading">Emulator downloading</string>
+    <string name="setup_check_emulator_not_downloaded_yet">Emulator not downloaded yet</string>
+    <string name="setup_check_downloads_in_the_background_or_select">%1$s downloads in the background, or select Download now.</string>
+    <string name="setup_check_bios_missing">BIOS missing</string>
+    <string name="setup_check_needs_one_of">"Needs one of: "</string>
+    <string name="setup_check_put_it_in_your_bios_folder">. Put it in your BIOS folder and run Set up RetroForge, which copies it across.</string>
+    <string name="setup_check_optional_bios_for_better_results">"%1$s. Optional BIOS for better results: "</string>
+    <string name="setup_check_everything_in_place">%1$s, everything in place.</string>
+    <string name="setup_check_all_set">All set</string>
+    <string name="setup_check_systems_games">%1$s systems, %2$s games.</string>
+
+    <!-- SupportCard.kt -->
+    <string name="support_qr_code_for_buy_me_a">QR code for Buy Me a Coffee</string>
+
+    <!-- TexturePackDownloads.kt -->
+    <string name="texture_pack_downloads_its_release_has_no_gliden64_pack">its release has no GLideN64 pack</string>
+    <string name="texture_pack_downloads_downloading_of_mb">Downloading %1$s… %2$s%% of %3$s MB</string>
+    <string name="texture_pack_downloads_unpacking">Unpacking %1$s…</string>
+    <string name="texture_pack_downloads_the_download_had_no_hts_file">the download had no .hts file in it</string>
+
+    <!-- TexturePacksCard.kt -->
+    <string name="texture_packs_texture_packs_n64">Texture packs (N64)</string>
+    <string name="texture_packs_high_resolution_texture_packs_for_n64">High-resolution texture packs for N64 games in the built-in player. A pack is a folder named after the game\'s internal name, for example SUPER MARIO 64; pick that folder and RetroForge copies it where the emulator looks. They\'re switched on automatically when a pack is installed.</string>
+    <string name="texture_packs_texture_packs_psp">Texture packs (PSP)</string>
+    <string name="texture_packs_high_resolution_texture_packs_for_psp">High-resolution texture packs for PSP games in the built-in player. A pack is a folder named after the game\'s ID, for example ULUS10041 (the pack\'s page usually says which); pick that folder and RetroForge copies it where PPSSPP looks. They\'re switched on automatically when a pack is installed.</string>
+    <string name="texture_packs_copying_the_texture_pack">Copying the texture pack…</string>
+    <string name="texture_packs_copying_the_texture_pack_files">Copying the texture pack… %1$s files</string>
+    <string name="texture_packs_added_the_game_uses_it_next">Added %1$s. The game uses it next time it starts.</string>
+    <string name="texture_packs_couldn_t_copy_it">Couldn\'t copy it: %1$s</string>
+    <string name="texture_packs_no_packs_installed">No packs installed.</string>
+    <string name="texture_packs_none_downloaded_yet">None downloaded yet.</string>
+    <string name="texture_packs_mb">%1$s (%2$s MB)</string>
+    <string name="texture_packs_finding_s_latest_release">Finding %1$s\'s latest release…</string>
+    <string name="texture_packs_added_it_s_used_next_time">Added %1$s (%2$s). It\'s used next time the game starts in the built-in player.</string>
+
+    <!-- ThemesScreen.kt -->
+    <string name="themes_couldn_t_read_the_file_or">couldn\'t read the file, or it\'s larger than 64 KB</string>
+    <string name="themes_that_isn_t_a_retroforge_theme">That isn\'t a RetroForge theme: %1$s</string>
+    <string name="themes_imported_theme">Imported theme</string>
+    <string name="themes_added_and_switched_to">Added and switched to \"%1$s\".</string>
+    <string name="themes_not_imported">"Not imported: "</string>
+    <string name="themes_not_stated_ask_the_author_before">not stated; ask the author before sharing it</string>
+
+    <!-- TutorialScreen.kt -->
+    <string name="tutorial_two_players_on_two_devices_play">Two players on two devices play the same game, each with RetroForge and the same game file (same name and size). The host is player 1, the one who joins is player 2.</string>
+    <string name="tutorial_to_host_open_the_game_and">To host: open the game and choose Play together → Host (or Netplay → Host this game in the game\'s menu). Your friend then joins.</string>
+    <string name="tutorial_same_wi_fi_your_friend_opens">Same Wi-Fi: your friend opens the same game and chooses Play together → Join, then picks you from the list. Or Retro tab → Play together → Find games on this Wi-Fi.</string>
+    <string name="tutorial_over_the_internet_when_you_host">Over the internet: when you host, RetroForge asks your router to let your friend in and shows your internet address in Netplay. Your friend types it under Join by address. If your router doesn\'t allow it, forward port 55450 (TCP) to your device in the router\'s settings. Mobile data can\'t host.</string>
+    <string name="tutorial_input_delay_settings_playing_play_together">Input delay (Settings → Playing → Play together): buttons work a few frames late on both devices so they arrive in time. 2 or 3 on Wi-Fi, 4 to 6 over the internet.</string>
+    <string name="tutorial_during_netplay_both_devices_run_at">During netplay both devices run at the same speed: fast-forward is off, and only player 1 can load a state or restart. If the game gets out of step, player 1\'s game is sent again by itself.</string>
+    <string name="tutorial_play_together_shows_on_the_games">Play together shows on the games it suits: NES, SNES, Mega Drive, Master System, PC Engine, PlayStation, Atari, arcade (FinalBurn Neo, MAME, Neo Geo, CPS) and the two-player Game Boy. Handhelds, computers and 3D systems like N64, GameCube and PS2 don\'t have it: their emulators drift apart between devices.</string>
+    <string name="tutorial_getting_started">Getting started</string>
+    <string name="tutorial_reset_combo_use_with_care_hold">RESET COMBO (use with care): hold Start + Select + L1 + R1 + L2 + R2 together for two seconds on a controller. A box offers \"Use the phone\'s language\" (safe: only the language changes, handy if you picked one you can\'t read) or \"Factory reset\". WARNING: Factory reset erases ALL of RetroForge\'s settings (language, theme, emulator choices, remapped buttons, hotkeys, chosen covers, save syncing, accounts and network drive sign-ins) and can\'t be undone. It asks twice first. Your game folders, library, games, saves and save states are kept.</string>
+    <string name="tutorial_settings_set_up_retroforge_walks_you">Settings → Set up RetroForge walks you through it: pick your games folder, check your BIOS files and choose emulators. The built-in player\'s emulators download by themselves.</string>
+    <string name="tutorial_your_games_folder_can_be_a">Your games folder can be a \"roms\" folder from another frontend (RetroBat, ES-DE: snes, nes, psx … inside), a single system folder, or just a folder of games: RetroForge recognises loose games by their file type (.gba, .nds, .sfc, .z64 …).</string>
+    <string name="tutorial_it_can_be_on_the_phone">It can be on the phone, an SD card or a USB drive. RetroForge only reads it; nothing is changed unless you use the ROM Manager.</string>
+    <string name="tutorial_new_games_retro_game_folders_scan">New games: Retro → Game folders → Scan for new games finds them. Settings → Games and library can also look each time the app starts (folders on the device only; network drives are rescanned by hand).</string>
+    <string name="tutorial_settings_check_my_setup_shows_every">Settings → Check my setup shows every system at once: its emulator, BIOS and games, and what\'s missing.</string>
+    <string name="tutorial_retroforge_comes_with_no_games_and">RetroForge comes with no games and no BIOS. Use your own.</string>
+    <string name="tutorial_games_and_films_on_a_network">Games and films on a network drive (PC or NAS)</string>
+    <string name="tutorial_what_it_does_plays_games_and">What it does: plays games and films kept on a computer or NAS at home, over Wi-Fi, without copying them to the phone. Nothing extra to install on the phone. The phone and the computer must be on the same network.</string>
+    <string name="tutorial_step_1_on_a_windows_pc">STEP 1, on a Windows PC: share the folder. Right-click the folder (for example your roms folder) → Properties → Sharing tab → Advanced Sharing… → tick Share this folder. Note the share name (you can keep the folder\'s name). Click Permissions, make sure Everyone has Read ticked, then OK, OK.</string>
+    <string name="tutorial_step_2_on_the_pc_let">STEP 2, on the PC: let the folder be read. Same Properties window → Security tab → Edit… → Add… → type Everyone → Check Names → OK. With Everyone selected, tick Read &amp; execute under Allow → OK → OK. RetroForge only ever reads, so Read is all it needs.</string>
+    <string name="tutorial_step_2b_if_some_games_then">STEP 2b, if some games then say ACCESS DENIED: those files kept their own permissions. Same Security tab → Advanced → tick Replace all child object permission entries with inheritable permission entries from this object → OK → Yes. It can take a few minutes on a big collection.</string>
+    <string name="tutorial_step_3_choose_how_the_phone">STEP 3, choose how the phone signs in. Option A (simplest each time, safest): use the PC\'s own sign-in. If you sign in to Windows with a Microsoft account, that\'s its email address and its password (not your PIN: Windows won\'t accept a PIN over the network). Settings → Accounts → Your info on the PC shows which account you use.</string>
+    <string name="tutorial_option_b_no_login_at_all">Option B (no login at all): on the PC open Control Panel → Network and Sharing Center → Change advanced sharing settings → All networks → Turn off password protected sharing → Save. Then leave the username and password empty in RetroForge. Anyone on your home Wi-Fi can then read the folders you\'ve shared, so only do this at home.</string>
+    <string name="tutorial_a_nas_synology_qnap_and_others">A NAS (Synology, QNAP and others) usually has shared folders already: use a NAS user\'s name and password, or leave them empty if the share allows guests.</string>
+    <string name="tutorial_step_4_in_retroforge_settings_games">STEP 4, in RetroForge: Settings → Games on a network drive (or Media → Films on a network drive) → Add a network drive.</string>
+    <string name="tutorial_tap_find_on_my_network_after">Tap Find on my network. After a few seconds your computer appears as a button (its address, and its name when the network gives one): tap it and the address box fills itself. Nothing found? Check the computer is on and awake, on the same Wi-Fi as the phone, and that step 1 is done. You can also type the address yourself: on Windows it\'s under Settings → Network &amp; internet → your connection → IPv4 address.</string>
+    <string name="tutorial_shared_folder_the_share_name_from">Shared folder: the share name from step 1, for example roms. A folder inside a share goes after a slash, for example E/Games. Then the username and password from step 3 (or leave them empty for option B), and a name to show if you like. Tap Test and save.</string>
+    <string name="tutorial_when_it_says_connected_it_s">When it says Connected, it\'s saved. Now add it as a game folder: Retro → Game folders → Add a folder. In Android\'s folder picker tap the menu (☰, top left), scroll down past your Google Drive accounts to your network drive (shown with its address underneath), open it, go into the folder you want and tap Use this folder, then Allow.</string>
+    <string name="tutorial_retroforge_scans_it_like_any_other">RetroForge scans it like any other folder. Your roms folder can have system folders (snes, psx …) inside it, or one folder further down. Cartridge games play straight from the network; CD and arcade games are copied to the phone the first time you play them (you\'ll see a percentage), then start from the copy.</string>
+    <string name="tutorial_films_media_choose_another_folder_then">Films: Media → Choose another folder, then the same steps in the folder picker.</string>
+    <string name="tutorial_if_it_says_doesn_t_allow">If it says \"doesn\'t allow guests\": Windows\' Guest account is off. Use option A (your sign-in), or option B.</string>
+    <string name="tutorial_if_it_says_access_denied_or">If it says ACCESS DENIED or \"Create failed\": the share or the folder doesn\'t let you read it. Do steps 1 and 2 again for that exact folder (Everyone: Read on both tabs).</string>
+    <string name="tutorial_if_it_says_the_username_or">If it says the username or password wasn\'t accepted: check them on the PC (a Microsoft account email and its password, not the PIN).</string>
+    <string name="tutorial_if_find_on_my_network_finds">If Find on my network finds nothing but the address works: some routers keep Wi-Fi devices apart (\"AP isolation\" or \"client isolation\"): turn that off in the router, or type the address yourself.</string>
+    <string name="tutorial_cloud_storage_google_drive_dropbox_onedrive">Cloud storage (Google Drive, Dropbox, OneDrive) can\'t be opened as a folder by Android apps: use a sync app to keep a folder on the phone in step with it, and choose that folder.</string>
+    <string name="tutorial_finding_and_playing_games">Finding and playing games</string>
+    <string name="tutorial_retro_shows_your_systems_only_ones">Retro shows your systems (only ones you have games for, or all of them in Settings), Recently played, Favourites, Playlists and a search box.</string>
+    <string name="tutorial_open_a_game_and_press_play">Open a game and press Play. Most systems play in RetroForge\'s built-in player: Game Boy to GBA, NES, SNES, Mega Drive, Master System, PC Engine, DS, PlayStation, N64, PSP, Virtual Boy, arcade (FB Neo, MAME 2003-Plus, CPS1-3), Saturn (experimental) and Dreamcast.</string>
+    <string name="tutorial_each_game_shows_how_long_you">Each game shows how long you\'ve played it in the built-in player.</string>
+    <string name="tutorial_games_from_retrobat_folders_show_their">Games from RetroBat folders show their gameplay video on the game page, and \"Read the manual\" opens the game\'s manual when RetroBat downloaded one.</string>
+    <string name="tutorial_home_surprise_me_opens_a_random">Home → 🎲 Surprise me opens a random game from your collection.</string>
+    <string name="tutorial_big_games_discs_arcade_sets_play">Big games (discs, arcade sets) play straight from their folder or network drive, so they start at once. Slow Wi-Fi? Settings → Playing → Disc games: choose Copy first, and they\'re copied to the phone before they start.</string>
+    <string name="tutorial_settings_playing_graphics_and_resolution_sets">Settings → Playing → Graphics and resolution sets OpenGL or Vulkan and the resolution per system; the pause menu has the same.</string>
+    <string name="tutorial_some_systems_need_bios_files_settings">Some systems need BIOS files. Settings → Set up RetroForge finds yours and copies them where the emulators look.</string>
+    <string name="tutorial_the_in_game_menu">The in-game menu</string>
+    <string name="tutorial_swipe_in_from_the_left_or">Swipe in from the left or right edge (or press ☰, Back, or Home/Guide on a controller) to pause and open the menu.</string>
+    <string name="tutorial_the_first_page_resume_save_and">The first page: Resume, save and load states, fast-forward, change disc, Keyboard (computers), Take a screenshot (saved to Pictures/RetroForge), restart and quit.</string>
+    <string name="tutorial_picture_screen_shape_screen_filter_sharp">Picture ›: screen shape, screen filter (sharp, smooth, CRT scanlines, curved CRT, LCD grid and ghosting, Scale2x), console look, bezel (The Bezel Project\'s artwork round the game in landscape; download a system\'s bezels here or in Settings → Covers and bezels → Bezels), widescreen, Resolution (draws 3D games sharper: 2× is like 720p, up to 10× for PSP), Graphics (OpenGL, or Vulkan for GameCube, PS2 and PSP, experimental), Cardboard VR and Show FPS (a frame counter for checking speed).</string>
+    <string name="tutorial_sound_and_controls_volume_touch_controls">Sound and controls ›: volume, touch controls on or off, Remap buttons. Emulator ›: each emulator\'s own settings, cheats and Switch emulator.</string>
+    <string name="tutorial_widescreen_n64_and_dreamcast_switches_the">Widescreen (N64 and Dreamcast): switches the game to 16:9 and restarts it by itself.</string>
+    <string name="tutorial_cheats_pick_from_libretro_s_cheat">Cheats: pick from libretro\'s cheat database for the game, or type your own codes.</string>
+    <string name="tutorial_carry_on_where_you_left_off">Carry on where you left off: quitting saves a state and the next start continues from it (Settings to switch off).</string>
+    <string name="tutorial_touch_controls_controllers_and_remap_buttons">Touch controls, controllers and Remap buttons</string>
+    <string name="tutorial_on_screen_buttons_are_drawn_for">On-screen buttons are drawn for each console (PlayStation pad with both sticks, N64, six-button Saturn, Mega Drive and more), in portrait and landscape.</string>
+    <string name="tutorial_connect_a_controller_and_the_on">Connect a controller and the on-screen buttons hide by themselves; they come back when it disconnects.</string>
+    <string name="tutorial_remap_buttons_in_game_menu_choose">Remap buttons (in-game menu): choose a button, then press the controller button you want for it, or drag on-screen buttons where you like. Saved per system.</string>
+    <string name="tutorial_in_the_app_d_pad_to">In the app: D-pad to move, A to select, B to go back, L1/R1 to switch tabs. The red ✕ at the top of every inner page also goes back.</string>
+    <string name="tutorial_hold_r2_to_fast_forward_on">Hold R2 to fast-forward on systems whose controllers had no R2 (Game Boy, GBA, NES, SNES, Mega Drive …).</string>
+    <string name="tutorial_computers_keyboard_mouse_and_bios">Computers: keyboard, mouse and BIOS</string>
+    <string name="tutorial_the_built_in_player_also_runs">The built-in player also runs home computers and more: Commodore 64, Amiga, MSX, ZX Spectrum, Amstrad CPC, Atari ST and 800, PC-88 and PC-98, X68000, DOS, ScummVM adventures, and consoles like the 3DO, Jaguar, Neo Geo CD, Vectrex and Intellivision.</string>
+    <string name="tutorial_keyboard_plug_in_or_pair_a">Keyboard: plug in or pair a keyboard (USB or Bluetooth) and type straight into the computer. On a touchscreen, open the in-game menu and choose Keyboard: Android\'s keyboard comes up and what you type goes to the game. On a C64, Esc is RUN/STOP.</string>
+    <string name="tutorial_mouse_amiga_atari_st_dos_scummvm">Mouse (Amiga, Atari ST, DOS, ScummVM …): the picture works like a laptop\'s trackpad. Drag a finger to move the pointer, tap to click, tap with two fingers to right-click.</string>
+    <string name="tutorial_dos_games_kept_as_a_folder">DOS games kept as a folder (RetroBat\'s \"Game.pc\" folders) play as they are: the first time, RetroForge copies the folder (a progress bar shows) and starts its dosbox.bat, or the game\'s own program.</string>
+    <string name="tutorial_commodore_disks_load_by_themselves_at">Commodore disks load by themselves at top speed, then the game runs at normal speed. Cartridge games start straight away.</string>
+    <string name="tutorial_bios_some_of_these_need_the">BIOS: some of these need the real machine\'s ROMs (Kickstart for the Amiga, TOS for the Atari ST, the 3DO and Neo Geo CD BIOS …). Put the ones you own in your BIOS folder, then Settings → Help and about → Set up RetroForge → BIOS files: RetroForge recognises them by their contents, whatever they\'re called, and copies them where each emulator looks.</string>
+    <string name="tutorial_other_emulators_retroarch_and_standalone_apps">Other emulators (RetroArch and standalone apps)</string>
+    <string name="tutorial_a_game_s_page_also_offers">A game\'s page also offers RetroArch, with the right core, for people who know their way around it, and free standalone emulators: NetherSX2 (PS2), Dolphin (GameCube, Wii), Azahar (3DS), RetroForge Switch Player or Eden (Switch), DuckStation, PPSSPP, Flycast and more.</string>
+    <string name="tutorial_get_opens_obtainium_already_set_up">\"Get\" opens Obtainium already set up for that app, so it installs from the official release and stays updated. Settings → Emulator apps also links the Obtainium Emulation Pack.</string>
+    <string name="tutorial_once_installed_play_with_starts_the">Once installed: \"Play with …\" starts the game in it, and \"Use by default\" makes Play use it for that system.</string>
+    <string name="tutorial_ps2_gamecube_wii_3ds_and_switch">PS2, GameCube, Wii, 3DS and Switch need their app\'s own setup the first time (PS2 BIOS in NetherSX2, keys and firmware in Eden). Games made of several files (.cue, .m3u) may also need your games folder added inside the app.</string>
+    <string name="tutorial_retroarch_hotkeys_start_select_quits_back">RetroArch hotkeys: Start + Select quits back to RetroForge; Down + Select opens RetroArch\'s menu. Change them in Settings → RetroArch hotkeys. RetroArch has its own menu, not RetroForge\'s swipe menu.</string>
+    <string name="tutorial_graphics_drivers_and_texture_packs">Graphics drivers and texture packs</string>
+    <string name="tutorial_settings_gpu_and_drivers_shows_your">Settings → GPU and drivers shows your graphics chip. On Snapdragon (Adreno) phones it lists Turnip drivers, with search, to download for emulators that have a driver manager (Eden, Dolphin, NetherSX2 …): load the file in that app.</string>
+    <string name="tutorial_texture_packs_n64_settings_download_n64">Texture packs (N64): Settings → Download N64 texture packs gets free HD packs (Super Mario 64, Mario Kart 64, Smash Bros., Majora\'s Mask, Ocarina of Time) and switches them on. They\'re big: use Wi-Fi.</string>
+    <string name="tutorial_your_own_packs_settings_texture_packs">Your own packs: Settings → Texture packs (N64 or PSP) → Add a texture pack folder. N64 packs are named after the game\'s internal name (SUPER MARIO 64), PSP packs after the game\'s ID (ULUS10041).</string>
+    <string name="tutorial_multi_disc_games">Multi-disc games</string>
+    <string name="tutorial_a_game_with_an_m3u_playlist">A game with an .m3u playlist shows once and plays as one game. Change disc from the in-game menu.</string>
+    <string name="tutorial_no_m3u_yet_rom_manager_multi">No .m3u yet? ROM Manager → Multi-disc makes them for you.</string>
+    <string name="tutorial_covers_and_artwork">Covers and artwork</string>
+    <string name="tutorial_artwork_from_your_other_frontend_gamelist">Artwork from your other frontend (gamelist.xml) is used as it is.</string>
+    <string name="tutorial_open_a_game_and_choose_change">Open a game and choose Change cover. Box art: free, from libretro\'s thumbnail library; a system\'s list also has \"Download box art\" for every game without artwork.</string>
+    <string name="tutorial_steamgriddb_thousands_of_community_covers_add">SteamGridDB: thousands of community covers. Add your own free API key in Settings (Show key lets you check it).</string>
+    <string name="tutorial_screenscraper_front_and_3d_boxes_an">ScreenScraper: front and 3D boxes. An account (Settings, with Show password) raises your daily limit.</string>
+    <string name="tutorial_your_own_image_any_picture_on">Your own image: any picture on the device. Edit details changes a game\'s name, year and description.</string>
+    <string name="tutorial_favourites_playlists_and_backups">Favourites, playlists and backups</string>
+    <string name="tutorial_save_syncing_settings_playing_save_syncing">Save syncing (Settings → Playing → Save syncing): your in-game saves and save states kept the same on every device. Choose a folder on a network drive (your PC), or a folder on this device that a cloud app keeps in step (Syncthing, FolderSync, Autosync for Google Drive, Nextcloud, OneDrive …). A game\'s saves come in when it starts and go back when you quit; Sync now does everything at once. If a save changed on two devices, the newer is kept and the other goes in the \"sync conflicts\" folder. Nothing is deleted.</string>
+    <string name="tutorial_on_a_game_s_page_add">On a game\'s page: \"Add to favourites\", or \"Add to a playlist\" to tick playlists or make a new one. Open a playlist to reorder, rename or delete it; the games themselves are never touched.</string>
+    <string name="tutorial_coming_from_es_de_settings_import">Coming from ES-DE: Settings → Import collections from ES-DE turns its custom collections into playlists.</string>
+    <string name="tutorial_settings_back_up_saves_and_settings">Settings → Back up saves and settings: one zip with in-game saves, save states, cheats, settings, favourites and playlists. On a new phone, add your game folders first, then Restore from a backup.</string>
+    <string name="tutorial_playstation_memory_cards_settings_playing_pick">PlayStation memory cards (Settings → Playing): pick a game\'s card to see its saves, copy a save to another game\'s card (sequels that read the first game\'s save) or delete one. Open a card file from another emulator (.mcr, .mcd, .mc, .gme) to bring its saves across, or save a game\'s card as a .mcr file. Quit the game first.</string>
+    <string name="tutorial_rom_hacks_and_patches">ROM hacks and patches</string>
+    <string name="tutorial_rom_hacks_shows_hacks_you_already">ROM hacks shows hacks you already have (named after the hack, not as a duplicate) and hacks from catalogues for NES, SNES, N64, Game Boy Color and GBA.</string>
+    <string name="tutorial_download_and_patch_for_hacks_published">Download and patch: for hacks published on GitHub, RetroForge downloads the patch, applies it to your own ROM and puts the new game in your library. Others open their official page.</string>
+    <string name="tutorial_rom_patcher_retro_screen_applies_ips">ROM Patcher (Retro screen) applies IPS, BPS or UPS patches, one after another, to make a new copy next to the original. It appears in your library by itself. Your original is never changed.</string>
+    <string name="tutorial_the_only_part_of_retroforge_that">The only part of RetroForge that changes your files, and only after showing you what it will do and asking for permission to change that folder.</string>
+    <string name="tutorial_duplicates_finds_the_same_game_in">Duplicates: finds the same game in several files and checks whether they hold the same data.</string>
+    <string name="tutorial_compress_playstation_saturn_dreamcast_and_other">Compress: PlayStation, Saturn, Dreamcast and other CD games (.cue/.bin) and PS2/PSP .iso become CHD; cartridges become .zip. Each new file is read back and checked before the original is set aside. GameCube and Wii: use Dolphin\'s own RVZ converter.</string>
+    <string name="tutorial_sort_moves_loose_games_into_the">Sort: moves loose games into the right system folders. Multi-disc: makes .m3u playlists.</string>
+    <string name="tutorial_nothing_is_deleted_straight_away_files">Nothing is deleted straight away: files go to _duplicates, _originals or _deleted, and History can undo every change. Free up space is the only step that deletes for good.</string>
+    <string name="tutorial_if_another_frontend_uses_the_same">If another frontend uses the same folder on a PC, close it first.</string>
+    <string name="tutorial_pc_ports_of_games_you_own">PC: ports of games you own</string>
+    <string name="tutorial_pc_ports_lists_fan_made_pc">PC → Ports lists fan-made PC versions of games you have (Ship of Harkinian for Ocarina of Time, Ghostship for Super Mario 64, SpaghettiKart, Zelda 3 and more), matched to your library.</string>
+    <string name="tutorial_android_tab_download_and_install_gets">Android tab: Download and install gets the port\'s official release (Android asks you to confirm the install), or Get with Obtainium. Open starts it once installed.</string>
+    <string name="tutorial_windows_tab_download_windows_version_unpacks">Windows tab: Download Windows version unpacks it into Download/RetroForge/Ports, ready to add in GameNative.</string>
+    <string name="tutorial_prepare_files_copies_your_rom_where">Prepare files copies your ROM where the port expects it. Your original stays where it is, so you can play both.</string>
+    <string name="tutorial_pc_windows_games">PC: Windows games</string>
+    <string name="tutorial_your_pc_games_pc_tab_steam">Your PC games (PC tab): Steam, Epic, GOG and Amazon games start in GameNative (sign in and install them there first); Windows games start from Winlator Cmod or WinNative shortcuts. Put the files in a \"windows\" or \"steam\" folder beside your other systems and they\'re found by themselves (.steam, .epic, .gog, .amazon and .pcgame files hold the game\'s id; .desktop files are shortcuts exported from Winlator). Or use Add a Steam game.</string>
+    <string name="tutorial_these_games_start_in_a_separate">These games start in a separate free PC game app: DroidDeck on Snapdragon devices, or GameNative and Winlator on others. The PC section checks your graphics chip and says which suit it. RetroForge also has its own PC player (next topic).</string>
+    <string name="tutorial_gamenative_install_it_from_pc_gamenative">GameNative: install it from PC → GameNative releases. Sign in to Steam, Epic, GOG or Amazon inside it, or tap Skip login, then + and choose a game folder you copied to the phone (allow All files access).</string>
+    <string name="tutorial_if_play_says_the_executable_couldn">If Play says the executable couldn\'t be chosen: Edit container → Executable Path → pick the game\'s .exe, save, and press Play again. The first start downloads Proton and takes a minute or two.</string>
+    <string name="tutorial_droiddeck_needs_a_snapdragon_chip_with">DroidDeck: needs a Snapdragon chip with an Adreno 730 or newer GPU. Install it from its official releases page, sign in to Steam inside it and install a game you own.</string>
+    <string name="tutorial_use_only_games_you_own_retroforge">Use only games you own. RetroForge never shares your store logins or game files.</string>
+    <string name="tutorial_pc_retroforge_s_own_pc_player">PC: RetroForge\'s own PC player</string>
+    <string name="tutorial_retroforge_can_play_windows_games_itself">RetroForge can play Windows games itself, with nothing else to install (64-bit ARM devices). The first game downloads the PC player\'s parts, about 300 MB.</string>
+    <string name="tutorial_add_a_game_pc_add_a">Add a game: PC → Add a Windows game folder and pick the folder that holds the game\'s .exe, or sign in to Steam on the PC tab and download a game you own from My Steam library (Wi-Fi only unless you allow mobile data).</string>
+    <string name="tutorial_where_games_are_kept_inside_retroforge">Where games are kept: inside RetroForge on the device (or on an SD card if it has more room), not in a folder you can browse. Uninstalling RetroForge removes them, so keep your original copy. Some devices\' Android closes games run from shared folders, which is why they live here.</string>
+    <string name="tutorial_controls_the_on_screen_controller_is">Controls: the on-screen controller is an Xbox pad; it hides when you connect a controller. Games without controller support get keyboard and mouse instead (sticks move and aim, triggers click). Tap the ☰ at the top, or swipe in from the edge, for the menu: controller, keyboard, Esc, Enter, Play together and Quit.</string>
+    <string name="tutorial_wrong_program_starts_pc_change_a">Wrong program starts? PC → Change a game\'s .exe. A game that won\'t start shows ⚠ Didn\'t start last time on its tile.</string>
+    <string name="tutorial_older_graphics_chips_if_a_game">Older graphics chips: if a game can\'t use the fast Direct3D route (DXVK), RetroForge switches to a slower one by itself and starts it again.</string>
+    <string name="tutorial_steam_cloud_saves_sync_before_and">Steam Cloud saves sync before and after you play when you\'re signed in to Steam on the PC tab.</string>
+    <string name="tutorial_media_films_and_3d">Media: films and 3D</string>
+    <string name="tutorial_media_use_retroforge_s_film_folders">Media → Use RetroForge\'s film folders makes Movies/RetroForge on your phone, with Films and 3D Films inside. When Android shows that folder, tap Use this folder, then Allow.</string>
+    <string name="tutorial_copy_films_in_plug_the_phone">Copy films in: plug the phone into a computer with a USB cable and drag them into Movies/RetroForge/Films or 3D Films, or move them with a file manager. Then press Look again.</string>
+    <string name="tutorial_already_keep_films_somewhere_else_an">Already keep films somewhere else (an SD card, a USB drive)? Choose another folder instead. RetroForge only reads it.</string>
+    <string name="tutorial_films_show_as_a_poster_grid">Films show as a poster grid with tidy titles and years, 3D films first. Posters, stories and ratings come from the files saved next to each film, as Kodi, Plex and Jellyfin use them: Film-poster.jpg or Film.jpg (or poster.jpg in a film\'s own folder) and Film.nfo or movie.nfo. Media Companion or tinyMediaManager on a PC make these for a whole collection. Films without them show a frame from the film; you can also add your own free TMDB key for personal use (Media → Film posters and stories).</string>
+    <string name="tutorial_3d_films_their_file_name_needs">3D films: their file name needs 3D, SBS, HSBS (side by side) or TAB, HOU (top and bottom), as most 3D films have. They get a 3D badge.</string>
+    <string name="tutorial_to_watch_in_3d_open_the">To watch in 3D: open the film, turn the phone sideways and put it in a Cardboard-style viewer. The View button switches between normal, Cardboard cinema (a 2D film on a big screen for each eye), 3D side by side and 3D top and bottom. RetroForge picks the right 3D mode from the file name.</string>
+    <string name="tutorial_if_a_film_can_t_play">If a film can\'t play here, RetroForge offers to open it in another video app.</string>
+    <string name="tutorial_plex_jellyfin_emby_or_a_nas">Plex, Jellyfin, Emby or a NAS: Media → Find media servers. RetroForge finds them on your home network the way smart TVs and Bigscreen do (DLNA), with no account or sign-in, and remembers them. Open a server, step into its folders, tap a poster to play. Films in a folder with 3D in its name play in 3D.</string>
+    <string name="tutorial_plex_not_found_in_plex_on">Plex not found? In Plex on the PC: Settings → DLNA → tick Enable the DLNA server. Make sure the phone is on the same network (Wi-Fi or the PC\'s USB tethering) and that the PC\'s firewall lets Plex through.</string>
+    <string name="tutorial_vr_tab_play_in_a_cardboard">VR tab: play in a Cardboard-style headset. The game is drawn once for each eye; Virtual Boy games are in real 3D.</string>
+    <string name="tutorial_switch_vr_on_from_the_in">Switch VR on from the in-game menu, or make it the default for every game on the VR tab. 3D films play from the Media tab.</string>
+    <string name="tutorial_meta_quest_retroforge_runs_as_a">Meta Quest: RetroForge runs as a flat Android app.</string>
+    <string name="tutorial_dual_screens_ayn_thor_ayaneo_pocket">Dual screens (AYN Thor, AYANEO Pocket DS …)</string>
+    <string name="tutorial_settings_dual_screen_ds_games_the">Settings → Dual screen. DS games: the top screen on the main display and the touch screen on the second.</string>
+    <string name="tutorial_game_box_on_the_second_screen">Game box on the second screen while browsing (experimental): RetroForge\'s artwork, or the open game\'s cover, name and description.</string>
+    <string name="tutorial_android_apps_and_launcher_mode">Android apps and launcher mode</string>
+    <string name="tutorial_the_android_tab_lists_every_app">The Android tab lists every app on the device, with search, and shortcuts to Android settings, Wi-Fi, Bluetooth, display and sound.</string>
+    <string name="tutorial_launcher_mode_makes_retroforge_the_home">Launcher mode makes RetroForge the home screen, so a handheld or TV box starts straight into it. Switch it off there to go back to your usual home screen.</string>
+    <string name="tutorial_looks_sounds_and_help">Looks, sounds and help</string>
+    <string name="tutorial_settings_themes_colours_shapes_type_and">Settings → Themes: colours, shapes, type and game-list layouts with previews. Import your own, or a theme\'s colours and system art from ES-DE or RetroBat.</string>
+    <string name="tutorial_interface_sounds_a_tick_when_moving">Interface sounds: a tick when moving, chimes on select and back (Settings to switch off; they use the media volume).</string>
+    <string name="tutorial_settings_report_a_problem_shares_the">Settings → Report a problem shares the app and device details (no personal data) so problems can be fixed.</string>
+    <string name="tutorial_links_has_the_youtube_channels_and">Links has the YouTube channels and sites behind a lot of this: Retro Game Corps, Modern Vintage Gamer, Digital Foundry, My Life in Gaming, The Gaming Historian and more.</string>
+
+    <!-- UpdateCard.kt -->
+    <string name="update_retroforge_is_out_update_from_home">RetroForge %1$s is out: update from Home</string>
+    <string name="update_couldn_t_check">Couldn\'t check: %1$s</string>
+    <string name="update_you_have_the_newest_version">You have the newest version.</string>
+    <string name="update_check_automatically_on">Check automatically: on</string>
+    <string name="update_check_automatically_off">Check automatically: off</string>
+    <string name="update_downloading">Downloading…</string>
+
+    <!-- SetupScreen.kt -->
+    <string name="setup_not_in_a_system_folder">%1$s not in a system folder</string>
+    <string name="setup_built_in_nothing_to_install_sorted">Built in, nothing to install: %1$s.</string>
+    <string name="setup_couldn_t_download_yet_no_internet">Couldn\'t download %1$s yet (no internet?). RetroForge tries again next time.</string>
+    <string name="setup_retroarch_for">RetroArch, for %1$s</string>
+    <string name="setup_not_playable_from_retroforge_yet">Not playable from RetroForge yet: %1$s%2$s</string>
+    <string name="setup_scan_for_bios_files">Scan for BIOS files</string>
+    <string name="setup_scan_again">Scan again</string>
+    <string name="setup_else">%1$s%2$s%3$s</string>
+    <string name="setup_needs_one_bios_file_for_this">Needs one BIOS file for this system, any version (%1$s are recognised).</string>
+    <string name="setup_needs">Needs %1$s.</string>
+    <string name="setup_missing_3">Missing: %1$s</string>
+    <string name="setup_built_in_player">"Built-in player: "</string>
+    <string name="setup_bios_file_s_copied">%1$s BIOS file(s) copied</string>
+    <string name="setup_already_there">%1$s already there</string>
+    <string name="setup_couldn_t_be_copied">%1$s couldn\'t be copied</string>
+    <string name="setup_nothing_to_do_retroforge_keeps_its">. Nothing to do: RetroForge keeps its own copy.</string>
+    <string name="setup_finished_with_problems">Finished with problems</string>
+    <string name="setup_bios_check_done_you_have_every">BIOS check done: you have every BIOS your games need.</string>
+    <string name="setup_every_system_in_your_library_has">Every system in your library has what it needs.</string>
+    <string name="setup_one_bios_file_any_version">one BIOS file, any version</string>
+
+    <!-- SetupViewModel.kt -->
+    <string name="setup_copy_failed">Copy failed: %1$s</string>
+    <!-- Counts -->
+    <plurals name="hacks_catalogues_select">
+        <item quantity="one">%1$s catalogue · %2$s hacks. Select to add or remove catalogues.</item>
+        <item quantity="other">%1$s catalogues · %2$s hacks. Select to add or remove catalogues.</item>
+    </plurals>
+    <plurals name="rom_manager_its_files_move">
+        <item quantity="one">Its file moves</item>
+        <item quantity="other">Its %1$s files move</item>
+    </plurals>
+    <plurals name="media_added_films_found">
+        <item quantity="one">Added: %1$s film found. They\'re above.</item>
+        <item quantity="other">Added: %1$s films found. They\'re above.</item>
+    </plurals>
+    <plurals name="network_drives_about_minutes_left">
+        <item quantity="one">About %1$s minute left</item>
+        <item quantity="other">About %1$s minutes left</item>
+    </plurals>
+    <plurals name="esde_import_missed">
+        <item quantity="one">" %1$s in them isn\'t in your RetroForge library."</item>
+        <item quantity="other">" %1$s in them aren\'t in your RetroForge library."</item>
+    </plurals>
+    <plurals name="memory_cards_saves_blocks_free">
+        <item quantity="one">%1$s: %2$s save, %3$s of 15 blocks free.</item>
+        <item quantity="other">%1$s: %2$s saves, %3$s of 15 blocks free.</item>
+    </plurals>
+    <plurals name="memory_cards_save_blocks">
+        <item quantity="one">• %1$s (%2$s block)</item>
+        <item quantity="other">• %1$s (%2$s blocks)</item>
+    </plurals>
+    <plurals name="settings_added_games_found">
+        <item quantity="one">Added %1$s: %2$s game found. They\'re in the Retro tab now.</item>
+        <item quantity="other">Added %1$s: %2$s games found. They\'re in the Retro tab now.</item>
+    </plurals>
+    <plurals name="setup_check_systems_need_a_look">
+        <item quantity="one">%1$s system needs a look</item>
+        <item quantity="other">%1$s systems need a look</item>
+    </plurals>
+    <plurals name="setup_bios_check_systems_missing">
+        <item quantity="one">BIOS check done: %1$s system missing a BIOS.</item>
+        <item quantity="other">BIOS check done: %1$s systems missing a BIOS.</item>
+    </plurals>
+    <plurals name="setup_optional_bios">
+        <item quantity="one">%1$s optional one would make some systems more accurate; see below.</item>
+        <item quantity="other">%1$s optional ones would make some systems more accurate; see below.</item>
+    </plurals>
+    <plurals name="setup_missing_bios_for_systems">
+        <item quantity="one">Missing BIOS for %1$s system</item>
+        <item quantity="other">Missing BIOS for %1$s systems</item>
+    </plurals>
+    <plurals name="count_game">
+        <item quantity="one">%1$s game</item>
+        <item quantity="other">%1$s games</item>
+    </plurals>
+    <plurals name="count_hack">
+        <item quantity="one">%1$s hack</item>
+        <item quantity="other">%1$s hacks</item>
+    </plurals>
+    <plurals name="count_cover">
+        <item quantity="one">%1$s cover</item>
+        <item quantity="other">%1$s covers</item>
+    </plurals>
+    <plurals name="count_folder">
+        <item quantity="one">%1$s folder</item>
+        <item quantity="other">%1$s folders</item>
+    </plurals>
+    <plurals name="count_system">
+        <item quantity="one">%1$s system</item>
+        <item quantity="other">%1$s systems</item>
+    </plurals>
+    <plurals name="count_more_system">
+        <item quantity="one">%1$s more system</item>
+        <item quantity="other">%1$s more systems</item>
+    </plurals>
+    <plurals name="count_problem">
+        <item quantity="one">%1$s problem</item>
+        <item quantity="other">%1$s problems</item>
+    </plurals>
+    <plurals name="count_set">
+        <item quantity="one">%1$s set</item>
+        <item quantity="other">%1$s sets</item>
+    </plurals>
+    <plurals name="count_playlist">
+        <item quantity="one">%1$s playlist</item>
+        <item quantity="other">%1$s playlists</item>
+    </plurals>
+    <plurals name="count_file">
+        <item quantity="one">%1$s file</item>
+        <item quantity="other">%1$s files</item>
+    </plurals>
+    <plurals name="count_change">
+        <item quantity="one">%1$s change</item>
+        <item quantity="other">%1$s changes</item>
+    </plurals>
+    <plurals name="count_time">
+        <item quantity="one">%1$s time</item>
+        <item quantity="other">%1$s times</item>
+    </plurals>
+    <plurals name="count_disc">
+        <item quantity="one">%1$s disc</item>
+        <item quantity="other">%1$s discs</item>
+    </plurals>
+    <plurals name="count_3d_box">
+        <item quantity="one">%1$s 3D box</item>
+        <item quantity="other">%1$s 3D boxes</item>
+    </plurals>
+    <plurals name="count_film">
+        <item quantity="one">%1$s film</item>
+        <item quantity="other">%1$s films</item>
+    </plurals>
+    <plurals name="count_save">
+        <item quantity="one">%1$s save</item>
+        <item quantity="other">%1$s saves</item>
+    </plurals>
+    <plurals name="count_block">
+        <item quantity="one">%1$s block</item>
+        <item quantity="other">%1$s blocks</item>
+    </plurals>
+    <plurals name="count_catalogue">
+        <item quantity="one">%1$s catalogue</item>
+        <item quantity="other">%1$s catalogues</item>
+    </plurals>
+    <plurals name="count_minute">
+        <item quantity="one">%1$s minute</item>
+        <item quantity="other">%1$s minutes</item>
+    </plurals>
+    <plurals name="count_copy">
+        <item quantity="one">%1$s copy</item>
+        <item quantity="other">%1$s copies</item>
+    </plurals>
+    <string name="rom_manager_multi_disc">Multi-disc</string>
+    <string name="section_home">Home</string>
+    <string name="section_retro">Retro</string>
+    <string name="section_hacks">Hacks</string>
+    <string name="section_pc">PC</string>
+    <string name="section_media">Media</string>
+    <string name="section_vr">VR</string>
+    <string name="section_apps">Android</string>
+    <string name="section_links">Links</string>
+    <string name="section_settings">Settings</string>
+
+    <!-- PlayerActivity.kt -->
+    <string name="player_this_device_s_ip">this device\'s IP</string>
+
+    <!-- LibraryScreens.kt -->
+    <string name="library_your_theme">your theme</string>
+    <string name="library_your_folder">your folder</string>
+
+    <!-- RomManagerScreen.kt -->
+    <string name="rom_manager_the_top_folder">the top folder</string>
+
+    <!-- FreeGamesSection.kt -->
+    <string name="free_games_the_folder_you_chose">the folder you chose</string>
+
+    <!-- SetupScreen.kt -->
+    <string name="setup_unrecognised_version">" (unrecognised version)"</string>
+    <string name="player_widescreen">widescreen</string>
+    <string name="player_resolution_original">" (original)"</string>
+    <string name="library_as_bookshelf">bookshelf</string>
+    <string name="library_as_list">list</string>
+    <string name="library_as_grid">grid</string>
+    <string name="setup_list_or">" or "</string>
+    <string name="setup_list_and">" and "</string>
+    <string name="library_layout_theme">theme layout</string>
+    <string name="library_tiles_consoles">consoles</string>
+    <string name="library_tiles_game_art">game art</string>
+    <string name="library_tiles_art_and_console">game art + console</string>
+    <string name="library_tiles_plain">plain</string>
+    <string name="tutorial_device_title">What will my device run? (a rough guide)</string>
+    <string name="tutorial_device_intro">A rough guide only: the same chip runs some games of a system perfectly and struggles with others, and cooling, Android version and drivers matter too. Settings → GPU and drivers shows your chip.</string>
+    <string name="tutorial_device_low">LOW END (Unisoc T610/T618, MediaTek Helio G85, Snapdragon 680, Exynos 850; 3-4 GB of RAM): everything up to PlayStation runs well: Game Boy to GBA, NES, SNES, Mega Drive, Master System, PC Engine, arcade (FinalBurn Neo, CPS1-3), PlayStation and the home computers. DS and lighter N64 and PSP games mostly play. GameCube, PS2, 3DS and Switch are out of reach.</string>
+    <string name="tutorial_device_mid">MID RANGE (Unisoc T820, Helio G99, Dimensity 900-1200, Snapdragon 720G to 778G or 7 Gen 1; 4-6 GB): add N64, DS, PSP at 2× resolution, Dreamcast and most Saturn. Lighter GameCube and 3DS games play; PS2 only for simpler games.</string>
+    <string name="tutorial_device_high">HIGH END (Snapdragon 865, 888, 8 Gen 1, Dimensity 8100-9000, Exynos 2200, Google Tensor; 8 GB): GameCube, Wii and most PS2 at 2×, most 3DS, and lighter Switch games (Blazing Chrome runs at full speed on a Galaxy S22).</string>
+    <string name="tutorial_device_flagship">FLAGSHIP (Snapdragon 8 Gen 2, 8 Gen 3, 8 Elite, Dimensity 9200 and newer; 8-16 GB): PS2 and GameCube at 3× and more, many Switch games, and older or lighter Windows games in the PC player.</string>
+    <string name="tutorial_device_snapdragon">Snapdragon chips (Adreno graphics) are the best for emulation: they can use Turnip drivers, which many GameCube, PS2, Switch and PC games need. Exynos, Xclipse and Mali chips run fewer of these heavy systems for the same speed.</string>
+    <string name="tutorial_device_ram">Switch and Windows games want 8 GB of RAM or more. If a game is slow: lower the resolution (in-game menu → Picture), try the other graphics option (OpenGL or Vulkan), and keep the device cool and charged.</string>
+    <string name="tutorial_away_title">Your network drive away from home (Tailscale)</string>
+    <string name="tutorial_away_what">What it does: plays the games on your home PC from anywhere: a friend\'s house, a hotel, mobile data. Tailscale (free for personal use) joins your PC and phone in a private network of their own, so the phone can reach the PC as if it were at home. Nothing is opened to the internet.</string>
+    <string name="tutorial_away_step1">STEP 1: set up the network drive at home first (the topic above), and check a game plays.</string>
+    <string name="tutorial_away_step2">STEP 2, on the PC: install Tailscale from tailscale.com/download and sign in (a Google, Microsoft or Apple account works). Leave it running; it starts with Windows.</string>
+    <string name="tutorial_away_step3">STEP 3, on the phone: Settings → Games and library → Games on a network drive → Get Tailscale (free), or find Tailscale on the Play Store. Sign in with the same account and switch it on.</string>
+    <string name="tutorial_away_step4">STEP 4: on the PC, click Tailscale\'s icon by the clock: your PC is listed with an address starting 100. (for example 100.101.102.103). Write it down.</string>
+    <string name="tutorial_away_step5">STEP 5, in RetroForge: remove the old network drive and add it again with that 100. address instead of the home one: same shared folder, username and password. Then Retro → Game folders: forget the old folder and add the new one, as in the topic above.</string>
+    <string name="tutorial_away_done">That\'s it: with Tailscale switched on, the drive works at home and away. At home Tailscale goes straight across your Wi-Fi, so it\'s just as fast.</string>
+    <string name="tutorial_away_speed">Speed away from home depends on your home broadband\'s upload speed. Cartridge games start straight away; big CD and Switch games are copied to the phone first, which can take a long time. Copy the ones you want before you leave.</string>
+    <string name="tutorial_away_data">On mobile data every game you play uses data. A Switch game is several gigabytes.</string>
+    <string name="tutorial_away_trouble">If it can\'t connect: check Tailscale is switched on on the phone and the PC is on and awake (not asleep). Windows can block file sharing on Tailscale\'s network: on the PC open PowerShell as administrator and run Set-NetConnectionProfile -InterfaceAlias Tailscale -NetworkCategory Private.</string>
 </resources>

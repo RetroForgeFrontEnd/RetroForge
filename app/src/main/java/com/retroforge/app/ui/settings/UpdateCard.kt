@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -35,7 +36,7 @@ fun UpdateBanner() {
     var update by remember { mutableStateOf<AppUpdate.Available?>(null) }
     LaunchedEffect(Unit) {
         update = withContext(Dispatchers.IO) { AppUpdate.checkIfDue(context) }
-        update?.let { android.widget.Toast.makeText(context, "RetroForge ${it.version} is out: update from Home", android.widget.Toast.LENGTH_LONG).show() }
+        update?.let { android.widget.Toast.makeText(context, str(R.string.update_retroforge_is_out_update_from_home, it.version), android.widget.Toast.LENGTH_LONG).show() }
     }
     update?.let { found -> UpdateOffer(found, onDismiss = { update = null }) }
 }
@@ -59,11 +60,11 @@ fun UpdateCard() {
                 scope.launch {
                     val r = withContext(Dispatchers.IO) { runCatching { AppUpdate.check() } }
                     found = r.getOrNull()
-                    result = r.exceptionOrNull()?.let { "Couldn't check: ${it.message}" } ?: if (found == null) "You have the newest version." else null
+                    result = r.exceptionOrNull()?.let { str(R.string.update_couldn_t_check, it.message) } ?: if (found == null) str(R.string.update_you_have_the_newest_version) else null
                     checking = false
                 }
             })
-            FocusChip(if (auto) "Check automatically: on" else "Check automatically: off", onClick = {
+            FocusChip(if (auto) stringResource(R.string.update_check_automatically_on) else stringResource(R.string.update_check_automatically_off), onClick = {
                 auto = !auto
                 AppUpdate.prefs(context).edit().putBoolean("auto", auto).apply()
             })
@@ -85,12 +86,12 @@ private fun UpdateOffer(update: AppUpdate.Available, onDismiss: () -> Unit) {
         CardTitle(stringResource(R.string.update_retroforge_is_out, update.version)) { StatusPill(stringResource(R.string.hacks_update), StatusTone.GOOD) }
         if (update.notes.isNotBlank()) CardBody(update.notes)
         ChipRow {
-            FocusChip(if (downloading) "Downloading…" else "Download and install", enabled = !downloading, onClick = {
+            FocusChip(if (downloading) stringResource(R.string.update_downloading) else stringResource(R.string.ports_download_and_install), enabled = !downloading, onClick = {
                 downloading = true
                 problem = null
                 scope.launch {
                     val r = withContext(Dispatchers.IO) { runCatching { AppUpdate.install(context, update) { progress = it / 100f } } }
-                    problem = r.exceptionOrNull()?.let { "Couldn't download it: ${it.message}" }
+                    problem = r.exceptionOrNull()?.let { str(R.string.hacks_couldn_t_download_it, it.message) }
                     downloading = false
                 }
             })

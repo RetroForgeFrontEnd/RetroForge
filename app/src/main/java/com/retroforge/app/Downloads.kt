@@ -1,5 +1,6 @@
 package com.retroforge.app
 
+import com.retroforge.core.ui.str
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -18,9 +19,9 @@ object Downloads {
             setRequestProperty("User-Agent", "RetroForge/${BuildConfig.VERSION_NAME}")
         }
         try {
-            if (connection.responseCode != 200) throw IOException("the server answered ${connection.responseCode}")
+            if (connection.responseCode != 200) throw IOException(str(R.string.downloads_the_server_answered, connection.responseCode))
             val total = connection.contentLengthLong.takeIf { it > 0 }
-            if (total != null && total > maxBytes) throw IOException("the file is over ${maxBytes / (1024 * 1024)} MB")
+            if (total != null && total > maxBytes) throw IOException(str(R.string.downloads_the_file_is_over_mb, maxBytes / (1024 * 1024)))
             val out = ByteArrayOutputStream(total?.toInt() ?: 64 * 1024)
             val buffer = ByteArray(64 * 1024)
             var lastShown = -1
@@ -29,7 +30,7 @@ object Downloads {
                     val n = input.read(buffer)
                     if (n < 0) break
                     out.write(buffer, 0, n)
-                    if (out.size() > maxBytes) throw IOException("the file is over ${maxBytes / (1024 * 1024)} MB")
+                    if (out.size() > maxBytes) throw IOException(str(R.string.downloads_the_file_is_over_mb, maxBytes / (1024 * 1024)))
                     if (total == null) onProgress(null)
                     else (out.size() * 100L / total).toInt().let { pct -> if (pct != lastShown) { lastShown = pct; onProgress(pct / 100f) } }
                 }

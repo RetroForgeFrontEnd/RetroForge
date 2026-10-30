@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -50,17 +51,13 @@ fun TexturePacksScreen() {
 fun TexturePacksCard(playerDir: File) {
     DownloadPacks(File(playerDir, "system/Mupen64plus/cache"))
     TexturePacks(
-        "Texture packs (N64)",
-        "High-resolution texture packs for N64 games in the built-in player. A pack is a folder named after the game's " +
-            "internal name, for example SUPER MARIO 64; pick that folder and RetroForge copies it where the emulator looks. " +
-            "They're switched on automatically when a pack is installed.",
+        str(R.string.texture_packs_texture_packs_n64),
+        str(R.string.texture_packs_high_resolution_texture_packs_for_n64),
         File(playerDir, "system/Mupen64plus/hires_texture"),
     )
     TexturePacks(
-        "Texture packs (PSP)",
-        "High-resolution texture packs for PSP games in the built-in player. A pack is a folder named after the game's ID, " +
-            "for example ULUS10041 (the pack's page usually says which); pick that folder and RetroForge copies it where " +
-            "PPSSPP looks. They're switched on automatically when a pack is installed.",
+        str(R.string.texture_packs_texture_packs_psp),
+        str(R.string.texture_packs_high_resolution_texture_packs_for_psp),
         File(playerDir, "saves/psp/TEXTURES"),
     )
 }
@@ -75,13 +72,13 @@ private fun TexturePacks(title: String, body: String, packs: File) {
     val installed = remember(changes) { packs.listFiles()?.filter { it.isDirectory }?.map { it.name }?.sorted().orEmpty() }
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { tree ->
         tree ?: return@rememberLauncherForActivityResult
-        status = "Copying the texture pack…"
+        status = str(R.string.texture_packs_copying_the_texture_pack)
         scope.launch {
             status = withContext(Dispatchers.IO) {
                 runCatching {
-                    val name = copyTree(context, tree, packs) { n -> status = "Copying the texture pack… $n files" }
-                    "Added $name. The game uses it next time it starts."
-                }.getOrElse { "Couldn't copy it: ${it.message}" }
+                    val name = copyTree(context, tree, packs) { n -> status = str(R.string.texture_packs_copying_the_texture_pack_files, n) }
+                    str(R.string.texture_packs_added_the_game_uses_it_next, name)
+                }.getOrElse { str(R.string.texture_packs_couldn_t_copy_it, it.message) }
             }
             changes++
         }
@@ -89,7 +86,7 @@ private fun TexturePacks(title: String, body: String, packs: File) {
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle(title)
         CardBody(body)
-        CardBody(if (installed.isEmpty()) "No packs installed." else "Installed: ${installed.joinToString()}")
+        CardBody(if (installed.isEmpty()) stringResource(R.string.texture_packs_no_packs_installed) else "Installed: ${installed.joinToString()}")
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             FocusChip(stringResource(R.string.texture_packs_add_a_texture_pack_folder), onClick = { pick.launch(null) })
             installed.forEach { name ->
@@ -117,18 +114,18 @@ private fun DownloadPacks(cacheDir: File) {
         CardBody(
             stringResource(R.string.texture_packs_free_hd_packs_by_ghostlydark_downloaded),
         )
-        CardBody(if (installed.isEmpty()) "None downloaded yet." else "Downloaded: " + installed.joinToString { "${it.name.removeSuffix(".hts").removeSuffix("_HIRESTEXTURES")} (${it.length() / 1_000_000} MB)" })
+        CardBody(if (installed.isEmpty()) str(R.string.texture_packs_none_downloaded_yet) else "Downloaded: " + installed.joinToString { str(R.string.texture_packs_mb, it.name.removeSuffix(".hts").removeSuffix("_HIRESTEXTURES"), it.length() / 1_000_000) })
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             TexturePackDownloads.packs.forEach { pack ->
                 FocusChip(stringResource(R.string.pc_games_download, pack.game), enabled = !busy, onClick = {
                     busy = true
-                    status = "Finding ${pack.game}'s latest release…"
+                    status = str(R.string.texture_packs_finding_s_latest_release, pack.game)
                     scope.launch {
                         status = withContext(Dispatchers.IO) {
                             runCatching {
                                 val names = TexturePackDownloads.install(context, pack, cacheDir) { status = it }
-                                "Added ${pack.game} (${names.joinToString()}). It's used next time the game starts in the built-in player."
-                            }.getOrElse { "Couldn't get ${pack.game}: ${it.message}" }
+                                str(R.string.texture_packs_added_it_s_used_next_time, pack.game, names.joinToString())
+                            }.getOrElse { str(R.string.free_games_couldn_t_get, pack.game, it.message) }
                         }
                         busy = false
                         changes++
@@ -136,7 +133,7 @@ private fun DownloadPacks(cacheDir: File) {
                 })
             }
             installed.forEach { file ->
-                FocusChip("Remove ${file.name.removeSuffix(".hts").removeSuffix("_HIRESTEXTURES")}", enabled = !busy, onClick = {
+                FocusChip(stringResource(R.string.network_drives_remove, file.name.removeSuffix(".hts").removeSuffix("_HIRESTEXTURES")), enabled = !busy, onClick = {
                     scope.launch { withContext(Dispatchers.IO) { file.delete() }; changes++ }
                 })
             }

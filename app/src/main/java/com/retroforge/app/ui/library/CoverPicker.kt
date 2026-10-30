@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -94,8 +95,8 @@ fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbK
             saving = true
             scope.launch {
                 covers.saveFromDevice(g, uri).fold(
-                    onSuccess = { message = "Cover saved." to false; onDone() },
-                    onFailure = { message = "Couldn't use that image: ${it.message}" to true },
+                    onSuccess = { message = str(R.string.cover_picker_cover_saved) to false; onDone() },
+                    onFailure = { message = str(R.string.cover_picker_couldn_t_use_that_image, it.message) to true },
                 )
                 saving = false
             }
@@ -109,8 +110,8 @@ fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbK
         scope.launch {
             val stored = if (c.source == CoverRepository.SOURCE_SCREENSCRAPER) ScreenScraper.withoutCredentials(c.fullUrl) else c.fullUrl
             covers.save(g, c.fullUrl, c.source, c.author, stored).fold(
-                onSuccess = { message = "Cover saved." to false; onDone() },
-                onFailure = { message = "Couldn't save that cover: ${it.message}" to true },
+                onSuccess = { message = str(R.string.cover_picker_cover_saved) to false; onDone() },
+                onFailure = { message = str(R.string.cover_picker_couldn_t_save_that_cover, it.message) to true },
             )
             saving = false
         }
@@ -119,7 +120,7 @@ fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbK
     ScreenFrame(title = stringResource(R.string.cover_picker_change_cover), subtitle = g.title) {
         if (saving) LinearProgressIndicator(Modifier.fillMaxWidth())
         message?.let { (text, isError) ->
-            StatusPill(if (isError) "Problem" else "Done", if (isError) StatusTone.BAD else StatusTone.GOOD)
+            StatusPill(if (isError) str(R.string.play_problem) else str(R.string.setup_done), if (isError) StatusTone.BAD else StatusTone.GOOD)
             CardBody(text)
         }
 
@@ -130,7 +131,7 @@ fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbK
             null -> LinearProgressIndicator(Modifier.fillMaxWidth())
             else -> r.fold(
                 onSuccess = { matches ->
-                    if (matches.isEmpty()) CardBody(if (covers.hasLibretroSource(g.system)) "No box art found for this game." else "No free box art source for this system yet.")
+                    if (matches.isEmpty()) CardBody(if (covers.hasLibretroSource(g.system)) stringResource(R.string.cover_picker_no_box_art_found_for_this) else stringResource(R.string.cover_picker_no_free_box_art_source_for))
                     CandidateRow(matches.map { Candidate(it.url, it.url, it.url, it.name, CoverRepository.SOURCE_LIBRETRO, null) }, previews, covers, ::choose)
                 },
                 onFailure = { CardBody(stringResource(R.string.cover_picker_couldn_t_reach_the_box_art, it.message.toString())) },
@@ -200,12 +201,12 @@ fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbK
                     if (list.isEmpty()) CardBody(stringResource(R.string.cover_picker_screenscraper_has_no_box_art_for))
                     CandidateRow(
                         list.take(12).map { m ->
-                            Candidate("ss-${m.type}-${m.region}", m.url, m.url, listOfNotNull(m.type.replace("box-", "Box "), m.region?.uppercase()).joinToString(" · "), CoverRepository.SOURCE_SCREENSCRAPER, null)
+                            Candidate("ss-${m.type}-${m.region}", m.url, m.url, listOfNotNull(m.type.replace("box-", str(R.string.cover_picker_box)), m.region?.uppercase()).joinToString(" · "), CoverRepository.SOURCE_SCREENSCRAPER, null)
                         },
                         previews, covers, ::choose,
                     )
                 },
-                onFailure = { CardBody(it.message ?: "ScreenScraper lookup failed.") },
+                onFailure = { CardBody(it.message ?: stringResource(R.string.cover_picker_screenscraper_lookup_failed)) },
             )
         }
 
@@ -244,7 +245,7 @@ private fun CandidateRow(candidates: List<Candidate>, previews: MutableMap<Strin
                             modifier = Modifier.fillMaxWidth().aspectRatio(2f / 3f).clip(RoundedCornerShape(8.dp)),
                         )
                     } else {
-                        Text(if (previews.containsKey(c.key)) "Preview unavailable" else "Loading…", style = MaterialTheme.typography.bodySmall,
+                        Text(if (previews.containsKey(c.key)) stringResource(R.string.cover_picker_preview_unavailable) else stringResource(R.string.cover_picker_loading), style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.fillMaxWidth().aspectRatio(2f / 3f).padding(8.dp))
                     }
                     Text(c.label, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 6.dp))
@@ -264,10 +265,10 @@ fun CoverControls(game: GameEntity, viewModel: LibraryViewModel, onChangeCover: 
     cover?.let {
         CardBody(
             when (it.source) {
-                CoverRepository.SOURCE_STEAMGRIDDB -> "Cover from SteamGridDB" + (it.author?.let { a -> " by $a" } ?: "")
-                CoverRepository.SOURCE_SCREENSCRAPER -> "Box art from ScreenScraper"
-                CoverRepository.SOURCE_DEVICE -> "Your own image"
-                else -> "Box art from libretro thumbnails"
+                CoverRepository.SOURCE_STEAMGRIDDB -> str(R.string.cover_picker_cover_from_steamgriddb) + (it.author?.let { a -> " by $a" } ?: "")
+                CoverRepository.SOURCE_SCREENSCRAPER -> str(R.string.settings_box_art_from_screenscraper)
+                CoverRepository.SOURCE_DEVICE -> str(R.string.cover_picker_your_own_image)
+                else -> str(R.string.cover_picker_box_art_from_libretro_thumbnails)
             },
         )
     }

@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.hacks
 
+import com.retroforge.core.ui.pluralStr
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -93,7 +95,7 @@ fun HacksScreen(
 
         if (state.systems.size > 1) {
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                item { FilterChip("All", selected = state.systemFilter == null) { viewModel.setFilter(null) } }
+                item { FilterChip(str(R.string.hacks_all), selected = state.systemFilter == null) { viewModel.setFilter(null) } }
                 items(state.systems) { system ->
                     FilterChip(systemName(system), selected = state.systemFilter == system) { viewModel.setFilter(system) }
                 }
@@ -119,7 +121,7 @@ fun HacksScreen(
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSources) {
             CardTitle(stringResource(R.string.hacks_catalogue_sources))
-            CardBody("${state.catalogues.size} catalogue${if (state.catalogues.size == 1) "" else "s"} · ${state.hacks.size} hacks. Select to add or remove catalogues.")
+            CardBody(pluralStr(R.plurals.hacks_catalogues_select, state.catalogues.size, state.catalogues.size, state.hacks.size))
         }
     }
 }
@@ -154,7 +156,7 @@ fun HackDetailScreen(viewModel: HacksViewModel, key: String, onOpenPatcher: () -
     val state by viewModel.state.collectAsStateWithLifecycle()
     val hack = state.find(key)
     if (hack == null) {
-        ScreenFrame(title = stringResource(R.string.hacks_hack)) { CardBody(if (state.loading) "Loading…" else "This hack is no longer in your catalogues.") }
+        ScreenFrame(title = stringResource(R.string.hacks_hack)) { CardBody(if (state.loading) stringResource(R.string.cover_picker_loading) else stringResource(R.string.hacks_this_hack_is_no_longer_in)) }
         return
     }
     val entry = hack.entry
@@ -169,7 +171,7 @@ fun HackDetailScreen(viewModel: HacksViewModel, key: String, onOpenPatcher: () -
                 entry.version?.let { "Version: $it" },
                 entry.released?.let { "Released: $it" },
                 entry.tags.takeIf { it.isNotEmpty() }?.let { "Tags: ${it.joinToString()}" },
-                "Listed in: ${hack.sourceName}",
+                str(R.string.hacks_listed_in, hack.sourceName),
             )
             facts.forEach { CardBody(it) }
         }
@@ -180,7 +182,7 @@ fun HackDetailScreen(viewModel: HacksViewModel, key: String, onOpenPatcher: () -
             var downloading by remember { mutableStateOf(false) }
             val scope = rememberCoroutineScope()
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = {
-                status = "Getting the latest patch…"
+                status = str(R.string.hacks_getting_the_latest_patch)
                 downloading = true
                 scope.launch {
                     val result = withContext(Dispatchers.IO) { runCatching { HackDownloads.latestPatch(repo) { progress = it } } }
@@ -190,7 +192,7 @@ fun HackDetailScreen(viewModel: HacksViewModel, key: String, onOpenPatcher: () -
                         com.retroforge.app.ui.patcher.PendingPatch.file = file
                         status = null
                         onOpenPatcher()
-                    }.onFailure { status = "Couldn't download it: ${it.message}" }
+                    }.onFailure { status = str(R.string.hacks_couldn_t_download_it, it.message) }
                 }
             }) {
                 CardTitle(stringResource(R.string.hacks_download_and_patch))
@@ -229,9 +231,9 @@ fun HackDetailScreen(viewModel: HacksViewModel, key: String, onOpenPatcher: () -
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenPatcher) {
             CardTitle(stringResource(R.string.hacks_patch_it))
             CardBody(
-                "Once you've downloaded the patch from the official page, open the ROM Patcher, pick your ROM and add the patch" +
-                    (if (entry.requires.isNotEmpty()) " after the ones listed above." else ".") +
-                    " Your original ROM is never changed.",
+                str(R.string.hacks_once_you_ve_downloaded_the_patch) +
+                    (if (entry.requires.isNotEmpty()) str(R.string.hacks_after_the_ones_listed_above) else ".") +
+                    str(R.string.hacks_your_original_rom_is_never_changed),
             )
         }
     }
@@ -241,7 +243,7 @@ private fun openPage(context: Context, url: String): String? = try {
     context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
     null
 } catch (_: ActivityNotFoundException) {
-    "No browser is installed. Open $url on another device."
+    str(R.string.hacks_no_browser_is_installed_open_on, url)
 }
 
 @Composable
@@ -261,14 +263,14 @@ fun CatalogueSourcesScreen(viewModel: HacksViewModel) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
                 CardTitle(loaded.catalogue.name)
                 if (loaded.builtIn) StatusPill(stringResource(R.string.hacks_built_in), StatusTone.NEUTRAL)
-                CardBody("${loaded.catalogue.hacks.size} hacks" + (loaded.catalogue.maintainer?.let { " · maintained by $it" } ?: ""))
+                CardBody("${loaded.catalogue.hacks.size} hacks" + (loaded.catalogue.maintainer?.let { stringResource(R.string.hacks_maintained_by, it) } ?: ""))
                 loaded.catalogue.description?.let { CardBody(it.take(300)) }
                 loaded.source?.let { source ->
-                    CardBody(source.url ?: "Added from a file on this device")
-                    CardBody("Added ${formatDate(source.addedAt)}" + (source.refreshedAt?.let { ", updated ${formatDate(it)}" } ?: ""))
+                    CardBody(source.url ?: stringResource(R.string.hacks_added_from_a_file_on_this))
+                    CardBody(stringResource(R.string.hacks_added, formatDate(source.addedAt)) + (source.refreshedAt?.let { stringResource(R.string.hacks_updated, formatDate(it)) } ?: ""))
                 }
                 if (loaded.warnings.isNotEmpty()) {
-                    CardBody(if (loaded.warnings.size == 1) "1 entry skipped as invalid." else "${loaded.warnings.size} entries skipped as invalid.")
+                    CardBody(if (loaded.warnings.size == 1) stringResource(R.string.hacks_1_entry_skipped_as_invalid) else stringResource(R.string.hacks_entries_skipped_as_invalid, loaded.warnings.size))
                 }
             }
             loaded.source?.let { source ->
@@ -309,7 +311,7 @@ fun CatalogueSourcesScreen(viewModel: HacksViewModel) {
 
         state.message?.let { message ->
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                StatusPill(if (state.messageIsError) "Problem" else "Done", if (state.messageIsError) StatusTone.BAD else StatusTone.GOOD)
+                StatusPill(if (state.messageIsError) str(R.string.play_problem) else str(R.string.setup_done), if (state.messageIsError) StatusTone.BAD else StatusTone.GOOD)
                 CardBody(message)
             }
         }

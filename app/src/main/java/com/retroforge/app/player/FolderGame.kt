@@ -1,5 +1,7 @@
 package com.retroforge.app.player
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.DocumentsContract
@@ -56,12 +58,12 @@ object FolderGame {
                             copied += n
                         }
                     }
-                } ?: throw IOException("couldn't read ${to.name}")
+                } ?: throw IOException(str(R.string.folder_game_couldn_t_read, to.name))
                 if (total > 0) onProgress((copied * 100 / total).toInt())
             }
             done.createNewFile()
         }
-        return entry(target) ?: throw IOException("no program to start in $name (a .bat, .exe or .com)")
+        return entry(target) ?: throw IOException(str(R.string.folder_game_no_program_to_start_in_a, name))
     }
 
     private fun entry(folder: File): File? {

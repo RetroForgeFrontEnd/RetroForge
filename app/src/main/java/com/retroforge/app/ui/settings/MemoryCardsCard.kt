@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.core.ui.pluralStr
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -55,21 +57,21 @@ fun MemoryCardsCard() {
     val openFile = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri ?: return@rememberLauncherForActivityResult
         status = runCatching {
-            val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() } ?: error("couldn't open the file")
-            val name = uri.lastPathSegment?.substringAfterLast('/')?.substringBeforeLast('.') ?: "Card file"
+            val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() } ?: error(str(R.string.built_in_player_couldn_t_open_the_file))
+            val name = uri.lastPathSegment?.substringAfterLast('/')?.substringBeforeLast('.') ?: str(R.string.memory_cards_card_file)
             opened = name to MemoryCard.read(bytes)
             shown = null
             copying = null
             null
-        }.getOrElse { "That file isn't a PlayStation memory card." }
+        }.getOrElse { str(R.string.memory_cards_that_file_isn_t_a_playstation) }
     }
     val saveFile = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
         val card = shown ?: return@rememberLauncherForActivityResult
         uri ?: return@rememberLauncherForActivityResult
         status = runCatching {
-            context.contentResolver.openOutputStream(uri)?.use { it.write(card.readBytes()) } ?: error("couldn't write")
-            "Saved ${card.nameWithoutExtension}'s card as a file."
-        }.getOrElse { "That didn't work: ${it.message}" }
+            context.contentResolver.openOutputStream(uri)?.use { it.write(card.readBytes()) } ?: error(str(R.string.memory_cards_couldn_t_write))
+            str(R.string.memory_cards_saved_s_card_as_a_file, card.nameWithoutExtension)
+        }.getOrElse { str(R.string.built_in_player_that_didn_t_work, it.message) }
     }
 
     FocusCard(modifier = Modifier.fillMaxWidth()) {
@@ -87,9 +89,9 @@ fun MemoryCardsCard() {
             FocusChip(stringResource(R.string.memory_cards_open_a_card_file), onClick = { openFile.launch(arrayOf("*/*")) })
         }
         if (source != null && sourceName != null) {
-            CardBody("$sourceName: ${source.saves.size} save${if (source.saves.size == 1) "" else "s"}, ${source.freeBlocks} of 15 blocks free.")
+            CardBody(pluralStr(R.plurals.memory_cards_saves_blocks_free, source.saves.size, sourceName, source.saves.size, source.freeBlocks))
             source.saves.forEach { save ->
-                CardBody("• ${save.title} (${save.blocks.size} block${if (save.blocks.size == 1) "" else "s"})")
+                CardBody(pluralStr(R.plurals.memory_cards_save_blocks, save.blocks.size, save.title, save.blocks.size))
                 ChipRow {
                     FocusChip(stringResource(R.string.memory_cards_copy_to_another_game), onClick = { copying = save; status = null })
                     if (opened == null) FocusChip(stringResource(R.string.memory_cards_delete), onClick = { deleting = save })
@@ -99,19 +101,19 @@ fun MemoryCardsCard() {
         }
         copying?.let { save ->
             val targets = cards.filter { it != shown }
-            CardBody(if (targets.isEmpty()) "No other game has a card yet: play it once first." else "Copy \"${save.title}\" to:")
+            CardBody(if (targets.isEmpty()) stringResource(R.string.memory_cards_no_other_game_has_a_card) else stringResource(R.string.memory_cards_copy_to, save.title))
             ChipRow {
                 targets.forEach { target ->
                     FocusChip(target.nameWithoutExtension, onClick = {
                         status = runCatching {
                             val card = MemoryCard(target.readBytes())
                             if (!card.copy(source!!, save)) {
-                                "${target.nameWithoutExtension}'s card is full (${card.freeBlocks} blocks free, ${save.blocks.size} needed)."
+                                str(R.string.memory_cards_s_card_is_full_blocks_free, target.nameWithoutExtension, card.freeBlocks, save.blocks.size)
                             } else {
                                 target.writeBytes(card.data)
-                                "Copied to ${target.nameWithoutExtension}."
+                                str(R.string.memory_cards_copied_to, target.nameWithoutExtension)
                             }
-                        }.getOrElse { "That didn't work: ${it.message}" }
+                        }.getOrElse { str(R.string.built_in_player_that_didn_t_work, it.message) }
                         copying = null
                         changes++
                     })
@@ -134,8 +136,8 @@ fun MemoryCardsCard() {
                         val card = MemoryCard(file!!.readBytes())
                         card.saves.firstOrNull { it.firstBlock == save.firstBlock }?.let(card::delete)
                         file.writeBytes(card.data)
-                        "Deleted."
-                    }.getOrElse { "That didn't work: ${it.message}" }
+                        str(R.string.memory_cards_deleted)
+                    }.getOrElse { str(R.string.built_in_player_that_didn_t_work, it.message) }
                     deleting = null
                     changes++
                 }) { Text(stringResource(R.string.memory_cards_delete)) }

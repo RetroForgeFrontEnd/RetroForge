@@ -1,5 +1,7 @@
 package com.retroforge.app.player
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.graphics.Bitmap
 import com.retroforge.artwork.LibretroThumbnails
 import com.retroforge.artwork.ThumbnailType
@@ -26,11 +28,11 @@ class Bezels(private val root: File, private val userAgent: String) {
 
     /** Downloads [system]'s list of game bezels and its system bezel. */
     fun install(system: String) {
-        val repo = repoFor(system) ?: throw IOException("The Bezel Project has no bezels for this system")
+        val repo = repoFor(system) ?: throw IOException(str(R.string.bezels_the_bezel_project_has_no_bezels))
         val pngs = overlayFiles(repo).filter { it.endsWith(".png", true) }
         // The system bezel sits in the overlay folder itself (Sega-Mega-Drive.png); games are in GameBezels/<system>.
         val system = pngs.filter { '/' !in it.removePrefix(OVERLAY) }.minByOrNull { it.length }
-            ?: throw IOException("this pack has no system bezel")
+            ?: throw IOException(str(R.string.bezels_this_pack_has_no_system_bezel))
         val dir = File(root, repo).apply { mkdirs() }
         File(dir, GAMES).writeText(pngs.filter { it.startsWith("${OVERLAY}GameBezels/") }.joinToString("\n"))
         save(system, repo, File(dir, SYSTEM))
@@ -45,14 +47,14 @@ class Bezels(private val root: File, private val userAgent: String) {
             get("$API/bezelproject-$repo/git/trees/$sha" + if (recursive) "?recursive=1" else "").decodeToString(),
         )
         fun entries(json: JSONObject) = json.optJSONArray("tree")?.let { t -> (0 until t.length()).map { t.getJSONObject(it) } }
-            ?: throw IOException("couldn't read the bezel list")
+            ?: throw IOException(str(R.string.bezels_couldn_t_read_the_bezel_list))
         val whole = tree("master", recursive = true)
         if (!whole.optBoolean("truncated")) return entries(whole).map { it.optString("path") }.filter { it.startsWith(OVERLAY) }
         // Walk down retroarch/overlay, then list that folder whole (it's well within GitHub's limit).
         var sha = "master"
         for (name in OVERLAY.trimEnd('/').split('/')) {
             sha = entries(tree(sha, recursive = false)).firstOrNull { it.optString("path") == name }?.optString("sha")
-                ?: throw IOException("this pack has no $name folder")
+                ?: throw IOException(str(R.string.bezels_this_pack_has_no_folder, name))
         }
         return entries(tree(sha, recursive = true)).map { OVERLAY + it.optString("path") }
     }
@@ -81,7 +83,7 @@ class Bezels(private val root: File, private val userAgent: String) {
         val part = File(target.path + ".part")
         part.writeBytes(get(url))
         target.delete()
-        if (!part.renameTo(target)) throw IOException("couldn't save ${target.name}")
+        if (!part.renameTo(target)) throw IOException(str(R.string.bezels_couldn_t_save, target.name))
     }
 
     private fun get(url: String): ByteArray {
@@ -91,7 +93,7 @@ class Bezels(private val root: File, private val userAgent: String) {
             setRequestProperty("User-Agent", userAgent)
         }
         try {
-            if (connection.responseCode != 200) throw IOException("GitHub answered ${connection.responseCode}")
+            if (connection.responseCode != 200) throw IOException(str(R.string.bezels_github_answered, connection.responseCode))
             return connection.inputStream.use { it.readBytes() }
         } finally {
             connection.disconnect()

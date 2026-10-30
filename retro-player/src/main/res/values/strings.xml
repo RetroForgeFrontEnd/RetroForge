@@ -1,0 +1,28 @@
+<resources>
+
+    <!-- CoreAssets.kt -->
+    <string name="core_assets_libretro_answered">libretro answered %1$s</string>
+    <string name="core_assets_couldn_t_write">couldn\'t write %1$s</string>
+
+    <!-- CoreManager.kt -->
+    <string name="core_manager_download_failed">Download failed</string>
+    <string name="core_manager_libretro_has_no_cores_for_this">libretro has no cores for this device\'s processor (%1$s)</string>
+    <string name="core_manager_libretro_s_server_answered_for">libretro\'s server answered %1$s for %2$s</string>
+    <string name="core_manager_the_download_for_had_no_core">The download for %1$s had no core in it</string>
+    <string name="core_manager_couldn_t_save">Couldn\'t save %1$s</string>
+
+    <!-- GpuDriver.kt -->
+    <string name="gpu_driver_isn_t_in_the_app">%1$s isn\'t in the app</string>
+    <string name="viewport_original">Original</string>
+    <string name="viewport_4_3">4:3</string>
+    <string name="viewport_16_9">16:9</string>
+    <string name="viewport_stretch">Stretch to fill</string>
+    <string name="viewport_pixel_perfect">Pixel perfect</string>
+    <string name="filter_sharp">Sharp pixels</string>
+    <string name="filter_smooth">Smooth</string>
+    <string name="filter_crt">CRT scanlines</string>
+    <string name="filter_lcd">LCD grid</string>
+    <string name="filter_crt_curved">CRT, curved screen</string>
+    <string name="filter_lcd_ghosting">LCD, with ghosting</string>
+    <string name="filter_scale2x">Smooth pixel art (Scale2x)</string>
+</resources>

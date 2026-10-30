@@ -131,6 +131,11 @@ class RetroForgeApplication : Application(), coil3.SingletonImageLoader.Factory 
 
     // Created on first use, so the player process (which never touches it) doesn't open the library or settings.
     val container: AppContainer by lazy { AppContainer(this) }
+
+    override fun onCreate() {
+        super.onCreate()
+        com.retroforge.core.ui.AppStrings.init(this)
+    }
 }
 
 /** Bumped when the game-name rules change, so libraries indexed before are relabelled once. */

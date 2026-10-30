@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -105,13 +106,13 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
         is LaunchPlan.Ready -> {
             plan.cores.forEachIndexed { index, core ->
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { problem = viewModel.play(game, plan, core) }) {
-                    CardTitle(if (index == 0 && chosen == null && !builtInMain) "Play" else "Play in RetroArch with ${core.name}")
+                    CardTitle(if (index == 0 && chosen == null && !builtInMain) stringResource(R.string.play_play) else stringResource(R.string.play_play_in_retroarch_with, core.name))
                     if (index == 0) CardBody(stringResource(R.string.play_in_retroarch_with_the_core, core.name))
                     if (core.id in RetroArchCores.needsBios) CardBody(stringResource(R.string.play_this_core_needs_bios_files_in))
                 }
             }
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                play?.let { CardBody("Played ${plural(it.playCount, "time")}, last on ${DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(it.lastPlayedAt))}.") }
+                play?.let { CardBody(stringResource(R.string.play_played_last_on, plural(it.playCount, "time"), DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(it.lastPlayedAt)))) }
                 CardBody(
                     stringResource(R.string.play_first_time_with_a_core_if, plan.cores.first().name),
                 )
@@ -130,7 +131,7 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
                     try {
                         context.startActivity(Intent(Intent.ACTION_VIEW, RetroArchLauncher.DOWNLOAD_URL.toUri()))
                     } catch (_: ActivityNotFoundException) {
-                        problem = LaunchProblem.StartFailed("No browser installed. Get RetroArch from ${RetroArchLauncher.DOWNLOAD_URL}")
+                        problem = LaunchProblem.StartFailed(str(R.string.play_no_browser_installed_get_retroarch_from, RetroArchLauncher.DOWNLOAD_URL))
                     }
                 }
             } else null,
@@ -175,16 +176,16 @@ private fun BuiltInCard(
         scope.launch {
             val intent = viewModel.builtInIntent(context, game, root, core)
             if (intent != null) context.startActivity(intent)
-            else onProblem(LaunchProblem.StartFailed("Couldn't download the ${core.name} emulator. Check the internet connection and try again."))
+            else onProblem(LaunchProblem.StartFailed(str(R.string.play_couldn_t_download_the_emulator_check, core.name)))
         }
     }) {
-        CardTitle(if (main) "Play" else "Play in RetroForge")
+        CardTitle(if (main) stringResource(R.string.play_play) else stringResource(R.string.play_play_in_retroforge))
         CardBody(
             when (state) {
-                CoreState.Ready -> "In RetroForge's built-in player, with ${core.name}."
-                is CoreState.Downloading -> "Getting the ${core.name} emulator… ${state.percent}%"
-                CoreState.Missing -> "In RetroForge's built-in player. The ${core.name} emulator (under 2 MB) downloads first."
-                is CoreState.Failed -> "Couldn't download the ${core.name} emulator last time (${state.reason}). Select to try again."
+                CoreState.Ready -> str(R.string.play_in_retroforge_s_built_in_player, core.name)
+                is CoreState.Downloading -> str(R.string.play_getting_the_emulator, core.name, state.percent)
+                CoreState.Missing -> str(R.string.play_in_retroforge_s_built_in_player_2, core.name)
+                is CoreState.Failed -> str(R.string.play_couldn_t_download_the_emulator_last, core.name, state.reason)
             },
         )
         if (core.needsBios) CardBody(stringResource(R.string.play_needs_this_system_s_bios_file, core.name))
@@ -198,7 +199,7 @@ private fun BuiltInCard(
             scope.launch {
                 val intent = viewModel.builtInIntent(context, game, root, core, netplay = how)
                 if (intent != null) context.startActivity(intent)
-                else onProblem(LaunchProblem.StartFailed("Couldn't download the ${core.name} emulator. Check the internet connection and try again."))
+                else onProblem(LaunchProblem.StartFailed(str(R.string.play_couldn_t_download_the_emulator_check, core.name)))
             }
         }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
@@ -214,11 +215,11 @@ private fun BuiltInCard(
 
 private fun describe(problem: LaunchProblem, viewModel: LibraryViewModel): String = when (problem) {
     LaunchProblem.RetroArchNotInstalled ->
-        "RetroForge plays games through RetroArch, a free app installed separately. Select to open RetroArch's official download page (${RetroArchLauncher.DOWNLOAD_URL})."
+        str(R.string.play_retroforge_plays_games_through_retroarch_a, RetroArchLauncher.DOWNLOAD_URL)
     is LaunchProblem.SystemNotSupported ->
-        "RetroArch can't start ${viewModel.systemName(problem.system)} games from RetroForge. Use one of the emulator apps below (Get installs it), or Settings → Help and about → How to use RetroForge → Other emulators."
+        str(R.string.play_retroarch_can_t_start_games_from, viewModel.systemName(problem.system))
     LaunchProblem.LocationNotSupported ->
-        "This game is in a location RetroArch can't open directly (for example a cloud drive). Games on internal storage, an SD card or a USB drive work."
+        str(R.string.play_this_game_is_in_a_location)
     is LaunchProblem.StartFailed -> problem.detail
 }
 
@@ -250,7 +251,7 @@ private fun StandaloneSection(
                 else FocusChip(stringResource(R.string.play_use_by_default), onClick = { viewModel.setEmulatorChoice(game.system, emulator.id) })
             } else {
                 FocusChip(stringResource(R.string.play_get_free, emulator.name), onClick = {
-                    if (!viewModel.getEmulator(emulator)) onProblem(LaunchProblem.StartFailed("Couldn't open ${emulator.page}"))
+                    if (!viewModel.getEmulator(emulator)) onProblem(LaunchProblem.StartFailed(str(R.string.play_couldn_t_open, emulator.page)))
                 })
             }
         }

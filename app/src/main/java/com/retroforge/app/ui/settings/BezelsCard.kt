@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -38,7 +39,7 @@ import java.io.File
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun BezelsCard(systems: List<Pair<String, String>>, title: String = "Bezels (The Bezel Project)") {
+fun BezelsCard(systems: List<Pair<String, String>>, title: String = str(R.string.bezels_bezels_the_bezel_project)) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val prefs = remember { context.getSharedPreferences("views", Context.MODE_PRIVATE) }
@@ -56,11 +57,11 @@ fun BezelsCard(systems: List<Pair<String, String>>, title: String = "Bezels (The
         on = !on
         prefs.edit().putBoolean(Bezels.PREF, on).apply()
     }) {
-        CardTitle(title) { StatusPill(if (on) "On" else "Off", if (on) StatusTone.GOOD else StatusTone.NEUTRAL) }
+        CardTitle(title) { StatusPill(if (on) stringResource(R.string.settings_on) else stringResource(R.string.player_off), if (on) StatusTone.GOOD else StatusTone.NEUTRAL) }
         CardBody(
             stringResource(R.string.bezels_artwork_round_the_game_in_landscape),
         )
-        CardBody(if (downloaded.isEmpty()) "No systems downloaded yet." else "Downloaded: " + downloaded.joinToString { it.second })
+        CardBody(if (downloaded.isEmpty()) stringResource(R.string.bezels_no_systems_downloaded_yet) else "Downloaded: " + downloaded.joinToString { it.second })
         // Above the buttons, so it stays in view however many systems there are.
         status?.let { CardBody(it) }
         progress?.let { p ->
@@ -77,28 +78,28 @@ fun BezelsCard(systems: List<Pair<String, String>>, title: String = "Bezels (The
                 scope.launch {
                     val failed = mutableListOf<String>()
                     missing.forEachIndexed { i, (id, name) ->
-                        status = "Downloading bezels… $name (${i + 1} of ${missing.size})"
+                        status = str(R.string.bezels_downloading_bezels_of, name, i + 1, missing.size)
                         withContext(Dispatchers.IO) { runCatching { bezels.install(id) } }.onFailure { failed += name }
                         progress = (i + 1f) / missing.size
                         changes++
                     }
                     progress = null
-                    status = if (failed.isEmpty()) "Added bezels for all ${missing.size} systems. Their games show bezels in landscape."
-                    else "Added ${missing.size - failed.size} systems. Couldn't get: ${failed.joinToString()}. Try those again below."
+                    status = if (failed.isEmpty()) str(R.string.bezels_added_bezels_for_all_systems_their, missing.size)
+                    else str(R.string.bezels_added_systems_couldn_t_get_try, missing.size - failed.size, failed.joinToString())
                     busy = false
                 }
             })
             offered.forEach { (id, name) ->
                 val have = id in downloaded.map { it.first }
-                FocusChip(if (have) "Remove $name" else "Download $name", enabled = !busy, onClick = {
+                FocusChip(if (have) stringResource(R.string.network_drives_remove, name) else stringResource(R.string.pc_games_download, name), enabled = !busy, onClick = {
                     busy = true
-                    status = if (have) null else "Downloading $name's bezels…"
+                    status = if (have) null else str(R.string.bezels_downloading_s_bezels, name)
                     if (!have) progress = 0f
                     scope.launch {
                         status = withContext(Dispatchers.IO) {
                             if (have) { bezels.remove(id); null }
-                            else runCatching { bezels.install(id); "Added $name. Its games show bezels in landscape." }
-                                .getOrElse { "Couldn't get $name's bezels: ${it.message}" }
+                            else runCatching { bezels.install(id); str(R.string.bezels_added_its_games_show_bezels_in, name) }
+                                .getOrElse { str(R.string.bezels_couldn_t_get_s_bezels, name, it.message) }
                         }
                         busy = false
                         progress = null

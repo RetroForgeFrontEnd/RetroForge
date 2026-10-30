@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.hacks
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import com.retroforge.hacks.CatalogueParser
 import java.io.ByteArrayOutputStream
 import java.net.HttpURLConnection
@@ -22,7 +24,7 @@ class CatalogueFetcher(private val userAgent: String) {
         val connection = try {
             URL(url).openConnection() as? HttpsURLConnection ?: return Result.Failed("Only https:// links are allowed.")
         } catch (e: Exception) {
-            return Result.Failed("That isn't a valid link.")
+            return Result.Failed(str(R.string.catalogue_fetcher_that_isn_t_a_valid_link))
         }
         return try {
             connection.instanceFollowRedirects = false
@@ -32,12 +34,12 @@ class CatalogueFetcher(private val userAgent: String) {
             connection.setRequestProperty("Accept", "application/json")
             when (val code = connection.responseCode) {
                 HttpURLConnection.HTTP_OK -> readCapped(connection)
-                in 300..399 -> Result.Failed("The link redirects elsewhere (HTTP $code). Use the final address of the catalogue file.")
-                403 -> Result.Failed("The site refused the request (HTTP 403). It may not allow apps to download from it.")
-                else -> Result.Failed("The site answered HTTP $code.")
+                in 300..399 -> Result.Failed(str(R.string.catalogue_fetcher_the_link_redirects_elsewhere_http_use, code))
+                403 -> Result.Failed(str(R.string.catalogue_fetcher_the_site_refused_the_request_http))
+                else -> Result.Failed(str(R.string.catalogue_fetcher_the_site_answered_http, code))
             }
         } catch (e: java.io.IOException) {
-            Result.Failed("Couldn't download the catalogue: ${e.message ?: e.javaClass.simpleName}")
+            Result.Failed(str(R.string.catalogue_fetcher_couldn_t_download_the_catalogue, e.message ?: e.javaClass.simpleName))
         } finally {
             connection.disconnect()
         }
@@ -45,7 +47,7 @@ class CatalogueFetcher(private val userAgent: String) {
 
     private fun readCapped(connection: HttpsURLConnection): Result {
         val declared = connection.contentLengthLong
-        if (declared > CatalogueParser.MAX_BYTES) return Result.Failed("The file is larger than 2 MB, so it isn't a catalogue.")
+        if (declared > CatalogueParser.MAX_BYTES) return Result.Failed(str(R.string.catalogue_fetcher_the_file_is_larger_than_2))
         val out = ByteArrayOutputStream()
         val buffer = ByteArray(16 * 1024)
         connection.inputStream.use { input ->
@@ -53,7 +55,7 @@ class CatalogueFetcher(private val userAgent: String) {
                 val read = input.read(buffer)
                 if (read < 0) break
                 out.write(buffer, 0, read)
-                if (out.size() > CatalogueParser.MAX_BYTES) return Result.Failed("The file is larger than 2 MB, so it isn't a catalogue.")
+                if (out.size() > CatalogueParser.MAX_BYTES) return Result.Failed(str(R.string.catalogue_fetcher_the_file_is_larger_than_2))
             }
         }
         return Result.Ok(out.toString(Charsets.UTF_8.name()))

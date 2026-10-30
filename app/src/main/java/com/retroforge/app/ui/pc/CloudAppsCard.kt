@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -46,7 +47,7 @@ fun CloudAppsCard() {
         ChipRow {
             services.forEach { service ->
                 val launch = remember(resumed) { service.pkg?.let { context.packageManager.getLaunchIntentForPackage(it) } }
-                val label = if (launch != null || service.pkg == null) "Open ${service.name}" else "Get ${service.name}"
+                val label = if (launch != null || service.pkg == null) str(R.string.cloud_apps_open, service.name) else str(R.string.cloud_apps_get, service.name)
                 FocusChip(label, onClick = { open(context, service, launch) })
             }
         }

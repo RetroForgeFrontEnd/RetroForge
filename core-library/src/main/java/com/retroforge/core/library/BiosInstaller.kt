@@ -1,5 +1,6 @@
 package com.retroforge.core.library
 
+import com.retroforge.core.ui.str
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.DocumentsContract
@@ -38,10 +39,10 @@ class BiosInstaller(private val resolver: ContentResolver) {
                 }
                 val created = DocumentsContract.createDocument(
                     resolver, DocumentsContract.buildDocumentUriUsingTree(targetTree, parentId), "application/octet-stream", name,
-                ) ?: error("couldn't create the file")
+                ) ?: error(str(R.string.bios_installer_couldn_t_create_the_file))
                 resolver.openInputStream(DocumentsContract.buildDocumentUriUsingTree(sourceTree, file.nodeId)).use { input ->
                     resolver.openOutputStream(created, "w").use { output ->
-                        checkNotNull(input) { "couldn't read ${file.foundAs}" }.copyTo(checkNotNull(output) { "couldn't write $name" })
+                        checkNotNull(input) { str(R.string.bios_installer_couldn_t_read, file.foundAs) }.copyTo(checkNotNull(output) { str(R.string.bios_installer_couldn_t_write, name) })
                     }
                 }
                 copied += target
@@ -65,7 +66,7 @@ class BiosInstaller(private val resolver: ContentResolver) {
             try {
                 val out = java.io.File(targetDir, target)
                 // BIOS names come from RetroForge's own rules; this keeps any odd name inside the folder.
-                require(out.canonicalPath.startsWith(targetDir.canonicalPath + java.io.File.separator)) { "unexpected file name" }
+                require(out.canonicalPath.startsWith(targetDir.canonicalPath + java.io.File.separator)) { str(R.string.bios_installer_unexpected_file_name) }
                 if (out.exists()) {
                     existing += target
                     continue
@@ -73,9 +74,9 @@ class BiosInstaller(private val resolver: ContentResolver) {
                 out.parentFile?.mkdirs()
                 val part = java.io.File(out.path + ".part")
                 resolver.openInputStream(DocumentsContract.buildDocumentUriUsingTree(sourceTree, file.nodeId)).use { input ->
-                    part.outputStream().use { output -> checkNotNull(input) { "couldn't read ${file.foundAs}" }.copyTo(output) }
+                    part.outputStream().use { output -> checkNotNull(input) { str(R.string.bios_installer_couldn_t_read, file.foundAs) }.copyTo(output) }
                 }
-                check(part.renameTo(out)) { "couldn't save $target" }
+                check(part.renameTo(out)) { str(R.string.bios_installer_couldn_t_save, target) }
                 copied += target
             } catch (e: Exception) {
                 failed += target to (e.message ?: e.javaClass.simpleName)
@@ -94,7 +95,7 @@ class BiosInstaller(private val resolver: ContentResolver) {
 
     private fun createDir(tree: Uri, parentId: String, name: String): String {
         val uri = DocumentsContract.createDocument(resolver, DocumentsContract.buildDocumentUriUsingTree(tree, parentId), Document.MIME_TYPE_DIR, name)
-            ?: error("couldn't create folder $name")
+            ?: error(str(R.string.bios_installer_couldn_t_create_folder, name))
         return DocumentsContract.getDocumentId(uri)
     }
 }

@@ -1,5 +1,7 @@
 package com.retroforge.app.network
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.content.Context
 import android.provider.DocumentsContract
 import com.hierynomus.msdtyp.AccessMask
@@ -196,7 +198,7 @@ object NetworkDrives {
             runCatching { connection.authenticate(auth) }.onFailure { failure = it as? Exception }.getOrNull()
         } ?: throw java.io.IOException(explain(failure, share), failure)
         val disk = session.connectShare(share.shareName) as? DiskShare
-            ?: throw java.io.IOException("${share.shareName} isn't a shared folder")
+            ?: throw java.io.IOException(str(R.string.network_drives_isn_t_a_shared_folder, share.shareName))
         open[share.id] = disk
         return disk
     }
@@ -206,12 +208,10 @@ object NetworkDrives {
         val m = e?.message.orEmpty()
         return when {
             "ACCOUNT_DISABLED" in m && share.user.isBlank() ->
-                "This computer doesn't allow guests (Windows switches its Guest account off). Enter the username and " +
-                    "password you sign in to that computer with."
-            "LOGON_FAILURE" in m || "WRONG_PASSWORD" in m -> "The username or password wasn't accepted by ${share.host}."
-            "ACCOUNT_RESTRICTION" in m -> "That account has no password, and Windows won't share with it over the network. " +
-                "Give the account a password, or use another one."
-            else -> m.ifBlank { "Couldn't sign in." }
+                str(R.string.network_drives_this_computer_doesn_t_allow_guests)
+            "LOGON_FAILURE" in m || "WRONG_PASSWORD" in m -> str(R.string.network_drives_the_username_or_password_wasn_t, share.host)
+            "ACCOUNT_RESTRICTION" in m -> str(R.string.network_drives_that_account_has_no_password_and)
+            else -> m.ifBlank { str(R.string.network_drives_couldn_t_sign_in) }
         }
     }
 
@@ -240,8 +240,7 @@ object NetworkDrives {
     /** Checks the share can be opened and read; returns how many entries its top holds. */
     fun test(share: NetworkShare): Int = runCatching { list(share, "") }.getOrElse { e ->
         if ("ACCESS_DENIED" in e.message.orEmpty()) throw java.io.IOException(
-            "${share.address} can't be read. On the PC: right-click that folder → Properties → Security → Edit → Add " +
-                "Everyone → tick Read & execute → OK. Or pick a folder inside it that's readable (e.g. ${share.shareName}/roms).", e,
+            str(R.string.network_drives_can_t_be_read_on_the, share.address, share.shareName), e,
         )
         throw e
     }.size

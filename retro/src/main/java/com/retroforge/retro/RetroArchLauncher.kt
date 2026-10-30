@@ -1,5 +1,6 @@
 package com.retroforge.retro
 
+import com.retroforge.core.ui.str
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
@@ -61,11 +62,11 @@ class RetroArchLauncher(private val context: Context) {
             context.startActivity(intent)
             null
         } catch (e: ActivityNotFoundException) {
-            LaunchProblem.StartFailed("RetroArch's game activity wasn't found. Update RetroArch.")
+            LaunchProblem.StartFailed(str(R.string.retro_arch_launcher_retroarch_s_game_activity_wasn_t))
         } catch (e: SecurityException) {
-            LaunchProblem.StartFailed("Android refused to start RetroArch: ${e.message}")
+            LaunchProblem.StartFailed(str(R.string.retro_arch_launcher_android_refused_to_start_retroarch, e.message))
         } catch (e: RuntimeException) {
-            LaunchProblem.StartFailed("Couldn't start RetroArch: ${e.message}")
+            LaunchProblem.StartFailed(str(R.string.retro_arch_launcher_couldn_t_start_retroarch, e.message))
         }
     }
 

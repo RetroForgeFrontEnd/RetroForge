@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import com.retroforge.core.ui.LocalThemeSpec
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
@@ -106,9 +108,9 @@ fun GameRow(game: GameEntity, image: Any?, onClick: () -> Unit, modifier: Modifi
 
 fun tagLine(game: GameEntity): String? = listOfNotNull(
     game.regions.ifEmpty { null },
-    game.discs?.let { if (it == 1) "1 disc" else "$it discs" },
-    if (game.isHack) game.hackFolder ?: "Hack" else null,
-    if (game.duplicateKey != null) "Also another copy" else null,
+    game.discs?.let { if (it == 1) str(R.string.game_views_1_disc) else "$it discs" },
+    if (game.isHack) game.hackFolder ?: str(R.string.hacks_hack) else null,
+    if (game.duplicateKey != null) str(R.string.game_views_also_another_copy) else null,
 ).joinToString(" · ").ifEmpty { null }
 
 /**

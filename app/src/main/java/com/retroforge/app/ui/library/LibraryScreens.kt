@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.app.ui.countOf
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -90,11 +92,11 @@ fun RetroScreen(
             val ownArt by viewModel.ownArt.collectAsStateWithLifecycle()
             CanvasSystemsView(systems.map { SystemSummary(it.id, it.name, it.games, it.hacks) }, systemArt, style, onOpenSystem)
             androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FocusChip(stringResource(R.string.library_tiles, style.label), onClick = viewModel::nextTileStyle)
+                FocusChip(stringResource(R.string.library_tiles, style.shownLabel()), onClick = viewModel::nextTileStyle)
                 val layout by viewModel.gameLayout.collectAsStateWithLifecycle()
-                FocusChip(stringResource(R.string.library_games, layout.label), onClick = viewModel::nextGameLayout)
+                FocusChip(stringResource(R.string.library_games, layout.shownLabel()), onClick = viewModel::nextGameLayout)
                 FocusChip(
-                    if (ownArt == null) "Use my own theme folder" else "Artwork: ${ownArt!!.themeName.ifBlank { "your theme" }} · change",
+                    if (ownArt == null) str(R.string.library_use_my_own_theme_folder) else str(R.string.library_artwork_change, ownArt!!.themeName.ifBlank { str(R.string.library_your_theme) }),
                     onClick = { pickArt.launch(null) },
                 )
                 if (ownArt != null) FocusChip(stringResource(R.string.library_back_to_built_in_artwork), onClick = viewModel::clearArtFolder)
@@ -151,10 +153,10 @@ fun RetroScreen(
             }
             else -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenFolders) {
                 CardTitle(stringResource(R.string.library_game_folders))
-                CardBody("${plural(systems.sumOf { it.games }, "game")} in ${plural(systems.size, "system")} from ${plural(roots!!.size, "folder")}.")
+                CardBody(stringResource(R.string.library_game_in_from, plural(systems.sumOf { it.games }, "game"), plural(systems.size, "system"), plural(roots!!.size, "folder")))
                 if (running != null) {
                     val percent = if (running.progress.systemsTotal > 0) " · ${running.progress.systemsDone * 100 / running.progress.systemsTotal}%" else ""
-                    StatusPill("Scanning ${running.progress.currentSystem ?: "…"}$percent", StatusTone.CAUTION)
+                    StatusPill(str(R.string.library_scanning_2, running.progress.currentSystem ?: "…", percent), StatusTone.CAUTION)
                     if (running.progress.systemsTotal > 0) {
                         LinearProgressIndicator(
                             progress = { running.progress.systemsDone.toFloat() / running.progress.systemsTotal },
@@ -222,7 +224,7 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
                     is ScanState.Running -> {
                         val p = state.progress
                         val percent = if (p.systemsTotal > 0) "${p.systemsDone * 100 / p.systemsTotal}% · " else ""
-                        CardBody("${percent}System ${minOf(p.systemsDone + 1, maxOf(p.systemsTotal, 1))} of ${maxOf(p.systemsTotal, 1)}: ${p.currentSystem ?: "starting"} · ${p.filesSeen} games found so far")
+                        CardBody(stringResource(R.string.library_system_of_games_found_so_far, percent, minOf(p.systemsDone + 1, maxOf(p.systemsTotal, 1)), maxOf(p.systemsTotal, 1), p.currentSystem ?: "starting", p.filesSeen))
                         if (p.systemsTotal > 0) LinearProgressIndicator(progress = { p.systemsDone.toFloat() / p.systemsTotal }, modifier = Modifier.fillMaxWidth())
                     }
                     is ScanState.Failed -> CardBody(state.reason)
@@ -233,10 +235,10 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
                 if (root.layout == "UNRECOGNISED") CardBody(stringResource(R.string.library_no_system_folders_were_found_here))
                 val unrecognised = root.unrecognisedFolders.lines().filter { it.isNotBlank() }
                 if (unrecognised.isNotEmpty()) {
-                    CardBody("${plural(unrecognised.size, "folder")} with no games RetroForge recognises (not named after a system, nothing playable inside): ${unrecognised.take(12).joinToString()}${if (unrecognised.size > 12) " …" else ""}")
+                    CardBody(stringResource(R.string.library_with_no_games_retroforge_recognises_not, plural(unrecognised.size, "folder"), unrecognised.take(12).joinToString(), if (unrecognised.size > 12) " …" else ""))
                 }
                 if (problems.isNotEmpty()) {
-                    CardBody("${problems.size} problem${if (problems.size == 1) "" else "s"}:")
+                    CardBody(countOf(problems.size, "problem") + ":")
                     problems.take(5).forEach { CardBody("• ${it.path}: ${it.message}") }
                 }
             }
@@ -308,13 +310,13 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
                 Text(viewModel.systemName(system), style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onBackground)
                 if (hackCount > 0) {
                     com.retroforge.app.ui.ChipRow {
-                        FocusChip((if (!showHacks) "● " else "") + "Games (${games.orEmpty().size - hackCount})", onClick = { showHacks = false })
-                        FocusChip((if (showHacks) "● " else "") + "ROM hacks ($hackCount)", onClick = { showHacks = true })
+                        FocusChip((if (!showHacks) "● " else "") + stringResource(R.string.library_games_2, games.orEmpty().size - hackCount), onClick = { showHacks = false })
+                        FocusChip((if (showHacks) "● " else "") + stringResource(R.string.library_rom_hacks, hackCount), onClick = { showHacks = true })
                     }
                 }
                 if (games == null) LinearProgressIndicator(Modifier.fillMaxWidth())
                 else CardBody("${shown.size} of ${if (hackCount == 0) games!!.size else if (showHacks) hackCount else games!!.size - hackCount} ${if (showHacks) "hacks" else "games"}")
-                FocusChip("Show as: ${if (layout == GameLayout.SHELF) "bookshelf" else if (asList) "list" else "grid"}", onClick = {
+                FocusChip(stringResource(R.string.library_show_as, if (layout == GameLayout.SHELF) stringResource(R.string.library_as_bookshelf) else if (asList) stringResource(R.string.library_as_list) else stringResource(R.string.library_as_grid)), onClick = {
                     viewModel.setGameLayout(if (layout == GameLayout.SHELF) GameLayout.LIST else if (asList) GameLayout.GRID else GameLayout.SHELF)
                 })
                 if (layout == GameLayout.SHELF) Box3dBatch(viewModel, shown)
@@ -323,7 +325,7 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
                 val apps = remember(system) { viewModel.standaloneOptions(system).map { (_, app) -> app.id to app.name } }
                 com.retroforge.app.ui.settings.SystemDriverCard(system, remember(system) { viewModel.systemCore(system) }, apps)
                 if (games.orEmpty().any { it.duplicateKey != null }) {
-                    FocusChip(if (hideCopies) "• Showing one copy of each game" else "Show one copy of each game", onClick = { hideCopies = !hideCopies })
+                    FocusChip(if (hideCopies) stringResource(R.string.library_showing_one_copy_of_each_game) else stringResource(R.string.library_show_one_copy_of_each_game), onClick = { hideCopies = !hideCopies })
                 }
             }
         }
@@ -392,7 +394,7 @@ fun GameDetailScreen(
                 g.publisher?.let { "Publisher: $it" },
                 g.genre?.let { "Genre: $it" },
                 g.players?.let { "Players: $it" },
-                g.rating?.let { "Rating: ${"%.1f".format(it * 5)} / 5" },
+                g.rating?.let { str(R.string.library_rating_5, "%.1f".format(it * 5)) },
                 g.regions.ifEmpty { null }?.let { "Region: $it" },
                 g.discs?.let { "Discs: $it" },
                 g.tags.lines().filter { it.isNotBlank() && it != g.regions }.ifEmpty { null }?.let { "Tags: ${it.joinToString()}" },
@@ -402,13 +404,13 @@ fun GameDetailScreen(
         if (g.isHack) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
                 StatusPill(stringResource(R.string.library_rom_hack), StatusTone.CAUTION)
-                CardBody(g.hackFolder?.let { "From your \"$it\" folder." } ?: "Marked as a hack in its file name.")
+                CardBody(g.hackFolder?.let { stringResource(R.string.library_from_your_folder, it) } ?: stringResource(R.string.library_marked_as_a_hack_in_its))
             }
         }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle(stringResource(R.string.library_file))
             CardBody(g.fileName)
-            CardBody("In ${rootsById[g.rootId]?.name ?: "your folder"}: ${g.relativePath}")
+            CardBody(stringResource(R.string.library_in_2, rootsById[g.rootId]?.name ?: stringResource(R.string.library_your_folder), g.relativePath))
             if (g.sizeBytes > 0) CardBody(Formatter.formatFileSize(context, g.sizeBytes))
         }
         if (duplicates.isNotEmpty()) {
@@ -421,7 +423,7 @@ fun GameDetailScreen(
     }
 }
 
-fun plural(count: Int, noun: String): String = if (count == 1) "1 $noun" else "$count ${noun}s"
+fun plural(count: Int, noun: String): String = com.retroforge.app.ui.countOf(count, noun)
 
 @Composable
 private fun SystemCoverBatch(viewModel: LibraryViewModel, system: String, games: List<GameEntity>, chosen: Map<Pair<Long, String>, File>) {
@@ -435,18 +437,18 @@ private fun SystemCoverBatch(viewModel: LibraryViewModel, system: String, games:
     }
     when (val b = if (mine) batch else null) {
         is CoverBatch.Running -> {
-            CardBody("Downloading box art: ${b.done} of ${b.total} · ${plural(b.found, "cover")} found")
+            CardBody(stringResource(R.string.library_downloading_box_art_of_found, b.done, b.total, plural(b.found, "cover")))
             LinearProgressIndicator(progress = { if (b.total == 0) 0f else b.done.toFloat() / b.total }, modifier = Modifier.fillMaxWidth())
             FocusChip(stringResource(R.string.library_stop), onClick = viewModel.covers::cancelBatch)
         }
         is CoverBatch.Finished -> CardBody(
-            "Box art: ${plural(b.found, "cover")} added" +
-                (if (b.missing > 0) ", ${b.missing} not found" else "") +
-                (if (b.failed > 0) ", ${b.failed} failed" else "") + ".",
+            str(R.string.library_box_art_added, plural(b.found, "cover")) +
+                (if (b.missing > 0) str(R.string.library_not_found, b.missing) else "") +
+                (if (b.failed > 0) str(R.string.library_failed, b.failed) else "") + ".",
         )
         is CoverBatch.Failed -> CardBody(b.reason)
         null -> if (missing > 0 && viewModel.covers.hasLibretroSource(system)) {
-            FocusChip("Download box art for ${plural(missing, "game")} without artwork", onClick = { viewModel.covers.downloadMissing(system, games) })
+            FocusChip(stringResource(R.string.library_download_box_art_for_without_artwork, plural(missing, "game")), onClick = { viewModel.covers.downloadMissing(system, games) })
         }
     }
 }
@@ -464,7 +466,7 @@ private fun PlayTogetherCard(viewModel: LibraryViewModel, onOpenGame: (Long) -> 
         CardBody(
             stringResource(R.string.library_two_players_two_devices_the_same),
         )
-        FocusChip(if (looking) "Looking…" else "Find games on this Wi-Fi", enabled = !looking, onClick = {
+        FocusChip(if (looking) stringResource(R.string.library_looking) else stringResource(R.string.library_find_games_on_this_wi_fi), enabled = !looking, onClick = {
             looking = true
             message = null
             scope.launch {
@@ -482,7 +484,7 @@ private fun PlayTogetherCard(viewModel: LibraryViewModel, onOpenGame: (Long) -> 
                             message = null
                             onOpenGame(id)
                         } else {
-                            message = "${host.title} isn't in your library. You need the same game file to join."
+                            message = str(R.string.library_isn_t_in_your_library_you, host.title)
                         }
                     }
                 })
@@ -500,18 +502,17 @@ private fun Box3dBatch(viewModel: LibraryViewModel, games: List<GameEntity>) {
     var done by remember { mutableStateOf<Int?>(null) }
     var result by remember { mutableStateOf<String?>(null) }
     val running = done != null
-    FocusChip(if (running) "Getting 3D boxes…" else "3D boxes from ScreenScraper", enabled = !running, onClick = {
+    FocusChip(if (running) stringResource(R.string.library_getting_3d_boxes) else stringResource(R.string.library_3d_boxes_from_screenscraper), enabled = !running, onClick = {
         if (!viewModel.covers.screenScraper.available) {
-            result = "3D boxes come from ScreenScraper, which needs RetroForge's developer ID from ScreenScraper. It isn't in this " +
-                "version yet. Until then, the shelf draws a case round each cover. (SteamGridDB has no 3D boxes.)"
+            result = str(R.string.library_3d_boxes_come_from_screenscraper_which)
             return@FocusChip
         }
         done = 0
         result = null
         scope.launch {
             result = viewModel.covers.fetchBox3d(games) { n -> done = n }.fold(
-                onSuccess = { if (it == 0) "ScreenScraper had no new 3D boxes for these games." else "Added ${plural(it, "3D box")}." },
-                onFailure = { "Couldn't get 3D boxes: ${it.message}" },
+                onSuccess = { if (it == 0) str(R.string.library_screenscraper_had_no_new_3d_boxes) else str(R.string.library_added, plural(it, "3D box")) },
+                onFailure = { str(R.string.library_couldn_t_get_3d_boxes, it.message) },
             )
             done = null
         }

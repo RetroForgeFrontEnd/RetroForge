@@ -1,5 +1,8 @@
 package com.retroforge.app.player
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
+
 /**
  * Why an arcade game didn't start: arcade romsets only work with the emulator version they were made for, and the
  * emulators say which files they couldn't find ("epr-23603.ic8 NOT FOUND", "missing: segabill").
@@ -20,8 +23,6 @@ object ArcadeRomsets {
     /** What to tell the player; null when the emulator didn't name missing files. */
     fun explain(emulator: String, messages: List<String>): String? {
         val missing = missingFiles(messages).ifEmpty { return null }
-        return "This arcade game's files don't match $emulator: it couldn't find ${missing.joinToString()}. Arcade romsets " +
-            "only work with the emulator version they were made for (FinalBurn Neo needs FinalBurn Neo sets, MAME 2003-Plus " +
-            "needs MAME 0.78 sets, and so on). Try the game with another emulator (on its page), or use a romset made for this one."
+        return str(R.string.arcade_romsets_this_arcade_game_s_files_don, emulator, missing.joinToString())
     }
 }

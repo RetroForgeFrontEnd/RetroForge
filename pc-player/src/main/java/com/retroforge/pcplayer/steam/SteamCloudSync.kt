@@ -1,5 +1,7 @@
 package com.retroforge.pcplayer.steam
 
+import com.retroforge.pcplayer.R
+import com.retroforge.core.ui.str
 import android.util.Log
 import `in`.dragonbra.javasteam.enums.EOSType
 import `in`.dragonbra.javasteam.enums.EResult
@@ -54,7 +56,7 @@ class SteamCloudSync(
 
     /** Before playing: brings down saves that are newer in the cloud. Null when not signed in to Steam. */
     suspend fun download(onStep: (String) -> Unit = {}): Result? = account.withSignIn { client, _ ->
-        val cloud = client.getHandler(SteamCloud::class.java) ?: throw IOException("Steam's cloud handler is missing")
+        val cloud = client.getHandler(SteamCloud::class.java) ?: throw IOException(str(R.string.steam_cloud_sync_steam_s_cloud_handler_is_missing))
         runCatching {
             cloud.signalAppLaunchIntent(appId, account.cloudClientId, account.machineName, true, EOSType.Win11).await()
         }
@@ -69,7 +71,7 @@ class SteamCloudSync(
             when {
                 localSha == remoteSha -> Unit
                 localSha == null || localSha == state[name] -> {
-                    onStep("Downloading your Steam Cloud saves")
+                    onStep(str(R.string.steam_cloud_sync_downloading_your_steam_cloud_saves))
                     fetch(cloud, name, local)
                     downloaded++
                 }
@@ -94,7 +96,7 @@ class SteamCloudSync(
 
     /** After playing: sends up saves changed here (and removes ones deleted here). Null when not signed in. */
     suspend fun upload(onStep: (String) -> Unit = {}): Result? = account.withSignIn { client, _ ->
-        val cloud = client.getHandler(SteamCloud::class.java) ?: throw IOException("Steam's cloud handler is missing")
+        val cloud = client.getHandler(SteamCloud::class.java) ?: throw IOException(str(R.string.steam_cloud_sync_steam_s_cloud_handler_is_missing))
         val remote = withTimeout(TIMEOUT) { cloud.getAppFileListChange(appId, 0).await() }
         val remoteShas = remoteFiles(remote).associate { (name, file) -> name to file.shaFile.hex() }
         val state = loadState()
@@ -111,7 +113,7 @@ class SteamCloudSync(
             cloud.signalAppExitSyncDone(appId, account.cloudClientId, true, false)
             return@withSignIn Result()
         }
-        onStep("Saving to Steam Cloud")
+        onStep(str(R.string.pc_player_saving_to_steam_cloud))
         val batch = withTimeout(TIMEOUT) {
             cloud.beginAppUploadBatch(appId, account.machineName, toUpload.keys.toList(), toDelete, account.cloudClientId, 0L).await()
         }
@@ -241,23 +243,23 @@ class SteamCloudSync(
     /** Downloads one cloud file over HTTP into [target] (unzipping it when Steam sent it compressed). */
     private suspend fun fetch(cloud: SteamCloud, name: String, target: File) {
         val info = withTimeout(TIMEOUT) { cloud.clientFileDownload(appId, name).await() }
-        if (info.encrypted) throw IOException("$name is encrypted in Steam Cloud")
+        if (info.encrypted) throw IOException(str(R.string.steam_cloud_sync_is_encrypted_in_steam_cloud, name))
         val headers = Headers.headersOf(*info.requestHeaders.flatMap { listOf(it.name, it.value) }.toTypedArray())
         val request = Request.Builder().url(url(info.useHttps, info.urlHost, info.urlPath)).headers(headers).build()
         target.parentFile?.mkdirs()
         val part = File(target.path + ".part")
         http.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) throw IOException("Steam Cloud download of $name failed (${response.code})")
+            if (!response.isSuccessful) throw IOException(str(R.string.steam_cloud_sync_steam_cloud_download_of_failed, name, response.code))
             response.body.byteStream().use { body ->
                 val input: InputStream = if (info.fileSize != info.rawFileSize) {
-                    ZipInputStream(body).also { it.nextEntry ?: throw IOException("$name came compressed but empty") }
+                    ZipInputStream(body).also { it.nextEntry ?: throw IOException(str(R.string.steam_cloud_sync_came_compressed_but_empty, name)) }
                 } else body
                 part.outputStream().use { input.copyTo(it) }
             }
         }
         if (part.length() != info.rawFileSize.toLong()) {
             part.delete()
-            throw IOException("$name downloaded incomplete")
+            throw IOException(str(R.string.steam_cloud_sync_downloaded_incomplete, name))
         }
         if (!part.renameTo(target)) {
             target.delete()

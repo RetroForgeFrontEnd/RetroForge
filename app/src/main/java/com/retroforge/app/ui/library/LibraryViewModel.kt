@@ -1,5 +1,7 @@
 package com.retroforge.app.ui.library
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -161,7 +163,7 @@ class LibraryViewModel(
         onProblem: (LaunchProblem?) -> Unit,
     ) {
         if (root == null) return onProblem(LaunchProblem.LocationNotSupported)
-        val component = standalone.installed(emulator) ?: return onProblem(LaunchProblem.StartFailed("${emulator.name} isn't installed."))
+        val component = standalone.installed(emulator) ?: return onProblem(LaunchProblem.StartFailed(str(R.string.library_isn_t_installed, emulator.name)))
         val romUri = repository.documentUri(root, game.documentId)
         fun launch(uri: Uri, romPath: String?): LaunchProblem? {
             val vars = LaunchVars(
@@ -173,7 +175,7 @@ class LibraryViewModel(
             val spec = try {
                 LaunchCommand.parse(option.command, vars)
             } catch (e: UnsupportedCommandException) {
-                return LaunchProblem.StartFailed("${emulator.name} can't open this game: ${e.message}.")
+                return LaunchProblem.StartFailed(str(R.string.library_can_t_open_this_game, emulator.name, e.message))
             }
             return standalone.launch(component, spec).also { if (it == null) repository.recordPlay(game, emulator.id) }
         }

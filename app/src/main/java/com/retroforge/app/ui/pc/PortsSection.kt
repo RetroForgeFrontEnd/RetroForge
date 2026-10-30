@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.pc
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -68,14 +69,12 @@ fun PortsSection(library: LibraryRepository) {
     var windowsTab by remember { mutableStateOf(false) }
 
     ChipRow {
-        FocusChip((if (!windowsTab) "● " else "") + "Android ports", onClick = { windowsTab = false; showAll = false })
-        FocusChip((if (windowsTab) "● " else "") + "Windows ports", onClick = { windowsTab = true; showAll = false })
+        FocusChip((if (!windowsTab) "● " else "") + stringResource(R.string.ports_android_ports), onClick = { windowsTab = false; showAll = false })
+        FocusChip((if (windowsTab) "● " else "") + stringResource(R.string.ports_windows_ports), onClick = { windowsTab = true; showAll = false })
     }
     CardBody(
-        if (!windowsTab) "Games rebuilt to run natively on Android, from decompiled code or PC source ports. They run better than emulation " +
-            "and add widescreen and higher frame rates. Each needs your own copy of the game; RetroForge never supplies game files."
-        else "Ports with only a Windows version. They run through GameNative or Winlator, so they need a strong Snapdragon phone " +
-            "and may not run well; all are experimental. Each needs your own copy of the game.",
+        if (!windowsTab) str(R.string.ports_games_rebuilt_to_run_natively_on)
+        else str(R.string.ports_ports_with_only_a_windows_version),
     )
     val tabPorts = ports.filter { it.isWindows == windowsTab }
     val mine = tabPorts.filter { it.id in owned }
@@ -117,42 +116,42 @@ private fun PortCard(port: GamePort, owned: GameEntity?, library: LibraryReposit
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (port.isWindows) {
                 FocusChip(stringResource(R.string.ports_download_windows_version), onClick = {
-                    prepared = "Looking for the Windows version…"
+                    prepared = str(R.string.ports_looking_for_the_windows_version)
                     scope.launch {
                         prepared = withContext(Dispatchers.IO) {
                             runCatching {
-                                val file = PortDownloads.pickWindows(PortDownloads.latest(port)) ?: return@runCatching "No Windows download in the latest release. Use Project page."
-                                val where = PortDownloads.unpackWindows(context, port, file) { p -> prepared = "Downloading ${file.name}… $p%" }
-                                "Unpacked into $where. In GameNative, add it as a custom game and pick its .exe."
-                            }.getOrElse { "Didn't download: ${it.message}" }
+                                val file = PortDownloads.pickWindows(PortDownloads.latest(port)) ?: return@runCatching str(R.string.ports_no_windows_download_in_the_latest)
+                                val where = PortDownloads.unpackWindows(context, port, file) { p -> prepared = str(R.string.ports_downloading, file.name, p) }
+                                str(R.string.ports_unpacked_into_in_gamenative_add_it, where)
+                            }.getOrElse { str(R.string.ports_didn_t_download, it.message) }
                         }
                     }
                 })
                 val runner = WINDOWS_RUNNERS.firstNotNullOfOrNull { context.packageManager.getLaunchIntentForPackage(it) }
-                FocusChip(if (runner != null) "Open GameNative" else "Get GameNative", onClick = {
+                FocusChip(if (runner != null) stringResource(R.string.ports_open_gamenative) else stringResource(R.string.ports_get_gamenative), onClick = {
                     if (runner != null) runCatching { context.startActivity(runner) } else open(context, GAMENATIVE_PAGE)
                 })
             } else {
                 if (launch != null) FocusChip(stringResource(R.string.home_layouts_open), onClick = { runCatching { context.startActivity(launch) } })
-                FocusChip(if (launch != null) "Update" else "Download and install", onClick = {
-                    prepared = "Looking for the latest version…"
+                FocusChip(if (launch != null) stringResource(R.string.hacks_update) else stringResource(R.string.ports_download_and_install), onClick = {
+                    prepared = str(R.string.ports_looking_for_the_latest_version)
                     scope.launch {
                         prepared = withContext(Dispatchers.IO) {
                             runCatching {
-                                val file = PortDownloads.pickApk(PortDownloads.latest(port)) ?: return@runCatching "No Android download in the latest release. Use Project page."
-                                PortDownloads.installApk(context, file) { p -> prepared = "Downloading ${file.name}… $p%" }
-                                "Downloaded ${file.name}. Confirm the install in Android's window (the first time, allow RetroForge to install apps)."
-                            }.getOrElse { "Didn't download: ${it.message}" }
+                                val file = PortDownloads.pickApk(PortDownloads.latest(port)) ?: return@runCatching str(R.string.ports_no_android_download_in_the_latest)
+                                PortDownloads.installApk(context, file) { p -> prepared = str(R.string.ports_downloading, file.name, p) }
+                                str(R.string.ports_downloaded_confirm_the_install_in_android, file.name)
+                            }.getOrElse { str(R.string.ports_didn_t_download, it.message) }
                         }
                     }
                 })
                 FocusChip(stringResource(R.string.ports_get_with_obtainium), onClick = { get(context, port) })
             }
             if (owned != null) FocusChip(stringResource(R.string.ports_prepare_files), onClick = {
-                prepared = "Copying…"
+                prepared = str(R.string.ports_copying)
                 scope.launch {
                     prepared = withContext(Dispatchers.IO) {
-                        runCatching { prepare(context, library, port, owned) }.getOrElse { "Couldn't copy the game: ${it.message}" }
+                        runCatching { prepare(context, library, port, owned) }.getOrElse { str(R.string.ports_couldn_t_copy_the_game, it.message) }
                     }
                 }
             })
@@ -181,31 +180,31 @@ private fun open(context: Context, url: String) {
  * easily. The original in the game folder is untouched (both stay playable). Returns what happened, for the card.
  */
 private suspend fun prepare(context: Context, library: LibraryRepository, port: GamePort, game: GameEntity): String {
-    val root = library.roots.first().firstOrNull { it.id == game.rootId } ?: error("its game folder isn't available")
+    val root = library.roots.first().firstOrNull { it.id == game.rootId } ?: error(str(R.string.ports_its_game_folder_isn_t_available))
     val source = library.documentUri(root, game.documentId)
     val resolver = context.contentResolver
     val folder = "${android.os.Environment.DIRECTORY_DOWNLOADS}/RetroForge/Ports/${port.name.replace(":", " -").replace(Regex("[\\/*?\"<>|]"), "_")}"
     fun save(name: String, write: (java.io.OutputStream) -> Unit) {
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) error("needs Android 10 or newer")
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q) error(str(R.string.port_downloads_needs_android_10_or_newer))
         val values = android.content.ContentValues().apply {
             put(android.provider.MediaStore.Downloads.DISPLAY_NAME, name)
             put(android.provider.MediaStore.Downloads.RELATIVE_PATH, folder)
         }
-        val uri = resolver.insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, values) ?: error("Android refused to create the file")
-        resolver.openOutputStream(uri)?.use(write) ?: error("couldn't write the file")
+        val uri = resolver.insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, values) ?: error(str(R.string.ports_android_refused_to_create_the_file))
+        resolver.openOutputStream(uri)?.use(write) ?: error(str(R.string.ports_couldn_t_write_the_file))
     }
     var name = game.fileName
     if (game.fileName.endsWith(".zip", ignoreCase = true)) {
         // Ports want the bare ROM: the first file in the zip.
         resolver.openInputStream(source)?.use { input ->
             java.util.zip.ZipInputStream(input.buffered()).use { zip ->
-                val entry = generateSequence { zip.nextEntry }.firstOrNull { !it.isDirectory } ?: error("the zip is empty")
+                val entry = generateSequence { zip.nextEntry }.firstOrNull { !it.isDirectory } ?: error(str(R.string.ports_the_zip_is_empty))
                 name = entry.name.substringAfterLast('/')
                 save(name) { zip.copyTo(it) }
             }
-        } ?: error("couldn't open the game")
+        } ?: error(str(R.string.game_files_couldn_t_open_the_game))
     } else {
-        resolver.openInputStream(source)?.use { input -> save(name) { input.copyTo(it) } } ?: error("couldn't open the game")
+        resolver.openInputStream(source)?.use { input -> save(name) { input.copyTo(it) } } ?: error(str(R.string.game_files_couldn_t_open_the_game))
     }
-    return "Copied $name to Download/RetroForge/Ports. Your original stays in your game folder. In the port, choose this file when it asks for the game."
+    return str(R.string.ports_copied_to_download_retroforge_ports_your, name)
 }

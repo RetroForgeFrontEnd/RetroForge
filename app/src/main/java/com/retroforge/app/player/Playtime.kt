@@ -1,5 +1,7 @@
 package com.retroforge.app.player
 
+import com.retroforge.app.R
+import com.retroforge.core.ui.str
 import java.io.File
 import java.util.Properties
 
@@ -33,9 +35,9 @@ class Playtime(private val file: File) {
         fun format(millis: Long): String {
             val minutes = millis / 60_000
             return when {
-                minutes < 1 -> "under a minute"
+                minutes < 1 -> str(R.string.playtime_under_a_minute)
                 minutes < 60 -> "$minutes min"
-                else -> "${minutes / 60} h ${minutes % 60} min"
+                else -> str(R.string.playtime_h_min, minutes / 60, minutes % 60)
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.retroforge.app.ui.settings
 
+import com.retroforge.core.ui.str
 import com.retroforge.app.R
 
 import androidx.compose.ui.res.stringResource
@@ -52,7 +53,7 @@ fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices,
         )
     }
     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { onResume(!resume) }) {
-        CardTitle(stringResource(R.string.built_in_player_carry_on_where_you_left_off)) { StatusPill(if (resume) "On" else "Off", if (resume) StatusTone.GOOD else StatusTone.NEUTRAL) }
+        CardTitle(stringResource(R.string.built_in_player_carry_on_where_you_left_off)) { StatusPill(if (resume) stringResource(R.string.settings_on) else stringResource(R.string.player_off), if (resume) StatusTone.GOOD else StatusTone.NEUTRAL) }
         CardBody(stringResource(R.string.built_in_player_when_you_quit_a_game_your))
     }
     CopyFirstCard()
@@ -133,7 +134,7 @@ private fun CopyFirstCard() {
         copyFirst = !copyFirst
         prefs.edit().putBoolean(com.retroforge.app.player.PlayerActivity.COPY_FIRST_PREF, copyFirst).apply()
     }) {
-        CardTitle(stringResource(R.string.built_in_player_disc_games_play_straight_away_or)) { StatusPill(if (copyFirst) "Copy first" else "Play straight away", if (copyFirst) StatusTone.NEUTRAL else StatusTone.GOOD) }
+        CardTitle(stringResource(R.string.built_in_player_disc_games_play_straight_away_or)) { StatusPill(if (copyFirst) stringResource(R.string.built_in_player_copy_first) else stringResource(R.string.built_in_player_play_straight_away), if (copyFirst) StatusTone.NEUTRAL else StatusTone.GOOD) }
         CardBody(
             stringResource(R.string.built_in_player_big_disc_games_playstation_dreamcast_saturn),
         )
@@ -171,33 +172,33 @@ private fun SaveBackupCard(library: LibraryRepository?) {
     var status by remember { mutableStateOf<String?>(null) }
     var restartNeeded by remember { mutableStateOf(false) }
     fun run(work: () -> String) = scope.launch {
-        status = "Working…"
-        status = withContext(Dispatchers.IO) { runCatching(work).getOrElse { "That didn't work: ${it.message}" } }
+        status = str(R.string.built_in_player_working)
+        status = withContext(Dispatchers.IO) { runCatching(work).getOrElse { str(R.string.built_in_player_that_didn_t_work, it.message) } }
     }
     val export = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
         uri ?: return@rememberLauncherForActivityResult
         run {
             val lists = listsDir(context).apply { deleteRecursively(); mkdirs() }
             library?.let { File(lists, "lists.json").writeText(kotlinx.coroutines.runBlocking { it.exportLists() }) }
-            val count = context.contentResolver.openOutputStream(uri)?.use { saveBackup(context).export(it) } ?: error("couldn't open the file")
+            val count = context.contentResolver.openOutputStream(uri)?.use { saveBackup(context).export(it) } ?: error(str(R.string.built_in_player_couldn_t_open_the_file))
             lists.deleteRecursively()
-            "Backed up $count files."
+            str(R.string.built_in_player_backed_up_files, count)
         }
     }
     val import = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri ?: return@rememberLauncherForActivityResult
         run {
             val lists = listsDir(context).apply { deleteRecursively() }
-            val count = context.contentResolver.openInputStream(uri)?.use { saveBackup(context).restore(it) } ?: error("couldn't open the file")
+            val count = context.contentResolver.openInputStream(uri)?.use { saveBackup(context).restore(it) } ?: error(str(R.string.built_in_player_couldn_t_open_the_file))
             val listsFile = File(lists, "lists.json")
             val listsNote = if (library != null && listsFile.exists()) {
                 val (matched, missed) = kotlinx.coroutines.runBlocking { library.importLists(listsFile.readText()) }
-                " Favourites and playlists: $matched games found" + (if (missed > 0) ", $missed not in your library (add their folder, then restore again)." else ".")
+                str(R.string.built_in_player_favourites_and_playlists_games_found, matched) + (if (missed > 0) str(R.string.built_in_player_not_in_your_library_add_their, missed) else ".")
             } else ""
             lists.deleteRecursively()
-            if (count == 0) "No RetroForge saves found in that file." else {
+            if (count == 0) str(R.string.built_in_player_no_retroforge_saves_found_in_that) else {
                 restartNeeded = true
-                "Restored $count files.$listsNote RetroForge restarts to load the settings."
+                str(R.string.built_in_player_restored_files_retroforge_restarts_to_load, count, listsNote)
             }
         }
     }
@@ -218,7 +219,7 @@ private fun SaveBackupCard(library: LibraryRepository?) {
 
 private fun File.size(): Long = walkTopDown().filter { it.isFile }.sumOf { it.length() }
 
-private fun Long.mb(): String = if (this < 1_000_000) "under 1 MB" else "%.0f MB".format(this / 1_000_000.0)
+private fun Long.mb(): String = if (this < 1_000_000) str(R.string.built_in_player_under_1_mb) else "%.0f MB".format(this / 1_000_000.0)
 
 /** Space the player uses: its emulators, and games it copied because their emulator needs a real file (CD systems, arcade). */
 @Composable
@@ -234,8 +235,8 @@ private fun StorageCard() {
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle(stringResource(R.string.built_in_player_storage))
         CardBody(
-            sizes?.let { (cores, games) -> "Emulators: ${cores.mb()}. Copied games: ${games.mb()} (the last two disc or arcade games copied to the phone)." }
-                ?: "Working out sizes…",
+            sizes?.let { (cores, games) -> str(R.string.built_in_player_emulators_copied_games_the_last_two, cores.mb(), games.mb()) }
+                ?: str(R.string.built_in_player_working_out_sizes),
         )
         FocusChip(stringResource(R.string.built_in_player_clear_copied_games), onClick = {
             scope.launch {
