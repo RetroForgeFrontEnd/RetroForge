@@ -24,6 +24,7 @@
 #include <cstdio>
 #include <cstring>
 #include <map>
+#include <deque>
 #include <mutex>
 #include <set>
 #include <string>
@@ -224,9 +225,23 @@ Player *P = nullptr;
 
 // ---------- core callbacks ----------
 
+// The core's recent warnings and errors, so a game that won't start can say why (an arcade romset's missing files).
+std::mutex coreMessagesMutex;
+std::deque<std::string> coreMessages;
+
 void coreLog(enum retro_log_level level, const char *fmt, ...) {
     va_list args;
     va_start(args, fmt);
+    if (level >= RETRO_LOG_WARN) {
+        va_list copy;
+        va_copy(copy, args);
+        char line[512];
+        vsnprintf(line, sizeof line, fmt, copy);
+        va_end(copy);
+        std::lock_guard<std::mutex> lock(coreMessagesMutex);
+        coreMessages.emplace_back(line);
+        if (coreMessages.size() > 60) coreMessages.pop_front();
+    }
     __android_log_vprint(level >= RETRO_LOG_ERROR ? ANDROID_LOG_ERROR : ANDROID_LOG_INFO, "RetroForgeCore", fmt, args);
     va_end(args);
 }
@@ -1383,6 +1398,18 @@ JNIEXPORT void JNI(setAnalog)(JNIEnv *, jobject, jint port, jint stick, jint x, 
     if (!P || port < 0 || port >= 4 || stick < 0 || stick > 1) return;
     P->analog[port][stick][0] = static_cast<int16_t>(x);
     P->analog[port][stick][1] = static_cast<int16_t>(y);
+}
+
+// The core's recent warnings and errors, oldest first.
+JNIEXPORT jobjectArray JNI(coreMessages)(JNIEnv *env, jobject) {
+    std::vector<std::string> out;
+    {
+        std::lock_guard<std::mutex> lock(coreMessagesMutex);
+        out.assign(coreMessages.begin(), coreMessages.end());
+    }
+    jobjectArray array = env->NewObjectArray(static_cast<jsize>(out.size()), env->FindClass("java/lang/String"), nullptr);
+    for (size_t i = 0; i < out.size(); i++) env->SetObjectArrayElement(array, static_cast<jsize>(i), env->NewStringUTF(out[i].c_str()));
+    return array;
 }
 
 // The core's options for the menu: key, description, choices ("a|b|c") and current value, four per option.

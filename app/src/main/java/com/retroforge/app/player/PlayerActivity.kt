@@ -485,7 +485,11 @@ class PlayerActivity : ComponentActivity() {
         } catch (e: SecurityException) {
             return fail("RetroForge no longer has access to this game's folder. Add the folder again in Settings.")
         }
-        if (!ok) return fail("${info.name} couldn't start this game. The file may be damaged, or it may need BIOS files.")
+        if (!ok) {
+            // Arcade romsets made for another emulator version: name the files it couldn't find.
+            val arcade = if (system in com.retroforge.library.ArcadeNames.SYSTEMS) ArcadeRomsets.explain(info.name, NativePlayer.coreMessages().toList()) else null
+            return fail(arcade ?: "${info.name} couldn't start this game. The file may be damaged, or it may need BIOS files.")
+        }
 
         sram().takeIf { it.isFile }?.let { NativePlayer.restoreSaveRam(it.readBytes()) }
         if (resume) autoState().takeIf { it.isFile }?.let { NativePlayer.loadState(it.readBytes()) }

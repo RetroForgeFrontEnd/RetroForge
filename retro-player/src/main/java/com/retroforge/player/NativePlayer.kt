@@ -64,6 +64,9 @@ object NativePlayer {
         CoreOption(key, label, choices.split('|').filter { it.isNotEmpty() }, current)
     }
 
+    /** The core's recent warnings and errors, oldest first (why a game wouldn't start). */
+    external fun coreMessages(): Array<String>
+
     /** What the core calls player 1's buttons: libretro id and name, two entries per button. */
     external fun buttonNames(): Array<String>
 
