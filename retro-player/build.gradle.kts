@@ -13,7 +13,9 @@ android {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
         }
         externalNativeBuild {
-            cmake { arguments += "-DANDROID_STL=c++_static" }
+            // Shared C++ runtime: it ships in the APK, and some emulator cores (MAME 2016 …) need libc++_shared.so
+            // already there when they load.
+            cmake { arguments += "-DANDROID_STL=c++_shared" }
         }
     }
     externalNativeBuild {

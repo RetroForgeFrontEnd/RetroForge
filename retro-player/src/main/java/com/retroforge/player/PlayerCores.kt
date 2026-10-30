@@ -76,6 +76,8 @@ object PlayerCores {
     private val b2 = PlayerCore("b2", "b2 (BBC Micro)")
     private val squirreljme = PlayerCore("squirreljme", "SquirrelJME")
     private val mameArcade = PlayerCore("mamearcade", "MAME (current, arcade)")
+    /** MAME 0.174 (2016): ST-V romsets and BIOS from before the current MAME's newer BIOS files. */
+    private val mame2016 = PlayerCore("mame2016", "MAME 2016 (0.174 romsets)")
     private val viceX64 = PlayerCore("vice_x64sc", "VICE x64sc")
     private val viceX128 = PlayerCore("vice_x128", "VICE x128")
     private val vicePlus4 = PlayerCore("vice_xplus4", "VICE xplus4")
@@ -237,7 +239,9 @@ object PlayerCores {
         "bbcmicro" to listOf(b2),
         "j2me" to listOf(squirreljme),
         // ST-V romsets need MAME's own (FinalBurn Neo and MAME 2003 don't have the board); stvbios.zip beside them.
-        "segastv" to listOf(mameArcade),
+        // Most ST-V collections (RetroBat's included) are 0.17x-era sets: MAME 2016 plays them; current MAME
+        // wants a newer stvbios.zip.
+        "segastv" to listOf(mame2016, mameArcade),
         // Mupen64Plus-Next plays 64DD disks with the 64DD IPL BIOS (64DD_IPL.bin) in the BIOS folder.
         "n64dd" to listOf(mupen),
     )
