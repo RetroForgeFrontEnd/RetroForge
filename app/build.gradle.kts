@@ -78,6 +78,7 @@ dependencies {
     implementation(project(":retro-player"))
     implementation(libs.commons.compress)
     implementation(libs.xz)
+    implementation(libs.androidx.webkit)
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
     implementation(libs.media3.exoplayer)

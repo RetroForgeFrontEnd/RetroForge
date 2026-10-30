@@ -84,6 +84,16 @@
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
             android:exported="false" />
 
+        <!-- Xbox Cloud Gaming (xbox.com/play with Better xCloud), full screen in landscape, in its own process so the
+             main screens behind it can't hold up its input, and leaving frees the WebView. -->
+        <activity
+            android:name=".ui.pc.XboxCloudActivity"
+            android:process=":xcloud"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|uiMode"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+            android:exported="false" />
+
         <!-- The built-in player: its own process, so each game gets a clean emulator core. -->
         <activity
             android:name=".player.PlayerActivity"

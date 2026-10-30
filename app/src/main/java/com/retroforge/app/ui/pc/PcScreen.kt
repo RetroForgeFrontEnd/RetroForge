@@ -39,6 +39,8 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
         PcGamesSection(library)
         PortsSection(library)
         FreeGamesSection(library)
+        Text("Cloud gaming", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
+        XboxCloudCard()
         Text("Windows games", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
         val loaded = status
         if (loaded == null) {
