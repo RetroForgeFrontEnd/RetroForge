@@ -30,7 +30,7 @@ import kotlin.concurrent.thread
  */
 class PcSession(private val context: Context, private val runtime: PcRuntime, val exe: File, screen: ScreenInfo) {
 
-    val xServer = XServer(screen)
+    val xServer = XServer(screen).apply { winHandler = com.winlator.cmod.winhandler.WinHandler() }
     private var xConnector: XConnectorEpoll? = null
     private var shmConnector: XConnectorEpoll? = null
     private var sharedMemory: SysVSharedMemory? = null
@@ -89,7 +89,6 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             "PATH" to "$wine/bin:$imageFs/usr/bin:/system/bin",
             "LD_LIBRARY_PATH" to "$imageFs/usr/lib:$wine/lib:/system/lib64",
             "LD_PRELOAD" to "$imageFs/usr/lib/libandroid-sysvshm.so:${execHelper().path}",
-            "PCPLAYER_SELF_EXE" to "$wine/bin/wine",
             "ANDROID_SYSVSHM_SERVER" to imageFs + UnixSocketConfig.SYSVSHM_SERVER_PATH,
             "PREFIX" to "$imageFs/usr",
             "WINEPREFIX" to runtime.prefix.path,
@@ -106,8 +105,32 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             "VK_ICD_FILENAMES" to "$imageFs/usr/share/vulkan/icd.d/wrapper_icd.aarch64.json",
             "SSL_CERT_FILE" to "$imageFs/usr/etc/tls/cert.pem",
             "MESA_SHADER_CACHE_DIR" to "$imageFs/usr/tmp/mesa",
-        )
+            // GameNative's defaults for the Vulkan wrapper.
+            "WRAPPER_MAX_IMAGE_COUNT" to "0",
+            "MESA_VK_WSI_PRESENT_MODE" to "mailbox",
+            // GameNative's default FEX settings: x86 memory ordering where it matters, code-change tracking,
+            // and its fixes for Mono/.NET's JIT.
+            "FEX_TSOENABLED" to "1",
+            "FEX_VECTORTSOENABLED" to "0",
+            "FEX_HALFBARRIERTSOENABLED" to "1",
+            "FEX_MEMCPYSETTSOENABLED" to "0",
+            "FEX_X87REDUCEDPRECISION" to "0",
+            "FEX_MULTIBLOCK" to "1",
+            "FEX_MAXINST" to "5000",
+            "FEX_SMALLTSCSCALE" to "1",
+            "FEX_SMCCHECKS" to "mtrack",
+            "FEX_VOLATILEMETADATA" to "1",
+            "FEX_MONOHACKS" to "1",
+            // .NET games abort loading Windows' ICU, which this Wine only partly has; they don't need it.
+            "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT" to "1",
+        ) + extraEnvironment()
     }
+
+    /** For testing: KEY=VALUE lines in files/pc/extra.env are added to (or replace) Wine's environment. */
+    private fun extraEnvironment(): Map<String, String> = runCatching {
+        File(runtime.root, "extra.env").readLines().map { it.trim() }.filter { it.isNotEmpty() && !it.startsWith("#") && '=' in it }
+            .associate { it.substringBefore('=') to it.substringAfter('=') }
+    }.getOrDefault(emptyMap())
 
     /**
      * libpcexec.so as a file Wine's processes can preload. The app's native libraries stay inside the APK (they
@@ -135,7 +158,7 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
         val command = listOf(
             "/system/bin/linker64", "${runtime.wineDir.path}/bin/wine",
             "explorer", "/desktop=shell,$screen", "D:\\${exe.name}",
-        )
+        ) + gameArguments(exe)
         log.delete()
         val builder = ProcessBuilder(command)
             .directory(exe.parentFile)
@@ -174,5 +197,15 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
 
     companion object {
         private const val TAG = "PcPlayer"
+
+        /**
+         * Extra arguments some engines need here. Godot games (an .exe with a .pck beside it) ask for OpenGL, which
+         * Godot on Windows gets through ANGLE on Direct3D 11, and there's no Direct3D layer yet; Godot's own
+         * Vulkan renderer works on the Vulkan wrapper, so they're started on that.
+         */
+        fun gameArguments(exe: File): List<String> =
+            if (File(exe.parentFile, exe.nameWithoutExtension + ".pck").isFile) {
+                listOf("--rendering-driver", "vulkan", "--rendering-method", "mobile")
+            } else emptyList()
     }
 }

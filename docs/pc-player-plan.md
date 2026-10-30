@@ -110,7 +110,7 @@ Effort is for one developer working with AI help, in focused days, and assumes t
 | Stage | What | Effort | Status |
 |---|---|---|---|
 | 1 | Research (this document) | 1 day | Done |
-| 2 | **First build:** `pc-player` module, runtime download with percentage, X server, Wine launch through the linker, full-screen activity with touch mouse, Esc/Enter/keyboard, Back to quit; PC tab "Add a Windows game folder" | 2–4 days | Built; see Phase 2 below for how far it got |
+| 2 | **First build:** `pc-player` module, runtime download with percentage, X server, Wine launch through the linker, full-screen activity with touch mouse, Esc/Enter/keyboard, Back to quit; PC tab "Add a Windows game folder" | 2–4 days | Built. On the S22: runtime, X server, Wine, FEX and Vulkan work; Warside opens its window but hangs loading (see below) |
 | 3 | **One game working well:** fix what stage 2's test shows (Wine prefix setup, graphics path on Xclipse), sound (Winlator's ALSA server or PulseAudio from the image), per-game log in the app | 1–2 weeks | Next |
 | 4 | **Controls:** gamepads into Wine (Winlator's `winhandler` / evdev shim, XInput), RetroForge's controller mapping and on-screen controls reused from the retro player, mouse modes (touchpad/relative), text input | 1–2 weeks | |
 | 5 | **Graphics choices:** Turnip for Adreno (libadrenotools), DXVK / VKD3D-Proton versions per game, resolution and frame-rate options, a GPU check that says up front what's likely to work | 2–3 weeks | |
@@ -135,10 +135,50 @@ months, as said before starting.
 | Player | `PcPlayerActivity.kt` | Full screen, landscape, in its own process (`:pcplayer`, so quitting ends every Wine process). Touch is a mouse (tap clicks where you touch, drag holds the button, two-finger tap right-clicks); Esc, Enter, keyboard and Quit buttons top right; Back asks before quitting; when Wine ends, shows the last lines of its log |
 | PC tab | `app/.../ui/pc/PcLibrary.kt`, `PcGamesSection.kt` | "Add a Windows game folder": pick the folder, RetroForge copies it (with a percentage) into `Android/data/com.retroforge.app/files/PC games/<name>` and picks the main .exe. The game shows as "RetroForge PC player" beside GameNative and Winlator games; the first start asks before the runtime download |
 
-### Test result
+### Test result (2026-10-30)
 
-_Filled in after testing on the S22; see below._
+**Warside did not reach its title screen.** Furthest point: the game's window is open and Godot's Vulkan renderer
+is running on the Xclipse, but the game hangs while loading (dark grey window, no title screen).
+
+What was tested, on what:
+
+| Step | Emulator (x86_64) | Galaxy S22 (Xclipse 920, Android 16) |
+|---|---|---|
+| PC tab shows the game as "RetroForge PC player"; first start asks before the download | Works | Works |
+| Runtime download with a percentage, unpack, prefix set-up | Works (1.8 GB) | Works (1.7 GB; 2.3 GB after Wine's first-run set-up) |
+| X server, full screen, cursor, Esc/Enter/keyboard/Quit buttons, end-of-game dialog with Wine's log | Works | Works |
+| Wine started through `linker64` at target SDK 37 | Stops as expected: Wine is arm64, the emulator x86_64 (now refused up front with a message) | **Works.** `wine cmd /c echo` prints; wineserver, services, explorer start through `libpcexec.so` |
+| Wine's desktop drawn by RetroForge's X server | | **Works** |
+| x86-64 game code through FEX (ARM64EC) | | **Works.** Warside.exe (Godot 4.5.1 + .NET 8) starts and loads .NET's runtime |
+| Godot on OpenGL (its default here: ANGLE on Direct3D 11) | | Fails with Godot's own "OpenGL 3.3 or Direct3D 11" dialog: no Direct3D layer (DXVK) in the prefix yet |
+| Godot on Vulkan (RetroForge now starts Godot games with `--rendering-driver vulkan --rendering-method mobile`) | | **Works:** "Vulkan 1.3.279 – Forward Mobile – Wrapper(Samsung Xclipse 920)"; the window shows Godot's dark grey loading background |
+| .NET start-up | | Aborted loading Windows' ICU (`icuuc68` missing): fixed with `DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1` |
+| Loading to the title screen | | **Hangs.** One thread at 100% CPU, memory flat for minutes, other threads idle, nothing more in Godot's log after audio set-up. Same with and without GameNative's FEX settings (which did get it further: 820 MB loaded instead of 630 MB) |
+| Sound | | None yet (no sound server; Godot falls back to silence) |
+
+Things learned that the code now handles: native libraries stay inside the APK, so `libpcexec.so` is copied out
+for `LD_PRELOAD`; under the linker each program's `/proc/self/exe` must name that program (wineserver finds its
+language files next to itself); Winlator's X server needs a `WinHandler` even when it does nothing.
+
+Testing aids left in place: `files/pc/last-run.log` (Wine's output), `files/pc/extra.env` (extra `KEY=VALUE`
+lines for Wine's environment, e.g. `WINEDEBUG=+seh`), and Godot's own log in the prefix
+(`drive_c/users/xuser/AppData/Roaming/Godot/app_userdata/<game>/logs`). The runtime and a Warside copy are still on
+the S22 (2.3 GB + 383 MB in RetroForge's storage).
 
 ### What's next
 
-See stage 3 above; the specific fixes found in testing are listed with the test result.
+1. **Find the Warside hang.** Most likely FEX and .NET's JIT (Godot's C# side) or the S22 being short of memory
+   (227 MB free, 3.4 GB in swap during the test). Next checks: run GameNative's own Warside container with the same
+   Proton/FEX to see whether it loads there; try FEX's `FEX_SMCCHECKS=full`; get a Wine backtrace of the busy thread
+   (`winedbg --command "bt all"`); try with other apps closed.
+2. **DXVK and VKD3D-Proton in the prefix** (GameNative's `dxvk-2.x` / `vkd3d` packages, a few MB each). Needed by
+   nearly every Direct3D game: Godot's default path, Max Payne 2 (D3D9), Snooker 19 (D3D11).
+3. **A non-.NET game next** to prove frames reach the screen end to end: Max Payne 2 (32-bit D3D9, also tests FEX's
+   32-bit path) once DXVK is in.
+4. Sound: Winlator's ALSA server (Java) or PulseAudio from the image.
+5. Then stages 4–8 above.
+
+Test games the user suggested and owns: Max Payne 2 and Snooker 19 (on the PC, not yet copied to the phone). A
+small set covering each API is in the session notes: Cave Story (DirectDraw), Max Payne (D3D8), Plants vs.
+Zombies (D3D9), Terraria (D3D9/XNA), Undertale (D3D11), Hollow Knight (D3D11/Unity), Super Hexagon or FTL
+(OpenGL), Warside with `--rendering-driver d3d12` (D3D12), Warside (Vulkan).

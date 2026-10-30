@@ -3,7 +3,7 @@
 // Android doesn't let an app that targets a current SDK execute files in its own storage, but the system
 // linker can still load them: "/system/bin/linker64 /path/program args" runs a program from app storage.
 // RetroForge starts Wine that way, and this library makes every program Wine starts (wineserver, the next
-// wine process) go the same way. It also answers "/proc/self/exe" with Wine's own path, because under the
+// wine process) go the same way. It also answers "/proc/self/exe" with the program being run, because under the
 // linker that link points at the linker, and Wine finds its files from it.
 #define _GNU_SOURCE
 #include <dlfcn.h>
@@ -151,19 +151,43 @@ int posix_spawnp(pid_t *pid, const char *file, const posix_spawn_file_actions_t 
     return spawn(strchr(path, '/') ? "posix_spawn" : "posix_spawnp", pid, path, actions, attr, argv, envp);
 }
 
-// Wine's own program path, set by RetroForge, stands in for "/proc/self/exe" (the linker, under linker64).
+typedef char *(*realpath_fn)(const char *, char *);
+
+static realpath_fn real_realpath(void) {
+    static realpath_fn real;
+    if (!real) real = (realpath_fn)dlsym(RTLD_NEXT, "realpath");
+    return real;
+}
+
+// Under the linker, "/proc/self/exe" names the linker. The program it's running is the second word of this
+// process's command line ("/system/bin/linker64 /path/program ..."), so that (with links resolved, as the kernel
+// would) stands in for it. Each program gets its own: wineserver looks for its files next to itself, wine next
+// to itself.
 static const char *self_exe(const char *path) {
+    static char exe[PATH_MAX];
+    static int looked;
     if (!path || strcmp(path, "/proc/self/exe") != 0) return NULL;
-    const char *exe = getenv("PCPLAYER_SELF_EXE");
-    return exe && exe[0] ? exe : NULL;
+    if (!looked) {
+        looked = 1;
+        char cmdline[PATH_MAX * 2];
+        int fd = open("/proc/self/cmdline", O_RDONLY | O_CLOEXEC);
+        if (fd >= 0) {
+            ssize_t n = read(fd, cmdline, sizeof(cmdline) - 1);
+            close(fd);
+            if (n > 0) {
+                cmdline[n] = 0;
+                size_t first = strlen(cmdline);
+                if (ends_with(cmdline, "linker64") && (ssize_t)first + 1 < n && cmdline[first + 1] == '/')
+                    if (!real_realpath()(cmdline + first + 1, exe)) exe[0] = 0;
+            }
+        }
+    }
+    return exe[0] ? exe : NULL;
 }
 
 char *realpath(const char *path, char *resolved) {
-    typedef char *(*fn)(const char *, char *);
-    static fn real;
-    if (!real) real = (fn)dlsym(RTLD_NEXT, "realpath");
     const char *exe = self_exe(path);
-    return real(exe ? exe : path, resolved);
+    return real_realpath()(exe ? exe : path, resolved);
 }
 
 ssize_t readlink(const char *path, char *buf, size_t len) {
