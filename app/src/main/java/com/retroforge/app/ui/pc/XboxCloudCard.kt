@@ -19,11 +19,8 @@ fun XboxCloudCard() {
     ) {
         CardTitle("Xbox Cloud Gaming")
         CardBody(
-            "Stream Xbox games from Microsoft's own site, xbox.com/play, improved by Better xCloud (redphx, MIT). " +
-                "Needs a Game Pass plan that includes cloud gaming and a fast connection. You sign in on Microsoft's page " +
-                "with your own account; RetroForge never sees your password. A controller works once the stream starts; " +
-                "games that support touch show touch controls. Back asks before leaving.",
+            "Stream Xbox games from xbox.com/play, improved by Better xCloud. Needs Game Pass with cloud gaming; you sign " +
+                "in on Microsoft's own page. Not made or endorsed by Microsoft.",
         )
-        CardBody("Not made or endorsed by Microsoft or Xbox. Select this card to open it.")
     }
 }

@@ -35,22 +35,28 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
     val status by viewModel.status.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
 
-    ScreenFrame(title = "PC", subtitle = "Ports of your games, and Windows games through a PC game runtime (a separate app).") {
-        PcGamesSection(library)
-        PortsSection(library)
-        FreeGamesSection(library)
-        Text("Cloud gaming", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
+    ScreenFrame(title = "PC", subtitle = "Your PC games, Xbox Cloud Gaming, ports and free games.") {
+        PcFold("Your PC games", "Steam, Epic, GOG and Amazon games through GameNative; Windows games through Winlator.", startOpen = true) {
+            PcGamesSection(library)
+        }
         XboxCloudCard()
-        Text("Windows games", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
-        val loaded = status
-        if (loaded == null) {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                CircularProgressIndicator()
-                Text("Checking this device…", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        PcFold("Ports", "Games rebuilt for Android (and Windows-only ports) that use your own copy of the game.") {
+            PortsSection(library)
+        }
+        PcFold("Free games", "${FreeGames.all.size} shareware, freeware and homebrew games to download and play.") {
+            FreeGamesSection(library)
+        }
+        PcFold("Windows games runtime", "Whether this device can run Windows games, and the DroidDeck app.") {
+            val loaded = status
+            if (loaded == null) {
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    CircularProgressIndicator()
+                    Text("Checking this device…", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            } else {
+                DeviceCard(loaded)
+                DroidDeckCard(loaded, bridge)
             }
-        } else {
-            DeviceCard(loaded)
-            DroidDeckCard(loaded, bridge)
         }
     }
 }

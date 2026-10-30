@@ -84,7 +84,6 @@ fun FreeGamesSection(library: com.retroforge.core.library.LibraryRepository) {
         }
     }
 
-    Text("Free games", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle("Free games to download") { StatusPill("${FreeGames.all.size} games", StatusTone.GOOD) }
         CardBody(
