@@ -237,7 +237,7 @@
     <string name="library_rom_patcher">ROM Patcher</string>
     <string name="library_apply_ips_bps_or_ups_patches">Apply IPS, BPS or UPS patches (ROM hacks, translations) to make a new copy. Originals are never changed.</string>
     <string name="library_rom_manager">ROM Manager</string>
-    <string name="library_tidy_duplicate_copies_and_compress_games">Tidy duplicate copies and compress games (CHD for discs, .zip for cartridges). Shows every change first and can undo it; files are set aside, not deleted.</string>
+    <string name="library_tidy_duplicate_copies_and_compress_games">Tidy duplicate copies and compress games (CHD for discs, RVZ for GameCube, Z3DS for 3DS, .zip for cartridges). Shows every change first and can undo it; files are set aside, not deleted.</string>
     <string name="library_access_lost">Access lost</string>
     <string name="library_scanning">Scanning</string>
     <string name="library_scan_failed">Scan failed</string>
@@ -317,7 +317,7 @@
     <string name="rom_manager_couldn_t_compare_too_large_or">Couldn\'t compare (too large or unreadable)</string>
     <string name="rom_manager_check_again">Check again</string>
     <string name="rom_manager_find_games_to_compress">Find games to compress</string>
-    <string name="rom_manager_disc_games_cue_bin_and_ps2">Disc games (.cue/.bin, and PS2/PSP .iso) become CHD, which RetroArch, DuckStation, Flycast, NetherSX2 and PPSSPP play directly. Cartridge ROMs become .zip. This only reads your files until you confirm.</string>
+    <string name="rom_manager_disc_games_cue_bin_and_ps2">Disc games (.cue/.bin, Dreamcast .gdi, and PS2/PSP .iso) become CHD, which RetroArch, DuckStation, Flycast, NetherSX2 and PPSSPP play directly. GameCube games become RVZ for Dolphin, 3DS games become Z3DS for Azahar, and cartridge ROMs become .zip. This only reads your files until you confirm.</string>
     <string name="rom_manager_looking_for_uncompressed_games">Looking for uncompressed games …</string>
     <string name="rom_manager_everything_that_can_be_compressed_already">Everything that can be compressed already is.</string>
     <string name="rom_manager_select_the_systems_to_compress">Select the systems to compress.</string>

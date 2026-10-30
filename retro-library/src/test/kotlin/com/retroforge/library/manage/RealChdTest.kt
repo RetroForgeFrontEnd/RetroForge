@@ -6,7 +6,7 @@ import java.io.File
 import java.io.RandomAccessFile
 
 /**
- * Opt-in: converts every .cue / .iso in RETROFORGE_CHD_TEST (a scratch folder, never a real collection) to
+ * Opt-in: converts every .cue / .gdi / .iso in RETROFORGE_CHD_TEST (a scratch folder, never a real collection) to
  * "<name>.rf.chd", verifies it and prints the data SHA-1 for comparison with `chdman info`.
  */
 class RealChdTest {
@@ -14,15 +14,18 @@ class RealChdTest {
     fun convertScratchDiscs() {
         val dir = System.getenv("RETROFORGE_CHD_TEST")?.let(::File)
         assumeTrue("RETROFORGE_CHD_TEST not set", dir != null && dir.isDirectory)
-        dir!!.walk().filter { it.extension.lowercase() in setOf("cue", "iso") }.forEach { src ->
+        dir!!.walk().filter { it.extension.lowercase() in setOf("cue", "gdi", "iso") }.forEach { src ->
             val out = File(src.parentFile, src.nameWithoutExtension + ".rf.chd")
             out.delete()
             val start = System.nanoTime()
             val written = RandomAccessFile(out, "rw").channel.use { ch ->
-                if (src.extension.equals("cue", true)) {
-                    val tracks = CueSheet.tracks(src.readText()) { File(src.parentFile, it).takeIf(File::isFile)?.length() }
+                if (src.extension.lowercase() in setOf("cue", "gdi")) {
+                    val gdi = src.extension.equals("gdi", true)
+                    val size = { name: String -> File(src.parentFile, name).takeIf(File::isFile)?.length() }
+                    val tracks = if (gdi) GdiSheet.tracks(src.readText(), size) else CueSheet.tracks(src.readText(), size)
                     CueSheet.cdStream(tracks) { File(src.parentFile, it).inputStream() }.use { data ->
-                        Chd.write(ch, data, CueSheet.logicalBytes(tracks), Chd.CD_HUNK, Chd.CD_FRAME, cd = true, tracks.mapIndexed(Chd::cdTrackMetadata))
+                        Chd.write(ch, data, CueSheet.logicalBytes(tracks), Chd.CD_HUNK, Chd.CD_FRAME, cd = true,
+                            tracks.mapIndexed(if (gdi) Chd::gdTrackMetadata else Chd::cdTrackMetadata))
                     }
                 } else {
                     src.inputStream().use { Chd.write(ch, it, src.length(), Chd.DVD_HUNK, Chd.DVD_SECTOR, cd = false, listOf(Chd.dvdMetadata)) }

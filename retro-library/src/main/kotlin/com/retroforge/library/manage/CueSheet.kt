@@ -13,7 +13,10 @@ enum class TrackType(val cueName: String, val chdName: String, val sectorSize: I
     AUDIO("AUDIO", "AUDIO", 2352),
 }
 
-/** One track as CHD stores it: [frames] frames read from [file] at [startByte] (in-file pregap included). */
+/**
+ * One track as CHD stores it: [frames] frames read from [file] at [startByte] (in-file pregap included), the last
+ * [padFrames] of them zeros that aren't in the file (GD-ROM padding before the high-density area).
+ */
 data class CdTrack(
     val type: TrackType,
     val file: String,
@@ -22,6 +25,7 @@ data class CdTrack(
     val pregap: Int,
     val pregapInData: Boolean,
     val postgap: Int,
+    val padFrames: Int = 0,
 ) {
     val paddedFrames: Int get() = (frames + Chd.CD_TRACK_PADDING - 1) / Chd.CD_TRACK_PADDING * Chd.CD_TRACK_PADDING
 }
@@ -138,7 +142,7 @@ object CueSheet {
             }
             val t = tracks[track]
             frame.fill(0)
-            if (frameInTrack < t.frames) {
+            if (frameInTrack < t.frames - t.padFrames) {
                 Chd.readFully(source!!, frame, t.type.sectorSize)
                 if (t.type == TrackType.AUDIO) {
                     var i = 0

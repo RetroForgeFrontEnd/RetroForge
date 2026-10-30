@@ -23,6 +23,7 @@ data class CompressCandidate(
 enum class CompressFormat(val label: String) {
     ZIP("ZIP"),
     CD_CHD("CHD (CD)"),
+    GD_CHD("CHD (GD-ROM)"),
     DVD_CHD("CHD (DVD)"),
     RVZ("RVZ"),
     Z3DS("Z3DS"),
@@ -81,7 +82,7 @@ object CompressPlanner {
                 game.extension == "cue" && chd -> cdJob(game, files, emptyList()).fold(jobs::add) { skip(it.message ?: "") }
                 game.extension == "m3u" && chd -> {
                     val discs = runCatching { TextFiles.read(files, game.relativePath) }.getOrNull()
-                        ?.lineSequence()?.map { it.trim().replace('\\', '/').removePrefix("./") }?.filter { it.endsWith(".cue", true) }?.toList().orEmpty()
+                        ?.lineSequence()?.map { it.trim().replace('\\', '/').removePrefix("./") }?.filter { it.endsWith(".cue", true) || it.endsWith(".gdi", true) }?.toList().orEmpty()
                     for (disc in discs) {
                         val cue = join(parentOf(game.relativePath), disc)
                         cdJob(game.copy(relativePath = cue), files, listOf(game.relativePath)).fold(jobs::add) { skip("${nameOf(cue)}: ${it.message}") }
@@ -91,7 +92,8 @@ object CompressPlanner {
                     if (game.size % Chd.DVD_SECTOR != 0L) skip("Not a whole number of 2048-byte sectors.")
                     else dvdJob(game, files).fold(jobs::add) { skip(it.message ?: "") }
                 }
-                game.extension == "gdi" -> skip("GDI discs aren't supported yet.")
+                game.extension == "gdi" && chd -> cdJob(game, files, emptyList()).fold(jobs::add) { skip(it.message ?: "") }
+                game.extension == "cdi" -> skip("CDI (DiscJuggler) images can't become CHD: chdman doesn't read them either. Flycast plays .cdi as it is.")
                 game.extension in discFiles -> Unit
                 game.size <= 0 -> Unit
                 game.system in zipSystems && "zip" in rule.extensions -> {
@@ -112,11 +114,11 @@ object CompressPlanner {
         val output = replaceExtension(game.relativePath, "chd")
         if (files.exists(output)) return Result.failure(IOException("${nameOf(output)} already exists."))
         return try {
-            val text = TextFiles.read(files, game.relativePath)
-            val tracks = CueSheet.tracks(text) { files.size(join(folder, it)) }
+            val gdi = game.relativePath.endsWith(".gdi", true)
+            val tracks = discTracks(files, game.relativePath)
             val inputs = listOf(game.relativePath) + tracks.map { join(folder, it.file) }.distinct()
             Result.success(
-                CompressJob(game.system, game.title, CompressFormat.CD_CHD, game.relativePath, game.systemFolder, inputs,
+                CompressJob(game.system, game.title, if (gdi) CompressFormat.GD_CHD else CompressFormat.CD_CHD, game.relativePath, game.systemFolder, inputs,
                     inputs.sumOf { files.size(it) ?: 0 }, output, playlists),
             )
         } catch (e: IOException) {
@@ -146,6 +148,14 @@ object CompressPlanner {
         val output = replaceExtension(game.relativePath, kind.extension)
         if (files.exists(output)) return Result.failure(IOException("${nameOf(output)} already exists."))
         return Result.success(CompressJob(game.system, game.title, CompressFormat.Z3DS, game.relativePath, game.systemFolder, listOf(game.relativePath), game.size, output))
+    }
+
+    /** The tracks of a .cue or .gdi sheet, with file names relative to the sheet's folder. */
+    fun discTracks(files: CollectionFiles, sheet: String): List<CdTrack> {
+        val folder = parentOf(sheet)
+        val text = TextFiles.read(files, sheet)
+        val size = { name: String -> files.size(join(folder, name)) }
+        return if (sheet.endsWith(".gdi", true)) GdiSheet.tracks(text, size) else CueSheet.tracks(text, size)
     }
 
     fun replaceExtension(path: String, ext: String) = path.substringBeforeLast('.') + "." + ext
@@ -230,12 +240,13 @@ class Compressor(private val files: CollectionFiles) {
                     // finish(), not close(): closing would close the channel before its size is read.
                     zip.finish()
                 }
-                CompressFormat.CD_CHD -> {
+                CompressFormat.CD_CHD, CompressFormat.GD_CHD -> {
                     val folder = parentOf(job.source)
-                    val tracks = CueSheet.tracks(TextFiles.read(files, job.source)) { files.size(join(folder, it)) }
+                    val tracks = CompressPlanner.discTracks(files, job.source)
+                    val metadata = if (job.format == CompressFormat.GD_CHD) Chd::gdTrackMetadata else Chd::cdTrackMetadata
                     CueSheet.cdStream(tracks) { files.open(join(folder, it)) }.use { data ->
                         Chd.write(channel, data, CueSheet.logicalBytes(tracks), Chd.CD_HUNK, Chd.CD_FRAME, cd = true,
-                            tracks.mapIndexed(Chd::cdTrackMetadata), onBytes, isCancelled)
+                            tracks.mapIndexed(metadata), onBytes, isCancelled)
                     }
                 }
                 CompressFormat.DVD_CHD -> files.open(job.source).use { data ->
@@ -266,7 +277,7 @@ class Compressor(private val files: CollectionFiles) {
                     if (entry.name != nameOf(job.source) || n != job.inputBytes || c.value != expected) throw IOException("the new zip didn't match the original")
                 }
             }
-            CompressFormat.CD_CHD, CompressFormat.DVD_CHD -> {
+            CompressFormat.CD_CHD, CompressFormat.GD_CHD, CompressFormat.DVD_CHD -> {
                 // The verifier recomputes the data SHA-1 from the compressed hunks and checks it against the header,
                 // which the writer filled from the original data.
                 files.openRead(partial).use { ChdVerifier.verify(it, onBytes) }

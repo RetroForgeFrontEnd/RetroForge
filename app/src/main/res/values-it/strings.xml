@@ -236,7 +236,7 @@
     <string name="library_rom_patcher">ROM Patcher</string>
     <string name="library_apply_ips_bps_or_ups_patches">Applica patch IPS, BPS o UPS (ROM hack, traduzioni) per creare una nuova copia. Gli originali non vengono mai modificati.</string>
     <string name="library_rom_manager">ROM Manager</string>
-    <string name="library_tidy_duplicate_copies_and_compress_games">Riordina le copie doppie e comprimi i giochi (CHD per i dischi, .zip per le cartucce). Mostra ogni modifica prima e può annullarla; i file vengono messi da parte, non eliminati.</string>
+    <string name="library_tidy_duplicate_copies_and_compress_games">Riordina le copie doppie e comprimi i giochi (CHD per i dischi, RVZ per GameCube, Z3DS per 3DS, .zip per le cartucce). Mostra ogni modifica prima e può annullarla; i file vengono messi da parte, non eliminati.</string>
     <string name="library_access_lost">Accesso perso</string>
     <string name="library_scanning">Scansione in corso</string>
     <string name="library_scan_failed">Scansione non riuscita</string>
@@ -316,7 +316,7 @@
     <string name="rom_manager_couldn_t_compare_too_large_or">Impossibile confrontare (troppo grande o illeggibile)</string>
     <string name="rom_manager_check_again">Controlla di nuovo</string>
     <string name="rom_manager_find_games_to_compress">Trova giochi da comprimere</string>
-    <string name="rom_manager_disc_games_cue_bin_and_ps2">I giochi su disco (.cue/.bin e .iso PS2/PSP) diventano CHD, che RetroArch, DuckStation, Flycast, NetherSX2 e PPSSPP eseguono direttamente. Le ROM delle cartucce diventano .zip. Legge soltanto i tuoi file finché non confermi.</string>
+    <string name="rom_manager_disc_games_cue_bin_and_ps2">I giochi su disco (.cue/.bin, .gdi Dreamcast e .iso PS2/PSP) diventano CHD, che RetroArch, DuckStation, Flycast, NetherSX2 e PPSSPP eseguono direttamente. I giochi GameCube diventano RVZ per Dolphin, quelli 3DS Z3DS per Azahar e le ROM delle cartucce .zip. Legge soltanto i tuoi file finché non confermi.</string>
     <string name="rom_manager_looking_for_uncompressed_games">Ricerca di giochi non compressi …</string>
     <string name="rom_manager_everything_that_can_be_compressed_already">Tutto ciò che si può comprimere è già compresso.</string>
     <string name="rom_manager_select_the_systems_to_compress">Seleziona i sistemi da comprimere.</string>

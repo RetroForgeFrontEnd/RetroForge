@@ -236,7 +236,7 @@
     <string name="library_rom_patcher">ROM Patcher</string>
     <string name="library_apply_ips_bps_or_ups_patches">Appliquez des patchs IPS, BPS ou UPS (ROM hacks, traductions) pour créer une nouvelle copie. Les originaux ne sont jamais modifiés.</string>
     <string name="library_rom_manager">ROM Manager</string>
-    <string name="library_tidy_duplicate_copies_and_compress_games">Rangez les copies en double et compressez les jeux (CHD pour les disques, .zip pour les cartouches). Chaque changement est montré avant et peut être annulé ; les fichiers sont mis de côté, pas supprimés.</string>
+    <string name="library_tidy_duplicate_copies_and_compress_games">Rangez les copies en double et compressez les jeux (CHD pour les disques, RVZ pour la GameCube, Z3DS pour la 3DS, .zip pour les cartouches). Chaque changement est montré avant et peut être annulé ; les fichiers sont mis de côté, pas supprimés.</string>
     <string name="library_access_lost">Accès perdu</string>
     <string name="library_scanning">Analyse en cours</string>
     <string name="library_scan_failed">Échec de l\'analyse</string>
@@ -316,7 +316,7 @@
     <string name="rom_manager_couldn_t_compare_too_large_or">Comparaison impossible (trop gros ou illisible)</string>
     <string name="rom_manager_check_again">Vérifier à nouveau</string>
     <string name="rom_manager_find_games_to_compress">Trouver des jeux à compresser</string>
-    <string name="rom_manager_disc_games_cue_bin_and_ps2">Les jeux sur disque (.cue/.bin, et .iso PS2/PSP) deviennent des CHD, que RetroArch, DuckStation, Flycast, NetherSX2 et PPSSPP lisent directement. Les ROMs de cartouche deviennent des .zip. Lit seulement vos fichiers jusqu\'à ce que vous confirmiez.</string>
+    <string name="rom_manager_disc_games_cue_bin_and_ps2">Les jeux sur disque (.cue/.bin, .gdi Dreamcast et .iso PS2/PSP) deviennent des CHD, que RetroArch, DuckStation, Flycast, NetherSX2 et PPSSPP lisent directement. Les jeux GameCube deviennent des RVZ pour Dolphin, les jeux 3DS des Z3DS pour Azahar et les ROMs de cartouche des .zip. Lit seulement vos fichiers jusqu'à ce que vous confirmiez.</string>
     <string name="rom_manager_looking_for_uncompressed_games">Recherche de jeux non compressés …</string>
     <string name="rom_manager_everything_that_can_be_compressed_already">Tout ce qui peut être compressé l\'est déjà.</string>
     <string name="rom_manager_select_the_systems_to_compress">Sélectionnez les systèmes à compresser.</string>
