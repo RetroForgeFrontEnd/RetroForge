@@ -45,6 +45,8 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
     val program: File = unrealGame(exe) ?: exe
     /** Drive D:, the game's own top folder, so paths the game reaches with ..\ from its .exe's folder still work. */
     private val folder: File = gameFolder(exe)
+    /** Whether this is Steam's own client (Steam method 2) rather than a game. */
+    private val steamClient = isSteamClient(program)
     /** The on-screen gamepad, seen by the game as an Xbox 360 controller once [VirtualPad.connected] is set. */
     val pad = VirtualPad(File(runtime.root, "pad.mem"))
 
@@ -77,8 +79,17 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             start()
         }
         mapDrives()
-        clearStaleSync()
+        val wineRunning = wineRunning()
+        if (!wineRunning) {
+            clearStaleSync()
+            registerTahoma()
+        }
         launchWine()
+    }
+
+    /** Whether a wineserver is running (a game from before still closing, say): then the prefix is in use. */
+    private fun wineRunning() = File("/proc").listFiles().orEmpty().any { dir ->
+        dir.name.all(Char::isDigit) && runCatching { File(dir, "cmdline").readText() }.getOrDefault("").contains("wineserver")
     }
 
     /**
@@ -86,11 +97,6 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
      * Wine finds it and waits forever at start. With no wineserver running nothing is using it, so it goes.
      */
     private fun clearStaleSync() {
-        val wineRunning = File("/proc").listFiles().orEmpty().any { dir ->
-            dir.name.all(Char::isDigit) &&
-                runCatching { File(dir, "cmdline").readText() }.getOrDefault("").contains("wineserver")
-        }
-        if (wineRunning) return
         File(runtime.imageFs, "usr/tmp").listFiles { f -> f.name.startsWith("ntsync_userspace") }.orEmpty()
             .forEach { it.delete() }
     }
@@ -138,7 +144,10 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             "WINEDEBUG" to "-all,err+module,err+loaddll",
             // Sound goes through ALSA (above); Wine's PulseAudio driver is off so it doesn't look for a server first.
             // DXVK's Direct3D DLLs and Mesa's OpenGL (installed in the prefix) before Wine's own.
-            "WINEDLLOVERRIDES" to "winemenubuilder.exe=d;winepulse.drv=d;d3d8,d3d9,d3d10core,d3d11,dxgi,opengl32=n,b",
+            // Steam's own client loads Valve's steamclient DLLs: the prefix's built-in ones only forward to a Linux
+            // Steam, and with none here Steam stops at once.
+            "WINEDLLOVERRIDES" to "winemenubuilder.exe=d;winepulse.drv=d;d3d8,d3d9,d3d10core,d3d11,dxgi,opengl32=n,b" +
+                if (steamClient) ";steamclient,steamclient64=n" else "",
             // Mesa's OpenGL draws through Vulkan (zink); GameNative's settings for the wrapper driver.
             "GALLIUM_DRIVER" to "zink",
             "LIBGL_KOPPER_DISABLE" to "true",
@@ -151,6 +160,7 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             "SDL_JOYSTICK_RAWINPUT" to "0",
             "SDL_JOYSTICK_HIDAPI" to "0",
             "SDL_JOYSTICK_WGI" to "0",
+            "PROTON_DISABLE_LSTEAMCLIENT" to if (steamClient) "1" else "",
             "DXVK_LOG_LEVEL" to "warn",
             "DXVK_LOG_PATH" to "none",
             "WINE_NO_DUPLICATE_EXPLORER" to "1",
@@ -242,6 +252,33 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             Log.i(TAG, "Wine exited with $code")
             onExit?.invoke(code)
         }
+    }
+
+    /**
+     * Windows' UI font, Tahoma (Wine's own copy), where DirectWrite finds it: in C:\windows\Fonts and the Windows NT
+     * font list. The prefix lists it only in the Windows 9x list, so DirectWrite has no Tahoma; Chromium-based windows
+     * (Steam's) then fall back to the system font, which is Tahoma again, and recurse until the stack runs out.
+     */
+    private fun registerTahoma() = runCatching {
+        val fonts = File(runtime.prefix, "drive_c/windows/Fonts").apply { mkdirs() }
+        for (name in listOf("tahoma.ttf", "tahomabd.ttf")) {
+            val copy = File(fonts, name)
+            if (!copy.isFile) File(runtime.wineDir, "share/wine/fonts/$name").takeIf { it.isFile }?.copyTo(copy)
+        }
+        val reg = File(runtime.prefix, "system.reg")
+        val text = reg.readText()
+        // The registry file writes each \ in a key's name as \\.
+        val section = text.indexOf("[Software\\\\Microsoft\\\\Windows NT\\\\CurrentVersion\\\\Fonts]")
+        if (section < 0) return@runCatching
+        val sectionEnd = text.indexOf("\n[", section).let { if (it < 0) text.length else it }
+        if (text.substring(section, sectionEnd).contains("\"Tahoma (TrueType)\"")) return@runCatching
+        var at = text.indexOf('\n', section) + 1
+        if (text.startsWith("#time=", at)) at = text.indexOf('\n', at) + 1
+        reg.writeText(
+            text.substring(0, at) +
+                "\"Tahoma (TrueType)\"=\"tahoma.ttf\"\n\"Tahoma Bold (TrueType)\"=\"tahomabd.ttf\"\n" +
+                text.substring(at),
+        )
     }
 
     /** Sets Wine's desktop colour (blue in the prefix as downloaded) to black in user.reg; Wine isn't running yet. */
@@ -338,10 +375,13 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
          * starts quietly, without its library window: the store and library pages run a phone out of memory under
          * emulation, and RetroForge shows the library itself.
          */
+        /** Steam's own client: steam.exe beside the package folder its files came from. */
+        fun isSteamClient(exe: File) = exe.name.equals("steam.exe", true) && File(exe.parentFile, "package").isDirectory
+
         fun gameArguments(exe: File): List<String> = when {
             File(exe.parentFile, exe.nameWithoutExtension + ".pck").isFile ->
                 listOf("--rendering-driver", "vulkan", "--rendering-method", "mobile")
-            exe.name.equals("steam.exe", true) && File(exe.parentFile, "package").isDirectory ->
+            isSteamClient(exe) ->
                 listOf("-inhibitbootstrap", "-no-cef-sandbox", "-cef-disable-gpu", "-cef-disable-gpu-compositing", "-silent")
             else -> emptyList()
         }
