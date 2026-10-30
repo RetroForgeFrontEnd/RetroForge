@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Build
 import android.system.Os
 import android.util.Log
+import com.winlator.cmod.alsaserver.ALSAClientConnectionHandler
+import com.winlator.cmod.alsaserver.ALSARequestHandler
 import com.winlator.cmod.sysvshm.SysVSHMConnectionHandler
 import com.winlator.cmod.sysvshm.SysVSHMRequestHandler
 import com.winlator.cmod.sysvshm.SysVSharedMemory
@@ -33,6 +35,7 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
     val xServer = XServer(screen).apply { winHandler = com.winlator.cmod.winhandler.WinHandler() }
     private var xConnector: XConnectorEpoll? = null
     private var shmConnector: XConnectorEpoll? = null
+    private var alsaConnector: XConnectorEpoll? = null
     private var sharedMemory: SysVSharedMemory? = null
     private var process: Process? = null
     val log = File(runtime.root, "last-run.log")
@@ -55,6 +58,14 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
         ).apply {
             setInitialInputBufferCapacity(262144)
             setCanReceiveAncillaryMessages(true)
+            start()
+        }
+        // Sound: Wine plays through ALSA, whose android_aserver plugin (in the image) sends it here; played with AAudio.
+        alsaConnector = XConnectorEpoll(
+            UnixSocketConfig.createSocket(rootPath, UnixSocketConfig.ALSA_SERVER_PATH),
+            ALSAClientConnectionHandler(false), ALSARequestHandler(),
+        ).apply {
+            setMultithreadedClients(true)
             start()
         }
         mapDrives()
@@ -90,11 +101,14 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             "LD_LIBRARY_PATH" to "$imageFs/usr/lib:$wine/lib:/system/lib64",
             "LD_PRELOAD" to "$imageFs/usr/lib/libandroid-sysvshm.so:${execHelper().path}",
             "ANDROID_SYSVSHM_SERVER" to imageFs + UnixSocketConfig.SYSVSHM_SERVER_PATH,
+            "ANDROID_ALSA_SERVER" to imageFs + UnixSocketConfig.ALSA_SERVER_PATH,
+            "ALSA_CONFIG_PATH" to "$imageFs/usr/share/alsa/alsa.conf:$imageFs/usr/etc/alsa/conf.d/android_aserver.conf",
+            "ALSA_PLUGIN_DIR" to "$imageFs/usr/lib/alsa-lib",
             "PREFIX" to "$imageFs/usr",
             "WINEPREFIX" to runtime.prefix.path,
             "WINEDEBUG" to "-all,err+module,err+loaddll",
-            // No sound server yet: Wine's audio drivers are switched off so nothing waits on one.
-            "WINEDLLOVERRIDES" to "winemenubuilder.exe=d;winealsa.drv=d;winepulse.drv=d",
+            // Sound goes through ALSA (above); Wine's PulseAudio driver is off so it doesn't look for a server first.
+            "WINEDLLOVERRIDES" to "winemenubuilder.exe=d;winepulse.drv=d",
             "WINE_NO_DUPLICATE_EXPLORER" to "1",
             "WINE_DISABLE_FULLSCREEN_HACK" to "1",
             "WINEESYNC" to "1",
@@ -196,6 +210,8 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
         xConnector = null
         shmConnector?.stop()
         shmConnector = null
+        alsaConnector?.stop()
+        alsaConnector = null
         sharedMemory?.deleteAll()
         sharedMemory = null
     }
