@@ -237,6 +237,7 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
 
     private fun launchWine() {
         blackDesktop()
+        hideTrayIcons()
         val screen = "${xServer.screenInfo.width}x${xServer.screenInfo.height}"
         // explorer /desktop gives Wine one desktop window the size of RetroForge's X screen; the game runs inside it
         // (without it, SDL games such as CTR Native can't open a window). Naming it anything but "shell" leaves out
@@ -297,6 +298,18 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
         val text = reg.readText()
         val black = text.replace(Regex("(?m)^\"Background\"=\"[0-9 ]+\"$"), "\"Background\"=\"0 0 0\"")
         if (black != text) reg.writeText(black)
+    }
+
+    /**
+     * No tray icons on screen: with no taskbar, Wine would show each one (Steam's, say) as a little window of its own
+     * in the corner. ShowSystray=0 for the RetroForge desktop, in user.reg; Wine isn't running yet.
+     */
+    private fun hideTrayIcons() = runCatching {
+        val reg = File(runtime.prefix, "user.reg")
+        val text = reg.readText()
+        val section = "[Software\\\\Wine\\\\Explorer\\\\Desktops\\\\RetroForge]"
+        if (text.contains(section)) return@runCatching
+        reg.appendText("\n$section ${System.currentTimeMillis() / 1000}\n\"ShowSystray\"=dword:00000000\n")
     }
 
     /**
