@@ -17,6 +17,14 @@ class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: android.content.Context) = super.attachBaseContext(com.retroforge.core.ui.AppLanguage.wrap(newBase))
 
 
+    /** Start + Select + L1 + R1 + L2 + R2 held: the language and factory-reset escape hatch. */
+    private val resetCombo = ResetCombo(this)
+
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        resetCombo.onKey(event)
+        return super.dispatchKeyEvent(event)
+    }
+
     private val sectionCommands = MutableSharedFlow<NavCommand>(
         extraBufferCapacity = 4,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,

@@ -4,6 +4,9 @@ The same guide as Settings → How to use RetroForge in the app.
 
 ## Getting started
 
+> **Reset combo, use with care:** hold **Start + Select + L1 + R1 + L2 + R2** together for two seconds on a controller. A box offers **Use the phone's language** (safe: only the language changes) or **Factory reset**.
+> **Warning:** Factory reset erases **all** of RetroForge's settings (language, theme, emulator choices, remapped buttons, hotkeys, chosen covers, save syncing, accounts and network drive sign-ins) and **can't be undone**. It asks twice first. Your game folders, library, games, saves and save states are kept.
+
 - Settings → Set up RetroForge walks you through it: pick your games folder, check your BIOS files and choose emulators. The built-in player's emulators download by themselves.
 - Your games folder can be a "roms" folder from another frontend (RetroBat, ES-DE: snes, nes, psx … inside), a single system folder, or just a folder of games: RetroForge recognises loose games by their file type (.gba, .nds, .sfc, .z64 …).
 - It can be on the phone, an SD card or a USB drive. RetroForge only reads it; nothing is changed unless you use the ROM Manager.

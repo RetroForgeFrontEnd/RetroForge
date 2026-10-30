@@ -34,6 +34,7 @@ private val topics = listOf(
         "Play together shows on the games it suits: NES, SNES, Mega Drive, Master System, PC Engine, PlayStation, Atari, arcade (FinalBurn Neo, MAME, Neo Geo, CPS) and the two-player Game Boy. Handhelds, computers and 3D systems like N64, GameCube and PS2 don't have it: their emulators drift apart between devices.",
     )),
     Topic("Getting started", listOf(
+        "RESET COMBO (use with care): hold Start + Select + L1 + R1 + L2 + R2 together for two seconds on a controller. A box offers \"Use the phone's language\" (safe: only the language changes, handy if you picked one you can't read) or \"Factory reset\". WARNING: Factory reset erases ALL of RetroForge's settings (language, theme, emulator choices, remapped buttons, hotkeys, chosen covers, save syncing, accounts and network drive sign-ins) and can't be undone. It asks twice first. Your game folders, library, games, saves and save states are kept.",
         "Settings → Set up RetroForge walks you through it: pick your games folder, check your BIOS files and choose emulators. The built-in player's emulators download by themselves.",
         "Your games folder can be a \"roms\" folder from another frontend (RetroBat, ES-DE: snes, nes, psx … inside), a single system folder, or just a folder of games: RetroForge recognises loose games by their file type (.gba, .nds, .sfc, .z64 …).",
         "It can be on the phone, an SD card or a USB drive. RetroForge only reads it; nothing is changed unless you use the ROM Manager.",
