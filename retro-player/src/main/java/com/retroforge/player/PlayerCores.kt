@@ -286,7 +286,9 @@ object PlayerCores {
 
     /** The core for this game ([preferred] when it's one of the system's), or null when the built-in player can't run it. */
     fun forGame(system: String, fileName: String, preferred: String? = null): PlayerCore? {
-        if (system !in discSystems && fileName.substringAfterLast('.', "").lowercase() in discExtensions) return null
+        // A .bin on a cartridge system is a cartridge dump (Mega Drive, Atari 2600 …), not a disc track.
+        val extension = fileName.substringAfterLast('.', "").lowercase()
+        if (system !in discSystems && extension != "bin" && extension in discExtensions) return null
         val list = choices(system)
         return list.firstOrNull { it.id == preferred } ?: list.firstOrNull()
     }

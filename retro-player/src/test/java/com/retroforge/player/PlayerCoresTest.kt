@@ -16,6 +16,9 @@ class PlayerCoresTest {
         assertEquals("mgba", PlayerCores.forGame("gba", "Advance Wars.zip")?.id)
         assertEquals("snes9x", PlayerCores.forGame("snes", "Super Metroid.sfc")?.id)
         assertEquals("desmume", PlayerCores.forGame("nds", "Mario Kart DS.nds")?.id)
+        // .bin is a cartridge dump on cartridge systems, not a disc track.
+        assertEquals(PlayerCores.forSystem("megadrive")?.id, PlayerCores.forGame("megadrive", "Sonic the Hedgehog.bin")?.id)
+        assertEquals(PlayerCores.forSystem("atari2600")?.id, PlayerCores.forGame("atari2600", "Adventure.bin")?.id)
     }
 
     @Test
