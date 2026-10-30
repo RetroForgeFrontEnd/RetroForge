@@ -318,10 +318,13 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
         fun gb(bytes: Long) = "%.1f GB".format(bytes / 1_000_000_000.0)
         // Room for the game plus a little to spare (saves, shader caches).
         val fits = size?.let { it in 1..(free - 1_000_000_000L) } == true
+        // Downloads use Wi-Fi only, unless the player lets them use mobile data (remembered for next time).
+        var useMobileData by remember { mutableStateOf(tabPrefs.getBoolean("download_mobile_data", false)) }
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { downloadFor = null },
             title = { Text(owned.name) },
             text = {
+              androidx.compose.foundation.layout.Column {
                 Text(
                     when {
                         active?.running == true ->
@@ -335,6 +338,23 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                             if (askNotificationsFirst) "\n\nRetroForge will ask once to show the download's progress in your notifications (you can say no)." else ""
                     },
                 )
+                if (fits && active?.running != true) {
+                    androidx.compose.foundation.layout.Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(top = 12.dp),
+                    ) {
+                        androidx.compose.material3.Switch(checked = useMobileData, onCheckedChange = {
+                            useMobileData = it
+                            tabPrefs.edit().putBoolean("download_mobile_data", it).apply()
+                        })
+                        Text(
+                            if (useMobileData) "Uses mobile data when there's no Wi-Fi (this download is ${gb(size!!)})"
+                            else "Wi-Fi only: waits for Wi-Fi if there's none",
+                            modifier = Modifier.padding(start = 12.dp),
+                        )
+                    }
+                }
+              }
             },
             confirmButton = {
                 if (fits && active?.running != true) androidx.compose.material3.TextButton(onClick = {
@@ -342,7 +362,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                         tabPrefs.edit().putBoolean("asked_notifications", true).apply()
                         askNotifications.launch(android.Manifest.permission.POST_NOTIFICATIONS)
                     }
-                    com.retroforge.pcplayer.steam.SteamDownloadService.start(context, owned.appId, owned.name, folder)
+                    com.retroforge.pcplayer.steam.SteamDownloadService.start(context, owned.appId, owned.name, folder, allowMobile = useMobileData)
                     downloadFor = null
                 }) { Text("Download ${gb(size!!)}") }
             },
