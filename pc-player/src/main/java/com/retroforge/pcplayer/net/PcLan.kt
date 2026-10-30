@@ -1,6 +1,5 @@
 package com.retroforge.pcplayer.net
 
-import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.io.Closeable
@@ -151,8 +150,8 @@ class PcLan private constructor(private val configFile: File, private val myName
             link.send('W', HOST, index, ByteArray(0))
             publish()
             readLink(link)
-        } catch (e: Exception) {
-            Log.i(TAG, "Player left: ${e.message}")
+        } catch (_: Exception) {
+            // The player left (or never said hello).
         } finally {
             link.close()
             if (link.index != 0) {
@@ -479,7 +478,6 @@ class PcLan private constructor(private val configFile: File, private val myName
     }
 
     companion object {
-        private const val TAG = "PcLan"
         /** The port between devices (TCP and UDP). The retro player's netplay uses 55450–55451. */
         const val PORT = 55460
         const val HOST = 1

@@ -186,6 +186,9 @@ char *if_indextoname(unsigned index, char *name) {
     return real_if_indextoname(index, name);
 }
 
+// Marks a list made below: its end entry's name (bionic's is NULL).
+static char our_list[] = "";
+
 // The interface list built from getifaddrs() (one entry per name), for when bionic's netlink query is refused.
 struct if_nameindex *if_nameindex(void) {
     REAL(if_nameindex);
@@ -213,18 +216,18 @@ struct if_nameindex *if_nameindex(void) {
         snprintf(list[n].if_name, IFNAMSIZ, "%s", ifa->ifa_name);
         n++;
     }
+    list[n].if_name = our_list;
     freeifaddrs(addrs);
     return list;
 }
 
 void if_freenameindex(struct if_nameindex *list) {
     REAL(if_freenameindex);
-    // Ours is one calloc block whose names sit right after the entries; bionic's is too, but frees names apart.
+    // Ours is one block (names included); bionic's names are freed one by one.
     if (!list) return;
     int count = 0;
     while (list[count].if_index) count++;
-    char *names = (char *)(list + count + 1);
-    if (count == 0 || list[0].if_name == names) free(list);
+    if (list[count].if_name == our_list) free(list);
     else real_if_freenameindex(list);
 }
 
@@ -278,10 +281,14 @@ int ioctl(int fd, int request, ...) {
         }
     }
     int ret = real_ioctl(fd, request, arg);
-    if (ret != 0 && req == SIOCGIFHWADDR && ifr && strcmp(ifr->ifr_name, "lo") != 0) {
+    if (ret != 0 && req == SIOCGIFHWADDR && ifr) {
         memset(&ifr->ifr_hwaddr, 0, sizeof(ifr->ifr_hwaddr));
-        ifr->ifr_hwaddr.sa_family = ARPHRD_ETHER;
-        fake_mac(ifr->ifr_name, (unsigned char *)ifr->ifr_hwaddr.sa_data);
+        if (strcmp(ifr->ifr_name, "lo") == 0) {
+            ifr->ifr_hwaddr.sa_family = ARPHRD_LOOPBACK;
+        } else {
+            ifr->ifr_hwaddr.sa_family = ARPHRD_ETHER;
+            fake_mac(ifr->ifr_name, (unsigned char *)ifr->ifr_hwaddr.sa_data);
+        }
         errno = 0;
         return 0;
     }
