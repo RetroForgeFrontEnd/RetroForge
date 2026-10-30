@@ -25,6 +25,7 @@ enum class CompressFormat(val label: String) {
     CD_CHD("CHD (CD)"),
     DVD_CHD("CHD (DVD)"),
     RVZ("RVZ"),
+    Z3DS("Z3DS"),
 }
 
 /** One conversion: [inputs] (all files of the game) become [output]; [playlists] are .m3u files naming [source]. */
@@ -49,6 +50,7 @@ object CompressPlanner {
     private val alreadyCompressed = setOf("zip", "7z", "chd", "cso", "pbp", "rvz", "gcz", "wbfs", "wia", "ciso", "gz", "squashfs", "rar", "xz", "zst")
     private val discFiles = setOf("cue", "gdi", "ccd", "toc", "m3u", "iso", "img", "bin", "mdf", "mds", "cdi")
     private val gameCube = setOf("gamecube", "gc")
+    private val threeDs = setOf("3ds", "n3ds")
     /**
      * Cartridge systems whose RetroArch cores load .zip (or RetroArch unpacks it for them). Not every system that
      * lists .zip: zipping Visual Pinball tables, 3DS games or ScummVM folders would break them.
@@ -75,6 +77,7 @@ object CompressPlanner {
                 game.system in gameCube && game.extension in setOf("iso", "gcm") -> rvzJob(game, files).fold(jobs::add) { skip(it.message ?: "") }
                 game.system == "wii" && game.extension in setOf("iso", "gcm") ->
                     skip("Wii discs need Nintendo's key to convert, which RetroForge doesn't include. Use Dolphin's converter: long-press the game in Dolphin and choose Convert File.")
+                game.system in threeDs && game.extension in setOf("3ds", "cci", "cxi", "3dsx") -> z3dsJob(game, files).fold(jobs::add) { skip(it.message ?: "") }
                 game.extension == "cue" && chd -> cdJob(game, files, emptyList()).fold(jobs::add) { skip(it.message ?: "") }
                 game.extension == "m3u" && chd -> {
                     val discs = runCatching { TextFiles.read(files, game.relativePath) }.getOrNull()
@@ -133,6 +136,14 @@ object CompressPlanner {
         val header = runCatching { files.openRead(game.relativePath).use { Rvz.read(it, 0, 0x20) } }.getOrNull()
         if (header == null || !Rvz.isGameCube(header)) return Result.failure(IOException("Not a GameCube disc (Wii discs need Dolphin's converter)."))
         return Result.success(CompressJob(game.system, game.title, CompressFormat.RVZ, game.relativePath, game.systemFolder, listOf(game.relativePath), game.size, output))
+    }
+
+    private fun z3dsJob(game: CompressCandidate, files: CollectionFiles): Result<CompressJob> {
+        val header = runCatching { files.openRead(game.relativePath).use { Rvz.read(it, 0, 0x200) } }.getOrNull()
+        val kind = header?.let(Z3ds::kindOf) ?: return Result.failure(IOException("Not a 3DS cartridge, NCCH or 3DSX file Azahar can compress."))
+        val output = replaceExtension(game.relativePath, kind.extension)
+        if (files.exists(output)) return Result.failure(IOException("${nameOf(output)} already exists."))
+        return Result.success(CompressJob(game.system, game.title, CompressFormat.Z3DS, game.relativePath, game.systemFolder, listOf(game.relativePath), game.size, output))
     }
 
     fun replaceExtension(path: String, ext: String) = path.substringBeforeLast('.') + "." + ext
@@ -231,6 +242,10 @@ class Compressor(private val files: CollectionFiles) {
                 CompressFormat.RVZ -> files.openRead(job.source).use { input ->
                     Rvz.write(channel, input, job.inputBytes, onBytes, isCancelled)
                 }
+                CompressFormat.Z3DS -> files.openRead(job.source).use { input ->
+                    val kind = Z3ds.kindOf(Rvz.read(input, 0, 0x200)) ?: throw IOException("not a 3DS file Azahar can compress")
+                    Z3ds.write(channel, input, job.inputBytes, kind, onBytes, isCancelled)
+                }
             }
             channel.size()
         }
@@ -256,6 +271,9 @@ class Compressor(private val files: CollectionFiles) {
             }
             CompressFormat.RVZ -> files.openRead(partial).use { rvz ->
                 files.open(job.source).use { original -> RvzVerifier.verify(rvz, original, onBytes) }
+            }
+            CompressFormat.Z3DS -> files.openRead(partial).use { z ->
+                files.open(job.source).use { original -> Z3dsVerifier.verify(z, original, onBytes) }
             }
         }
     }

@@ -324,6 +324,7 @@
     <string name="rom_manager_a_zip_is_usually_30_60" formatted="false">A .zip is usually 30–60% smaller.</string>
     <string name="rom_manager_a_chd_is_usually_30_60" formatted="false">A CHD is usually 30–60% smaller; audio CD tracks shrink less.</string>
     <string name="rom_manager_an_rvz_is_usually_30_70" formatted="false">An RVZ is usually 30–70% smaller; Dolphin plays it directly.</string>
+    <string name="rom_manager_a_z3ds_is_usually_20_60" formatted="false">A compressed 3DS game is usually 20–60% smaller; Azahar plays it directly.</string>
     <string name="rom_manager_sort_loose_games_into_system_folders">Sort loose games into system folders</string>
     <string name="rom_manager_finds_games_outside_a_folder_for">Finds games outside a folder for their system (loose files, a Downloads or Extras folder) and shows where each would go: the folder you already use for that system, or a new one named like RetroBat and ES-DE. This only reads your files.</string>
     <string name="rom_manager_looking_for_loose_games">Looking for loose games …</string>

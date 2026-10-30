@@ -323,6 +323,7 @@
     <string name="rom_manager_a_zip_is_usually_30_60" formatted="false">Um .zip costuma ser 30–60% menor.</string>
     <string name="rom_manager_a_chd_is_usually_30_60" formatted="false">Um CHD costuma ser 30–60% menor; faixas de áudio de CD encolhem menos.</string>
     <string name="rom_manager_an_rvz_is_usually_30_70" formatted="false">Um RVZ costuma ser 30–70% menor; o Dolphin joga-o diretamente.</string>
+    <string name="rom_manager_a_z3ds_is_usually_20_60" formatted="false">Um jogo de 3DS comprimido costuma ser 20–60% menor; o Azahar joga-o diretamente.</string>
     <string name="rom_manager_sort_loose_games_into_system_folders">Organizar jogos soltos em pastas de sistema</string>
     <string name="rom_manager_finds_games_outside_a_folder_for">Encontra jogos fora da pasta do seu sistema (arquivos soltos, uma pasta Downloads ou Extras) e mostra para onde cada um iria: a pasta que você já usa para esse sistema, ou uma nova com o nome usado no RetroBat e no ES-DE. Só lê seus arquivos.</string>
     <string name="rom_manager_looking_for_loose_games">Procurando jogos soltos …</string>

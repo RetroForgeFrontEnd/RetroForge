@@ -299,6 +299,7 @@ private fun CompressTab(viewModel: RomManagerViewModel) {
                     if (jobs.any { it.format == CompressFormat.ZIP }) CardBody(stringResource(R.string.rom_manager_a_zip_is_usually_30_60))
                     if (jobs.any { it.format == CompressFormat.CD_CHD || it.format == CompressFormat.DVD_CHD }) CardBody(stringResource(R.string.rom_manager_a_chd_is_usually_30_60))
                     if (jobs.any { it.format == CompressFormat.RVZ }) CardBody(stringResource(R.string.rom_manager_an_rvz_is_usually_30_70))
+                    if (jobs.any { it.format == CompressFormat.Z3DS }) CardBody(stringResource(R.string.rom_manager_a_z3ds_is_usually_20_60))
                 }
             }
             if (report.skipped.isNotEmpty()) {
