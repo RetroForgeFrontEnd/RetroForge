@@ -78,7 +78,7 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
         val (option, emulator) = chosen
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { problem = viewModel.playStandalone(game, root, option, emulator) }) {
             CardTitle(stringResource(R.string.play_play))
-            CardBody("In ${option.label}, your choice for ${viewModel.systemName(game.system)}.")
+            CardBody(stringResource(R.string.play_in_your_choice_for, option.label, viewModel.systemName(game.system)))
         }
     }
 
@@ -87,15 +87,14 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
             plan.cores.forEachIndexed { index, core ->
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { problem = viewModel.play(game, plan, core) }) {
                     CardTitle(if (index == 0 && chosen == null && !builtInMain) "Play" else "Play in RetroArch with ${core.name}")
-                    if (index == 0) CardBody("In RetroArch with the ${core.name} core.")
+                    if (index == 0) CardBody(stringResource(R.string.play_in_retroarch_with_the_core, core.name))
                     if (core.id in RetroArchCores.needsBios) CardBody(stringResource(R.string.play_this_core_needs_bios_files_in))
                 }
             }
             FocusCard(modifier = Modifier.fillMaxWidth()) {
                 play?.let { CardBody("Played ${plural(it.playCount, "time")}, last on ${DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(it.lastPlayedAt))}.") }
                 CardBody(
-                    "First time with a core? If RetroArch says the core is missing, open RetroArch → Online Updater → Core Downloader and get " +
-                        "\"${plan.cores.first().name}\". To come back here, quit the game from RetroArch's menu.",
+                    stringResource(R.string.play_first_time_with_a_core_if, plan.cores.first().name),
                 )
             }
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -175,9 +174,9 @@ private fun BuiltInCard(
                 is CoreState.Failed -> "Couldn't download the ${core.name} emulator last time (${state.reason}). Select to try again."
             },
         )
-        if (core.needsBios) CardBody("${core.name} needs this system's BIOS file.")
+        if (core.needsBios) CardBody(stringResource(R.string.play_needs_this_system_s_bios_file, core.name))
         if (game.system == "saturn") CardBody(stringResource(R.string.play_saturn_in_the_built_in_player))
-        if (played > 0) CardBody("Time played here: ${Playtime.format(played)}.")
+        if (played > 0) CardBody(stringResource(R.string.play_time_played_here, Playtime.format(played)))
     }
     if (main && com.retroforge.app.player.Netplay.supports(game.system)) {
         // Netplay: the same game on two devices, one hosting (player 1), the other joining (player 2).
@@ -224,7 +223,7 @@ private fun StandaloneSection(
     val multiFile = game.fileName.substringAfterLast('.').lowercase() in setOf("cue", "m3u", "gdi", "ccd", "toc")
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle(stringResource(R.string.play_other_emulators))
-        CardBody("Free standalone apps that play ${viewModel.systemName(game.system)} games. RetroForge doesn't include them: install the ones you want.")
+        CardBody(stringResource(R.string.play_free_standalone_apps_that_play_games, viewModel.systemName(game.system)))
         if (multiFile) CardBody(stringResource(R.string.play_this_game_is_made_of_several))
         if (!viewModel.hasObtainium()) CardBody(stringResource(R.string.play_tip_obtainium_installs_emulators_from_their))
     }
@@ -232,11 +231,11 @@ private fun StandaloneSection(
         val installed = remember(emulator.id, resumes) { viewModel.installedComponent(emulator) } != null
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (installed) {
-                FocusChip("Play with ${option.label}", onClick = { onProblem(viewModel.playStandalone(game, root, option, emulator)) })
+                FocusChip(stringResource(R.string.play_play_with, option.label), onClick = { onProblem(viewModel.playStandalone(game, root, option, emulator)) })
                 if (choice == emulator.id) FocusChip(stringResource(R.string.play_stop_using_by_default), onClick = { viewModel.setEmulatorChoice(game.system, null) })
                 else FocusChip(stringResource(R.string.play_use_by_default), onClick = { viewModel.setEmulatorChoice(game.system, emulator.id) })
             } else {
-                FocusChip("Get ${emulator.name} (free)", onClick = {
+                FocusChip(stringResource(R.string.play_get_free, emulator.name), onClick = {
                     if (!viewModel.getEmulator(emulator)) onProblem(LaunchProblem.StartFailed("Couldn't open ${emulator.page}"))
                 })
             }

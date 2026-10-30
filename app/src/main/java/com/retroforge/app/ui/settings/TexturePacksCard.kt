@@ -93,7 +93,7 @@ private fun TexturePacks(title: String, body: String, packs: File) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             FocusChip(stringResource(R.string.texture_packs_add_a_texture_pack_folder), onClick = { pick.launch(null) })
             installed.forEach { name ->
-                FocusChip("Remove $name", onClick = {
+                FocusChip(stringResource(R.string.network_drives_remove, name), onClick = {
                     scope.launch { withContext(Dispatchers.IO) { File(packs, name).deleteRecursively() }; changes++ }
                 })
             }
@@ -120,7 +120,7 @@ private fun DownloadPacks(cacheDir: File) {
         CardBody(if (installed.isEmpty()) "None downloaded yet." else "Downloaded: " + installed.joinToString { "${it.name.removeSuffix(".hts").removeSuffix("_HIRESTEXTURES")} (${it.length() / 1_000_000} MB)" })
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             TexturePackDownloads.packs.forEach { pack ->
-                FocusChip("Download ${pack.game}", enabled = !busy, onClick = {
+                FocusChip(stringResource(R.string.pc_games_download, pack.game), enabled = !busy, onClick = {
                     busy = true
                     status = "Finding ${pack.game}'s latest release…"
                     scope.launch {

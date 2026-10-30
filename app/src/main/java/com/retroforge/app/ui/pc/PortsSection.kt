@@ -90,7 +90,7 @@ fun PortsSection(library: LibraryRepository) {
         Text(stringResource(R.string.ports_all_ports), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
         rest.forEach { PortCard(it, null, library) }
     } else {
-        if (rest.isNotEmpty()) FocusChip("Show all ${rest.size} other ports", onClick = { showAll = true })
+        if (rest.isNotEmpty()) FocusChip(stringResource(R.string.ports_show_all_other_ports, rest.size), onClick = { showAll = true })
     }
 }
 
@@ -106,9 +106,9 @@ private fun PortCard(port: GamePort, owned: GameEntity?, library: LibraryReposit
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             StatusPill(port.kindLabel, StatusTone.NEUTRAL)
             if (port.status == "experimental") StatusPill(stringResource(R.string.ports_experimental), StatusTone.CAUTION)
-            if (owned != null) StatusPill("You have ${owned.title}", StatusTone.GOOD)
+            if (owned != null) StatusPill(stringResource(R.string.ports_you_have, owned.title), StatusTone.GOOD)
         }
-        CardBody("Needs: ${port.needs}")
+        CardBody(stringResource(R.string.ports_needs, port.needs))
         if (port.isWindows) {
             CardBody(
                 stringResource(R.string.ports_how_download_the_windows_version_from),

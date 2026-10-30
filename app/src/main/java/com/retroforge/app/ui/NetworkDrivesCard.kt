@@ -82,18 +82,16 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
         folder.trim(), user.trim(), password)
 
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("$what on a network drive")
+        CardTitle(stringResource(R.string.network_drives_on_a_network_drive, what))
         CardBody(
-            "Play ${what.lowercase()} kept in a shared folder on your PC or NAS, over Wi-Fi, without copying them to the phone. " +
-                "Tap Add a network drive, then Find on my network, pick your computer and one of its shared folders, then Add. " +
-                "How to share a folder on the PC: Settings → Help and about → How to use RetroForge.",
+            stringResource(R.string.network_drives_play_kept_in_a_shared_folder, what.lowercase()),
         )
         if (shares.isNotEmpty()) CardBody("Added: " + shares.joinToString { "${it.name} (${it.address})" })
         if (!adding) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 FocusChip(stringResource(R.string.network_drives_add_a_network_drive), onClick = { adding = true; status = null })
                 shares.forEach { share ->
-                    FocusChip("Remove ${share.name}", onClick = { NetworkDrives.remove(context, share.id); changes++ })
+                    FocusChip(stringResource(R.string.network_drives_remove, share.name), onClick = { NetworkDrives.remove(context, share.id); changes++ })
                 }
             }
         } else {
@@ -178,7 +176,7 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
     popup?.let { (text, fraction, left) ->
         androidx.compose.material3.AlertDialog(
             onDismissRequest = {},
-            title = { Text("Adding your ${what.lowercase()}") },
+            title = { Text(stringResource(R.string.network_drives_adding_your, what.lowercase())) },
             text = {
                 androidx.compose.foundation.layout.Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(text)

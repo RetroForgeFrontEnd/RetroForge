@@ -219,7 +219,7 @@ fun ThemesScreen(viewModel: ThemesViewModel) {
 @Composable
 private fun PendingCard(p: PendingImport, dark: Boolean, viewModel: ThemesViewModel) {
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("From \"${p.source}\"")
+        CardTitle(stringResource(R.string.themes_from, p.source))
         if (p.theme == null) {
             StatusPill(stringResource(R.string.themes_no_colours_found), StatusTone.CAUTION)
             CardBody(stringResource(R.string.themes_this_theme_doesn_t_define_its))

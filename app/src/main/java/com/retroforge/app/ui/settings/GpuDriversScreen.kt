@@ -71,9 +71,7 @@ fun GpuDriversScreen() {
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle(stringResource(R.string.gpu_drivers_using_a_driver))
             CardBody(
-                "Download a driver below; it's saved to Download/$FOLDER. Then, in an emulator with a GPU driver manager " +
-                    "(Eden, Dolphin, NetherSX2 and others), open its graphics settings, choose to install a driver and pick the zip. " +
-                    "Winlator and GameNative come with Turnip and choose it in each container's settings.",
+                stringResource(R.string.gpu_drivers_download_a_driver_below_it_s, FOLDER),
             )
             CardBody(stringResource(R.string.gpu_drivers_try_one_driver_at_a_time))
         }
@@ -141,7 +139,7 @@ fun GpuDriversScreen() {
                         CardBody("${file.release} · ${file.source} · ${file.published} · ${"%.1f".format(file.size / 1_000_000.0)} MB")
                         CardBody(progress[file.url]?.let { if (it.endsWith("%")) "Downloading… $it" else it } ?: "Select to download.")
                     }
-                    if (canUse) FocusChip("Use ${file.release} in RetroForge", onClick = {
+                    if (canUse) FocusChip(stringResource(R.string.gpu_drivers_use_in_retroforge, file.release), onClick = {
                         if (progress[file.url]?.endsWith("%") == true) return@FocusChip
                         progress[file.url] = "0%"
                         scope.launch {

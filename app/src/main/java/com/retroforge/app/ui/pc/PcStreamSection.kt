@@ -89,7 +89,7 @@ fun PcStreamSection() {
             val fresh = list.filterNot { it.address in known }
             if (list.isEmpty()) CardBody(stringResource(R.string.pc_stream_no_pcs_answered_type_its_address))
             else if (fresh.isEmpty()) CardBody(stringResource(R.string.pc_stream_every_pc_that_answered_is_already))
-            else ChipRow { fresh.forEach { pc -> FocusChip("Add ${pc.name}", onClick = { add(pc.address) }) } }
+            else ChipRow { fresh.forEach { pc -> FocusChip(stringResource(R.string.pc_stream_add, pc.name), onClick = { add(pc.address) }) } }
         }
         ControllerTextField(
             value = address, onValueChange = { address = it }, singleLine = true,
@@ -128,8 +128,7 @@ private fun HostCard(host: StreamHost, streaming: PcStreaming, onChanged: () -> 
         if (s != null && !s.online) CardBody(stringResource(R.string.pc_stream_it_didn_t_answer_check_the))
         pin?.let {
             CardBody(
-                "PIN: $it\nOn the PC, open Sunshine's page (https://localhost:47990), go to PIN, and type $it with any device " +
-                    "name. With GeForce Experience, type it in the box that appears. Waiting for the PC…",
+                stringResource(R.string.pc_stream_pin_on_the_pc_open_sunshine, it, it),
             )
         }
         ChipRow {

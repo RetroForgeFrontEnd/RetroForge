@@ -1370,7 +1370,7 @@ class PlayerActivity : ComponentActivity() {
             fps?.let { shown ->
                 val target = video?.fps?.toInt() ?: 60
                 Text(
-                    "$shown / $target fps",
+                    stringResource(R.string.player_fps, shown, target),
                     color = if (shown >= target - 2) Color(0xFF9FE3B0) else Color(0xFFFFC56B),
                     fontSize = 13.sp,
                     modifier = Modifier.align(Alignment.TopStart).padding(top = 36.dp, start = 12.dp)
@@ -1386,11 +1386,11 @@ class PlayerActivity : ComponentActivity() {
             when (val p = phase) {
                 Phase.Loading -> Centered {
                     CircularProgressIndicator()
-                    Text("Starting $title…", color = Color.White, modifier = Modifier.padding(top = 16.dp))
+                    Text(stringResource(R.string.player_starting, title), color = Color.White, modifier = Modifier.padding(top = 16.dp))
                     loadingDetail?.let { Text(it, color = Color(0xFFBBBBC4), fontSize = 13.sp, modifier = Modifier.padding(top = 6.dp)) }
                 }
                 is Phase.Failed -> Centered {
-                    Text("Couldn't start $title", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.player_couldn_t_start, title), color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     Text(p.message, color = Color(0xFFDDDDDD), textAlign = TextAlign.Center, modifier = Modifier.padding(vertical = 16.dp))
                     Button(onClick = { finish() }) { Text(stringResource(R.string.player_back_to_retroforge)) }
                 }
@@ -1462,7 +1462,7 @@ class PlayerActivity : ComponentActivity() {
                 when (menuPage) {
                     MenuPage.MAIN -> {
                         Text(title, color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-                        Text("Paused · $coreName", color = Color(0xFFAAAAB4), fontSize = 13.sp)
+                        Text(stringResource(R.string.player_paused, coreName), color = Color(0xFFAAAAB4), fontSize = 13.sp)
                         notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
                         MenuButton(onClick = { closeMenu() }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_resume)) }
                         MenuButton(onClick = {
@@ -1492,7 +1492,7 @@ class PlayerActivity : ComponentActivity() {
                                 val next = (current + 1) % count
                                 notice = if (NativePlayer.insertDisc(next)) "Disc ${next + 1} inserted" else "Couldn't change disc"
                                 closeMenu()
-                            }, modifier = wide) { Text("Disc ${current + 1} of $count · change to disc ${(current + 1) % count + 1}") }
+                            }, modifier = wide) { Text(stringResource(R.string.player_disc_of_change_to_disc, current + 1, count, (current + 1) % count + 1)) }
                         }
                         if (system in PlayerCores.keyboardSystems) {
                             MenuButton(onClick = { closeMenu(); keyboard.show() }, modifier = wide) { Text(stringResource(R.string.player_keyboard)) }
@@ -1574,8 +1574,8 @@ class PlayerActivity : ComponentActivity() {
                     MenuPage.PICTURE -> {
                         Text(stringResource(R.string.player_picture_2), color = Color.White, fontWeight = FontWeight.Bold)
                         MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
-                        MenuButton(onClick = { chooseShape(shape.next()) }, modifier = wide) { Text("Screen shape: ${shape.label}") }
-                        MenuButton(onClick = { chooseFilter(filter.next()) }, modifier = wide) { Text("Screen filter: ${filter.label}") }
+                        MenuButton(onClick = { chooseShape(shape.next()) }, modifier = wide) { Text(stringResource(R.string.player_screen_shape, shape.label)) }
+                        MenuButton(onClick = { chooseFilter(filter.next()) }, modifier = wide) { Text(stringResource(R.string.player_screen_filter, filter.label)) }
                         MenuButton(onClick = { chooseLook(!consoleLook) }, modifier = wide) { Text("Console look: ${if (consoleLook) "On" else "Off"}") }
                         if (Bezels.repoFor(system) != null) {
                             if (bezels.downloaded(system)) MenuButton(onClick = { chooseBezel(!bezelOn) }, modifier = wide) {
@@ -1593,7 +1593,7 @@ class PlayerActivity : ComponentActivity() {
                             Text("Resolution: ${scale}×" + if (scale == 1) " (original)" else "")
                         }
                         if (coreId in PlayerCores.vulkanCores) MenuButton(onClick = { chooseGraphics() }, modifier = wide) {
-                            Text("Graphics: ${PlayerCores.graphicsLabel(coreId, vulkanOn)}")
+                            Text(stringResource(R.string.player_graphics, PlayerCores.graphicsLabel(coreId, vulkanOn)))
                         }
                         MenuButton(onClick = { chooseVr(!vr) }, modifier = wide) {
                             Text("Cardboard VR: ${if (vr) "On" else "Off"}" + if (PlayerCores.sideBySide(coreId)) " (3D)" else "")
@@ -1606,14 +1606,14 @@ class PlayerActivity : ComponentActivity() {
                     MenuPage.SOUND_CONTROLS -> {
                         Text(stringResource(R.string.player_sound_and_controls_2), color = Color.White, fontWeight = FontWeight.Bold)
                         MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
-                        MenuButton(onClick = { chooseVolume() }, modifier = wide) { Text("Volume: ${(volume * 100).toInt()}%") }
+                        MenuButton(onClick = { chooseVolume() }, modifier = wide) { Text(stringResource(R.string.player_volume, (volume * 100).toInt())) }
                         if (hasTouch) MenuButton(onClick = { chooseTouch(!touchEnabled) }, modifier = wide) {
                             Text("Touch controls: ${if (touchEnabled) "On" else "Off"}")
                         }
                         MenuButton(onClick = { menuPage = MenuPage.CONTROLS }, modifier = wide) { Text(stringResource(R.string.player_remap_buttons)) }
                     }
                     MenuPage.EMULATOR -> {
-                        Text("Emulator · $coreName", color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                        Text(stringResource(R.string.player_emulator_2, coreName), color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                         MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         MenuButton(onClick = {
                             coreOptions = NativePlayer.options()
@@ -1661,7 +1661,7 @@ class PlayerActivity : ComponentActivity() {
                             }
                             if (cheat.custom) {
                                 MenuButton(onClick = { updateCheats(cheats.filterIndexed { j, _ -> j != i }) }, modifier = wide) {
-                                    Text("Remove \"${cheat.description}\"", fontSize = 13.sp)
+                                    Text(stringResource(R.string.player_remove, cheat.description), fontSize = 13.sp)
                                 }
                             }
                         }
@@ -1680,7 +1680,7 @@ class PlayerActivity : ComponentActivity() {
                         }
                     }
                     MenuPage.OPTIONS -> {
-                        Text("$coreName settings", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.player_settings, coreName), color = Color.White, fontWeight = FontWeight.Bold)
                         Text(stringResource(R.string.player_select_a_setting_to_change_it), color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
                         MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         if (coreOptions.isEmpty()) Text(stringResource(R.string.player_this_emulator_has_no_settings), color = Color(0xFFDDDDDD))
@@ -1724,7 +1724,7 @@ class PlayerActivity : ComponentActivity() {
                                 saveTouchMap(if (next == default) touchMap - label else touchMap + (label to next))
                             }, modifier = wide) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text("On-screen $label", fontSize = 14.sp)
+                                    Text(stringResource(R.string.player_on_screen, label), fontSize = 14.sp)
                                     Text("presses " + (buttons.firstOrNull { it.second == now }?.first ?: "?"), color = Color(0xFFFF8A1F), fontSize = 13.sp)
                                 }
                             }

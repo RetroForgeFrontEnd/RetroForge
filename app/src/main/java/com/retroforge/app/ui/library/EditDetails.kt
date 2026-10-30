@@ -78,7 +78,7 @@ fun EditDetailsScreen(viewModel: LibraryViewModel, gameId: Long, onDone: () -> U
             FocusChip(stringResource(R.string.network_drives_cancel), onClick = onDone)
         }
         edit?.let { e ->
-            CardBody("Scanned title: ${e.scanned.title}")
+            CardBody(stringResource(R.string.edit_details_scanned_title, e.scanned.title))
             FocusChip(stringResource(R.string.edit_details_reset_to_the_scanned_details), onClick = {
                 scope.launch {
                     viewModel.resetDetails(g)

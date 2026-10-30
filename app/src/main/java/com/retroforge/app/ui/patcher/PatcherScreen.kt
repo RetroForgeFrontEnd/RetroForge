@@ -82,7 +82,7 @@ fun PatcherScreen(viewModel: PatcherViewModel) {
                 CardBody(stringResource(R.string.patcher_select_to_choose_a_rom_zip))
             } else {
                 CardBody(if (rom.file.name == rom.pickedName) rom.pickedName else "${rom.file.name} (from ${rom.pickedName})")
-                CardBody("${rom.file.bytes.size} bytes · CRC32 ${hex(rom.crc32)}")
+                CardBody(stringResource(R.string.patcher_bytes_crc32, rom.file.bytes.size, hex(rom.crc32)))
             }
         }
 
@@ -92,8 +92,8 @@ fun PatcherScreen(viewModel: PatcherViewModel) {
         }
         state.choice?.let { choice ->
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                CardTitle("Which patch from ${choice.archiveName}?")
-                CardBody("This archive holds ${choice.candidates.size} patches. If a hack's readme names one, choose that.")
+                CardTitle(stringResource(R.string.patcher_which_patch_from, choice.archiveName))
+                CardBody(stringResource(R.string.patcher_this_archive_holds_patches_if_a, choice.candidates.size))
             }
             choice.candidates.forEachIndexed { i, candidate ->
                 FocusChip(
@@ -147,7 +147,7 @@ private fun PatchCard(index: Int, patch: PickedPatch, state: PatcherState, viewM
                 if (patch.file.name != patch.pickedName) append(" · from ${patch.pickedName}")
             },
         )
-        patch.info.expectedSourceCrc32?.let { CardBody("Needs ROM CRC32 ${hex(it)} (${patch.info.expectedSourceSize} bytes)") }
+        patch.info.expectedSourceCrc32?.let { CardBody(stringResource(R.string.patcher_needs_rom_crc32_bytes, hex(it), patch.info.expectedSourceSize.toString())) }
         if (index == 0) {
             when (state.match) {
                 RomMatch.MATCH -> StatusPill(stringResource(R.string.patcher_rom_matches_this_patch), StatusTone.GOOD)
@@ -159,7 +159,7 @@ private fun PatchCard(index: Int, patch: PickedPatch, state: PatcherState, viewM
         } else if (patch.info.format != PatchFormat.IPS) {
             CardBody(stringResource(R.string.patcher_checked_against_the_result_of_the))
         }
-        patch.info.metadata?.takeIf { it.isNotBlank() }?.let { CardBody("Patch info: ${it.trim().take(300)}") }
+        patch.info.metadata?.takeIf { it.isNotBlank() }?.let { CardBody(stringResource(R.string.patcher_patch_info, it.trim().take(300))) }
 
         if (readme != null) {
             val lines = readme.text.trim().lines()

@@ -120,7 +120,7 @@ fun ManualViewer(uri: Uri, title: String, onClose: () -> Unit) {
         Box(Modifier.fillMaxSize().background(Color(0xFF111114))) {
             val renderer = opened?.first
             if (renderer == null) {
-                CardBody("Opening the manual of $title…")
+                CardBody(stringResource(R.string.game_extras_opening_the_manual_of, title))
             } else {
                 BoxWithConstraints(Modifier.fillMaxSize()) {
                     val widthPx = with(LocalDensity.current) { maxWidth.toPx().toInt() }

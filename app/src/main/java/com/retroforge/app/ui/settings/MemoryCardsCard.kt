@@ -126,7 +126,7 @@ fun MemoryCardsCard() {
         AlertDialog(
             onDismissRequest = { deleting = null },
             title = { Text(stringResource(R.string.memory_cards_delete_this_save)) },
-            text = { Text("\"${save.title}\" will be removed from ${shown?.nameWithoutExtension}'s memory card. This can't be undone (unless you have a backup).") },
+            text = { Text(stringResource(R.string.memory_cards_will_be_removed_from_s_memory, save.title, shown?.nameWithoutExtension.toString())) },
             confirmButton = {
                 TextButton(onClick = {
                     val file = shown

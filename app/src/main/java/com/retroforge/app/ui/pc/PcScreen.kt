@@ -107,7 +107,7 @@ private fun DeviceCard(status: PcStatus) {
         StatusPill(label, tone)
         CardBody(status.support.reason)
         CardBody("GPU: ${status.gpu.glRenderer ?: "unknown"}")
-        status.gpu.socModel?.let { CardBody("Chip: $it") }
+        status.gpu.socModel?.let { CardBody(stringResource(R.string.pc_chip, it)) }
         CardBody(stringResource(R.string.pc_based_on_droiddeck_s_published_requirements))
     }
 }
@@ -140,8 +140,7 @@ private fun DroidDeckCard(status: PcStatus, bridge: DroidDeckBridge) {
         ) {
             CardTitle(stringResource(R.string.pc_pc_game_runtime)) { StatusPill(stringResource(R.string.pc_not_installed), StatusTone.NEUTRAL) }
             CardBody(
-                "RetroForge works with DroidDeck, a free, separately developed app. Install it only from its official releases page: ${DroidDeckBridge.RELEASES_URL}. " +
-                    "Select this card to open it in a browser.",
+                stringResource(R.string.pc_retroforge_works_with_droiddeck_a_free, DroidDeckBridge.RELEASES_URL),
             )
             openError?.let { CardBody(it) }
         }

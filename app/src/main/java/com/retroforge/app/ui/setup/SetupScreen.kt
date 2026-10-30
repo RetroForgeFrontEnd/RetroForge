@@ -97,7 +97,7 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
                     val cores = builtIn.map { it.second }.distinctBy { it.id }
                     val ready = cores.count { (coreStates[it.id] ?: viewModel.coreState(it.id)) == com.retroforge.player.CoreState.Ready }
                     if (ready == cores.size) StatusPill(stringResource(R.string.pc_stream_ready), StatusTone.GOOD)
-                    else StatusPill("Getting ${ready + 1} of ${cores.size}…", StatusTone.CAUTION)
+                    else StatusPill(stringResource(R.string.setup_getting_of, ready + 1, cores.size), StatusTone.CAUTION)
                     CardBody("Built in, nothing to install: ${builtIn.map { viewModel.systemName(it.first) }.sorted().joinToString()}.")
                     CardBody(stringResource(R.string.setup_retroforge_downloads_these_emulators_for_you))
                     val failed = cores.filter { (coreStates[it.id] ?: viewModel.coreState(it.id)) is com.retroforge.player.CoreState.Failed }
@@ -113,7 +113,7 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
                 CardTitle("RetroArch, for ${plural(needRetroArch.size, "more system")}")
                 val i = install
                 if (i == null) StatusPill(stringResource(R.string.pc_not_installed), StatusTone.CAUTION) else StatusPill("Installed ${i.versionName.orEmpty()}".trim(), StatusTone.GOOD)
-                CardBody("${needRetroArch.map(viewModel::systemName).sorted().joinToString()} play in RetroArch, a free emulator app RetroForge starts for you.")
+                CardBody(stringResource(R.string.setup_play_in_retroarch_a_free_emulator, needRetroArch.map(viewModel::systemName).sorted().joinToString()))
                 if (i == null) {
                     CardBody(stringResource(R.string.setup_install_it_from_google_play_or))
                 } else {
@@ -160,7 +160,7 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
             }
         }
         if (bios.checking) {
-            CardBody("Scanning your BIOS files… ${(bios.progress * 100).toInt()}%")
+            CardBody(stringResource(R.string.setup_scanning_your_bios_files, (bios.progress * 100).toInt()))
             LinearProgressIndicator(progress = { bios.progress }, modifier = Modifier.fillMaxWidth())
         }
         bios.error?.let { CardBody(it) }
@@ -176,10 +176,10 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
                         BiosNeed.OPTIONAL -> "optional"
                     }
                     when (report.status) {
-                        BiosStatus.OK -> StatusPill("Found ($need)", StatusTone.GOOD)
-                        BiosStatus.UNVERIFIED -> StatusPill("Found, version not recognised ($need)", StatusTone.CAUTION)
-                        BiosStatus.PARTIAL -> StatusPill("Some files missing ($need)", StatusTone.CAUTION)
-                        BiosStatus.MISSING -> StatusPill("Missing ($need)", if (report.rule.need == BiosNeed.REQUIRED) StatusTone.BAD else StatusTone.NEUTRAL)
+                        BiosStatus.OK -> StatusPill(stringResource(R.string.setup_found, need), StatusTone.GOOD)
+                        BiosStatus.UNVERIFIED -> StatusPill(stringResource(R.string.setup_found_version_not_recognised, need), StatusTone.CAUTION)
+                        BiosStatus.PARTIAL -> StatusPill(stringResource(R.string.setup_some_files_missing, need), StatusTone.CAUTION)
+                        BiosStatus.MISSING -> StatusPill(stringResource(R.string.setup_missing_2, need), if (report.rule.need == BiosNeed.REQUIRED) StatusTone.BAD else StatusTone.NEUTRAL)
                     }
                     report.found.forEach { f ->
                         CardBody("${f.foundAs}${if (f.foundAs != f.wanted.baseName) " → ${f.wanted.name}" else ""}${if (f.verified) "" else " (unrecognised version)"}")
@@ -222,9 +222,9 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
                 bios.copyResult?.let { r ->
                     FocusCard(modifier = Modifier.fillMaxWidth()) {
                         StatusPill(if (r.failed.isEmpty()) "Done" else "Finished with problems", if (r.failed.isEmpty()) StatusTone.GOOD else StatusTone.CAUTION)
-                        if (r.copied.isNotEmpty()) CardBody("Copied: ${r.copied.joinToString()}")
-                        if (r.alreadyThere.isNotEmpty()) CardBody("Already there, left alone: ${r.alreadyThere.joinToString()}")
-                        r.failed.forEach { (name, why) -> CardBody("Couldn't copy $name: $why") }
+                        if (r.copied.isNotEmpty()) CardBody(stringResource(R.string.setup_copied, r.copied.joinToString()))
+                        if (r.alreadyThere.isNotEmpty()) CardBody(stringResource(R.string.setup_already_there_left_alone, r.alreadyThere.joinToString()))
+                        r.failed.forEach { (name, why) -> CardBody(stringResource(R.string.setup_couldn_t_copy, name, why)) }
                     }
                 }
                 if (settings?.retroArchSystemUri != null) {

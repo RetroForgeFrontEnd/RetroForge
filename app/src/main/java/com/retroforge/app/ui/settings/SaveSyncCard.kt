@@ -96,7 +96,7 @@ fun SaveSyncCard() {
             kind == "folder" -> prefs.getString("uri", null)?.let { Uri.parse(it).lastPathSegment?.substringAfter(':')?.ifBlank { "the folder you chose" } }
             else -> null
         }
-        where?.let { CardBody("Syncing with: $it") }
+        where?.let { CardBody(stringResource(R.string.save_sync_syncing_with, it)) }
         progress?.let { p ->
             CardBody("${(p * 100).toInt()}%")
             LinearProgressIndicator(progress = { p }, modifier = Modifier.fillMaxWidth())
@@ -109,7 +109,7 @@ fun SaveSyncCard() {
             )
             ChipRow {
                 drives.forEach { share ->
-                    FocusChip("Use ${share.name}", onClick = {
+                    FocusChip(stringResource(R.string.save_sync_use, share.name), onClick = {
                         edit {
                             putBoolean("on", true); putString("kind", "network"); putString("share", share.id)
                             putString("folder", folderName.trim().trim('/', '\\'))

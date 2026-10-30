@@ -18,7 +18,7 @@ import com.retroforge.core.ui.Wordmark
 fun AboutScreen() {
     ScreenFrame(title = null) {
         Wordmark()
-        CardBody("Version ${BuildConfig.VERSION_NAME}")
+        CardBody(stringResource(R.string.about_version, BuildConfig.VERSION_NAME))
 
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle(stringResource(R.string.about_who_made_it))

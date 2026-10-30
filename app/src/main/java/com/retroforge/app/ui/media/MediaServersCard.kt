@@ -123,7 +123,7 @@ fun MediaServersCard(prefs: SharedPreferences) {
                 if (videos.isNotEmpty()) {
                     // A folder called "3D Films" (or with SBS or 3D in its name) holds 3D films, whatever their titles say.
                     val folder3d = path.any { (_, title) -> Films.parse("", "$title.mkv", 0).is3d }
-                    CardBody("${videos.size} to watch:")
+                    CardBody(stringResource(R.string.media_servers_to_watch, videos.size))
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         videos.forEach { v -> ServerFilm(v, folder3d) { play(context, v, it) } }
                     }

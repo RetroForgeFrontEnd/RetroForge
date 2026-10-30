@@ -89,7 +89,7 @@ fun FreeGamesSection(library: com.retroforge.core.library.LibraryRepository) {
     }
 
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle(stringResource(R.string.free_games_free_games_to_download)) { StatusPill("${FreeGames.all.size} games", StatusTone.GOOD) }
+        CardTitle(stringResource(R.string.free_games_free_games_to_download)) { StatusPill(stringResource(R.string.free_games_games, FreeGames.all.size), StatusTone.GOOD) }
         CardBody(
             stringResource(R.string.free_games_games_their_makers_let_anyone_share),
         )

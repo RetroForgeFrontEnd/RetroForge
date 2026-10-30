@@ -142,29 +142,26 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
             is Pending.MoveDuplicates -> {
                 CardTitle("Move ${if (pending.count == 1) "1 copy" else "${pending.count} copies"}?")
                 CardBody(
-                    "They go to the $DUPLICATES_FOLDER folder at the top of ${root.name}, keeping their folder structure. " +
-                        "gamelist.xml entries are pointed at the copy you keep, after saving the original as gamelist.xml.retroforge-backup. " +
-                        "Nothing is deleted; delete $DUPLICATES_FOLDER yourself once you're happy.",
+                    stringResource(R.string.rom_manager_they_go_to_the_folder_at, DUPLICATES_FOLDER, root.name, DUPLICATES_FOLDER),
                 )
             }
             is Pending.Compress -> {
                 CardTitle("Compress ${plural(pending.count, "game")} (${formatBytes(pending.bytes)})?")
                 CardBody(
-                    "Each game is compressed, then read back and checked. Only then do its original files move to the $ORIGINALS_FOLDER folder " +
-                        "and gamelist.xml / .m3u entries point at the new file. This can take a long time for disc games.",
+                    stringResource(R.string.rom_manager_each_game_is_compressed_then_read, ORIGINALS_FOLDER),
                 )
             }
             is Pending.DeleteGame -> {
-                CardTitle("Delete ${pending.game.title}?")
+                CardTitle(stringResource(R.string.rom_manager_delete, pending.game.title))
                 CardBody(
                     "${if (pending.parts.size == 1) "Its file moves" else "Its ${pending.parts.size} files move"} to the $DELETED_FOLDER folder and its gamelist.xml entry is removed. " +
                         "You can undo this from History until you empty $DELETED_FOLDER with Free up space.",
                 )
                 pending.parts.take(6).forEach { CardBody("• $it") }
-                if (pending.parts.size > 6) CardBody("… and ${pending.parts.size - 6} more")
+                if (pending.parts.size > 6) CardBody(stringResource(R.string.rom_manager_and_more, pending.parts.size - 6))
             }
             is Pending.Purge -> {
-                CardTitle("Delete ${pending.summary.folder} permanently?") { StatusPill(stringResource(R.string.rom_manager_this_can_t_be_undone), StatusTone.BAD) }
+                CardTitle(stringResource(R.string.rom_manager_delete_permanently, pending.summary.folder)) { StatusPill(stringResource(R.string.rom_manager_this_can_t_be_undone), StatusTone.BAD) }
                 CardBody(
                     "${plural(pending.summary.files, "file")} (${formatBytes(pending.summary.bytes)}) will be deleted for good. " +
                         "History entries that would need them can no longer be undone.",
@@ -185,21 +182,21 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
             is Pending.Undo -> {
                 CardTitle(stringResource(R.string.rom_manager_undo_this))
                 CardBody(pending.log.summary)
-                CardBody("Files move back where they were and gamelist.xml / .m3u changes are reversed. Files RetroForge made go to $DUPLICATES_FOLDER rather than being deleted.")
+                CardBody(stringResource(R.string.rom_manager_files_move_back_where_they_were, DUPLICATES_FOLDER))
             }
         }
         CardBody(stringResource(R.string.rom_manager_if_another_frontend_uses_this_folder))
         if (!canWrite) {
             StatusPill(stringResource(R.string.rom_manager_needs_permission_to_change_files), StatusTone.CAUTION)
             CardBody(
-                "So far RetroForge can only read ${root.name}. Choose the same folder in the next screen and tap \"Use this folder\", then \"Allow\".",
+                stringResource(R.string.rom_manager_so_far_retroforge_can_only_read, root.name),
             )
-            if (refused) CardBody("That was a different folder. Please choose ${root.name} itself.")
+            if (refused) CardBody(stringResource(R.string.rom_manager_that_was_a_different_folder_please, root.name))
         }
     }
     ChipRow {
         if (canWrite) FocusChip(if (pending is Pending.Purge) "Delete permanently" else "Yes, go ahead", onClick = viewModel::confirm)
-        else FocusChip("Allow changes to ${root.name}", onClick = {
+        else FocusChip(stringResource(R.string.rom_manager_allow_changes_to, root.name), onClick = {
             val rootUri = root.treeUri.toUri()
             pickFolder.launch(DocumentsContract.buildDocumentUriUsingTree(rootUri, DocumentsContract.getTreeDocumentId(rootUri)))
         })
@@ -339,7 +336,7 @@ private fun SortTab(viewModel: RomManagerViewModel) {
                 FocusCard(modifier = Modifier.fillMaxWidth()) {
                     Text("Into $folder: ${plural(list.size, "game")}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                     list.take(5).forEach { CardBody("${it.title}  (from ${it.path.substringBeforeLast('/', "the top folder")})") }
-                    if (list.size > 5) CardBody("… and ${list.size - 5} more")
+                    if (list.size > 5) CardBody(stringResource(R.string.rom_manager_and_more, list.size - 5))
                 }
             }
             ChipRow {
@@ -369,7 +366,7 @@ private fun MultiDiscTab(viewModel: RomManagerViewModel) {
                 FocusCard(modifier = Modifier.fillMaxWidth()) {
                     Text("${viewModel.systemName(system)}: ${plural(jobs.size, "game")}", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                     jobs.take(5).forEach { CardBody("${it.title}: ${plural(it.discs.size, "disc")}") }
-                    if (jobs.size > 5) CardBody("… and ${jobs.size - 5} more")
+                    if (jobs.size > 5) CardBody(stringResource(R.string.rom_manager_and_more, jobs.size - 5))
                 }
             }
             if (report.skipped.isNotEmpty()) {
@@ -399,18 +396,18 @@ private fun HistoryTab(viewModel: RomManagerViewModel, root: RootEntity) {
             holding.forEach { CardBody("${it.folder}: ${plural(it.files, "file")} · ${formatBytes(it.bytes)}") }
         }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            holding.forEach { h -> FocusChip("Delete ${h.folder} permanently", onClick = { viewModel.askPurge(h) }) }
+            holding.forEach { h -> FocusChip(stringResource(R.string.rom_manager_delete_permanently_2, h.folder), onClick = { viewModel.askPurge(h) }) }
         }
     }
     val mine = logs.filter { it.rootId == root.id }
-    if (mine.isEmpty()) CardBody("Nothing has been changed in ${root.name} yet.")
+    if (mine.isEmpty()) CardBody(stringResource(R.string.rom_manager_nothing_has_been_changed_in_yet, root.name))
     val format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
     mine.forEach { log ->
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             CardTitle(when (log.kind) { "compress" -> "Compressed"; "delete" -> "Deleted"; "playlists" -> "Playlists made"; else -> "Duplicates tidied" })
             CardBody(log.summary)
             CardBody(format.format(Date(log.startedAt)) + " · ${plural(log.steps.size, "change")}" + if (!log.finished) " · interrupted" else "")
-            log.undoneAt?.let { StatusPill("Undone ${format.format(Date(it))}", StatusTone.NEUTRAL) }
+            log.undoneAt?.let { StatusPill(stringResource(R.string.rom_manager_undone, format.format(Date(it))), StatusTone.NEUTRAL) }
             if (log.undoneAt == null && log.purgedAt != null) StatusPill(stringResource(R.string.rom_manager_can_t_be_undone_its_files), StatusTone.NEUTRAL)
         }
         if (log.undoneAt == null && log.purgedAt == null) FocusChip(stringResource(R.string.rom_manager_undo), onClick = { viewModel.askUndo(log) })

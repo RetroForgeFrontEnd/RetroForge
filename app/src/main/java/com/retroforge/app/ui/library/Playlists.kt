@@ -148,7 +148,7 @@ fun PlaylistScreen(viewModel: LibraryViewModel, playlistId: Long, onOpenGame: (L
             }
         } else if (confirmDelete) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
-                CardTitle("Delete \"${p.name}\"?")
+                CardTitle(stringResource(R.string.playlists_delete, p.name))
                 CardBody(stringResource(R.string.playlists_only_the_playlist_goes_the_games))
             }
             ChipRow {

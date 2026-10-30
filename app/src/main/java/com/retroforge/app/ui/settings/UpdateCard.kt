@@ -82,7 +82,7 @@ private fun UpdateOffer(update: AppUpdate.Available, onDismiss: () -> Unit) {
     var downloading by remember { mutableStateOf(false) }
     var problem by remember { mutableStateOf<String?>(null) }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
-        CardTitle("RetroForge ${update.version} is out") { StatusPill(stringResource(R.string.hacks_update), StatusTone.GOOD) }
+        CardTitle(stringResource(R.string.update_retroforge_is_out, update.version)) { StatusPill(stringResource(R.string.hacks_update), StatusTone.GOOD) }
         if (update.notes.isNotBlank()) CardBody(update.notes)
         ChipRow {
             FocusChip(if (downloading) "Downloading…" else "Download and install", enabled = !downloading, onClick = {

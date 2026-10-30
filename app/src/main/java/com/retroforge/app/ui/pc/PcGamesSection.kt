@@ -242,7 +242,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                 }
             }
         }
-        copying?.let { CardBody("Copying the game… $it%") }
+        copying?.let { CardBody(stringResource(R.string.pc_games_copying_the_game, it)) }
         if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
         status?.let { CardBody(it) }
     }
@@ -365,7 +365,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
                     }
                     com.retroforge.pcplayer.steam.SteamDownloadService.start(context, owned.appId, owned.name, folder, allowMobile = useMobileData)
                     downloadFor = null
-                }) { Text("Download ${gb(size!!)}") }
+                }) { Text(stringResource(R.string.pc_games_download, gb(size!!))) }
             },
             dismissButton = { androidx.compose.material3.TextButton(onClick = { downloadFor = null }) { Text(stringResource(R.string.retro_forge_root_close)) } },
         )
@@ -378,7 +378,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
         val folder = remember(game.key) { pc.windowsGameFolder(game) }
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { exeFor = null },
-            title = { Text("Which .exe starts ${game.title}?") },
+            title = { Text(stringResource(R.string.pc_games_which_exe_starts, game.title)) },
             text = {
                 androidx.compose.foundation.layout.Column(
                     Modifier.verticalScroll(androidx.compose.foundation.rememberScrollState()),
@@ -415,9 +415,7 @@ fun PcGamesSection(library: com.retroforge.core.library.LibraryRepository) {
             title = { Text(stringResource(R.string.pc_games_download_the_pc_player)) },
             text = {
                 Text(
-                    "RetroForge's PC player needs its Windows runtime first: Wine (Proton 11), FEX and a Linux image built " +
-                        "for Android. That's about 280 MB to download and about 1.8 GB on this device. It downloads once, " +
-                        "with a percentage, the first time ${game.title} starts.",
+                    stringResource(R.string.pc_games_retroforge_s_pc_player_needs_its, game.title),
                 )
             },
             confirmButton = {

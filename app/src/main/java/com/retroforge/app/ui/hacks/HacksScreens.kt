@@ -136,7 +136,7 @@ private fun HackCard(hack: ListedHack, onClick: () -> Unit) {
         Text(entry.title, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis)
         Text(entry.baseGame, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.secondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
         if (entry.authors.isNotEmpty()) {
-            Text("by ${entry.authors.joinToString()}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(stringResource(R.string.hacks_by, entry.authors.joinToString()), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
         Text(
             entry.summary,
@@ -194,7 +194,7 @@ fun HackDetailScreen(viewModel: HacksViewModel, key: String, onOpenPatcher: () -
                 }
             }) {
                 CardTitle(stringResource(R.string.hacks_download_and_patch))
-                CardBody("Gets the latest patch from the hack's GitHub releases ($repo) and opens the patcher with it. Then pick your ${entry.baseGame} ROM.")
+                CardBody(stringResource(R.string.hacks_gets_the_latest_patch_from_the, repo, entry.baseGame))
                 status?.let { CardBody(it) }
                 if (downloading) com.retroforge.app.ui.DownloadBar(progress)
             }
@@ -202,7 +202,7 @@ fun HackDetailScreen(viewModel: HacksViewModel, key: String, onOpenPatcher: () -
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { openError = openPage(context, entry.pageUrl) }) {
             CardTitle(stringResource(R.string.hacks_open_official_page))
-            CardBody("Read the full description, check which ROM version it needs, and download the patch there. ${entry.pageUrl}")
+            CardBody(stringResource(R.string.hacks_read_the_full_description_check_which, entry.pageUrl))
             openError?.let { CardBody(it) }
         }
 
@@ -299,7 +299,7 @@ fun CatalogueSourcesScreen(viewModel: HacksViewModel) {
             if (!confirming) {
                 FocusChip(stringResource(R.string.hacks_download_catalogue), onClick = { confirming = true }, enabled = url.isNotBlank() && !state.busy)
             } else {
-                CardBody("Download the catalogue from ${url.trim()}? (up to 2 MB)")
+                CardBody(stringResource(R.string.hacks_download_the_catalogue_from_up_to, url.trim()))
                 ChipRow {
                     FocusChip(stringResource(R.string.hacks_yes_download), onClick = { viewModel.addFromUrl(url); confirming = false; url = "" })
                     FocusChip(stringResource(R.string.network_drives_cancel), onClick = { confirming = false })

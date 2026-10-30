@@ -174,7 +174,7 @@ fun SettingsScreen(
 
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenThemes) {
                     CardTitle(stringResource(R.string.settings_themes))
-                    CardBody("Change RetroForge's colours, fonts and layout, with previews (brightness: ${settings.themeMode.name.lowercase()}). You can also import a theme, or the colours of one you use in ES-DE or RetroBat.")
+                    CardBody(stringResource(R.string.settings_change_retroforge_s_colours_fonts_and, settings.themeMode.name.lowercase()))
                 }
 
                 viewPrefs?.let { prefs ->
@@ -205,7 +205,7 @@ fun SettingsScreen(
 
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenAbout) {
                     CardTitle(stringResource(R.string.settings_about_retroforge))
-                    CardBody("Version ${BuildConfig.VERSION_NAME}, made by Darren Glancy.")
+                    CardBody(stringResource(R.string.settings_version_made_by_darren_glancy, BuildConfig.VERSION_NAME))
                     CardBody(stringResource(R.string.settings_who_made_it_what_it_does))
                 }
 
@@ -249,7 +249,7 @@ private fun SteamGridDbKeyCard(saved: String?, onSave: (String?) -> Unit) {
                 stringResource(R.string.settings_thousands_of_fan_made_covers_to),
             )
         } else {
-            StatusPill("API key saved (…${saved.takeLast(4)})", StatusTone.GOOD)
+            StatusPill(stringResource(R.string.settings_api_key_saved, saved.takeLast(4)), StatusTone.GOOD)
             CardBody(stringResource(R.string.settings_use_change_cover_on_any_game))
         }
         ControllerTextField(
@@ -298,7 +298,7 @@ private fun HotkeysCard(enabled: Boolean, menu: HotkeyCombo, quit: HotkeyCombo, 
         CardTitle(stringResource(R.string.settings_retroarch_buttons))
         if (enabled) {
             StatusPill(stringResource(R.string.settings_on), StatusTone.GOOD)
-            CardBody("In games started from RetroForge: ${quit.label} quits back to RetroForge, ${menu.label} opens RetroArch's menu (save states, disc swap under Disc Control, shaders).")
+            CardBody(stringResource(R.string.settings_in_games_started_from_retroforge_quits, quit.label, menu.label))
         } else {
             StatusPill(stringResource(R.string.settings_off_retroarch_s_own_settings), StatusTone.NEUTRAL)
         }
@@ -341,7 +341,7 @@ private fun ScreenScraperCard(savedUser: String?, onSave: (String?, String?) -> 
         } else if (savedUser.isNullOrBlank()) {
             StatusPill(stringResource(R.string.settings_no_account_lower_limits), StatusTone.NEUTRAL)
         } else {
-            StatusPill("Signed in as $savedUser", StatusTone.GOOD)
+            StatusPill(stringResource(R.string.settings_signed_in_as, savedUser), StatusTone.GOOD)
         }
         CardBody(
             stringResource(R.string.settings_optional_sign_in_with_a_free),
@@ -441,7 +441,7 @@ private fun NetplayCard() {
             label = { Text(stringResource(R.string.settings_your_name_for_other_players)) },
             modifier = Modifier.fillMaxWidth(),
         )
-        FocusChip("Input delay: $delay frames", onClick = {
+        FocusChip(stringResource(R.string.settings_input_delay_frames, delay), onClick = {
             val all = com.retroforge.app.player.Netplay.delays
             delay = all[(all.indexOf(delay) + 1) % all.size]
             com.retroforge.app.player.Netplay.setDelay(context, delay)

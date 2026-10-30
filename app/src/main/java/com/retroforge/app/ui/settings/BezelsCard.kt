@@ -71,7 +71,7 @@ fun BezelsCard(systems: List<Pair<String, String>>, title: String = "Bezels (The
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             // Every system in the library at once, so every scanned game gets its bezel.
             val missing = offered.filter { it.first !in downloaded.map { d -> d.first } }
-            if (missing.size > 1) FocusChip("Download all (${missing.size} systems)", enabled = !busy, onClick = {
+            if (missing.size > 1) FocusChip(stringResource(R.string.bezels_download_all_systems, missing.size), enabled = !busy, onClick = {
                 busy = true
                 progress = 0f
                 scope.launch {

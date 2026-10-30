@@ -98,7 +98,7 @@ fun HomeScreen(
         } else {
             Wordmark(fontSize = 32.sp)
         }
-        StatusPill("Preview ${BuildConfig.VERSION_NAME}", StatusTone.CAUTION)
+        StatusPill(stringResource(R.string.home_preview, BuildConfig.VERSION_NAME), StatusTone.CAUTION)
         if (systems.isNotEmpty()) {
             // A random game from the whole collection: a way back into games you forgot you had.
             val scope = androidx.compose.runtime.rememberCoroutineScope()

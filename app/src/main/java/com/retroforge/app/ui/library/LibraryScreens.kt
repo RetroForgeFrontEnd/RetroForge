@@ -89,9 +89,9 @@ fun RetroScreen(
             val ownArt by viewModel.ownArt.collectAsStateWithLifecycle()
             CanvasSystemsView(systems.map { SystemSummary(it.id, it.name, it.games, it.hacks) }, systemArt, style, onOpenSystem)
             androidx.compose.foundation.layout.FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FocusChip("Tiles: ${style.label}", onClick = viewModel::nextTileStyle)
+                FocusChip(stringResource(R.string.library_tiles, style.label), onClick = viewModel::nextTileStyle)
                 val layout by viewModel.gameLayout.collectAsStateWithLifecycle()
-                FocusChip("Games: ${layout.label}", onClick = viewModel::nextGameLayout)
+                FocusChip(stringResource(R.string.library_games, layout.label), onClick = viewModel::nextGameLayout)
                 FocusChip(
                     if (ownArt == null) "Use my own theme folder" else "Artwork: ${ownArt!!.themeName.ifBlank { "your theme" }} · change",
                     onClick = { pickArt.launch(null) },
@@ -138,16 +138,16 @@ fun RetroScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
             if (query.trim().length >= 2) {
-                if (results.isEmpty()) CardBody("No games match \"${query.trim()}\".")
+                if (results.isEmpty()) CardBody(stringResource(R.string.library_no_games_match, query.trim()))
                 results.take(30).forEach { game ->
                     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { onOpenGame(game.id) }) {
                         Text(game.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
                         CardBody(listOfNotNull(viewModel.systemName(game.system), tagLine(game)).joinToString(" · "))
                         // With several folders (e.g. internal storage and an SD card), show which one this copy is in.
-                        if (rootsById.size > 1) rootsById[game.rootId]?.let { CardBody("In ${it.name}") }
+                        if (rootsById.size > 1) rootsById[game.rootId]?.let { CardBody(stringResource(R.string.library_in, it.name)) }
                     }
                 }
-                if (results.size > 30) CardBody("Showing 30 of ${results.size}+ matches. Type more to narrow it down.")
+                if (results.size > 30) CardBody(stringResource(R.string.library_showing_30_of_matches_type_more, results.size))
             }
 
             if (recent.isNotEmpty()) {
@@ -209,7 +209,7 @@ fun LibraryFoldersScreen(viewModel: LibraryViewModel) {
                     else -> Unit
                 }
                 if (!access) CardBody(stringResource(R.string.library_android_no_longer_lets_retroforge_read))
-                root.lastScanAt?.let { CardBody("Last scanned ${DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(it))}") }
+                root.lastScanAt?.let { CardBody(stringResource(R.string.library_last_scanned, DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(it)))) }
                 if (root.layout == "UNRECOGNISED") CardBody(stringResource(R.string.library_no_system_folders_were_found_here))
                 val unrecognised = root.unrecognisedFolders.lines().filter { it.isNotBlank() }
                 if (unrecognised.isNotEmpty()) {
@@ -488,7 +488,7 @@ private fun Box3dBatch(viewModel: LibraryViewModel, games: List<GameEntity>) {
     })
     done?.let { n ->
         val p = if (games.isEmpty()) 1f else n.toFloat() / games.size
-        CardBody("${(p * 100).toInt()}% (${n} of ${games.size} games)")
+        CardBody(stringResource(R.string.library_of_games, (p * 100).toInt(), n, games.size))
         LinearProgressIndicator(progress = { p }, modifier = Modifier.fillMaxWidth())
     }
     result?.let { CardBody(it) }

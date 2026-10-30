@@ -133,7 +133,7 @@ fun CoverPickerScreen(viewModel: LibraryViewModel, gameId: Long, hasSteamGridDbK
                     if (matches.isEmpty()) CardBody(if (covers.hasLibretroSource(g.system)) "No box art found for this game." else "No free box art source for this system yet.")
                     CandidateRow(matches.map { Candidate(it.url, it.url, it.url, it.name, CoverRepository.SOURCE_LIBRETRO, null) }, previews, covers, ::choose)
                 },
-                onFailure = { CardBody("Couldn't reach the box-art server: ${it.message}") },
+                onFailure = { CardBody(stringResource(R.string.cover_picker_couldn_t_reach_the_box_art, it.message.toString())) },
             )
         }
 
@@ -248,7 +248,7 @@ private fun CandidateRow(candidates: List<Candidate>, previews: MutableMap<Strin
                             modifier = Modifier.fillMaxWidth().aspectRatio(2f / 3f).padding(8.dp))
                     }
                     Text(c.label, style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 6.dp))
-                    c.author?.let { Text("by $it", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                    c.author?.let { Text(stringResource(R.string.hacks_by, it), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                 }
             }
         }

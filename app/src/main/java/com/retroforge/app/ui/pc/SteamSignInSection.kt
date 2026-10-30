@@ -114,7 +114,7 @@ fun SteamSignInSection() {
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle(stringResource(R.string.steam_sign_in_steam_for_retroforge_s_pc_player))
         if (signedInAs != null) {
-            CardBody("Signed in as $signedInAs. Steam games you own start in RetroForge's PC player with your account's ticket from Steam.")
+            CardBody(stringResource(R.string.steam_sign_in_signed_in_as_steam_games_you, signedInAs.toString()))
             ChipRow {
                 FocusChip(stringResource(R.string.settings_sign_out), onClick = { account.signOut(); signedInAs = null })
             }
