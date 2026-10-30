@@ -1366,6 +1366,11 @@ JNIEXPORT void JNI(setSurface)(JNIEnv *env, jobject, jobject surface) {
     p.windowCv.wait_for(lock, std::chrono::seconds(2), [&] { return !p.windowPending; });
 }
 
+// The custom Vulkan driver chosen in Settings (empty strings: the device's own). Set before openCore.
+JNIEXPORT void JNI(setGpuDriver)(JNIEnv *env, jobject, jstring hookDir, jstring driverDir, jstring driverName) {
+    vkr::setDriver(str(env, hookDir), str(env, driverDir), str(env, driverName));
+}
+
 JNIEXPORT void JNI(setVr)(JNIEnv *, jobject, jboolean on) {
     if (P) P->vr = on;
 }

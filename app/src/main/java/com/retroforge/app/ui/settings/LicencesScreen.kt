@@ -57,6 +57,15 @@ private val notices = listOf(
             "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND.",
     ),
     Notice(
+        "libadrenotools and linkernsbypass (loading Turnip drivers in the built-in player)", "BSD 2-Clause",
+        "Copyright (c) 2021, Billy Laws. Redistribution and use in source and binary forms, with or without modification, are permitted " +
+            "provided that: redistributions of source code retain the above copyright notice, this list of conditions and the following " +
+            "disclaimer; redistributions in binary form reproduce them in the documentation and/or other materials provided with the " +
+            "distribution. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS \"AS IS\" AND ANY EXPRESS OR IMPLIED " +
+            "WARRANTIES ARE DISCLAIMED; IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DAMAGES ARISING IN ANY WAY " +
+            "OUT OF THE USE OF THIS SOFTWARE.",
+    ),
+    Notice(
         "Better xCloud userscript (PC tab → Xbox Cloud Gaming)", "MIT",
         "Copyright (c) 2023 redphx, (c) 2020 Phosphor Icons. github.com/redphx/better-xcloud, bundled unchanged and added to " +
             "Microsoft's xbox.com/play page. Not affiliated with Xbox.",

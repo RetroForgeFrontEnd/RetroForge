@@ -45,6 +45,9 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
     val program: File = unrealGame(exe) ?: exe
     /** Drive D:, the game's own top folder, so paths the game reaches with ..\ from its .exe's folder still work. */
     private val folder: File = gameFolder(exe)
+    /** The custom Vulkan driver chosen in Settings (its folder and library), or null for the device's own. */
+    private val customDriver: Pair<String, String>? = customDriver(runtime.root)
+
     /** Whether this is Steam's own client (Steam method 2) rather than a game. */
     private val steamClient = isSteamClient(program)
     /** The on-screen gamepad, seen by the game as an Xbox 360 controller once [VirtualPad.connected] is set. */
@@ -173,6 +176,11 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             "XDG_DATA_DIRS" to "$imageFs/usr/share",
             "XDG_CONFIG_DIRS" to "$imageFs/usr/etc/xdg",
             "VK_ICD_FILENAMES" to "$imageFs/usr/share/vulkan/icd.d/wrapper_icd.aarch64.json",
+            // A Turnip driver chosen in Settings → GPU and drivers: the Vulkan wrapper loads it through adrenotools (in
+            // the image) instead of the device's own driver. Qualcomm chips only; nothing changes elsewhere.
+            "ADRENOTOOLS_DRIVER_PATH" to (customDriver?.let { it.first + "/" } ?: ""),
+            "ADRENOTOOLS_HOOKS_PATH" to (customDriver?.let { "$imageFs/usr/lib" } ?: ""),
+            "ADRENOTOOLS_DRIVER_NAME" to (customDriver?.second ?: ""),
             "SSL_CERT_FILE" to "$imageFs/usr/etc/tls/cert.pem",
             "MESA_SHADER_CACHE_DIR" to "$imageFs/usr/tmp/mesa",
             // GameNative's defaults for the Vulkan wrapper.
@@ -381,9 +389,24 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
          * Whether this device's Vulkan driver can't run DXVK (it needs Vulkan 1.3 and features older Adreno drivers
          * lack, even when Android lists 1.3), found the first time a game tried: then games use Wine's own Direct3D.
          */
-        fun dxvkUnsupported(root: File) = File(root, "no-dxvk").isFile
+        fun dxvkUnsupported(root: File) = File(root, noDxvkFlag(root)).isFile
 
-        fun markDxvkUnsupported(root: File) = runCatching { File(root, "no-dxvk").writeText("DXVK found no usable Vulkan GPU\n") }
+        fun markDxvkUnsupported(root: File) = runCatching { File(root, noDxvkFlag(root)).writeText("DXVK found no usable Vulkan GPU\n") }
+
+        /** Recorded per driver: the device's own may not run DXVK where Turnip does. */
+        private fun noDxvkFlag(root: File) = customDriver(root)?.let { "no-dxvk-${it.second}" } ?: "no-dxvk"
+
+        /**
+         * The Turnip driver chosen in Settings → GPU and drivers (files/gpu-driver beside the runtime's files/pc, as
+         * adrenotools packages it: meta.json naming the library), on a Qualcomm chip; null otherwise.
+         */
+        fun customDriver(runtimeRoot: File): Pair<String, String>? {
+            if (!Build.HARDWARE.startsWith("qcom", true) && !(Build.VERSION.SDK_INT >= 31 && Build.SOC_MANUFACTURER.equals("QTI", true))) return null
+            val dir = File(runtimeRoot.parentFile, "gpu-driver")
+            val meta = File(dir, "meta.json").takeIf { it.isFile }?.readText() ?: return null
+            val library = Regex("\"libraryName\"\\s*:\\s*\"([^\"]+)\"").find(meta)?.groupValues?.get(1) ?: return null
+            return if (File(dir, library).isFile) dir.path to library else null
+        }
 
         /** DXVK's message when the Vulkan driver gives it no GPU it can use. */
         fun dxvkFoundNoGpu(log: File) = runCatching { log.readText().contains("DXVK: No adapters found") }.getOrDefault(false)

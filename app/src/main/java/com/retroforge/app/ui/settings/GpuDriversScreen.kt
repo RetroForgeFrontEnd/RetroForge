@@ -47,6 +47,8 @@ fun GpuDriversScreen() {
     var showAnyway by remember { mutableStateOf(false) }
     var query by remember { mutableStateOf("") }
     val progress = remember { mutableStateMapOf<String, String>() }
+    // The driver RetroForge's own players use (built-in player's Vulkan cores, PC player), or null for the phone's.
+    var inPlayers by remember { mutableStateOf(com.retroforge.player.GpuDriver.current(context)?.second) }
     LaunchedEffect(Unit) { advice = withContext(Dispatchers.IO) { GpuDrivers.advice(GpuProbe.probe()) } }
 
     ScreenFrame(title = "GPU and drivers", subtitle = "What graphics chip this device has, and custom drivers for emulators that can use them.") {
@@ -70,7 +72,22 @@ fun GpuDriversScreen() {
                     "Winlator and GameNative come with Turnip and choose it in each container's settings.",
             )
             CardBody("Try one driver at a time. If a game gets worse, switch that emulator back to the system driver.")
-            CardBody("RetroForge's built-in player will use these too, once it supports GPU systems (N64, PSP, GameCube …).")
+        }
+
+        if (advice?.canUseCustomDrivers == true) {
+            FocusCard(modifier = Modifier.fillMaxWidth()) {
+                CardTitle("RetroForge's own players")
+                CardBody(
+                    "The built-in player's Vulkan cores (Dolphin, PS2, PSP on Vulkan) and the PC player can use a Turnip driver instead " +
+                        "of the phone's own: often faster, and it lets older Adrenos run the PC player's fast Direct3D (DXVK).",
+                )
+                StatusPill(inPlayers?.let { "Using $it" } ?: "Using the phone's own driver", if (inPlayers != null) StatusTone.GOOD else StatusTone.NEUTRAL)
+                CardBody(if (inPlayers == null) "Choose Use in RetroForge on a driver below." else "If games get worse, go back to the phone's driver.")
+                if (inPlayers != null) FocusChip("Use the phone's own driver", onClick = {
+                    stopUsingInPlayers(context)
+                    inPlayers = null
+                })
+            }
         }
 
         val canUse = advice?.canUseCustomDrivers == true
@@ -121,9 +138,55 @@ fun GpuDriversScreen() {
                         CardBody("${file.release} · ${file.source} · ${file.published} · ${"%.1f".format(file.size / 1_000_000.0)} MB")
                         CardBody(progress[file.url]?.let { if (it.endsWith("%")) "Downloading… $it" else it } ?: "Select to download.")
                     }
+                    if (canUse) FocusChip("Use ${file.release} in RetroForge", onClick = {
+                        if (progress[file.url]?.endsWith("%") == true) return@FocusChip
+                        progress[file.url] = "0%"
+                        scope.launch {
+                            progress[file.url] = withContext(Dispatchers.IO) {
+                                runCatching { useInPlayers(context, file, agent) { p -> progress[file.url] = "$p%" } }
+                                    .fold({ "RetroForge's players now use it" }, { "Couldn't use it: ${it.message}" })
+                            }
+                            inPlayers = com.retroforge.player.GpuDriver.current(context)?.second
+                        }
+                    })
                 }
         }
     }
+}
+
+/**
+ * Downloads [file] and unpacks it for RetroForge's own players (files/gpu-driver: its meta.json and library, as
+ * adrenotools packages it), replacing the one they used.
+ */
+private fun useInPlayers(context: Context, file: DriverFile, agent: String, onProgress: (Int) -> Unit) {
+    val zip = File(context.cacheDir, "drivers/${file.fileName}")
+    GpuDrivers.download(file, zip, agent, onProgress)
+    val target = com.retroforge.player.GpuDriver.dir(context)
+    val fresh = File(target.path + ".new")
+    fresh.deleteRecursively()
+    fresh.mkdirs()
+    try {
+        java.util.zip.ZipFile(zip).use { archive ->
+            for (entry in archive.entries()) {
+                if (entry.isDirectory) continue
+                val out = File(fresh, entry.name.substringAfterLast('/'))
+                archive.getInputStream(entry).use { input -> out.outputStream().use { input.copyTo(it) } }
+            }
+        }
+        val meta = File(fresh, "meta.json").takeIf { it.isFile }?.readText() ?: error("it has no meta.json (not an adrenotools driver)")
+        val library = Regex("\"libraryName\"\\s*:\\s*\"([^\"]+)\"").find(meta)?.groupValues?.get(1) ?: error("its meta.json names no library")
+        if (!File(fresh, library).isFile) error("$library is missing from it")
+        target.deleteRecursively()
+        if (!fresh.renameTo(target)) error("couldn't put it in place")
+    } finally {
+        fresh.deleteRecursively()
+        zip.delete()
+    }
+}
+
+/** Back to the phone's own driver in RetroForge's players. */
+private fun stopUsingInPlayers(context: Context) {
+    com.retroforge.player.GpuDriver.dir(context).deleteRecursively()
 }
 
 /** Downloads [file] and puts it in Download/RetroForge/GPU drivers (app storage on Android 9 and older). Returns where. */

@@ -14,6 +14,12 @@ bool setNegotiation(const retro_hw_render_context_negotiation_interface *iface);
 /** Answers GET_HW_RENDER_CONTEXT_NEGOTIATION_INTERFACE_SUPPORT. */
 bool negotiationSupport(retro_hw_render_context_negotiation_interface *iface);
 
+/**
+ * A custom Vulkan driver (Turnip) to use instead of the device's: the folder holding adrenotools' hook libraries, the
+ * driver's folder and its library's file name. Empty names use the device's own driver.
+ */
+void setDriver(const std::string &hookDir, const std::string &driverDir, const std::string &driverName);
+
 /** Creates the instance and device (on the core thread). False with [error] when Vulkan isn't usable. */
 bool init(std::string &error);
 /** The interface handed to the core through GET_HW_RENDER_INTERFACE; null before init. */

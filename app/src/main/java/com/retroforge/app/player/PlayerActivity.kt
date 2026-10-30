@@ -474,6 +474,8 @@ class PlayerActivity : ComponentActivity() {
         // Play! keeps its memory cards and settings under $EXTERNAL_STORAGE ("/sdcard/Play Data Files"), which apps can't
         // write to any more, and stops when it can't. This process is the player's alone, so point it at our own folder.
         if (coreId == "play") runCatching { android.system.Os.setenv("EXTERNAL_STORAGE", File(systemDir, "play").apply { mkdirs() }.path, true) }
+        // A Turnip driver chosen in Settings → GPU and drivers, for Vulkan cores (the device's own driver otherwise).
+        com.retroforge.player.GpuDriver.applyTo(this)
         val error = NativePlayer.openCore(corePath, systemDir.path, savesDir.path, options.keys.toTypedArray(), options.values.toTypedArray())
         if (error != null) return fail(error)
         applyScale()
