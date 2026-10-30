@@ -69,11 +69,11 @@ public class ALSAClient {
             mirrorStreamPtr = 0; // Ensure mirror is null
         }
 
-        if (streamPtr > 0) start();
+        if (streamPtr != 0) start();
     }
 
     public void start() {
-        if (streamPtr > 0 && !playing) {
+        if (streamPtr != 0 && !playing) {
             if (reflectorMode) {
                 simulatedStart(streamPtr);
                 start(mirrorStreamPtr);
@@ -85,7 +85,7 @@ public class ALSAClient {
     }
 
     public void stop() {
-        if (streamPtr > 0 && playing) {
+        if (streamPtr != 0 && playing) {
             if (reflectorMode) {
                 simulatedStop(streamPtr);
                 stop(mirrorStreamPtr);
@@ -97,7 +97,7 @@ public class ALSAClient {
     }
 
     public void pause() {
-        if (streamPtr > 0) {
+        if (streamPtr != 0) {
             if (reflectorMode) {
                 simulatedPause(streamPtr);
                 pause(mirrorStreamPtr);
@@ -109,7 +109,7 @@ public class ALSAClient {
     }
 
     public void drain() {
-        if (streamPtr > 0) {
+        if (streamPtr != 0) {
             if (reflectorMode) {
                 simulatedFlush(streamPtr);
                 flush(mirrorStreamPtr);
@@ -178,7 +178,7 @@ public class ALSAClient {
             System.out.println("Attempting to rebuild playback stream (Attempt " + (i + 1) + ")");
             long newStreamPtr = create(dataType.ordinal(), channelCount, sampleRate, bufferSize);
 
-            if (newStreamPtr > 0) {
+            if (newStreamPtr != 0) {
                 if (playing) {
                     int result = start(newStreamPtr);
                     if (result == 0) { // AAUDIO_OK

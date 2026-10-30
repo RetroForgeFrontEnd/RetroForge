@@ -9,4 +9,6 @@ public abstract class RequestCodes {
     public static final byte WRITE = 5;
     public static final byte DRAIN = 6;
     public static final byte POINTER = 7;
+    // RetroForge: asked by the ALSA plugin in GameNative's Linux image (not by Winlator Cmod's) before it prepares a stream.
+    public static final byte MIN_BUFFER_SIZE = 8;
 }

@@ -49,15 +49,11 @@ public class ALSARequestHandler implements RequestHandler {
                 createSharedMemory(alsaClient, outputStream);
                 break;
             case RequestCodes.WRITE:
-                ByteBuffer buffer = alsaClient.getSharedBuffer();
-                if (buffer != null) {
-                    buffer.limit(requestLength);
-                    alsaClient.writeDataToStream(buffer);
-                }
-                else {
-                    if (inputStream.available() < requestLength) return false;
-                    alsaClient.writeDataToStream(inputStream.readByteBuffer(requestLength));
-                }
+                // RetroForge: the plugin in GameNative's bionic Linux image sends the samples on the socket even
+                // though it's given shared memory, so they're always read from the socket. (Reading them from the
+                // shared buffer left them on the socket, where they were taken for "close" requests: no sound.)
+                if (inputStream.available() < requestLength) return false;
+                alsaClient.writeDataToStream(inputStream.readByteBuffer(requestLength));
                 break;
             case RequestCodes.DRAIN:
                 alsaClient.drain();
@@ -67,8 +63,26 @@ public class ALSARequestHandler implements RequestHandler {
                     outputStream.writeInt(alsaClient.pointer());
                 }
                 break;
+            case RequestCodes.MIN_BUFFER_SIZE: {
+                // RetroForge: the plugin waits for this answer, so without it no sound ever starts.
+                if (inputStream.available() < 6) return false;
+                byte channels = inputStream.readByte();
+                ALSAClient.DataType dataType = ALSAClient.DataType.values()[inputStream.readByte()];
+                int sampleRate = inputStream.readInt();
+                try (XStreamLock lock = outputStream.lock()) {
+                    outputStream.writeInt(minBufferSize(channels, dataType, sampleRate));
+                }
+                break;
+            }
         }
         return true;
+    }
+
+    /** RetroForge: 40 ms of audio, in whole blocks of 256 frames, in bytes (GameNative's default latency). */
+    private static int minBufferSize(int channels, ALSAClient.DataType dataType, int sampleRate) {
+        final int latencyMillis = 40, framesPerBuffer = 256;
+        int frames = Math.max(framesPerBuffer, Math.round(latencyMillis * sampleRate / 1000f / framesPerBuffer) * framesPerBuffer);
+        return frames * dataType.byteCount * channels;
     }
 
     private void createSharedMemory(ALSAClient alsaClient, XOutputStream outputStream) throws IOException {
