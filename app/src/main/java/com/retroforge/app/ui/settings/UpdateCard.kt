@@ -59,7 +59,7 @@ fun UpdateCard() {
                     checking = false
                 }
             })
-            FocusChip(if (auto) "Check every day: on" else "Check every day: off", onClick = {
+            FocusChip(if (auto) "Check automatically: on" else "Check automatically: off", onClick = {
                 auto = !auto
                 AppUpdate.prefs(context).edit().putBoolean("auto", auto).apply()
             })

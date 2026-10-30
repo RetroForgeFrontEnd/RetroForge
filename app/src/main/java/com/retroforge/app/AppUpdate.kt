@@ -6,14 +6,15 @@ import com.retroforge.app.ui.pc.ReleaseFile
 import org.json.JSONArray
 
 /**
- * RetroForge's own updates, from its GitHub releases (betas included). Checked once a day when the app starts, unless
+ * RetroForge's own updates, from its GitHub releases (betas included). Checked every few hours when the app starts, unless
  * switched off; Settings → Help and about checks on request. Installing goes through Android's installer, which asks
  * the user to confirm.
  */
 object AppUpdate {
     const val REPO = "RetroForgeFrontEnd/RetroForge"
     private const val PREFS = "app_update"
-    private const val DAY_MS = 24L * 60 * 60 * 1000
+    /** How often the Home check looks for a new release: a few times a day, so one shows up soon after it's out. */
+    private const val CHECK_EVERY_MS = 3L * 60 * 60 * 1000
 
     data class Available(val version: String, val notes: String, val apk: ReleaseFile)
 
@@ -33,12 +34,13 @@ object AppUpdate {
         return Available(version, newest.optString("body").lineSequence().take(12).joinToString("\n").trim(), apk)
     }
 
-    /** Checks if a day has passed since the last check (and the user hasn't switched it off). */
+    /** Checks when a few hours have passed since the last check that reached GitHub (unless switched off). */
     fun checkIfDue(context: Context): Available? {
         val prefs = prefs(context)
-        if (!autoCheck(context) || System.currentTimeMillis() - prefs.getLong("last", 0) < DAY_MS) return null
-        prefs.edit().putLong("last", System.currentTimeMillis()).apply()
-        return runCatching { check() }.getOrNull()?.takeIf { it.version != prefs.getString("skipped", null) }
+        if (!autoCheck(context) || System.currentTimeMillis() - prefs.getLong("last", 0) < CHECK_EVERY_MS) return null
+        // Only a check that reached GitHub counts: offline, the next start tries again.
+        val found = runCatching { check() }.onSuccess { prefs.edit().putLong("last", System.currentTimeMillis()).apply() }.getOrNull()
+        return found?.takeIf { it.version != prefs.getString("skipped", null) }
     }
 
     /** Downloads the APK and opens Android's installer; [onProgress] gets 0 to 100. */
