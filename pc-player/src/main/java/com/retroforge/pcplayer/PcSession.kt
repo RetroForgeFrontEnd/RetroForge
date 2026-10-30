@@ -329,9 +329,15 @@ class PcSession(private val context: Context, private val runtime: PcRuntime, va
             return dir
         }
 
-        fun gameArguments(exe: File): List<String> =
-            if (File(exe.parentFile, exe.nameWithoutExtension + ".pck").isFile) {
+        /**
+         * Steam's own client (steam.exe beside its package folder) starts without its updater: under Wine the updater
+         * can't check free space (Wine refuses its \\?\D:\. path) and gives up; the client files are put in place whole.
+         */
+        fun gameArguments(exe: File): List<String> = when {
+            File(exe.parentFile, exe.nameWithoutExtension + ".pck").isFile ->
                 listOf("--rendering-driver", "vulkan", "--rendering-method", "mobile")
-            } else emptyList()
+            exe.name.equals("steam.exe", true) && File(exe.parentFile, "package").isDirectory -> listOf("-inhibitbootstrap")
+            else -> emptyList()
+        }
     }
 }
