@@ -1,0 +1,27 @@
+# Martial Champion (arcade). Numpad notation for a fighter facing right: 6 forward, 2 down, 3 down-forward;
+# *60 charges for a second. H high, M mid, L low attack, taken as the cabinet's first, second and third buttons.
+title: Martial Champion
+match: martial champion | martchmp
+buttons: H=B M=A L=Y
+checked: no
+Mahambah | Savanna Tornado | 6 2 3+H
+Mahambah | Panther Claw | 2*60 8+M
+Avu | Arabian Burner | 2 3 6+M
+Avu | Arabian Drill | 4*60 6+M
+Chaos | Double Cross | 2*60 8+M
+Chaos | Nile Star | 2 3 6+M
+Bobby | Bloody Screw | 2 1 4+M
+Bobby | Hell Slugger | 2 3 6+M
+Jin | Tenga Renken | 6 2 3+H
+Jin | Hou'ou Ken | 2 3 6+M
+Goldor | Gol Wave | 4*60 6+L
+Goldor | Gol Barrier | M _ M _ M _ M _ M
+Racheal | Shadow Attack | 4*60 6+M
+Racheal | Hiton no Jutsu | M _ M _ M _ M _ M
+Zen | Kumo no Himo | 2 3 6+M
+Zen | Koma no Mai | 4*60 6+M
+Hoi | Makuu Ken | 4*60 6+M
+Hoi | Shouen Kyaku | 6 2 3+H
+Hoi | Long-range kick | 4+L
+Ti Ti | Chameleon Attack | 2 3 6+M
+Ti Ti | Hyakuretsu Tokken | M _ M _ M _ M _ M

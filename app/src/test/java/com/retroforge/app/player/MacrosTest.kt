@@ -147,6 +147,7 @@ class MacrosTest {
         assertNull(titleFor("Dragon Ball Z - Super Butouden 3 (Japan)"))
         assertEquals("Double Dragon V", titleFor("Double Dragon V - The Shadow Falls (USA)"))
         assertNull(titleFor("Double Dragon (USA)"))
+        assertEquals("Martial Champion", titleFor("Martial Champion (ver EAB)"))
     }
 
     @Test
