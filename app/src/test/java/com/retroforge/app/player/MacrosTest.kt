@@ -148,6 +148,11 @@ class MacrosTest {
         assertEquals("Double Dragon V", titleFor("Double Dragon V - The Shadow Falls (USA)"))
         assertNull(titleFor("Double Dragon (USA)"))
         assertEquals("Martial Champion", titleFor("Martial Champion (ver EAB)"))
+        assertEquals("Real Bout Fatal Fury 2", titleFor("Real Bout Fatal Fury 2 - The Newcomers"))
+        assertNull(titleFor("Real Bout Fatal Fury Special"))
+        assertEquals("The Last Blade 2", titleFor("Last Blade 2, The"))
+        assertEquals("The Last Blade 2", titleFor("Bakumatsu Roman Dai Ni Maku Gekka no Kenshi"))
+        assertNull(titleFor("The Last Blade"))
     }
 
     @Test

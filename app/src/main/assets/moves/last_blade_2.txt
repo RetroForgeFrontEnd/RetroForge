@@ -1,0 +1,143 @@
+# The Last Blade 2 (Neo Geo, Dreamcast). Numpad notation for a fighter facing right: 6 forward, 2 down,
+# 3 down-forward; *60 charges for a second. A weak slash, B strong slash, C kick, D deflect. Where a move takes
+# A or B the list uses B. Desperation moves need a full power gauge; super desperation moves also need low life
+# (or EX mode). "Close" moves are throws: do them next to the other fighter.
+title: The Last Blade 2
+match: last blade 2 | bakumatsu roman dai ni maku
+buttons: A=B B=A C=Y D=X
+checked: no
+Kaede | Morning Star Squall | 2 3 6+B
+Kaede | Morning Star Wind Fang | 6 2 3+B
+Kaede | Morning Star Fillet Flash | 2 1 4+B
+Kaede | Shinmei Oite (in the air) | 2 3 6+B
+Kaede | East Wind Wallop | 2 1 4+C
+Kaede | Morning Star Storm Blast (close) | 4 1 2 3 6+C
+Kaede | Desperation: Morning Star Pounce | 2 1 4 6+A+B
+Kaede | Desperation: Morning Star Revival | 2 3 6 2 3 6+A+B
+Kaede | Super desperation: Bad Dragon Rising | 2 1 4 1 6+B
+Kaede | Super desperation: Morning Star Lance | 2 3 6 2 3 6+B
+Kaede (original) | Single Slash Squall | 2 3 6+B
+Kaede (original) | Single Slash Air Fang | 6 2 3+B
+Kaede (original) | Single Slash Fillet Flash | 2 1 4+B
+Kaede (original) | East Wind Wallop | 2 1 4+C
+Kaede (original) | Single Slash Storm Blast (close) | 4 1 2 3 6+C
+Kaede (original) | Desperation: Lively Dragon Pounce | 2 1 4 1 6+A+B
+Kaede (original) | Super desperation: Bad Dragon Rising | 2 1 4 1 6+B
+Moriya | Glancing Blade Moonlight | 2 3 6+B
+Moriya | Glancing Blade Haze | 2 1 4+B
+Moriya | Glancing Blade New Moon | 6 2 3+B
+Moriya | Sash Blade Moonwalk | 4 1 2+B
+Moriya | Desperation: Life and Death Moonlight Flash | 6 4 1 2 3 6+A+B
+Moriya | Super desperation: Life and Death Wild Season | 6 4 1 2 3 6+B
+Yuki | Ice Blade | 2 3 6+B
+Yuki | Frosty Flasher | 6 2 3+B
+Yuki | Blizzard Blast | 2 1 4+B
+Yuki | Ice Reflector | 4 1 2 3 6+C
+Yuki | Split-in-Two Swing (close) | 6 3 2 1 4+C
+Yuki | Desperation: Glacial Sequoia | 2 3 6 2 3 6+A+B
+Yuki | Super desperation: True Frozen Whirlwind | 2 1 4 6+B
+Okina | Turtle Thrust | 2 3 6+B
+Okina | Turtle Tremor | 6 3 2 1 4+B
+Okina | Tortoise Tromp | 6 3 2 1 4+C
+Okina | Fisherman's Feint | 6 2 3+B
+Okina | Pacifist Pounce | 4 1 2+B
+Okina | Desperation: Genbu Blast | 6 4 1 2 3 6+A+B
+Okina | Super desperation: Rage of Genbu | 6 4 1 2 3 6+B
+Juzoh | Bopper | 2 3 6+B
+Juzoh | Rock Crusher | 6*60 4+C
+Juzoh | Violent Quake | 6 2 3+B
+Juzoh | Yasegaman | 2 3 6+C
+Juzoh | Mozuhana | 2 1 4+C
+Juzoh | Pile Drive Burial (close) | 6 3 2 1 4+A
+Juzoh | Hammer Whop (close) | 6 3 2 1 4+B
+Juzoh | Desperation: Just Dandy Invincible | 2 3 6 2 3 6+A+B
+Juzoh | Desperation: Ultra-Violent Eruption | 2 3 6 2 3 6+B
+Keiichiro | Fatal Flurry | 4*60 6+B
+Keiichiro | Foolish Flurry | 2*60 8+B
+Keiichiro | Wolf Fang | 4*60 6+C
+Keiichiro | A Glorious Death | 2 1 4+B
+Keiichiro | Desperation: True Fang of the Wolf | 2 1 4 6+A+B
+Keiichiro | Super desperation: Final Wolf Fang | 2 1 4 6+B
+Kojiroh | Flashing Flight | 2 1 4+A
+Kojiroh | Black Hole Blade | 2 1 4+B
+Kojiroh | Shujin | 2 1 4+C
+Kojiroh | Empty Death | 6 2 3+B
+Kojiroh | Blast-of-Plague Demise | 2 3 6+B
+Kojiroh | Desperation: Black Hole Blade - Eagle | 2 1 4 6+A+B
+Kojiroh | Super desperation: Wolf Fang of Emptiness | 2 1 4 6+B
+Akari | Messianic Blast | 2 3 6+B
+Akari | Astro-Revolve | 2 8+C
+Akari | Koumyou Gojuugo | 4 2 1+B
+Akari | Pure Princess Parry | 6 3 2 1 4+A
+Akari | Changing Troll | 6 3 2 1 4+B
+Akari | Transforming Troll | 6 3 2 1 4+C
+Akari | Desperation: Sextex Synthesis | 2 1 4 6+A+B
+Akari | Super desperation: 100 Demon Sabbath | 6 3 2 1 4 6+B
+Hibiki | Distance Slash | 2 3 6+B
+Hibiki | Beckoning Slash | 6 2 3+B
+Hibiki | Piercing Moon Pounce | 6 2 3+C
+Hibiki | Heavenly Being Blade | 4 1 2 3 6+C
+Hibiki | Desperation: Heavenly Spirit of Victory | 2 1 4 6+A+B
+Hibiki | Desperation: No Fear Feint | 6 4 1 2 3 6+B
+Hyo | Keima's Rage | 6 2 3+C
+Hyo | Windmill | 2 1 4+A
+Hyo | Piercing Sparrow | 6 1 6+B
+Hyo | Domino Toppler | 3 _ 3+C
+Hyo | Badger Bash | A _ A _ A _ A _ A
+Hyo | Destiny | 6 3 2 1 4+B
+Hyo | Loudmouth | 6 3 2 1 4+C
+Hyo | Desperation: Checkmate of the Queen | 6 3 2 1 4 6 3 2 1 4+A+B
+Hyo | Super desperation: Checkmate of the Rook | 6 3 2 1 4 6 3 2 1 4+B
+Kouryu | Arrow Show | 2 3 6+B
+Kouryu | Big Slash | 2 1 4+C
+Kouryu | Quad Rusher | 2 1 4+B _ 2 1 4+B _ 2 1 4+B _ 2 1 4+B
+Kouryu | Desperation: Fire Phoenix Super (in the air) | 6 4 1 2 3 6+A
+Kouryu | Desperation: Earth Slasher Super | 6 4 1 2 3 6+B
+Kouryu | Desperation: Water Tornado Super | 6 4 1 2 3 6+C
+Kouryu | Desperation: Lightning Dragon Super | 6 4 1 2 3 6+D
+Kouryu | Super desperation: Ultimate End | 4 6 3 2 1 4+B
+Mukuro | Bald Eagle Swoop | 2 1 4+B
+Mukuro | Rotation Evisceration | 6 2 3+B
+Mukuro | Weasel's Slash | 4 1 2 3 6+B
+Mukuro | Land Licking Slider | 6 4 6+C
+Mukuro | Merciless Mash (close) | 6 3 2 1 4+C
+Mukuro | Desperation: Delirium Drubber | 2 3 6 2 3 6+A+B
+Mukuro | Super desperation: Wild Hunger Wallop | 2 3 6 2 3 6+B
+Rekka | Dragon Hammer | 2 1 4+C _ 2 1 4+C _ 2 1 4+C
+Rekka | Fan of Flames | 2*60 8+B
+Rekka | Serpent Rush | 6 3 2 1 4+B
+Rekka | Desperation: Hidden Serpent Slam | 2 1 4 1 6+A+B
+Rekka | Super desperation: Concealed Javelin of Judgement | 2 1 4 1 6+B
+Setsuna | Anonymity - One | 2 3 6+B
+Setsuna | Anonymity - Two | 6 2 3+B
+Setsuna | Anonymity - Three | 2 1 4+B
+Setsuna | Anonymity - Four | 6 2 3+C
+Setsuna | Anonymity - Five | 6 3 2 1 4+C
+Setsuna | Desperation: Anonymity - Severance | 2 3 6 2 3 6+A+B
+Setsuna | Super desperation: Anonymity - Ultimate | 6 3 2 1 4 6 3 2 1 4+B
+Shigen | White Tiger Talon | 2 1 4+B
+Shigen | White Tiger Pounce | 2 1 4+C
+Shigen | Exploding Spirit Blast | 6 2 3+A
+Shigen | Shout Blast | 6 2 3+B
+Shigen | Kingfisher Crunch (close) | 4 1 2 3 6+B
+Shigen | Diamond Smasher (close) | 6 3 2 1 4 6+C
+Shigen | Desperation: Bouko Hyouga | 2 3 6 2 3 6+A+B
+Shigen | Desperation: Inga Ouhou | 4 1 2 3 6 4+A+B
+Shigen | Desperation: Destiny's Retribution | 6 3 2 1 4 6 3 2 1 4+A+B
+Shigen | Super desperation: Fugu Taiten | 6 3 2 1 4 6 3 2 1 4+B
+Shinnosuke | Hienyoku | 2 3 6+A
+Shinnosuke | Gouensou | 2 3 6+B
+Shinnosuke | Shouhoukou | 6 2 3+B
+Shinnosuke | Enhoukou (close) | 6 3 2 1 4+B
+Shinnosuke | Shizukanaru Kodou | 2 1 4+C
+Shinnosuke | Desperation: Guren Suzaku (in the air) | 4 1 2 3 6+A+B
+Shinnosuke | Desperation: Seikai Ryougen | 6 4 1 2 3 6+A+B
+Shinnosuke | Super desperation: Hou'ou Tenshou (in the air) | 4 1 2 3 6+B
+Zantetsu | Flowing Shadow Fury | 2 3 6+A
+Zantetsu | Devil Drop (close) | 6 3 2 1 4+C
+Zantetsu | Spirit Drill | 2 1 4+B
+Zantetsu | Underwater Undulation | 4 2 1+A
+Zantetsu | Necromancer's Shadow | 6 4 6+C
+Zantetsu | Oboro Giri | 6 2 3+C
+Zantetsu | Desperation: Steel Crusher | 6 4 1 2 3 6+A+B
+Zantetsu | Super desperation: Dark Hunter (close) | 6 3 2 1 4 6 3 2 1 4+B

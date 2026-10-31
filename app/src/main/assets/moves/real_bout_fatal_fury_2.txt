@@ -1,0 +1,177 @@
+# Real Bout Fatal Fury 2: The Newcomers (Neo Geo). Numpad notation for a fighter facing right: 6 forward, 2 down,
+# 3 down-forward; *60 charges for a second. A light punch, B light kick, C heavy attack, D sway attack. Where a move
+# takes A or C the list uses C. S-Power moves need the power gauge flashing; P-Power ones also need low life.
+title: Real Bout Fatal Fury 2
+match: real bout fatal fury 2 | real bout garou densetsu 2
+buttons: A=B B=A C=Y D=X
+checked: no
+Terry | Power Wave | 2 3 6+A
+Terry | Round Wave | 2 3 6+C
+Terry | Burning Knuckle | 2 1 4+C
+Terry | Rising Tackle | 2*60 8+A
+Terry | Crack Shoot | 2 1 4+B
+Terry | Fire Kick | 2 3 6+B
+Terry | Passing Sway | 2 3 6+D
+Terry | S-Power: Power Geyser | 2 1 4 1 6+B+C
+Terry | P-Power: Triple Geyser | 2 1 4 1 6+C
+Andy | Hishouken | 2 1 4+C
+Andy | Shouryuudan | 6 2 3+C
+Andy | Zanei Ken | 1 6+C
+Andy | Kuuhadan | 1 2 3 6+B
+Andy | Genei Shiranui (in the air) | 2 1 4+D
+Andy | S-Power: Chou Reppadan | 2 1 4 1 6+B+C
+Andy | P-Power: Dan Da Dan | 2 1 4 1 6+C _ C _ C _ C _ C
+Joe | TNT Punch | A _ A _ A _ A _ A
+Joe | Tiger Kick | 6 2 3+B
+Joe | Golden Heel | 2 1 4+B
+Joe | Hurricane Upper | 4 1 2 3 6+C
+Joe | Slash Kick | 1 6+C
+Joe | S-Power: Screw Upper | 6 4 1 2 3 6+B+C
+Joe | P-Power: Thunder Fire | 6 4 1 2 3 6+C
+Mai | Kachousen | 2 3 6+A
+Mai | Ryuuenbu | 2 1 4+A
+Mai | Night Bird | 2 1 4+C
+Mai | Shinobi Bachi | 4 1 2 3 6+C
+Mai | Musasabi no Mai (in the air) | 2+A+B
+Mai | S-Power: Chou Hissatsu Shinobi Bachi | 6 4 1 2 3 6+B+C
+Mai | P-Power: Flower Hurricane | 6 4 1 2 3 6+C
+Billy | Sansetsukon Chuudan Uchi | 4*60 6+A
+Billy | Senpuukon | A _ A _ A _ A _ A
+Billy | Suzume Otoshi | 2 1 4+A
+Billy | Karyuu Tsuigeki Kon | 2 1 4+B
+Billy | Kyoushuu Hishoukon | 4 1 2 3 6+B
+Billy | Guren Sakkon | 6 3 2+C
+Billy | S-Power: Chou Kaen Senpuukon | 6 4 1 2 3 6+B+C
+Blue Mary | Crab Clutch | 4*60 6+B
+Blue Mary | Young Dive | 2*60 8+C
+Blue Mary | Mary Snatcher | 6 2 3+B
+Blue Mary | Real Counter | 2 1 4+A
+Blue Mary | Vertical Arrow | 6 2 3+A
+Blue Mary | Straight Slicer | 4*60 6+A
+Blue Mary | Spin Fall | 2 3 6+C
+Blue Mary | S-Power: Mary Typhoon | 6 4 1 2 3 6+B+C
+Blue Mary | P-Power: Escalation | 6 4 1 2 3 6+C
+Bob | Wild Wolf | 4*60 6+B
+Bob | Bison Horn | 2*60 8+C
+Bob | Monkey Dance | 6 2 3+B
+Bob | Rolling Turtle | 2 1 4+B
+Bob | Sidewinder | 2 1 4+C
+Bob | Frog Hunting | 4 6 _ 6+B+C
+Bob | S-Power: Dangerous Wolf | 6 4 1 2 3 6+B+C
+Bob | P-Power: Dancing Bison | 6 4 1 2 3 6+C
+Cheng | Kiten Hinzan | 2 3 6+A
+Cheng | High Kiten Hinzan | 6 2 3+A
+Cheng | Belly Drum Blast | 2*60 8+A
+Cheng | Avalanche Crunch | 4*60 6+C
+Cheng | Flexible Geezer | 2 1 4+B
+Cheng | Fatty Bazooka | 2 1 4+C
+Cheng | S-Power: Bursting Heavens | 1*60 2 6+B+C
+Cheng | P-Power: Collapse of Creation (in the air) | 4 1 2 3 6+C
+Duck King | Head Spin Attack | 2 3 6+C
+Duck King | Neo Break Storm | 6 2 3+B _ B _ B _ B _ B
+Duck King | Dashing Dive | 2 1 4+B
+Duck King | Flying Spin Attack (in the air) | 2 1 4+A
+Duck King | S-Power: Break Spiral | 6 3 2 1 4 7 8+B+C
+Duck King | S-Power: Break Spiral Blaze (in the air) | 4 1 2 3 6+B+C
+Duck King | P-Power: Duck Dance | 6 4 1 2 3 6+C _ C _ C _ C _ C
+Duck King | P-Power: Divine Punisher (in the air) | 2 1 4+B+C
+Duck King | P-Power: Rolling Punisher | 2 3 6+B+C
+Duck King | P-Power: Dancing Caliber | 2 1 4+B+C
+Duck King | P-Power: Break Hurricane | 6 2 3+B+C
+Duck King | P-Power: Super Bombing Machine | 6 3 2 1 4+C
+Franco | Zapper | 2 3 6+A
+Franco | Double Kong | 2 1 4+A
+Franco | Guts Dunk | 2 3 6 9+B
+Franco | Golden Bomber | 1*60 6+C
+Franco | Waving Blow | 2 3 6+D
+Franco | S-Power: Megaton Screw | 6 3 2 1 4+B+C
+Franco | S-Power: Final Omega Shot | 6 4 1 2 3 6+B+C
+Franco | P-Power: Armageddon Buster | 6 4 1 2 3 6+C
+Geese | Reppuken | 2 1 4+A
+Geese | Double Reppuken | 2 1 4+C
+Geese | Palm Blast | 4 1 2 3 6+A
+Geese | Dragon Throw | 4 1 2 3 6+B
+Geese | Push of the Tiger | 4 1 2 3 6+C
+Geese | Vacuum Throw (close) | 6 3 2 1 4 7 8+A
+Geese | S-Power: Raging Storm | 6 4 1 2 3 6+B+C
+Geese | P-Power: Rashomon (close) | 6 3 2 1 4 7 8+C
+Geese | P-Power: Deadly Rave (start) | 6 3 2 1 4 6+A
+Hon Fu | Sky of Fire | 6 2 3+C
+Hon Fu | Blazing Steed | 2 1 4+A _ A _ A _ A _ A
+Hon Fu | Heavenly Lightning | 2 1 4+B
+Hon Fu | Assured Victory Retaliation | 2 1 4+C
+Hon Fu | Kyuuryuu no Yomi | 4 1 2 3 6+C
+Hon Fu | Earthly Lightning | 1*60 6+B _ B
+Hon Fu | S-Power: Explosion Goro | 2 1 4 1 6+B+C
+Hon Fu | P-Power: Yokaton Hammer | 2 1 4 1 6+C
+Jin Chonrei | Emperor's Eye | 2 3 6+C
+Jin Chonrei | Emperor Crunch | 6 2 3+C
+Jin Chonrei | Transcendent Dragon | 2 3 6+B
+Jin Chonrei | Emperor God Bop | 6 _ 6+A
+Jin Chonrei | Extended Emperor God Bop | 6 _ 6 _ 6+A
+Jin Chonrei | Emperor Blast | 2 1 4 6+C
+Jin Chonrei | S-Power: Empire Destiny Slash | 6 4 1 2 3 6+B+C
+Jin Chonrei | P-Power: Emperor Roar Destroyer | 6 4 1 2 3 6+C
+Jin Chonshu | Sight of Heaven | 2 3 6+C
+Jin Chonshu | Empire Heaven Smash | 6 2 3+C
+Jin Chonshu | Emperor God Bop | 6 _ 6+A
+Jin Chonshu | Emperor's God Eye | 6 3 2 1 4+C
+Jin Chonshu | Imperial Exterminator (in the air) | 2 1 4+B
+Jin Chonshu | Dragon's Light | 2 3 6+B
+Jin Chonshu | S-Power: Emperor Drain | 6 4 1 2 3 6+B+C
+Jin Chonshu | S-Power: Air Emperor Drain (in the air) | 2 1 4 6+B+C
+Jin Chonshu | P-Power: Leviathan's Strain | 6 4 1 2 3 6+C
+Kim | Hienzan | 2*60 8+A
+Kim | Hangetsuzan | 2 1 4+C
+Kim | Haki Kyaku | 2 _ 2+B
+Kim | Hishou Kyaku (in the air) | 2+B
+Kim | S-Power: Houou Tenbu Kyaku (in the air) | 4 1 2 3 6+B+C
+Kim | P-Power: Houou Kyaku | 2 1 4 1 6+C
+Laurence | Bloody Spin | 6 3 2 1 4+C
+Laurence | Bloody Cutter | 2*60 8+C
+Laurence | Bloody Saber | 4*60 6+C
+Laurence | S-Power: Bloody Flash | 6 4 1 2 3 6+B+C
+Laurence | P-Power: Bloody Shadow | 6 4 1 2 3 6+C
+Li Xiangfei | Nanpa | 2 3 6+C
+Li Xiangfei | Tenpouzan | 6 2 3+B
+Li Xiangfei | Senri Chuu'ou | 2 3 6+B
+Li Xiangfei | S-Power: Daitetsujin | 6 4 1 2 3+B+C
+Li Xiangfei | P-Power: Majinga (close) | 6 3 2 1 4 7 8+C
+Rick | Shooting Star | 2 3 6+C
+Rick | Blazing Sunburst | 2 1 4+A
+Rick | Full Moon Fever | 2 1 4+B
+Rick | Divine Blast | 2 1 4+C
+Rick | Hellion | 6 2 3+A
+Rick | S-Power: Gaia Breath | 6 4 1 2 3 6+B+C
+Rick | P-Power: Howling Bull | 6 4 1 2 3 6+C
+Yamazaki | Snake Tamer | 2 1 4+C
+Yamazaki | Double Return | 2 3 6+C
+Yamazaki | Judgement Dagger | 6 2 3+A
+Yamazaki | Yaki'ire | 6 2 3+B
+Yamazaki | Explosive Beating | 6 4 2 8+C
+Yamazaki | Sadomazo | 4 1 2 3 6+B
+Yamazaki | S-Power: Guillotine | 6 4 1 2 3 6+B+C
+Yamazaki | P-Power: Yondan Drill (close) | 6 3 2 1 4 7 8+C _ C _ C _ C _ C
+Sokaku | Makibishi | 2 3 6+A
+Sokaku | Nozaru Geri | 2 1 4+A
+Sokaku | Jakonbu | A _ A _ A _ A _ A
+Sokaku | Shout! | 6 3 2 1 4+B
+Sokaku | Kimon Jin (close) | 6 3 2 1 4 7 8+C
+Sokaku | Hyoi Dan | 6 4 6+C
+Sokaku | S-Power: Ikazuchi | 6 4 1 2 3 6+B+C
+Sokaku | P-Power: Raijin no Ibuki | 6 4 1 2 3 6+C
+Tung | Shouha | 2 3 6+A
+Tung | Gekiha | 2 3 6+C
+Tung | Thousand Kicks | 6 2 3+B
+Tung | Shin Shippu | 2 1 4+C
+Tung | S-Power: Senpuu Gouken | 6 4 1 2 3 6+B+C
+Tung | P-Power: Super Gekiha | 6 4 1 2 3 6+C
+Krauser | Blitz Ball | 2 1 4+C
+Krauser | Leg Tomahawk | 2 3 6+B
+Krauser | To the Moon Blow | 6 3 2 1 4+B
+Krauser | Kaiser Claw | 6 2 3+C
+Krauser | Phoenix Thrust | 4 1 2 3 6+C
+Krauser | Scum Gale (close) | 4 1 2 3 6+A
+Krauser | S-Power: Kaiser Wave | 4*60 6+B+C
+Krauser | P-Power: Gigatech Cyclone (close) | 6 3 2 1 4 7 8+C
+Krauser | P-Power: Unlimited Desire | 6 3 2 1 4 6+A

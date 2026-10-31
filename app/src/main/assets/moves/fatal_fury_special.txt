@@ -4,6 +4,7 @@
 # "close" moves are done next to the other fighter.
 title: Fatal Fury Special
 match: fatal fury special | garou densetsu special
+not: real bout
 buttons: A=B B=A C=Y D=X
 checked: no
 Terry | Power Wave | 2 3 6+C
