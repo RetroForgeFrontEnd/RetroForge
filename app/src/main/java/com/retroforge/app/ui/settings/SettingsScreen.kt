@@ -207,15 +207,26 @@ fun SettingsScreen(
                 }
 
                 FocusCard(modifier = Modifier.fillMaxWidth()) {
-                    CardTitle(stringResource(R.string.settings_size)) { StatusPill("${settings.uiScale}%", StatusTone.NEUTRAL) }
+                    // The slider's stops are 70–150% in tens. The size changes on letting go, not while dragging, so
+                    // the screen doesn't grow under the finger; the pill shows where the slider is meanwhile.
+                    var dragging by remember { mutableStateOf<Int?>(null) }
+                    val shown = dragging ?: settings.uiScale
+                    CardTitle(stringResource(R.string.settings_size)) { StatusPill("$shown%", StatusTone.NEUTRAL) }
                     CardBody(stringResource(R.string.settings_size_body))
-                    androidx.compose.foundation.layout.FlowRow(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(12.dp)) {
-                        FocusChip(stringResource(R.string.settings_size_smaller), enabled = settings.uiScale > 70,
-                            onClick = { viewModel.setUiScale((settings.uiScale - 10).coerceAtLeast(70)) })
-                        FocusChip(stringResource(R.string.settings_size_bigger), enabled = settings.uiScale < 150,
-                            onClick = { viewModel.setUiScale((settings.uiScale + 10).coerceAtMost(150)) })
-                        if (settings.uiScale != 100) FocusChip(stringResource(R.string.settings_size_normal), onClick = { viewModel.setUiScale(100) })
+                    androidx.compose.material3.Slider(
+                        value = shown.toFloat(),
+                        onValueChange = { dragging = (Math.round(it / 10f) * 10) },
+                        onValueChangeFinished = { dragging?.let(viewModel::setUiScale); dragging = null },
+                        valueRange = 70f..150f,
+                        steps = 7,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    androidx.compose.foundation.layout.Row(Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.settings_size_smaller), style = MaterialTheme.typography.labelMedium)
+                        androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+                        Text(stringResource(R.string.settings_size_bigger), style = MaterialTheme.typography.labelMedium)
                     }
+                    if (settings.uiScale != 100) FocusChip(stringResource(R.string.settings_size_normal), onClick = { viewModel.setUiScale(100) })
                 }
 
                 viewPrefs?.let { prefs ->
