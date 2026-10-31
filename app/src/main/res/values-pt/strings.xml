@@ -2025,4 +2025,6 @@
         <item quantity="one">Corrigir o cabeçalho de %1$d jogo?</item>
         <item quantity="other">Corrigir os cabeçalhos de %1$d jogos?</item>
     </plurals>
+    <string name="library_soft_patch">Patch suave</string>
+    <string name="library_soft_patch_body">%1$s está ao lado deste jogo, então o reprodutor integrado o aplica sempre que o jogo inicia. O arquivo do jogo nunca é alterado; mova ou renomeie o patch para jogar sem ele.</string>
 </resources>

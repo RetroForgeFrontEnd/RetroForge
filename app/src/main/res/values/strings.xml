@@ -2153,4 +2153,6 @@
         <item quantity="one">Fix the header of %1$d game?</item>
         <item quantity="other">Fix the headers of %1$d games?</item>
     </plurals>
+    <string name="library_soft_patch">Soft patch</string>
+    <string name="library_soft_patch_body">%1$s is beside this game, so the built-in player applies it each time the game starts. The game file itself is never changed; move or rename the patch to play the game without it.</string>
 </resources>

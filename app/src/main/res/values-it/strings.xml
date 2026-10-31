@@ -2025,4 +2025,6 @@
         <item quantity="one">Riparare l\'intestazione di %1$d gioco?</item>
         <item quantity="other">Riparare le intestazioni di %1$d giochi?</item>
     </plurals>
+    <string name="library_soft_patch">Patch morbido</string>
+    <string name="library_soft_patch_body">%1$s è accanto a questo gioco, quindi il lettore integrato lo applica a ogni avvio. Il file del gioco non viene mai modificato; sposta o rinomina la patch per giocare senza.</string>
 </resources>

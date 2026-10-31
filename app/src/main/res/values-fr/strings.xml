@@ -2026,4 +2026,6 @@
         <item quantity="one">Réparer l\'en-tête de %1$d jeu ?</item>
         <item quantity="other">Réparer les en-têtes de %1$d jeux ?</item>
     </plurals>
+    <string name="library_soft_patch">Patch souple</string>
+    <string name="library_soft_patch_body">%1$s est à côté de ce jeu : le lecteur intégré l\'applique à chaque lancement. Le fichier du jeu n\'est jamais modifié ; déplacez ou renommez le patch pour jouer sans lui.</string>
 </resources>

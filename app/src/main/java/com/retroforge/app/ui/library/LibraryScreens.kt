@@ -407,6 +407,12 @@ fun GameDetailScreen(
             ).forEach { CardBody(it) }
             if (g.description == null && g.developer == null) CardBody(stringResource(R.string.library_no_gamelist_xml_details_for_this))
         }
+        media.patch?.let { patch ->
+            FocusCard(modifier = Modifier.fillMaxWidth()) {
+                StatusPill(stringResource(R.string.library_soft_patch), StatusTone.GOOD)
+                CardBody(stringResource(R.string.library_soft_patch_body, patch))
+            }
+        }
         if (g.isHack) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
                 StatusPill(stringResource(R.string.library_rom_hack), StatusTone.CAUTION)

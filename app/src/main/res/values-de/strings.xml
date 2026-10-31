@@ -1993,4 +1993,6 @@
         <item quantity="one">Header von %1$d Spiel reparieren?</item>
         <item quantity="other">Header von %1$d Spielen reparieren?</item>
     </plurals>
+    <string name="library_soft_patch">Soft-Patch</string>
+    <string name="library_soft_patch_body">%1$s liegt neben diesem Spiel, daher wendet der eingebaute Player ihn bei jedem Start an. Die Spieldatei selbst wird nie verändert; verschiebe oder benenne den Patch um, um ohne ihn zu spielen.</string>
 </resources>

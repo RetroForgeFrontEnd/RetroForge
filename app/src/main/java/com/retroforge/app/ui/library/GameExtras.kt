@@ -52,8 +52,11 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 
-/** A game's manual and gameplay video, where RetroBat and ES-DE keep them beside the games. */
-data class GameMedia(val manual: Uri?, val video: Uri?)
+/**
+ * A game's manual and gameplay video, where RetroBat and ES-DE keep them beside the games, and the name of a soft patch
+ * beside the game ("Game.ips"), which the built-in player applies as it loads.
+ */
+data class GameMedia(val manual: Uri?, val video: Uri?, val patch: String? = null)
 
 /**
  * Looks for the game's manual (manuals/<game>-manual.pdf) and video (videos/<game>-video.mp4) in its system folder, as
@@ -74,6 +77,8 @@ suspend fun findGameMedia(resolver: ContentResolver, root: RootEntity?, game: Ga
     GameMedia(
         manual = existing(listOf("manuals/$base-manual.pdf", "manuals/$base.pdf")),
         video = existing(listOf("videos/$base-video.mp4", "videos/$base.mp4")),
+        patch = if (game.fileName.substringAfterLast('.').lowercase() in com.retroforge.app.player.SoftPatch.discTypes) null
+        else listOf("bps", "ups", "ips").map { "$base.$it" }.firstOrNull { existing(listOf(it)) != null },
     )
 }
 

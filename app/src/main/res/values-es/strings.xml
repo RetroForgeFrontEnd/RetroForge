@@ -2026,4 +2026,6 @@
         <item quantity="one">¿Reparar la cabecera de %1$d juego?</item>
         <item quantity="other">¿Reparar las cabeceras de %1$d juegos?</item>
     </plurals>
+    <string name="library_soft_patch">Parche suave</string>
+    <string name="library_soft_patch_body">%1$s está junto a este juego, así que el reproductor integrado lo aplica cada vez que se inicia. El archivo del juego nunca cambia; mueve o renombra el parche para jugar sin él.</string>
 </resources>
