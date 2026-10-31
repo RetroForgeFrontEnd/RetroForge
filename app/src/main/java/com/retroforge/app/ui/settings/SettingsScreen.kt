@@ -74,6 +74,7 @@ fun SettingsScreen(
         "covers" to (str(R.string.settings_covers_and_bezels) to str(R.string.settings_steamgriddb_and_screenscraper_accounts_for_box)),
         "looks" to (str(R.string.settings_looks_and_sounds) to str(R.string.settings_themes_interface_sounds_android_apps_and)),
         "help" to (str(R.string.settings_help_and_about) to str(R.string.settings_how_to_use_retroforge_updates_set)),
+        "kiosk" to (str(R.string.kiosk_title) to str(R.string.kiosk_settings_body)),
     )
 
     ScreenFrame(title = groups.firstOrNull { it.first == group }?.second?.first ?: str(R.string.settings_settings), compact = true) {
@@ -88,6 +89,7 @@ fun SettingsScreen(
         }
         FocusChip(stringResource(R.string.settings_all_settings), onClick = { group = null })
         when (group) {
+            "kiosk" -> com.retroforge.app.ui.KioskCard()
             "games" -> {
                 com.retroforge.app.ui.NetworkDrivesCard(str(R.string.settings_games), onUse = library?.let { lib ->
                     { uri, progress ->

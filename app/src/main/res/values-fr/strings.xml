@@ -1976,4 +1976,21 @@
     <string name="playtime_other_emulators">Joués dans d\'autres émulateurs</string>
     <string name="playtime_other_emulators_body">Les autres émulateurs n\'indiquent pas à RetroForge combien de temps vous avez joué : on voit ici combien de fois vous les avez lancés.</string>
     <string name="playtime_started_last">Lancé %1$s, la dernière le %2$s</string>
+    <string name="kiosk_title">Mode kiosque et contrôle parental</string>
+    <string name="kiosk_settings_body">Un code pour les Réglages, la suppression, le gestionnaire de ROM et les réglages d\'émulateur.</string>
+    <string name="kiosk_body">Pour la famille et la télé : avec un code, les Réglages, la suppression de fichiers et de jeux, le gestionnaire de ROM et les réglages d\'émulateur (aussi dans le menu du jeu) le demandent d\'abord. Jouer ne le demande jamais. Un bon code laisse tout ouvert 10 minutes ou jusqu\'à ce qu\'on quitte RetroForge.</string>
+    <string name="kiosk_set_pin">Choisir un code</string>
+    <string name="kiosk_change_pin">Changer le code</string>
+    <string name="kiosk_turn_off">Désactiver</string>
+    <string name="kiosk_forgot">Code oublié ? Impossible d\'être bloqué : dans les Paramètres d\'Android → Applications → RetroForge → Stockage, choisissez Vider le stockage. Cela retire le code, mais aussi les réglages de RetroForge, l\'index de la bibliothèque et les sauvegardes et états du lecteur intégré (vos fichiers de jeux ne sont pas touchés) : sauvegardez-les d\'abord si possible.</string>
+    <string name="kiosk_enter_pin">Saisissez le code</string>
+    <string name="kiosk_new_pin">Choisissez un code (4 à 8 chiffres)</string>
+    <string name="kiosk_confirm_pin">Saisissez le même code encore une fois</string>
+    <string name="kiosk_wrong">Code incorrect.</string>
+    <string name="kiosk_mismatch">Les codes ne correspondent pas. Choisissez-en un à nouveau.</string>
+    <string name="kiosk_wait">Trop d\'essais erronés. Attendez %1$s secondes.</string>
+    <string name="kiosk_locked_title">Verrouillé</string>
+    <string name="kiosk_locked_body">Le mode kiosque est activé : il faut le code.</string>
+    <string name="kiosk_ok">OK</string>
+    <string name="kiosk_cancel">Annuler</string>
 </resources>

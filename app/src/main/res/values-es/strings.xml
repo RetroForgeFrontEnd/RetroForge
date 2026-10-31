@@ -1976,4 +1976,21 @@
     <string name="playtime_other_emulators">Jugados en otros emuladores</string>
     <string name="playtime_other_emulators_body">Otros emuladores no le dicen a RetroForge cuánto jugaste, así que aquí se ve cuántas veces los abriste.</string>
     <string name="playtime_started_last">Abierto %1$s, la última el %2$s</string>
+    <string name="kiosk_title">Modo quiosco y control parental</string>
+    <string name="kiosk_settings_body">Un PIN para Ajustes, borrar, el gestor de ROMs y los ajustes del emulador.</string>
+    <string name="kiosk_body">Para la familia y la tele: con un PIN, Ajustes, borrar archivos y juegos, el gestor de ROMs y los ajustes del emulador (también en el menú del juego) lo piden antes. Para jugar nunca hace falta. Un PIN correcto deja todo abierto 10 minutos o hasta salir de RetroForge.</string>
+    <string name="kiosk_set_pin">Poner un PIN</string>
+    <string name="kiosk_change_pin">Cambiar el PIN</string>
+    <string name="kiosk_turn_off">Desactivar</string>
+    <string name="kiosk_forgot">¿Olvidaste el PIN? No puedes quedarte fuera: en Ajustes de Android → Aplicaciones → RetroForge → Almacenamiento, elige Borrar almacenamiento. Eso quita el PIN, pero también los ajustes de RetroForge, su índice de la biblioteca y las partidas y estados guardados del reproductor integrado (tus archivos de juegos no se tocan), así que haz copia de las partidas antes si puedes.</string>
+    <string name="kiosk_enter_pin">Escribe el PIN</string>
+    <string name="kiosk_new_pin">Elige un PIN (de 4 a 8 cifras)</string>
+    <string name="kiosk_confirm_pin">Escribe el mismo PIN otra vez</string>
+    <string name="kiosk_wrong">PIN incorrecto.</string>
+    <string name="kiosk_mismatch">Los PIN no coinciden. Elige uno otra vez.</string>
+    <string name="kiosk_wait">Demasiados intentos fallidos. Espera %1$s segundos.</string>
+    <string name="kiosk_locked_title">Bloqueado</string>
+    <string name="kiosk_locked_body">El modo quiosco está activo: esto necesita el PIN.</string>
+    <string name="kiosk_ok">OK</string>
+    <string name="kiosk_cancel">Cancelar</string>
 </resources>

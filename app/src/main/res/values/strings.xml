@@ -2103,4 +2103,21 @@
     <string name="playtime_other_emulators">Played in other emulators</string>
     <string name="playtime_other_emulators_body">Other emulators don\'t tell RetroForge how long you played, so these show how often you started them.</string>
     <string name="playtime_started_last">Started %1$s, last on %2$s</string>
+    <string name="kiosk_title">Kiosk mode and child lock</string>
+    <string name="kiosk_settings_body">A PIN for Settings, deleting, the ROM Manager and emulator settings.</string>
+    <string name="kiosk_body">For family and TV setups: with a PIN set, Settings, deleting files and games, the ROM Manager and emulator settings (also in a game\'s menu) ask for it first. Playing games never needs it. One right PIN keeps things open for 10 minutes or until RetroForge is left.</string>
+    <string name="kiosk_set_pin">Set a PIN</string>
+    <string name="kiosk_change_pin">Change the PIN</string>
+    <string name="kiosk_turn_off">Turn off</string>
+    <string name="kiosk_forgot">Forgot the PIN? You can\'t be locked out: in Android\'s Settings → Apps → RetroForge → Storage, choose Clear storage. That removes the PIN, but also RetroForge\'s settings, its library index and the built-in player\'s saves and save states (your game files are not touched), so back saves up first if you can.</string>
+    <string name="kiosk_enter_pin">Enter the PIN</string>
+    <string name="kiosk_new_pin">Choose a PIN (4 to 8 digits)</string>
+    <string name="kiosk_confirm_pin">Enter the same PIN again</string>
+    <string name="kiosk_wrong">Wrong PIN.</string>
+    <string name="kiosk_mismatch">The PINs didn\'t match. Choose one again.</string>
+    <string name="kiosk_wait">Too many wrong tries. Wait %1$s seconds.</string>
+    <string name="kiosk_locked_title">Locked</string>
+    <string name="kiosk_locked_body">Kiosk mode is on: this needs the PIN.</string>
+    <string name="kiosk_ok">OK</string>
+    <string name="kiosk_cancel">Cancel</string>
 </resources>

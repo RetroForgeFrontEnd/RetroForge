@@ -1975,4 +1975,21 @@
     <string name="playtime_other_emulators">Jogados em outros emuladores</string>
     <string name="playtime_other_emulators_body">Outros emuladores não dizem ao RetroForge quanto tempo jogou, então aqui aparece quantas vezes os abriu.</string>
     <string name="playtime_started_last">Aberto %1$s, a última em %2$s</string>
+    <string name="kiosk_title">Modo quiosque e bloqueio infantil</string>
+    <string name="kiosk_settings_body">Um PIN para Definições, apagar, o gestor de ROMs e as definições do emulador.</string>
+    <string name="kiosk_body">Para a família e a TV: com um PIN, Definições, apagar ficheiros e jogos, o gestor de ROMs e as definições do emulador (também no menu do jogo) pedem-no primeiro. Para jogar nunca é preciso. Um PIN certo deixa tudo aberto 10 minutos ou até sair do RetroForge.</string>
+    <string name="kiosk_set_pin">Definir um PIN</string>
+    <string name="kiosk_change_pin">Mudar o PIN</string>
+    <string name="kiosk_turn_off">Desligar</string>
+    <string name="kiosk_forgot">Esqueceu o PIN? Não fica trancado: nas Definições do Android → Apps → RetroForge → Armazenamento, escolha Limpar armazenamento. Isso tira o PIN, mas também as definições do RetroForge, o índice da biblioteca e os jogos e estados gravados do reprodutor integrado (os seus ficheiros de jogos não são tocados), por isso faça antes uma cópia das gravações se puder.</string>
+    <string name="kiosk_enter_pin">Introduza o PIN</string>
+    <string name="kiosk_new_pin">Escolha um PIN (4 a 8 dígitos)</string>
+    <string name="kiosk_confirm_pin">Introduza o mesmo PIN outra vez</string>
+    <string name="kiosk_wrong">PIN errado.</string>
+    <string name="kiosk_mismatch">Os PIN não coincidem. Escolha um outra vez.</string>
+    <string name="kiosk_wait">Demasiadas tentativas erradas. Espere %1$s segundos.</string>
+    <string name="kiosk_locked_title">Bloqueado</string>
+    <string name="kiosk_locked_body">O modo quiosque está ligado: isto precisa do PIN.</string>
+    <string name="kiosk_ok">OK</string>
+    <string name="kiosk_cancel">Cancelar</string>
 </resources>

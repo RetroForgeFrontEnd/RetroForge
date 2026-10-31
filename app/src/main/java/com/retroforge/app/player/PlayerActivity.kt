@@ -1650,7 +1650,9 @@ class PlayerActivity : ComponentActivity() {
                         // The rest in three groups, so the menu stays short.
                         MenuButton(onClick = { menuPage = MenuPage.PICTURE }, modifier = wide) { Text(stringResource(R.string.player_picture)) }
                         MenuButton(onClick = { menuPage = MenuPage.SOUND_CONTROLS }, modifier = wide) { Text(stringResource(R.string.player_sound_and_controls)) }
-                        MenuButton(onClick = { menuPage = MenuPage.EMULATOR }, modifier = wide) { Text(stringResource(R.string.player_emulator)) }
+                        // Kiosk mode: the emulator's settings, cheats and choice need the PIN.
+                        val kioskGuard = com.retroforge.app.ui.rememberKioskGuard()
+                        MenuButton(onClick = { kioskGuard { menuPage = MenuPage.EMULATOR } }, modifier = wide) { Text(stringResource(R.string.player_emulator)) }
                         if (Netplay.supports(system)) MenuButton(onClick = { menuPage = MenuPage.NETPLAY; if (netState == 0 && netHosts == null) findNetplayHosts() }, modifier = wide) {
                             Text(if (netPlaying) stringResource(R.string.player_netplay_player, NativePlayer.netplayPlayer() + 1) else stringResource(R.string.player_netplay_2))
                         }
