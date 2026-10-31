@@ -44,6 +44,9 @@ object NativePlayer {
     external fun start()
     external fun setPaused(paused: Boolean)
     external fun setFastForward(on: Boolean)
+
+    /** Draws one frame in every [frames] + 1 (0 draws them all); the game and its sound keep full speed. */
+    external fun setFrameSkip(frames: Int)
     external fun setSurface(surface: Surface?)
 
     /**
@@ -128,6 +131,20 @@ object NativePlayer {
 
     external fun stop()
     external fun close()
+
+    // RetroAchievements (see Cheevos). Fields in the returned lines are split by '\u001f'.
+    external fun cheevosStart(hardcore: Boolean)
+    external fun cheevosUserAgentClause(): String
+    external fun cheevosLogin(user: String, password: String, token: String)
+    external fun cheevosLogout()
+    external fun cheevosLoadGame(consoleId: Int)
+    external fun cheevosRequests(): Array<String>
+    /** [status] is the HTTP status, or -1 when there was no answer. */
+    external fun cheevosResponse(id: Int, status: Int, body: ByteArray?)
+    external fun cheevosEvents(): Array<String>
+    external fun cheevosList(): Array<String>
+    external fun cheevosRichPresence(): String
+    external fun cheevosUnloadGame()
 }
 
 data class CoreInfo(val needsFile: Boolean, val blockExtract: Boolean, val name: String, val version: String, val extensions: Set<String>)

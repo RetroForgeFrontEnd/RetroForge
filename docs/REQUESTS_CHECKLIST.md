@@ -205,6 +205,38 @@ Requests that were never fully done, or only answered:
 | App updates | ✅ checked every few hours from GitHub releases (betas included), offered on Home with a message at startup, and Settings → Help and about → Check for updates; Android's installer confirms |
 
 
+## Requests of 31 October (new features, in this order)
+
+| Request | Status |
+|---|---|
+| RetroAchievements | 🔨 in progress: rcheevos (RetroAchievements' own library, MIT) built into the built-in player; sign-in, unlock pop-ups and the achievement list next |
+| Save state manager in the app | 📋 to do: every state per game with its picture and date, rename, delete, load |
+| Smart backlog and playtime analytics | 📋 to do: a backlog (want to play, playing, finished), suggestions from it, and playtime charts per game, system and week |
+| Peer-to-peer save and memory card sync on the local network | 📋 to do: two devices find each other on the Wi-Fi and swap newer saves and memory cards when RetroForge opens, no network drive needed |
+| Custom soundtracks and a jukebox | 📋 to do: your own music in the menus (and over games if wanted), and a jukebox for game music files |
+| Game notes, strategy guides and map viewer | 📋 to do: notes per game (also in the pause menu), guides and maps from your own files, viewable mid-game |
+| Automatic fan-translation patching | 📋 to do: spot Japanese-only games and offer known fan translations, patched like ROM hacks |
+| Smart input profiles and per-game layout swapping | 📋 to do: controller profiles picked by controller and game, with per-game button layouts |
+| Retro news and modding feed | 📋 to do: a feed of retro gaming news, emulator releases and modding from public RSS feeds |
+| AI translation overlay | 📋 to do: translate on-screen text in a game (Japanese and others) and show it over the picture, like RetroArch's AI service; needs a translation service (on-device OCR and translation where possible) |
+| Virtual light-gun: touch, gyro and second-controller aiming | 📋 to do: light-gun games (arcade, Time Crisis, Duck Hunt, Saturn shooters) aimed by touch, the phone's gyroscope or another controller's cursor, with a crosshair and calibration |
+| Kiosk mode and child lock | 📋 to do: settings, deleting files, the ROM Manager and emulator settings locked behind a PIN or a switch, for family and TV setups |
+| 3D disc, cartridge and box gallery | 📋 to do: on the game page, spin a 3D disc, cartridge or case and look at the back of the box |
+| Smart memory card importer and converter | 📋 to do: bring in saves from other emulators and devices (PS1 .mcr/.mcd/.gme/.psv, PS2 .ps2/.max/.psu, GameCube .gci/.raw, Dreamcast VMU, N64 .eep/.mpk, .srm/.sav), work out which game they belong to, convert to the format the chosen emulator reads and put them in place |
+| Speedrun and challenge mode | 📋 to do: a split timer in the player (LiveSplit-style splits, personal bests per game), RetroAchievements leaderboards and challenges shown alongside, and set challenges (no-damage, time limits) |
+| Power and heat profiles per system | 📋 to do: Battery saver for light systems, High performance for PS2/GameCube/Switch/PC. Android doesn't let apps set CPU/GPU clocks (that needs root), so this uses what apps may: Android's performance hints and Game Mode, sustained performance mode, a lower frame rate and resolution where the game allows, and the picture's refresh rate |
+| ROM header fixer and region patcher | 📋 to do: find and fix bad headers (strip SNES copier headers, add or repair iNES/NES 2.0 headers, fix Mega Drive and Game Boy checksums) and region-free patches where known, always on a copy with the original kept |
+| Frame skip in the pause menu | ✅ done: Off, 1, 2 or 3 frames skipped between drawn ones, kept for each system; the game and its sound keep full speed |
+| Virtual touchpad and motion sensor calibration | 📋 to do: use the touch screen as a mouse or touchpad (PC, DS, Wii pointer), and calibrate the gyroscope and accelerometer (centre, dead zone, sensitivity, axis flips) for motion games |
+| Audio latency and resampler studio | 📋 to do: per system, the output (AAudio or OpenSL ES), buffer size, resampler quality (sinc, cubic, linear) and audio sync, with simple sliders to stop crackling and cut sound lag |
+| RGB and LED lighting sync | 📋 to do: handheld stick rings and accent lights (Retroid, AYN, AYANEO where the maker exposes them) and smart lights (Philips Hue on the local network) follow the game's picture or system colours, flashing on hits |
+| Automatic ROM renaming and cleaning | 📋 to do: identify games by checksum against No-Intro and Redump lists and rename them to their proper names, flagging bad dumps, hacks and duplicates, always showing the changes first |
+| Hardware benchmark and thermal profiler | 📋 to do: a stress test of the device for emulation (CPU, GPU, OpenGL and Vulkan), recording when it throttles and how fast it runs, then suggesting resolution and graphics backend for PS2, GameCube and PC games |
+| Pass the controller: swap players 1 and 2 | 📋 to do: a pause menu button (and hotkey) that swaps the player 1 and player 2 controllers mid-game, for taking turns; over netplay, hand player 1 to the other device so two people can take turns at a one-player game |
+| Quality-of-life patch collections | 📋 to do: one-tap QoL patches by game (60 fps, widescreen, faster text, slow-down removed) from public patch collections, applied on a copy or as soft patches, like translation patching |
+| Voice chat in netplay | 📋 to do: push-to-talk or open voice between the players in a netplay game, over the same connection, with mute and volume in the pause menu |
+| Second screen on another device | 📋 to do: send the DS or 3DS bottom screen (and later a Wii U GamePad view) to a nearby phone, tablet or second monitor on the same Wi-Fi, with touch sent back to the game |
+
 ## Future plans (30 October)
 
 | Request | Status |

@@ -33,6 +33,7 @@
 
 #include "libretro.h"
 #include "netplay.h"
+#include "cheevos.h"
 #include "vfs.h"
 #include "vulkan_render.h"
 
@@ -126,6 +127,10 @@ struct Player {
     std::atomic<bool> running{false}, paused{false}, fastForward{false};
     // Fast-forward the core asked for itself (VICE while a disk loads), on top of the user's own.
     std::atomic<bool> coreFastForward{false};
+    // Frame skip: of every frameSkip + 1 frames, one is drawn; the rest run without a picture (the sound plays on).
+    std::atomic<int> frameSkip{0};
+    unsigned skipCount = 0;
+    bool drawThis = true;
     std::atomic<float> volume{1.0f};
     retro_disk_control_ext_callback disks{}; // multi-disc games (the core's eject/insert); zeroed when not offered // boost for quiet systems; samples are clamped, not wrapped
     std::atomic<int> viewX{0}, viewY{0}, viewW{0}, viewH{0}; // picture rectangle in surface pixels; 0 = fit
@@ -324,7 +329,7 @@ bool environment(unsigned cmd, void *data) {
             *static_cast<unsigned *>(data) = RETRO_LANGUAGE_ENGLISH;
             return true;
         case RETRO_ENVIRONMENT_GET_AUDIO_VIDEO_ENABLE:
-            if (data) *static_cast<int *>(data) = 3;
+            if (data) *static_cast<int *>(data) = P && !P->drawThis ? 2 : 3;  // 2: sound only (a skipped frame)
             return true;
         case RETRO_ENVIRONMENT_SET_FASTFORWARDING_OVERRIDE: {
             // The core turns fast-forward on and off itself (e.g. VICE's warp while a disk loads).
@@ -447,9 +452,11 @@ bool environment(unsigned cmd, void *data) {
                 if (d->port == 0 && d->device == RETRO_DEVICE_JOYPAD && d->id <= RETRO_DEVICE_ID_JOYPAD_R3) P->buttonNames[d->id] = d->description;
             return true;
         }
+        case RETRO_ENVIRONMENT_SET_MEMORY_MAPS:
+            cheevos::setMemoryMap(static_cast<const retro_memory_map *>(data));  // where achievements look
+            return true;
         case RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
         case RETRO_ENVIRONMENT_SET_CONTROLLER_INFO:
-        case RETRO_ENVIRONMENT_SET_MEMORY_MAPS:
         case RETRO_ENVIRONMENT_SET_SUBSYSTEM_INFO:
         case RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
         case RETRO_ENVIRONMENT_SET_SERIALIZATION_QUIRKS:
@@ -1113,10 +1120,13 @@ void runLoop() {
             } else {
                 for (uint32_t &c : p.carried) c = 0;  // this frame uses them
             }
+            int skip = p.frameSkip;
+            p.drawThis = skip <= 0 || p.skipCount++ % unsigned(skip + 1) == 0;
             p.core.run();
+            cheevos::frame();
             if (p.netInput) netplay::endFrame(hooks);
         }
-        present();
+        if (p.drawThis) present();
 
         double fps = p.av.timing.fps > 0 ? p.av.timing.fps : 60.0;
         auto frame = std::chrono::duration_cast<clock::duration>(std::chrono::duration<double>(1.0 / fps));
@@ -1199,6 +1209,11 @@ bool readAll(int fd, std::vector<uint8_t> &out) {
 }
 
 } // namespace
+
+// For cheevos.cpp: the core lock, and the loaded game.
+std::mutex &coreLock() { static std::mutex none; return P ? P->coreMutex : none; }
+const std::string &contentPath() { static const std::string none; return P ? P->contentPath : none; }
+const std::vector<uint8_t> &contentBytes() { static const std::vector<uint8_t> none; return P ? P->content : none; }
 
 // ---------- JNI ----------
 
@@ -1304,6 +1319,7 @@ JNIEXPORT jboolean JNI(loadGame)(JNIEnv *env, jobject, jstring path, jint fd, jb
     std::lock_guard<std::mutex> lock(p.coreMutex);
     if (!p.core.load_game(&game)) return JNI_FALSE;
     p.gameLoaded = true;
+    cheevos::setCoreMemory(p.core.get_memory_data, p.core.get_memory_size);
     p.core.get_system_av_info(&p.av);
     // Every port, as RetroArch does: one controller, the rest empty. Flycast attaches memory cards here.
     p.core.set_controller_port_device(0, RETRO_DEVICE_JOYPAD);
@@ -1352,6 +1368,10 @@ JNIEXPORT void JNI(setPaused)(JNIEnv *, jobject, jboolean paused) {
 
 JNIEXPORT void JNI(setFastForward)(JNIEnv *, jobject, jboolean on) {
     if (P) P->fastForward = on;
+}
+
+JNIEXPORT void JNI(setFrameSkip)(JNIEnv *, jobject, jint frames) {
+    if (P) P->frameSkip = frames;
 }
 
 // Hands the drawing surface to the core thread (null when it goes away) and waits until it's been taken.
@@ -1561,6 +1581,7 @@ JNIEXPORT void JNI(reset)(JNIEnv *, jobject) {
     if (!P || !P->gameLoaded) return;
     std::lock_guard<std::mutex> lock(P->coreMutex);
     P->core.reset();
+    cheevos::reset();
 }
 
 JNIEXPORT jbyteArray JNI(saveRam)(JNIEnv *env, jobject) {
@@ -1597,6 +1618,7 @@ JNIEXPORT jboolean JNI(loadState)(JNIEnv *env, jobject, jbyteArray state) {
     env->GetByteArrayRegion(state, 0, static_cast<jsize>(data.size()), reinterpret_cast<jbyte *>(data.data()));
     std::lock_guard<std::mutex> lock(P->coreMutex);
     bool loaded = P->core.unserialize(data.data(), data.size());
+    if (loaded) cheevos::reset();  // progress towards achievements starts again from the state
     if (loaded) netplay::stateChanged();  // the host loaded a state: player 2 gets it too
     return loaded ? JNI_TRUE : JNI_FALSE;
 }
@@ -1639,6 +1661,7 @@ JNIEXPORT void JNI(close)(JNIEnv *, jobject) {
     audioClose();
     {
         std::lock_guard<std::mutex> lock(P->coreMutex);
+        cheevos::shutdown();
         if (P->gameLoaded) P->core.unload_game();
         P->core.deinit();
     }

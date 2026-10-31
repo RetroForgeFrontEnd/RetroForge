@@ -25,6 +25,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -141,7 +144,7 @@ class PlayerActivity : ComponentActivity() {
     private var bezelBusy by mutableStateOf(false)
     private var bezelStatus by mutableStateOf<String?>(null)
     private val bezels by lazy { Bezels(File(filesDir, "bezels"), "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}") }
-    private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS, NETPLAY }
+    private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS, NETPLAY, ACHIEVEMENTS }
 
     // Controller remapping, per system: "keyCode:button,keyCode:button".
     private var remap by mutableStateOf<Map<Int, Int>>(emptyMap())
@@ -202,6 +205,35 @@ class PlayerActivity : ComponentActivity() {
         return code?.let { KeyEvent.keyCodeToString(it).removePrefix("KEYCODE_").removePrefix("BUTTON_").replace('_', ' ') } ?: "none"
     }
     private var cheats by mutableStateOf<List<Cheat>>(emptyList())
+
+    // RetroAchievements (Settings → Playing): the session while this game runs, its set, and pop-ups waiting to show.
+    private val raAccount by lazy { RaAccount(this) }
+    private var raSession: RaSession? = null
+    private var raGame by mutableStateOf<RaEvent.GameReady?>(null)
+    private var raList by mutableStateOf<List<RaAchievement>>(emptyList())
+    private val raPopups = androidx.compose.runtime.mutableStateListOf<RaEvent>()
+    /** This game counts for RetroAchievements hardcore: states can't be loaded and cheats are off. */
+    private val raHardcoreGame: Boolean
+        get() = raAccount.signedIn && raAccount.enabled && raAccount.hardcore && RaConsoles.of(system) != 0 && !intent.hasExtra(EXTRA_NETPLAY)
+
+    private fun startAchievements() {
+        val console = RaConsoles.of(system)
+        if (!raAccount.signedIn || !raAccount.enabled || console == 0 || intent.hasExtra(EXTRA_NETPLAY)) return
+        val session = RaSession(lifecycleScope, ::onAchievementEvent)
+        session.start(raAccount.hardcore)
+        session.signIn(raAccount.user, token = raAccount.token)
+        session.loadGame(console)
+        raSession = session
+    }
+
+    private fun onAchievementEvent(event: RaEvent) {
+        when (event) {
+            is RaEvent.GameReady -> { raGame = event; raPopups += event }
+            // A game without a set, signing in, and coming back online need no pop-up.
+            is RaEvent.NoGame, is RaEvent.SignedIn, RaEvent.Online -> Unit
+            else -> raPopups += event
+        }
+    }
     /** What the core calls player 1's buttons (libretro id → name), once the game has loaded. */
     private var coreButtons by mutableStateOf<Map<Int, String>>(emptyMap())
     private fun padLayout() = PadLayout.forSystem(system, coreButtons)
@@ -214,6 +246,7 @@ class PlayerActivity : ComponentActivity() {
 
     /** Turns on exactly the enabled cheats; tells the user when this emulator has no cheat support. */
     private fun applyCheats(list: List<Cheat>) {
+        if (raHardcoreGame) return  // RetroAchievements hardcore: no cheats
         val ok = NativePlayer.applyCheats(list.filter { it.enabled }.map { it.code }.toTypedArray())
         if (!ok && list.any { it.enabled }) runOnUiThread { cheatStatus = str(R.string.player_this_emulator_doesn_t_support_cheats) }
     }
@@ -247,6 +280,8 @@ class PlayerActivity : ComponentActivity() {
     }
     private var menuPage by mutableStateOf(MenuPage.MAIN)
     private var fastForwardOn by mutableStateOf(false)
+    /** Frames skipped between drawn ones (0 to 3), kept for each system. */
+    private var frameSkip by mutableStateOf(0)
 
     // Netplay (Netplay.kt, netplay.cpp): this game played together with a second device.
     private var netGameId = ""
@@ -509,7 +544,8 @@ class PlayerActivity : ComponentActivity() {
         }
 
         sram().takeIf { it.isFile }?.let { NativePlayer.restoreSaveRam(it.readBytes()) }
-        if (resume) autoState().takeIf { it.isFile }?.let { NativePlayer.loadState(it.readBytes()) }
+        // Hardcore starts the game from the beginning (RetroAchievements doesn't allow states there).
+        if (resume && !raHardcoreGame) autoState().takeIf { it.isFile }?.let { NativePlayer.loadState(it.readBytes()) }
         val av = NativePlayer.video()
         synchronized(surfaceLock) {
             loaded = true
@@ -531,6 +567,9 @@ class PlayerActivity : ComponentActivity() {
                 if (c.moveToFirst()) c.getLong(0) else -1L
             }
         }.getOrNull() ?: -1L)
+        startAchievements()
+        frameSkip = prefs.getInt("frameskip.$system", 0)
+        NativePlayer.setFrameSkip(frameSkip)
         NativePlayer.start()
         loadBezel(fileName)
         runOnUiThread {
@@ -1045,6 +1084,7 @@ class PlayerActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        raSession?.stop()
         announcer?.stop()
         closeRouterPort()
         if (isFinishing) {
@@ -1407,6 +1447,14 @@ class PlayerActivity : ComponentActivity() {
                 )
             }
 
+            raPopups.firstOrNull()?.let { event ->
+                LaunchedEffect(event) {
+                    kotlinx.coroutines.delay(if (event is RaEvent.Unlocked || event is RaEvent.Completed) 5000 else 3500)
+                    raPopups.remove(event)
+                }
+                AchievementPopup(event, Modifier.align(Alignment.TopCenter).padding(top = 28.dp, start = 16.dp, end = 16.dp))
+            }
+
             if (phase == Phase.Playing && !menuOpen) {
                 // Swipe in from either edge for the menu. (With gesture navigation the system's own back swipe does the same.)
                 EdgeSwipe(Modifier.align(Alignment.CenterStart), fromLeft = true)
@@ -1462,6 +1510,64 @@ class PlayerActivity : ComponentActivity() {
         }
     }
 
+    /** A RetroAchievements pop-up: an unlock (with its badge), progress, the game's set, or a problem. */
+    @Composable
+    private fun AchievementPopup(event: RaEvent, modifier: Modifier) {
+        val (badge, line1, line2) = when (event) {
+            is RaEvent.Unlocked -> Triple(event.badge, stringResource(R.string.ra_unlocked, event.title), stringResource(R.string.ra_points, event.description, event.points))
+            is RaEvent.Progress -> Triple(event.badge, event.title, event.progress)
+            is RaEvent.GameReady -> Triple(event.badge, event.title, stringResource(R.string.ra_game_ready, event.unlocked, event.total) +
+                if (raAccount.hardcore) " · " + stringResource(R.string.ra_hardcore) else "")
+            is RaEvent.Completed -> Triple("", stringResource(R.string.ra_mastered), event.title)
+            is RaEvent.Leaderboard -> Triple("", event.title, event.score)
+            is RaEvent.SignInFailed -> Triple("", stringResource(R.string.ra_sign_in_failed), event.reason)
+            is RaEvent.Problem -> Triple("", stringResource(R.string.ra_achievements), event.message)
+            RaEvent.Offline -> Triple("", stringResource(R.string.ra_achievements), stringResource(R.string.ra_offline))
+            else -> return
+        }
+        androidx.compose.foundation.layout.Row(
+            modifier.widthIn(max = 420.dp).background(Color(0xE61C1C22), RoundedCornerShape(12.dp)).padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            if (badge.isNotEmpty()) coil3.compose.AsyncImage(badge, null, Modifier.size(48.dp).clip(RoundedCornerShape(6.dp)))
+            else Text("🏆", fontSize = 30.sp)
+            Column {
+                Text(line1, color = Color(0xFFFFC56B), fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                Text(line2, color = Color.White, fontSize = 13.sp)
+            }
+        }
+    }
+
+    /** The pause menu's list of this game's achievements, unlocked first. */
+    @Composable
+    private fun AchievementsPage(wide: Modifier, first: FocusRequester) {
+        val unlocked = raList.count { it.unlocked }
+        Text(raGame?.title ?: stringResource(R.string.ra_achievements), color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+        Text(
+            stringResource(R.string.ra_game_ready, unlocked, raList.size) + if (raAccount.hardcore) " · " + stringResource(R.string.ra_hardcore) else "",
+            color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
+        )
+        raSession?.richPresence()?.takeIf { it.isNotBlank() }?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
+        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
+        if (raList.isEmpty()) Text(stringResource(R.string.ra_none_yet), color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
+        raList.sortedByDescending { it.unlocked }.forEach { a ->
+            androidx.compose.foundation.layout.Row(
+                wide.background(Color(0xFF26262E), RoundedCornerShape(8.dp)).padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                coil3.compose.AsyncImage(a.badge, null, Modifier.size(40.dp).clip(RoundedCornerShape(4.dp)))
+                Column(Modifier.weight(1f)) {
+                    Text((if (a.unlocked) "✓ " else "") + a.title, color = if (a.unlocked) Color(0xFFFFC56B) else Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text(a.description, color = Color(0xFFBBBBC4), fontSize = 12.sp)
+                    if (!a.unlocked && a.progress.isNotEmpty()) Text(a.progress, color = Color(0xFF3ED6FF), fontSize = 12.sp)
+                }
+                Text("${a.points}", color = Color(0xFFAAAAB4), fontSize = 13.sp)
+            }
+        }
+    }
+
     @Composable
     private fun PauseMenu(title: String) {
         val first = remember(menuPage) { FocusRequester() }
@@ -1502,6 +1608,7 @@ class PlayerActivity : ComponentActivity() {
                         }, modifier = wide) { Text(stringResource(R.string.player_save_state)) }
                         MenuButton(onClick = {
                             if (netGuest) { notice = str(R.string.player_during_netplay_only_player_1_can); return@MenuButton }
+                            if (raHardcoreGame) { notice = str(R.string.ra_hardcore_no_states); return@MenuButton }
                             worker.execute {
                                 val file = slotState()
                                 val done = file.isFile && NativePlayer.loadState(file.readBytes())
@@ -1513,6 +1620,14 @@ class PlayerActivity : ComponentActivity() {
                             fastForwardOn = !fastForwardOn
                             NativePlayer.setFastForward(fastForwardOn)
                         }, modifier = wide) { Text("Fast-forward: ${if (fastForwardOn) "On" else "Off"}") }
+                        // Frame skip: draws fewer frames on slow devices; the game and sound keep full speed.
+                        MenuButton(onClick = {
+                            frameSkip = (frameSkip + 1) % 4
+                            prefs.edit().putInt("frameskip.$system", frameSkip).apply()
+                            NativePlayer.setFrameSkip(frameSkip)
+                        }, modifier = wide) {
+                            Text(stringResource(R.string.player_frame_skip, if (frameSkip == 0) stringResource(R.string.player_off) else "$frameSkip"))
+                        }
                         // Multi-disc games (an .m3u): put in the next disc when the game asks for it.
                         val discs = remember(menuPage) { if (loaded) NativePlayer.discInfo() else null }
                         if (discs != null) {
@@ -1527,6 +1642,11 @@ class PlayerActivity : ComponentActivity() {
                             MenuButton(onClick = { closeMenu(); keyboard.show() }, modifier = wide) { Text(stringResource(R.string.player_keyboard)) }
                         }
                         MenuButton(onClick = { takeScreenshot() }, modifier = wide) { Text(stringResource(R.string.player_take_a_screenshot)) }
+                        raSession?.let { session ->
+                            MenuButton(onClick = { raList = session.achievements(); menuPage = MenuPage.ACHIEVEMENTS }, modifier = wide) {
+                                Text(raGame?.let { stringResource(R.string.ra_menu_count, it.unlocked, it.total) } ?: stringResource(R.string.ra_achievements))
+                            }
+                        }
                         // The rest in three groups, so the menu stays short.
                         MenuButton(onClick = { menuPage = MenuPage.PICTURE }, modifier = wide) { Text(stringResource(R.string.player_picture)) }
                         MenuButton(onClick = { menuPage = MenuPage.SOUND_CONTROLS }, modifier = wide) { Text(stringResource(R.string.player_sound_and_controls)) }
@@ -1651,13 +1771,14 @@ class PlayerActivity : ComponentActivity() {
                             coreOptions = NativePlayer.options()
                             menuPage = MenuPage.OPTIONS
                         }, modifier = wide) { Text(stringResource(R.string.player_emulator_settings)) }
-                        MenuButton(onClick = { openCheats() }, modifier = wide) {
+                        MenuButton(onClick = { if (raHardcoreGame) notice = str(R.string.ra_hardcore_no_cheats).also { menuPage = MenuPage.MAIN } else openCheats() }, modifier = wide) {
                             Text(stringResource(R.string.player_cheats_2) + cheats.count { it.enabled }.let { if (it > 0) stringResource(R.string.player_on, it) else "" })
                         }
                         if (PlayerCores.choices(system).size > 1) {
                             MenuButton(onClick = { menuPage = MenuPage.EMULATORS }, modifier = wide) { Text(stringResource(R.string.player_switch_emulator)) }
                         }
                     }
+                    MenuPage.ACHIEVEMENTS -> AchievementsPage(wide, first)
                     MenuPage.CHEATS -> {
                         Text(stringResource(R.string.player_cheats), color = Color.White, fontWeight = FontWeight.Bold)
                         Text(
