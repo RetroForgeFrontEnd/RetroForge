@@ -681,7 +681,7 @@ class PlayerActivity : ComponentActivity() {
         // Back (the gesture, the button and the Back key): Android 16's back gesture only reaches callbacks like this
         // one, never dispatchKeyEvent.
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() = onBack()
+            override fun handleOnBackPressed() = if (controllerBack) Unit else onBack()
         })
 
         setContent {
@@ -1397,6 +1397,9 @@ class PlayerActivity : ComponentActivity() {
 
     // ---------- input ----------
 
+    /** A controller's Back (Select) is held: the back callback leaves it to the game. */
+    private var controllerBack = false
+
     /** Back in the menu goes up a page, then closes it; in the game it opens the menu (or leaves a game that failed). */
     private fun onBack() {
         when {
@@ -1410,6 +1413,17 @@ class PlayerActivity : ComponentActivity() {
     // reads controller keys.
     @SuppressLint("RestrictedApi")
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        // Xbox controllers over Bluetooth send their View button (Select) as Back: in a game it's Select, so Select +
+        // a button plays a move instead of leaving the game. The Xbox button still opens the menu.
+        // Android also hands that Back to the back callback when it's let go, so the callback skips it (controllerBack).
+        if (event.keyCode == KeyEvent.KEYCODE_BACK && fromController(event) &&
+            (event.action == KeyEvent.ACTION_UP && controllerBack || !menuOpen && phase == Phase.Playing)
+        ) {
+            controllerBack = event.action == KeyEvent.ACTION_DOWN
+            return dispatchKeyEvent(
+                KeyEvent(event.downTime, event.eventTime, event.action, KeyEvent.KEYCODE_BUTTON_SELECT, event.repeatCount, event.metaState, event.deviceId, event.scanCode, event.flags, event.source),
+            )
+        }
         // System keys go to Android: Back to the back callback (see onCreate), as the gesture does, volume to the sound.
         // Menu stays ours.
         if (event.isSystem && event.keyCode != KeyEvent.KEYCODE_MENU) return super.dispatchKeyEvent(event)
@@ -1447,6 +1461,13 @@ class PlayerActivity : ComponentActivity() {
             return true
         }
         return super.dispatchKeyEvent(event)
+    }
+
+    /** A key from a game controller (its device has a gamepad or a stick), not the phone's own keys or a keyboard. */
+    private fun fromController(event: KeyEvent): Boolean {
+        val sources = event.device?.sources ?: return false
+        return sources and android.view.InputDevice.SOURCE_GAMEPAD == android.view.InputDevice.SOURCE_GAMEPAD ||
+            sources and android.view.InputDevice.SOURCE_JOYSTICK == android.view.InputDevice.SOURCE_JOYSTICK
     }
 
     /** A key from a real typing keyboard (or Android's virtual one), never a gamepad or a TV remote's d-pad. */
