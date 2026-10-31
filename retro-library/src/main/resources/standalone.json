@@ -105,7 +105,7 @@
   {
    "id": "RETROFORGE_PS3",
    "name": "RetroForge PS3 Player",
-   "page": "https://github.com/RetroForgeFrontEnd/RetroForge/releases",
+   "page": "https://github.com/RetroForgeFrontEnd/RetroForge-PS3-Player/releases",
    "obtainium": null,
    "packages": [
     {
@@ -117,7 +117,7 @@
   {
    "id": "RETROFORGE_PS4",
    "name": "RetroForge PS4 Player",
-   "page": "https://github.com/RetroForgeFrontEnd/RetroForge/releases",
+   "page": "https://github.com/RetroForgeFrontEnd/RetroForge-PS4-Player/releases",
    "obtainium": null,
    "packages": [
     {

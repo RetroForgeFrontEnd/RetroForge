@@ -22,7 +22,9 @@ Feedback and bug reports are very welcome: [open an issue](../../issues).
   [PS3 Player](https://github.com/RetroForgeFrontEnd/RetroForge-PS3-Player/releases) (built on RPCS3, with
   RPCN online sign-in and DLC from the game's page),
   [Switch Player](https://github.com/RetroForgeFrontEnd/RetroForge-Switch-Player/releases) (built on Eden,
-  with Play Online rooms on your Wi-Fi), and a PS4 player (built on shadPS4) to follow. You need your own
+  with Play Online rooms on your Wi-Fi) and
+  [PS4 Player](https://github.com/RetroForgeFrontEnd/RetroForge-PS4-Player/releases) (built on shadPS4; an early
+  preview, and most games are slow or don't start yet). You need your own
   games, keys and firmware from your own consoles.
 - **Network drives built in.** Finds the PCs on your home network and lists their shared folders; no
   sign-in. Games stream straight from the PC, so even big disc games start at once.
@@ -58,12 +60,8 @@ The full feature list is in each [release](../../releases).
 
 ## What's coming
 
-- The RetroForge PS4 Player on GitHub, with its own releases page.
-- Film sound in DTS and Dolby TrueHD, for Blu-ray rips.
-- Music controls in the pause menu, so you can change songs without leaving the game.
-- Copying games from a network drive keeps going when you leave RetroForge, with a "ready, tap to play"
-  notification.
-- More testing of PS3, PS4 and Switch on more phones and handhelds.
+- More testing of PS3, PS4 and Switch on more phones and handhelds, and faster PS4 games.
+- More move lists for Moves and turbo, and more of them checked in the games.
 
 Ideas and requests are welcome: [open an issue](../../issues).
 

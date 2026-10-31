@@ -4,8 +4,8 @@ RetroForge's PS4 player is built on shadPS4. It plays games the same way shadPS4
 from your own PS4. Nothing in this guide downloads a game, firmware or a key for you, and RetroForge never ships any
 of them.
 
-> **Status:** the PS4 player is in early testing, and RetroForge's PS4 screens (step 4) are still being built.
-> Steps 1–3 work today and the dumps you make now are exactly what it will use.
+> **Status:** the [RetroForge PS4 Player](https://github.com/RetroForgeFrontEnd/RetroForge-PS4-Player/releases) is
+> an early preview. Sonic Mania plays on a Galaxy Tab A9+ at about 40% speed; most games are slow or don't start yet.
 
 ## The short version
 
