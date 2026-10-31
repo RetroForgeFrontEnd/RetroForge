@@ -1,0 +1,81 @@
+# Primal Rage (arcade 2.3, SNES, Mega Drive, PlayStation, Saturn). Numpad notation for a fighter facing right:
+# 6 toward, 4 away, 2 down, 8 up. HQ HF are high quick and high fierce, LQ LF low quick and low fierce. Primal Rage
+# moves hold the buttons through the stick motion, so every step here presses them. Fatalities are done when the
+# other fighter is dizzy at the end of the last round; "Chomp a human" eats a worshipper for health.
+title: Primal Rage
+match: primal rage
+not: primal rage 2
+buttons: HQ=Y HF=X LQ=B LF=A
+checked: no
+Armadon | Bed-O-Nails | 2+HF+LQ 8+HF+LQ
+Armadon | Iron Maiden | 4+HF+LQ 7+HF+LQ 8+HF+LQ 9+HF+LQ 6+HF+LQ
+Armadon | Rushing Uppercut | 4+HQ+LQ 1+HQ+LQ 2+HQ+LQ 3+HQ+LQ 6+HQ+LQ
+Armadon | The Gut Gouger | 4+HQ+HF+LQ 6+HQ+HF+LQ
+Armadon | Hornication Uppercut | 3+HQ+HF+LQ 6+HQ+HF+LQ 9+HQ+HF+LQ
+Armadon | Spinning Death | 4+HQ+LF 6+HQ+LF 3+HQ+LF 2+HQ+LF
+Armadon | Flying Spikes | 4+HF+LF 7+HF+LF 8+HF+LF
+Armadon | Fatality: Gut Fling | 2+HQ+HF+LQ HQ+HF+LQ 2+HQ+HF+LQ HQ+HF+LQ 2+HQ+HF+LQ HQ+HF+LQ 2+HQ+HF+LQ 8+HQ+HF+LQ
+Armadon | Fatality: Meditation | 6+HQ+HF+LQ+LF 2+HQ+HF+LQ+LF 4+HQ+HF+LQ+LF 6+HQ+HF+LQ+LF HQ+HF+LQ+LF 6+HQ+HF+LQ+LF
+Blizzard | Mega Punch (Short) | 4+HQ+LQ 6+HQ+LQ
+Blizzard | Mega Punch (Quick) | 4+HQ+HF+LQ+LF 6+HQ+HF+LQ+LF
+Blizzard | Mega Punch (Long) | 4+HF+LF 6+HF+LF
+Blizzard | Cold Breath | 4+HQ+HF+LF 6+HQ+HF+LF
+Blizzard | Ice Geyser | 2+HQ+HF+LF 8+HQ+HF+LF
+Blizzard | Punching Bag | 6+HQ+LF 3+HQ+LF 2+HQ+LF 1+HQ+LF 4+HQ+LF 7+HQ+LF 8+HQ+LF
+Blizzard | Throw | 4+HF+LQ 7+HF+LQ 8+HF+LQ 9+HF+LQ 6+HF+LQ
+Blizzard | Fatality: Brain Bash | 2+HQ+HF+LF HQ+HF+LF 2+HQ+HF+LF 1+HQ+HF+LF 4+HQ+HF+LF 7+HQ+HF+LF 8+HQ+HF+LF 9+HQ+HF+LF 6+HQ+HF+LF
+Blizzard | Fatality: To-Da-Moon | 2+HQ+HF+LQ+LF HQ+HF+LQ+LF 2+HQ+HF+LQ+LF HQ+HF+LQ+LF 2+HQ+HF+LQ+LF HQ+HF+LQ+LF 2+HQ+HF+LQ+LF 8+HQ+HF+LQ+LF
+Blizzard | Fatality: Redemption | 2+HQ+HF+LQ+LF 6+HQ+HF+LQ+LF 8+HQ+HF+LQ+LF 2+HQ+HF+LQ+LF 8+HQ+HF+LQ+LF
+Blizzard | Chomp a human | 4+HQ+HF+LQ+LF 7+HQ+HF+LQ+LF 8+HQ+HF+LQ+LF 9+HQ+HF+LQ+LF 6+HQ+HF+LQ+LF 3+HQ+HF+LQ+LF 2+HQ+HF+LQ+LF
+Chaos | Grab-N-Throw | 6+HF+LF 4+HF+LF
+Chaos | Power Puke (Slow) | 8+HF+LQ 9+HF+LQ 6+HF+LQ
+Chaos | Power Puke (Fast) | 8+HQ+LF 9+HQ+LF 6+HQ+LF
+Chaos | Fart of Fury | 6+HF+LQ 9+HF+LQ 8+HF+LQ 7+HF+LQ 4+HF+LQ
+Chaos | Flying Butt Slam | 2+HF+LF 3+HF+LF 6+HF+LF 9+HF+LF 8+HF+LF 9+HF+LF 3+HF+LF
+Chaos | Battering Ram | 6+HQ+LQ HQ+LQ 6+HQ+LQ
+Chaos | Fatality: Golden Shower | 2+HQ+LQ HQ+LQ 2+HQ+LQ 4+HQ+HF+LQ+LF 6+HQ+HF+LQ+LF 4+HQ+HF+LQ+LF 6+HQ+HF+LQ+LF
+Chaos | Fatality: The Churl | 6+HQ+HF+LQ+LF HQ+HF+LQ+LF 6+HQ+HF+LQ+LF HQ+HF+LQ+LF 6+HQ+HF+LQ+LF 4+HQ+HF+LQ+LF HQ+HF+LQ+LF 4+HQ+HF+LQ+LF HQ+HF+LQ+LF 4+HQ+HF+LQ+LF
+Chaos | Chomp a human | 6+HQ+HF+LQ+LF 3+HQ+HF+LQ+LF 2+HQ+HF+LQ+LF 1+HQ+HF+LQ+LF 4+HQ+HF+LQ+LF
+Diablo | Fireball (Slow) | 2+HF+LF 3+HF+LF 6+HF+LF
+Diablo | Fireball (Fast) | 2+HQ+LQ 3+HQ+LQ 6+HQ+LQ
+Diablo | Hot Foot | 7+HF+LF 3+HF+LF
+Diablo | Mega Lunge | 2+HQ+LF 3+HQ+LF 6+HQ+LF
+Diablo | The Pulverizer | 8+HQ+LF 9+HQ+LF 6+HQ+LF 3+HQ+LF 2+HQ+LF
+Diablo | Inferno Flash | 8+HF+LQ+LF
+Diablo | Fatality: Incinerator | 7+HQ+HF+LQ+LF 2+HQ+HF+LQ+LF 3+HQ+HF+LQ+LF
+Diablo | Fatality: Fireball | 6+HF+LQ+LF HF+LQ+LF 6+HF+LQ+LF HF+LQ+LF 6+HF+LQ+LF
+Diablo | Fatality: Infernal | 8+HQ+LQ+LF 2+HQ+LQ+LF 8+HQ+LQ+LF 2+HQ+LQ+LF HQ+LQ+LF 2+HQ+LQ+LF
+Diablo | Chomp a human | 2+HQ+HF+LQ+LF 8+HQ+HF+LQ+LF 2+HQ+HF+LQ+LF
+Sauron | Primal Scream | 2+HQ+LQ 8+HQ+LQ
+Sauron | Earthquake Stomp | 8+HQ+HF+LF 2+HQ+HF+LF
+Sauron | Cranium Crusher | 2+HQ+LF 8+HQ+LF
+Sauron | Leaping Bone Bash | 2+HF+LQ 8+HF+LQ 2+HF+LQ
+Sauron | Stun Roar | 4+HQ+LQ 6+HQ+LQ
+Sauron | Neck Throw | 6+HF+LF 4+HF+LF
+Sauron | Fatality: Carnage | 4+HQ+HF+LQ+LF 6+HQ+HF+LQ+LF 4+HQ+HF+LQ+LF 6+HQ+HF+LQ+LF 4+HQ+HF+LQ+LF
+Sauron | Fatality: Flesh Eating | 2+HQ+LQ HQ+LQ 2+HQ+LQ 8+HQ+HF+LQ+LF HQ+HF+LQ+LF 8+HQ+HF+LQ+LF
+Sauron | Fatality: Grape Crusher | 8+HQ+HF+LQ+LF 2+HQ+HF+LQ+LF 8+HQ+HF+LQ+LF 2+HQ+HF+LQ+LF HQ+HF+LQ+LF 2+HQ+HF+LQ+LF
+Sauron | Chomp a human | 2+HQ+HF+LQ+LF HQ+HF+LQ+LF 2+HQ+HF+LQ+LF 8+HQ+HF+LQ+LF
+Talon | Brain Basher | 4+HF+LQ 7+HF+LQ 8+HF+LQ 9+HF+LQ 6+HF+LQ
+Talon | Pounce and Flip | 6+HF+LQ 2+HF+LQ 3+HF+LQ 6+HF+LQ
+Talon | Frantic Fury | 4+HQ+LF 1+HQ+LF 2+HQ+LF 3+HQ+LF 6+HQ+LF
+Talon | The Slasher | 2+HQ+LQ+LF 3+HQ+LQ+LF 6+HQ+LQ+LF
+Talon | The Face Ripper | 2+HF+LF 3+HF+LF 6+HF+LF
+Talon | Jugular Bite (in a combo) | 4+HF+LF 6+HF+LF
+Talon | Fatality: Heart Wrenching | 6+HQ+LQ+LF 3+HQ+LQ+LF 2+HQ+LQ+LF 1+HQ+LQ+LF 4+HQ+LQ+LF 7+HQ+LQ+LF 8+HQ+LQ+LF
+Talon | Fatality: Shredding | 6+HQ+LF 3+HQ+LF 2+HQ+LF 1+HQ+LF 4+HQ+LF 7+HQ+LF 8+HQ+LF
+Talon | Fatality: Stampede | 6+HQ+HF+LQ+LF 4+HQ+HF+LQ+LF 8+HQ+HF+LQ+LF 2+HQ+HF+LQ+LF
+Talon | Chomp a human | 6+HQ+HF+LQ+LF 3+HQ+HF+LQ+LF 2+HQ+HF+LQ+LF
+Vertigo | Venom Spit (Slow) | 6+HQ+LQ HQ+LQ 6+HQ+LQ
+Vertigo | Venom Spit (Fast) | 6+HF+LF HF+LF 6+HF+LF
+Vertigo | Voodoo Spell | 4+HF+LQ HF+LQ 4+HF+LQ
+Vertigo | Ground Teleport | 2+HF+LF HF+LF 2+HF+LF
+Vertigo | Air Teleport | 2+HF+LF 8+HF+LF
+Vertigo | Come Slither | 4+HQ+LQ HQ+LQ 4+HQ+LQ
+Vertigo | Scorpion Sting | 6+HF+LQ HF+LQ 6+HF+LQ
+Vertigo | Fatality: Petrify | 4+HF+LF HF+LF 4+HF+LF 6+HQ+HF+LQ+LF HQ+HF+LQ+LF 6+HQ+HF+LQ+LF
+Vertigo | Fatality: Shrink and Eat | 4+HF+LF HF+LF 4+HF+LF 2+HQ+HF+LQ+LF 8+HQ+HF+LQ+LF
+Vertigo | Chomp a human | 2+HQ+HF+LQ+LF 3+HQ+HF+LQ+LF 6+HQ+HF+LQ+LF 9+HQ+HF+LQ+LF 8+HQ+HF+LQ+LF
+Armadon | Fatality: The Impaler | 2+HQ+HF+LQ+LF 4+HQ+HF+LQ+LF 8+HQ+HF+LQ+LF 2+HQ+HF+LQ+LF
+Chaos | Ground Shaker | 4+HF+LQ 7+HF+LQ 1+HF+LQ
+Chaos | Fatality: Cannonball | 1+HQ+HF+LQ+LF 9+HQ+HF+LQ+LF 6+HQ+HF+LQ+LF 3+HQ+HF+LQ+LF 2+HQ+HF+LQ+LF 1+HQ+HF+LQ+LF

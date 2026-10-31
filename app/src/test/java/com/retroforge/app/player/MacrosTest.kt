@@ -138,6 +138,7 @@ class MacrosTest {
         assertEquals("Fighter's History Dynamite", titleFor("Fighter's History Dynamite"))
         assertEquals("Fighter's History Dynamite", titleFor("Karnov's Revenge"))
         assertNull(titleFor("Fighter's History (USA)"))
+        assertEquals("Primal Rage", titleFor("Primal Rage (USA)"))
         assertNull(titleFor("Tekken 2"))
     }
 
