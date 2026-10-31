@@ -19,7 +19,7 @@ Nothing goes to GitHub until every row is ✅ (or the user agrees to leave it ou
 | Soft patching | A patch beside a game plays patched; the game page shows it | 🟡 emulator |
 | Backlog | Set a status on a game page; it shows in Backlog with a suggestion | ✅ S22, 31 Oct: Playing set on Advance Wars, listed with a "Carry on" suggestion, taken out again |
 | Playtime | Charts per game, system, week | ✅ S22, 31 Oct (real playtime shown) |
-| Notes and guides | Write notes on the page and mid-game; a guide picture and a PDF open | ✅ S22 and emulator, 31 Oct: notes both ways; a guide picture scrolls and a two-page PDF opens (the Close manual button covers the PDF's first line) |
+| Notes and guides | Write notes on the page and mid-game; a guide picture and a PDF open | ✅ S22 and emulator, 31 Oct: notes both ways; a guide picture scrolls and a two-page PDF opens (the Close manual button covered the first line; fixed in 25fe940) |
 | Files | Copy, cut, paste, rename, new folder, delete, share, open with | ✅ S22, 31 Oct, in a test folder made and deleted in Roms; Share and Open with show Android's chooser |
 | Save importer | A save from another emulator plays in the built-in player | 🟡 emulator, 31 Oct: PS1 .mcs, N64 .eep and GB .sav imports written correctly; playing one in a real game that keeps saves still to do |
 | Save swap | Two devices pair with the code and swap a newer save | 📋 needs two devices |
