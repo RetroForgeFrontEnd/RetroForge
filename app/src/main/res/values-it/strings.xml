@@ -2385,4 +2385,8 @@
     <string name="music_wont_play">Non si riesce a riprodurre: la stazione non risponde o il file non è leggibile. Provane un\'altra.</string>
     <string name="media_see_more">Mostra altro (%1$d)</string>
     <string name="music_scan_again">Scansiona di nuovo</string>
+    <string name="game_copy_channel">Copia dei giochi sul telefono</string>
+    <string name="game_copy_copying">Copia sul telefono… %1$d%%</string>
+    <string name="game_copy_ready">%1$s è pronto</string>
+    <string name="game_copy_tap_to_play">Tocca per giocare.</string>
 </resources>

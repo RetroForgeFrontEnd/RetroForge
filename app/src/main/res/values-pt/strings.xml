@@ -2385,4 +2385,8 @@
     <string name="music_wont_play">Não é possível reproduzir: a estação não responde ou o ficheiro não pode ser lido. Experimente outra.</string>
     <string name="media_see_more">Ver mais (%1$d)</string>
     <string name="music_scan_again">Procurar de novo</string>
+    <string name="game_copy_channel">Copiar jogos para o telefone</string>
+    <string name="game_copy_copying">Copiando para o telefone… %1$d%%</string>
+    <string name="game_copy_ready">%1$s está pronto</string>
+    <string name="game_copy_tap_to_play">Toque para jogar.</string>
 </resources>

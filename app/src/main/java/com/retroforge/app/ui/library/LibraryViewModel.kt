@@ -167,7 +167,7 @@ class LibraryViewModel(
         if (root == null) return onProblem(LaunchProblem.LocationNotSupported)
         val component = standalone.installed(emulator) ?: return onProblem(LaunchProblem.StartFailed(str(R.string.library_isn_t_installed, emulator.name)))
         val romUri = repository.documentUri(root, game.documentId)
-        fun launch(uri: Uri, romPath: String?): LaunchProblem? {
+        fun launch(uri: Uri, romPath: String?, inBackground: Boolean = false): LaunchProblem? {
             val vars = LaunchVars(
                 romUri = uri.toString(),
                 romPath = romPath,
@@ -179,6 +179,12 @@ class LibraryViewModel(
             } catch (e: UnsupportedCommandException) {
                 return LaunchProblem.StartFailed(str(R.string.library_can_t_open_this_game, emulator.name, e.message))
             }
+            if (inBackground) {
+                // Android won't let RetroForge open another app from the background: a notification does it on a tap.
+                GameCopyService.ready(context, game.title, runCatching { standalone.intent(component, spec) }.getOrElse { return null })
+                repository.recordPlay(game, emulator.id)
+                return null
+            }
             return standalone.launch(component, spec).also { if (it == null) repository.recordPlay(game, emulator.id) }
         }
         if (romUri.authority?.endsWith(".network") != true || game.system !in COPY_FROM_NETWORK) {
@@ -187,21 +193,28 @@ class LibraryViewModel(
         if (_copying.value != null) return
         onProblem(null)
         _copying.value = game.id to 0
+        val app = context.applicationContext
+        GameCopyService.start(app, game.title)
         viewModelScope.launch {
+            var shown = 0
             val local = withContext(Dispatchers.IO) {
                 runCatching {
                     // The built-in player's game cache: copied once, reused next time, the two most recent games kept.
                     val cache = File(context.externalCacheDir ?: context.cacheDir, "games")
                     val dir = File(cache, Integer.toHexString(romUri.toString().hashCode()))
                     GameFiles.prune(cache, keep = 2, current = dir)
-                    File(GameFiles(resolver, dir).expose(romUri, game.fileName) { _copying.value = game.id to it })
+                    File(GameFiles(resolver, dir).expose(romUri, game.fileName) { percent ->
+                        _copying.value = game.id to percent
+                        if (percent != shown) { shown = percent; GameCopyService.progress(app, game.title, percent) }
+                    })
                 }
             }
+            GameCopyService.stop(app)
             _copying.value = null
             local.fold(
                 onSuccess = { file ->
                     val uri = androidx.core.content.FileProvider.getUriForFile(context, "${context.packageName}.ports", file)
-                    onProblem(launch(uri, null))
+                    onProblem(launch(uri, null, inBackground = !GameCopyService.inFront()))
                 },
                 onFailure = { onProblem(LaunchProblem.StartFailed("Couldn't copy ${game.fileName} from the network drive: ${it.message}")) },
             )

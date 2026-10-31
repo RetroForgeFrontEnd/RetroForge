@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <!-- Copying a game from a network drive to the phone keeps going while the user is in another app. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <!-- Android 17: reaching other devices on the Wi-Fi (netplay, link cable, online rooms, network drives) needs the
          user's say-so; LocalNetwork asks before the first of those. -->
@@ -72,6 +74,10 @@
             </intent-filter>
         </activity-alias>
 
+        <service
+            android:name=".ui.library.GameCopyService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
         <service
             android:name=".ui.media.MusicService"
             android:exported="true"

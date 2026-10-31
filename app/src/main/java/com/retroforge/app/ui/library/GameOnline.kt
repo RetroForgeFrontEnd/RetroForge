@@ -70,11 +70,12 @@ object GameOnline {
 
 /**
  * The game page's online card: host a room, join one found on this Wi-Fi, or join a friend's by address.
- * [play] starts the game with the extras.
+ * [play] starts the game with the extras. [copying] is the percent copied while a game on a network drive is copied
+ * to the phone first, shown here too since Play's own progress is further up the page, out of sight.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun GameOnlineCard(game: GameEntity, play: (List<IntentExtra>) -> Unit) {
+fun GameOnlineCard(game: GameEntity, copying: Int?, play: (List<IntentExtra>) -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var address by remember { mutableStateOf(GameOnline.lastAddress(context)) }
@@ -96,6 +97,10 @@ fun GameOnlineCard(game: GameEntity, play: (List<IntentExtra>) -> Unit) {
                     }
                 }
             })
+        }
+        copying?.let { percent ->
+            CardBody(stringResource(R.string.play_copying_from_network, percent))
+            androidx.compose.material3.LinearProgressIndicator(progress = { percent / 100f }, modifier = Modifier.fillMaxWidth())
         }
         rooms?.let { found ->
             if (found.isEmpty()) CardBody(stringResource(R.string.online_no_rooms))

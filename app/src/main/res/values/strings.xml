@@ -2513,4 +2513,8 @@
     <string name="music_wont_play">This won\'t play: the station isn\'t answering or the file can\'t be read. Try another.</string>
     <string name="media_see_more">See more (%1$d)</string>
     <string name="music_scan_again">Scan again</string>
+    <string name="game_copy_channel">Copying games to the phone</string>
+    <string name="game_copy_copying">Copying to the phone… %1$d%%</string>
+    <string name="game_copy_ready">%1$s is ready</string>
+    <string name="game_copy_tap_to_play">Tap to play.</string>
 </resources>

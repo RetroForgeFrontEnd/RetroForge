@@ -2386,4 +2386,8 @@
     <string name="music_wont_play">Lecture impossible : la station ne répond pas ou le fichier est illisible. Essayez-en un autre.</string>
     <string name="media_see_more">Voir plus (%1$d)</string>
     <string name="music_scan_again">Analyser à nouveau</string>
+    <string name="game_copy_channel">Copie des jeux sur le téléphone</string>
+    <string name="game_copy_copying">Copie sur le téléphone… %1$d%%</string>
+    <string name="game_copy_ready">%1$s est prêt</string>
+    <string name="game_copy_tap_to_play">Touchez pour jouer.</string>
 </resources>

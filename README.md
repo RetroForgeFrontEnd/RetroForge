@@ -6,7 +6,7 @@ A free Android frontend for retro games and PC games, all in one place.
 
 Made by Darren Glancy, built with a lot of help from AI (Claude). Tested on a Samsung Galaxy S22 as it went.
 
-**Status: beta (0.7.0).** It works well for most systems, but it's still being tested on more devices.
+**Status: beta (0.8.0).** It works well for most systems, but it's still being tested on more devices.
 Feedback and bug reports are very welcome: [open an issue](../../issues).
 
 ## What it does
@@ -17,6 +17,13 @@ Feedback and bug reports are very welcome: [open an issue](../../issues).
 - **Uses your collection as it is.** Point it at a RetroBat or ES-DE `roms` folder on the phone, an SD
   card or a shared folder on your PC, and it reads the titles, artwork, videos and manuals. It never
   changes your files.
+- **PS3, PS4 and Switch, in RetroForge's own players.** Each is a separate free app that RetroForge opens
+  your games in, with no menus of its own:
+  [PS3 Player](https://github.com/RetroForgeFrontEnd/RetroForge-PS3-Player/releases) (built on RPCS3, with
+  RPCN online sign-in and DLC from the game's page),
+  [Switch Player](https://github.com/RetroForgeFrontEnd/RetroForge-Switch-Player/releases) (built on Eden,
+  with Play Online rooms on your Wi-Fi), and a PS4 player (built on shadPS4) to follow. You need your own
+  games, keys and firmware from your own consoles.
 - **Network drives built in.** Finds the PCs on your home network and lists their shared folders; no
   sign-in. Games stream straight from the PC, so even big disc games start at once.
 - **In the game:** save states, fast-forward, cheats, screen shapes, CRT and LCD filters, upscaling
@@ -29,17 +36,36 @@ Feedback and bug reports are very welcome: [open an issue](../../issues).
   controls and LAN play. Plus streaming from your own PC (Moonlight/Sunshine built in) and Xbox Cloud Gaming.
 - **Looks:** Bezel Project bezels round the game in landscape, and game lists as a list, a grid or a
   bookshelf of 3D game cases.
-- **Saves everywhere:** save syncing through your PC's shared folder or a cloud app's folder.
+- **Play together:** netplay for up to 4 players on the same Wi-Fi, a virtual link cable for Game Boy
+  trading and battles, Switch Play Online rooms, and tournaments for game nights.
+- **Your library:** RetroAchievements, save states with pictures, playtime and a backlog, smart
+  collections, a gaming passport, game notes and guides, kiosk mode with a child lock, and input profiles.
+- **Saves everywhere:** save syncing through your PC's shared folder or a cloud app's folder, and a save
+  importer for saves from other emulators.
 - **Free games:** shareware, freeware and homebrew to download in one tap (Doom, Wolfenstein 3D, Commander
   Keen and new games for old consoles).
 - **More ways to play:** RetroArch and 21 standalone emulators (Dolphin, NetherSX2, Azahar, Eden and
   more) through Obtainium, PC ports of games you own, and Windows games through GameNative,
   Winlator or DroidDeck.
-- **ROM tools:** a ROM hack patcher and catalogue, a ROM Manager (duplicates, CHD/zip compression,
-  multi-disc playlists, all undoable) and PlayStation memory card tools.
-- **Media:** your films with posters, Plex and other media servers without signing in, 3D films.
+- **ROM tools:** a ROM hack patcher and catalogue, soft patches, a ROM Manager (identify against No-Intro
+  and Redump, rename, fix headers, duplicates, CHD/RVZ/zip compression, multi-disc playlists, all undoable)
+  and PlayStation memory card tools.
+- **Media:** your films with posters, Plex and other media servers without signing in, 3D films. A Music
+  tab for songs on the phone or your PC, with Now Playing visuals and an equaliser, and internet radio
+  from around the world. Your music keeps playing while you play.
 
 The full feature list is in each [release](../../releases).
+
+## What's coming
+
+- The RetroForge PS4 Player on GitHub, with its own releases page.
+- Film sound in DTS and Dolby TrueHD, for Blu-ray rips.
+- Music controls in the pause menu, so you can change songs without leaving the game.
+- Copying games from a network drive keeps going when you leave RetroForge, with a "ready, tap to play"
+  notification.
+- More testing of PS3, PS4 and Switch on more phones and handhelds.
+
+Ideas and requests are welcome: [open an issue](../../issues).
 
 ## Install
 

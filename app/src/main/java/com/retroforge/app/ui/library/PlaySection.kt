@@ -370,6 +370,7 @@ private fun StandaloneSection(
     options.firstOrNull { (_, emulator) -> emulator.id == GameOnline.SWITCH_PLAYER }
         ?.takeIf { (_, emulator) -> remember(emulator.id, resumes) { viewModel.installedComponent(emulator) } != null }
         ?.let { (option, emulator) ->
-            GameOnlineCard(game) { extras -> viewModel.playStandalone(context, game, root, option, emulator, onProblem, extras) }
+            val copying by viewModel.copying.collectAsStateWithLifecycle()
+            GameOnlineCard(game, copying?.takeIf { it.first == game.id }?.second) { extras -> viewModel.playStandalone(context, game, root, option, emulator, onProblem, extras) }
         }
 }

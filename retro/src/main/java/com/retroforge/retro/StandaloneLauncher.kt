@@ -31,6 +31,20 @@ class StandaloneLauncher(private val context: Context) {
     }.isSuccess
 
     fun launch(component: Pair<String, String>, spec: LaunchSpec): LaunchProblem? {
+        return try {
+            context.startActivity(intent(component, spec))
+            null
+        } catch (e: ActivityNotFoundException) {
+            LaunchProblem.StartFailed(str(R.string.standalone_launcher_the_emulator_s_game_screen_wasn))
+        } catch (e: SecurityException) {
+            LaunchProblem.StartFailed(str(R.string.standalone_launcher_android_refused_to_start_the_emulator, e.message))
+        } catch (e: RuntimeException) {
+            LaunchProblem.StartFailed(str(R.string.standalone_launcher_couldn_t_start_the_emulator, e.message))
+        }
+    }
+
+    /** The intent that opens the game, with read access to its file passed on; for [launch] or a notification's tap. */
+    fun intent(component: Pair<String, String>, spec: LaunchSpec): Intent {
         val (pkg, activity) = component
         val intent = Intent(spec.action ?: Intent.ACTION_MAIN).setComponent(ComponentName(pkg, activity))
         spec.category?.let(intent::addCategory)
@@ -45,19 +59,10 @@ class StandaloneLauncher(private val context: Context) {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         if (spec.clearTask) intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         if (spec.clearTop) intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        return try {
-            // The game is only readable through RetroForge's folder permission; pass read access on for this file.
-            spec.grants.forEach { context.grantUriPermission(pkg, Uri.parse(it), Intent.FLAG_GRANT_READ_URI_PERMISSION) }
-            if (spec.data != null && spec.data in spec.grants) intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            context.startActivity(intent)
-            null
-        } catch (e: ActivityNotFoundException) {
-            LaunchProblem.StartFailed(str(R.string.standalone_launcher_the_emulator_s_game_screen_wasn))
-        } catch (e: SecurityException) {
-            LaunchProblem.StartFailed(str(R.string.standalone_launcher_android_refused_to_start_the_emulator, e.message))
-        } catch (e: RuntimeException) {
-            LaunchProblem.StartFailed(str(R.string.standalone_launcher_couldn_t_start_the_emulator, e.message))
-        }
+        // The game is only readable through RetroForge's folder permission; pass read access on for this file.
+        spec.grants.forEach { context.grantUriPermission(pkg, Uri.parse(it), Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+        if (spec.data != null && spec.data in spec.grants) intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        return intent
     }
 
     /**
