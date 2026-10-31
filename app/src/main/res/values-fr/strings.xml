@@ -2003,4 +2003,6 @@
         <item quantity="one">Laissé tel quel : %1$d jeu</item>
         <item quantity="other">Laissés tels quels : %1$d jeux</item>
     </plurals>
+    <string name="player_soft_patch_applied">Partie avec le patch %1$s (le fichier du jeu reste intact)</string>
+    <string name="player_soft_patch_doesnt_fit">Le patch %1$s est fait pour une autre version de ce jeu, il a donc démarré sans</string>
 </resources>

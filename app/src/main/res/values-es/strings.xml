@@ -2003,4 +2003,6 @@
         <item quantity="one">Sin tocar: %1$d juego</item>
         <item quantity="other">Sin tocar: %1$d juegos</item>
     </plurals>
+    <string name="player_soft_patch_applied">Jugando con el parche %1$s (el archivo del juego no cambia)</string>
+    <string name="player_soft_patch_doesnt_fit">El parche %1$s es para otra versión de este juego, así que empezó sin él</string>
 </resources>

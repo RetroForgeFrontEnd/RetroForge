@@ -695,6 +695,21 @@ class PlayerActivity : ComponentActivity() {
             return NativePlayer.loadGame(start.path, -1, false)
         }
         val ext = fileName.substringAfterLast('.', "").lowercase()
+        // A patch beside the game (a translation, a fix) is applied to a temporary copy; the game file never changes.
+        // Disc games play unpatched.
+        val patch = if (ext in SoftPatch.discTypes) null else SoftPatch.find(contentResolver, uri, fileName)
+        fun patched(file: File): File {
+            if (patch != null) {
+                val ok = SoftPatch.apply(file, patch)
+                runOnUiThread {
+                    android.widget.Toast.makeText(
+                        this, if (ok) str(R.string.player_soft_patch_applied, patch.name) else str(R.string.player_soft_patch_doesnt_fit, patch.name),
+                        android.widget.Toast.LENGTH_LONG,
+                    ).show()
+                }
+            }
+            return file
+        }
         if (ext == "zip" && "zip" !in extensions) {
             val file = contentResolver.openInputStream(uri)?.use { stream ->
                 ZipInputStream(stream).use { zip ->
@@ -704,7 +719,7 @@ class PlayerActivity : ComponentActivity() {
                     File(cache, contentName(entry.name.substringAfterLast('/'))).also { out -> out.outputStream().use { zip.copyTo(it) } }
                 }
             } ?: throw IOException(str(R.string.player_couldn_t_open_it))
-            return NativePlayer.loadGame(file.path, -1, !needsFile)
+            return NativePlayer.loadGame(patched(file).path, -1, !needsFile)
         }
         if (ext == "7z" && "7z" !in extensions) {
             // 7-Zip needs random access, so the archive is copied to the cache first.
@@ -718,9 +733,13 @@ class PlayerActivity : ComponentActivity() {
                 }
             }
             archive.delete()
-            return NativePlayer.loadGame(file.path, -1, !needsFile)
+            return NativePlayer.loadGame(patched(file).path, -1, !needsFile)
         }
         val named = File(cache, contentName(fileName))
+        if (patch != null) {
+            contentResolver.openInputStream(uri)?.use { input -> named.outputStream().use { input.copyTo(it) } } ?: throw IOException(str(R.string.player_couldn_t_open_it))
+            return NativePlayer.loadGame(patched(named).path, -1, !needsFile)
+        }
         if (needsFile) {
             val root = File(externalCacheDir ?: cacheDir, "games")
             val dir = File(root, Integer.toHexString(uri.toString().hashCode()))

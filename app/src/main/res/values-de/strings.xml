@@ -1970,4 +1970,6 @@
         <item quantity="one">Übersprungen: %1$d Spiel</item>
         <item quantity="other">Übersprungen: %1$d Spiele</item>
     </plurals>
+    <string name="player_soft_patch_applied">Gespielt mit dem Patch %1$s (die Spieldatei bleibt unverändert)</string>
+    <string name="player_soft_patch_doesnt_fit">Der Patch %1$s passt zu einer anderen Version dieses Spiels, daher startet es ohne ihn</string>
 </resources>

@@ -2130,4 +2130,6 @@
         <item quantity="one">Left alone: %1$d game</item>
         <item quantity="other">Left alone: %1$d games</item>
     </plurals>
+    <string name="player_soft_patch_applied">Playing with the patch %1$s (the game file is unchanged)</string>
+    <string name="player_soft_patch_doesnt_fit">The patch %1$s was made for a different version of this game, so it started without it</string>
 </resources>

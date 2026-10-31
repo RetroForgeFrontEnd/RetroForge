@@ -2002,4 +2002,6 @@
         <item quantity="one">Lasciato stare: %1$d gioco</item>
         <item quantity="other">Lasciati stare: %1$d giochi</item>
     </plurals>
+    <string name="player_soft_patch_applied">Si gioca con la patch %1$s (il file del gioco non cambia)</string>
+    <string name="player_soft_patch_doesnt_fit">La patch %1$s è per un’altra versione di questo gioco, quindi è partito senza</string>
 </resources>
