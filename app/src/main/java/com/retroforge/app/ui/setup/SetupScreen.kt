@@ -236,7 +236,7 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
         }
 
         // 4. Switch keys and firmware, installed in the Switch Player itself, when there are Switch games or the player is installed.
-        if ("switch" in systemIds || com.retroforge.app.ui.settings.SwitchPlayer.installed(context)) {
+        if (!com.retroforge.app.Store.play && ("switch" in systemIds || com.retroforge.app.ui.settings.SwitchPlayer.installed(context))) {
             com.retroforge.app.ui.settings.SwitchSettingsCard(stringResource(R.string.setup_4_switch_keys_and_firmware), setup = true)
         }
 

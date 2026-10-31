@@ -132,7 +132,7 @@ class LibraryViewModel(
     }
 
 
-    private val emulators = StandaloneEmulators.bundled()
+    private val emulators = StandaloneEmulators.bundled().without(com.retroforge.app.Store.hiddenEmulators)
 
     /** Chosen emulator per system ("RETROARCH" or a standalone id); absent means the built-in player, or RetroArch where it has no core. */
     val emulatorChoices: StateFlow<Map<String, String>> = settings.settings.map { it.emulatorChoices }
@@ -247,7 +247,7 @@ class LibraryViewModel(
     val systems: StateFlow<List<SystemSummary>> = kotlinx.coroutines.flow.combine(repository.systemCounts, showAllSystems) { counts, all ->
         val withGames = counts.map { SystemSummary(it.system, repository.systemName(it.system), it.games, it.hacks) }
         val others = if (all) repository.rules.systems.filter { rule -> counts.none { it.system == rule.id } }.map { SystemSummary(it.id, it.name, 0, 0) } else emptyList()
-        (withGames + others).sortedBy { it.name.lowercase() }
+        (withGames + others).filter { it.id !in com.retroforge.app.Store.hiddenSystems }.sortedBy { it.name.lowercase() }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val hacks: StateFlow<List<GameEntity>> = repository.hacks.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

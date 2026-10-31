@@ -99,7 +99,7 @@ class SetupViewModel(
     private val _bios = MutableStateFlow(BiosState())
     val bios: StateFlow<BiosState> = _bios.asStateFlow()
 
-    private val standalone by lazy { com.retroforge.library.StandaloneEmulators.bundled() }
+    private val standalone by lazy { com.retroforge.library.StandaloneEmulators.bundled().without(com.retroforge.app.Store.hiddenEmulators) }
 
     /** Games outside a folder for their system (loose in the roms folder): setup offers to sort them. */
     suspend fun looseGames(): Int = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {

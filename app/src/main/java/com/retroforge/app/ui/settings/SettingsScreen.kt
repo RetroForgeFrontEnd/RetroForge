@@ -155,7 +155,7 @@ fun SettingsScreen(
                     CardBody(stringResource(R.string.settings_shows_which_graphics_chip_this_device))
                 }
 
-                if (SwitchPlayer.installed(LocalContext.current)) SwitchSettingsCard(stringResource(R.string.switch_settings_title), setup = false)
+                if (!com.retroforge.app.Store.play && SwitchPlayer.installed(LocalContext.current)) SwitchSettingsCard(stringResource(R.string.switch_settings_title), setup = false)
             }
             "saves" -> {
                 SaveBackupCard(library)
@@ -259,7 +259,8 @@ fun SettingsScreen(
                     CardBody(stringResource(R.string.settings_with_a_controller_d_pad_to))
                 }
 
-                UpdateCard()
+                // Play updates the Play build itself.
+                if (!com.retroforge.app.Store.play) UpdateCard()
 
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenAbout) {
                     CardTitle(stringResource(R.string.settings_about_retroforge))
@@ -282,7 +283,8 @@ fun SettingsScreen(
                     legalNoticeParagraphs.forEach { CardBody(it) }
                 }
 
-                SupportCard()
+                // Play doesn't allow donation links outside its own billing.
+                if (!com.retroforge.app.Store.play) SupportCard()
                 ReportProblemCard()
                 ChipRow {
                     FocusChip(stringResource(R.string.settings_thanks_and_licences), onClick = onOpenLicences)

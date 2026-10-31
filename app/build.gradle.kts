@@ -36,6 +36,22 @@ android {
         buildConfigField("String", "SUPPORT_GITHUB", quoted("support.github"))
     }
 
+    // Two builds from one codebase. "full" is the GitHub APK with everything. "play" is for Google Play: no Switch,
+    // no self-updating or installing other apps, no outside donation links (see docs/PLAY_STORE.md). It has its own
+    // application ID, so it installs beside the GitHub one (the two are signed with different keys).
+    flavorDimensions += "store"
+    productFlavors {
+        create("full") {
+            dimension = "store"
+            buildConfigField("boolean", "PLAY_STORE", "false")
+        }
+        create("play") {
+            dimension = "store"
+            applicationIdSuffix = ".play"
+            buildConfigField("boolean", "PLAY_STORE", "true")
+        }
+    }
+
     signingConfigs {
         if (keystoreProps.getProperty("storeFile") != null) {
             create("release") {

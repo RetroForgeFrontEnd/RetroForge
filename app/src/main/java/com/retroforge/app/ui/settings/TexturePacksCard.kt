@@ -127,7 +127,8 @@ private fun TexturePacks(title: String, body: String, packs: File) {
 private fun DownloadPacks(cacheDir: File, only: String? = null) {
     // On a game's page, only that game's pack (and nothing at all when there's none for it).
     fun key(s: String) = s.lowercase().filter { it.isLetterOrDigit() }
-    val packs = if (only == null) TexturePackDownloads.packs else TexturePackDownloads.packs.filter { key(only).contains(key(it.game)) }
+    // Fan texture packs of other companies' games aren't offered for one-tap download in the Play build.
+    val packs = if (com.retroforge.app.Store.play) emptyList() else if (only == null) TexturePackDownloads.packs else TexturePackDownloads.packs.filter { key(only).contains(key(it.game)) }
     if (packs.isEmpty()) return
     val context = LocalContext.current
     val scope = rememberCoroutineScope()

@@ -40,6 +40,10 @@ class StandaloneEmulators(val emulators: Map<String, StandaloneEmulator>, privat
 
     val systemIds: Set<String> get() = systems.keys
 
+    /** The same list without [ids] (emulators a build doesn't offer). */
+    fun without(ids: Set<String>): StandaloneEmulators =
+        if (ids.isEmpty()) this else StandaloneEmulators(emulators - ids, systems.mapValues { (_, o) -> o.filter { it.emulator !in ids } }, source)
+
     companion object {
         private val json = Json { ignoreUnknownKeys = true }
 

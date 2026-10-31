@@ -23,21 +23,26 @@ export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"
 ./gradlew testDebugUnitTest assembleDebug lintDebug
 ```
 
-The APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
+There are two builds of the app (see [PLAY_STORE](PLAY_STORE.md)). `assembleDebug` makes both:
+
+- `app/build/outputs/apk/full/debug/app-full-debug.apk`: the GitHub version, with everything (`com.retroforge.app`).
+- `app/build/outputs/apk/play/debug/app-play-debug.apk`: the Google Play version (`com.retroforge.app.play`).
+
+For just one, use `assembleFullDebug` or `assemblePlayDebug`.
 
 Or open `F:\RetroForge` in Android Studio and run the **app** configuration.
 
 ## Install on a device or emulator
 
 ```bash
-adb install -r app/build/outputs/apk/debug/app-debug.apk
+adb install -r app/build/outputs/apk/full/debug/app-full-debug.apk
 ```
 
 RetroForge appears as **RetroForge** in the phone launcher and in the Android TV launcher row (the manifest declares `LEANBACK_LAUNCHER` and does not require a touchscreen).
 
 ## Release builds
 
-`assembleRelease` shrinks and obfuscates the code with R8 (APK about 4 MB). Tested 2026-10-28: the release build, signed with the debug key for testing, ran every main screen on the emulator without errors.
+`assembleFullRelease` (GitHub) and `bundlePlayRelease` (the .aab Google Play wants) shrink and obfuscate the code with R8 (APK about 4 MB). Tested 2026-10-28: the release build, signed with the debug key for testing, ran every main screen on the emulator without errors.
 
 ### Your release key (once, keep it safe)
 
@@ -76,7 +81,7 @@ support.github=https://...
 2. Settings → Developer options → turn on USB debugging.
 3. Connect the phone by USB, unlock it, and tap **Allow** on "Allow USB debugging?" (tick "Always allow from this computer").
 4. In a terminal: `adb devices` should list the phone as `device` (not `unauthorized`).
-5. Install: `adb install -r app/build/outputs/apk/debug/app-debug.apk`
+5. Install: `adb install -r app/build/outputs/apk/full/debug/app-full-debug.apk`
 
 ## Film artwork (no built-in TMDB key)
 

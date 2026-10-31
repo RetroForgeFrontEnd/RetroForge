@@ -81,7 +81,7 @@ newer). Then open RetroForge and follow **Set up RetroForge**.
 ## Building it yourself
 
 See [BUILD_AND_INSTALL](docs/BUILD_AND_INSTALL.md). In short: Android Studio, JDK 17, then
-`./gradlew :app:assembleDebug`.
+`./gradlew :app:assembleFullDebug`.
 
 ## More
 

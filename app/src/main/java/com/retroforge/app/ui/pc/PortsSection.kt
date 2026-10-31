@@ -133,7 +133,8 @@ private fun PortCard(port: GamePort, owned: GameEntity?, library: LibraryReposit
                 })
             } else {
                 if (launch != null) FocusChip(stringResource(R.string.home_layouts_open), onClick = { runCatching { context.startActivity(launch) } })
-                FocusChip(if (launch != null) stringResource(R.string.hacks_update) else stringResource(R.string.ports_download_and_install), onClick = {
+                // The Play build can't install apps itself; Get (Obtainium or the releases page) still works.
+                if (!com.retroforge.app.Store.play) FocusChip(if (launch != null) stringResource(R.string.hacks_update) else stringResource(R.string.ports_download_and_install), onClick = {
                     prepared = str(R.string.ports_looking_for_the_latest_version)
                     scope.launch {
                         prepared = withContext(Dispatchers.IO) {
