@@ -46,6 +46,13 @@ CUSA12345/
 
 If there's no `eboot.bin`, or the dumper said it couldn't decrypt, the dump didn't work. Run it again.
 
+**Updates:** merged into the game folder works. You can also keep the update as its own dumped folder named
+`CUSA12345-UPDATE` (or `CUSA12345-patch`) next to the game: shadPS4 lays it over the game when it starts, and
+RetroForge doesn't list it as a separate game.
+
+**DLC:** dumped DLC folders can't be added yet; that's coming. For now, DLC only comes in through a `.pkg` (see the
+end of this guide).
+
 ## Step 2: Dump the system files (once)
 
 shadPS4 needs some of the PS4's own system modules and fonts. These come from your console too, and you only do
@@ -68,15 +75,16 @@ Use the device's own storage or a fast microSD card. PS4 games are big, so leave
    looks for them and tells you if any modules are still missing.
 2. **Add your games folder.** RetroForge finds every `CUSAxxxxx` folder with an `eboot.bin`, reads each game's
    name and icon, and shows it in your library.
-3. Tap a game to play.
+3. Tap a game to play. The first time, Android asks you to let the PS4 player access all files; allow it, or it
+   can't read your games folder.
 
-Optional: if you want trophies to unlock, you can import your console's **trophy key** (shadPS4 reads it from its
-`keys.json`). Games play fine without it.
+Optional: if you want trophies to unlock, you can import the **trophy key** (the same for every PS4; 16 bytes, or
+32 hex digits). shadPS4 reads it from its `keys.json`. Games play fine without it.
 
 ## If a game doesn't start
 
-- **"Missing modules"**: the system dump didn't include them all. Dump the system files again and import the new
-  dump.
+- **The system-files import says modules are missing** (for example "29 of 34 modules found"): the dump didn't
+  include them all. Dump the system files again and import the new dump.
 - **Black screen or crash at start**: check shadPS4's compatibility list for that game. If it doesn't run in
   shadPS4 yet, it won't run here either.
 - **Game starts on PC shadPS4 but not on Android**: some games need more memory or a faster GPU than the device
@@ -90,6 +98,16 @@ Unpacking a homebrew or backup `.pkg` needs two PKG keys. They're **not** someth
 game, and RetroForge doesn't include them, link to them or tell you where to find them. If you already have them,
 you can import them once and the player unpacks such packages in the background. If you don't, dump the game from
 your console instead (step 1): the result is the same game folder, and it needs no keys.
+
+What the player reports for a `.pkg`:
+
+| Message | Meaning |
+|---|---|
+| `no_keys` | No PKG keys imported yet. |
+| `bad_keys` | The imported keys are wrong or don't belong together. |
+| `retail_pkg` | A PlayStation Store package: it can't be unpacked. Dump the game from your PS4 instead. |
+| `not_a_pkg` | The file isn't a PS4 package. |
+| `no_space` | Not enough free space to unpack it. |
 
 ## The legal bit
 
