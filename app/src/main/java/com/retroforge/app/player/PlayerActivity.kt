@@ -2503,7 +2503,11 @@ private fun MenuGrid(columns: Int, vararg tiles: Tile?) {
 /** The moves put on screen from Moves and turbo, with ⇄ for which way the fighter faces. */
 @Composable
 private fun MoveButtons(moves: List<Macros.Move>, facingRight: Boolean, onFlip: () -> Unit, onMove: (Macros.Move) -> Unit, modifier: Modifier) {
-    androidx.compose.foundation.layout.Row(modifier, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+    // On a dark backing, so the buttons read over bright games too.
+    androidx.compose.foundation.layout.Row(
+        modifier.background(Color.Black.copy(alpha = 0.6f), androidx.compose.foundation.shape.RoundedCornerShape(10.dp)).padding(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
         MenuButton(onClick = onFlip, contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)) {
             Text(if (facingRight) "⇄ →" else "← ⇄", fontSize = 12.sp)
         }
