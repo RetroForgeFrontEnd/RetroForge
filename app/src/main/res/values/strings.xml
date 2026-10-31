@@ -2512,4 +2512,5 @@
     <string name="radio_none">No stations found.</string>
     <string name="music_wont_play">This won\'t play: the station isn\'t answering or the file can\'t be read. Try another.</string>
     <string name="media_see_more">See more (%1$d)</string>
+    <string name="music_scan_again">Scan again</string>
 </resources>

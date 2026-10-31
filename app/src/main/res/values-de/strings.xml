@@ -2352,4 +2352,5 @@
     <string name="radio_none">Keine Sender gefunden.</string>
     <string name="music_wont_play">Das lässt sich nicht abspielen: Der Sender antwortet nicht oder die Datei ist nicht lesbar. Versuch etwas anderes.</string>
     <string name="media_see_more">Mehr anzeigen (%1$d)</string>
+    <string name="music_scan_again">Erneut scannen</string>
 </resources>

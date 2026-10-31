@@ -121,7 +121,7 @@ fun MusicSection(prefs: SharedPreferences) {
         })
         FocusChip(if (folder == null) stringResource(R.string.music_choose_folder) else stringResource(R.string.music_change_folder), onClick = { pick.launch(null) })
         if (folder != null) FocusChip(stringResource(R.string.music_forget_folder), onClick = { prefs.edit().remove(MUSIC_FOLDER).apply(); folder = null })
-        if (folder != null || onPhone) FocusChip(stringResource(R.string.player_look_again), onClick = { refresh++ })
+        if (folder != null || onPhone) FocusChip(stringResource(R.string.music_scan_again), onClick = { refresh++ })
     }
     if (denied) CardBody(stringResource(R.string.music_permission_denied))
     val list = albums

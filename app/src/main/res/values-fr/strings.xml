@@ -2385,4 +2385,5 @@
     <string name="radio_none">Aucune station trouvée.</string>
     <string name="music_wont_play">Lecture impossible : la station ne répond pas ou le fichier est illisible. Essayez-en un autre.</string>
     <string name="media_see_more">Voir plus (%1$d)</string>
+    <string name="music_scan_again">Analyser à nouveau</string>
 </resources>

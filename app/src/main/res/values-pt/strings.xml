@@ -2384,4 +2384,5 @@
     <string name="radio_none">Nenhuma estação encontrada.</string>
     <string name="music_wont_play">Não é possível reproduzir: a estação não responde ou o ficheiro não pode ser lido. Experimente outra.</string>
     <string name="media_see_more">Ver mais (%1$d)</string>
+    <string name="music_scan_again">Procurar de novo</string>
 </resources>

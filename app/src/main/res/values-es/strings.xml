@@ -2385,4 +2385,5 @@
     <string name="radio_none">No se encontraron emisoras.</string>
     <string name="music_wont_play">No se puede reproducir: la emisora no responde o el archivo no se puede leer. Prueba otra.</string>
     <string name="media_see_more">Ver más (%1$d)</string>
+    <string name="music_scan_again">Volver a escanear</string>
 </resources>
