@@ -125,7 +125,7 @@ class MacrosTest {
         assertEquals("The King of Fighters", titleFor("The King of Fighters '95"))
         assertEquals("Art of Fighting", titleFor("Art of Fighting (USA)"))
         assertEquals("Art of Fighting", titleFor("Ryuuko no Ken"))
-        assertNull(titleFor("Art of Fighting 2"))
+        assertEquals("Art of Fighting", titleFor("Art of Fighting (Japan)"))
         assertEquals("Clay Fighter", titleFor("Clay Fighter (USA)"))
         assertEquals("Clay Fighter", titleFor("ClayFighter - Tournament Edition (USA)"))
         assertNull(titleFor("Clay Fighter 2 - Judgment Clay (USA)"))
@@ -140,6 +140,13 @@ class MacrosTest {
         assertNull(titleFor("Fighter's History (USA)"))
         assertEquals("Primal Rage", titleFor("Primal Rage (USA)"))
         assertNull(titleFor("Tekken 2"))
+        assertEquals("Art of Fighting 2", titleFor("Art of Fighting 2 (USA)"))
+        assertEquals("Art of Fighting 2", titleFor("Ryuuko no Ken 2"))
+        assertNull(titleFor("Art of Fighting 3 - The Path of the Warrior"))
+        assertEquals("Dragon Ball Z: Super Butouden 2", titleFor("Dragon Ball Z - Super Butouden 2 (Japan)"))
+        assertNull(titleFor("Dragon Ball Z - Super Butouden 3 (Japan)"))
+        assertEquals("Double Dragon V", titleFor("Double Dragon V - The Shadow Falls (USA)"))
+        assertNull(titleFor("Double Dragon (USA)"))
     }
 
     @Test

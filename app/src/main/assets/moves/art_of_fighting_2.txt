@@ -1,0 +1,91 @@
+# Art of Fighting 2 (Neo Geo, SNES; Ryuuko no Ken 2). Numpad notation for a fighter facing right: 6 forward,
+# 2 down, 3 down-forward. A punch, B kick, C strong attack (or throw up close), D taunt. Special moves use spirit.
+# "Super" moves need a full spirit gauge; "Hidden" ones also need the life bar flashing. "Close" moves are throws:
+# do them next to the other fighter. "In the air" moves start from a jump.
+title: Art of Fighting 2
+match: art of fighting 2 | ryuuko no ken 2 | ryuko no ken 2
+buttons: A=B B=A C=Y D=X
+checked: no
+Ryo | Kohou | 6 2 3+A
+Ryo | Ko'ou Ken | 2 3 6+A
+Ryo | Ko'ou Ken (in the air) | 2 3 6+A
+Ryo | Kyokugenryuu Renbu Ken | 2 1 4+A
+Ryo | Hien Shippuu Kyaku | 1 6+B
+Ryo | Zanretsu Ken | 6 4 6+A
+Ryo | Super: Haoh Shoukou Ken | 6 4 1 2 3 6+A
+Ryo | Hidden: Ryuuko Ranbu | 2 3 6 3 2 1 4+C
+Robert | Ryuuga | 6 2 3+A
+Robert | Ryuugeki Ken | 2 3 6+A
+Robert | Hien Ryuujin Kyaku (in the air) | 2 1 4+B
+Robert | Kyokugenryuu Renbu Ken | 2 1 4+A
+Robert | Hien Shippuu Kyaku | 1 6+B
+Robert | Genei Kyaku | 6 4 6+B
+Robert | Super: Haoh Shoukou Ken | 6 4 1 2 3 6+A
+Robert | Hidden: Ryuuko Ranbu | 2 3 6 3 2 1 4+C
+Yuri | Ko'ou Ken | 2 3 6+A
+Yuri | Saiha | 2 1 4+A
+Yuri | Raiou Ken | 2 3 6+B
+Yuri | Enbu Kyaku | 2 1 4+B
+Yuri | Hyakuretsu Binta | 6 4 6+A
+Yuri | Super: Haoh Shoukou Ken | 6 4 1 2 3 6+A
+Yuri | Hidden: Niren Houou Kyaku | 6 4 6 3 2 1 4+B+C
+Takuma | Ko'ou Ken | 2 3 6+A
+Takuma | Kishin Geki | 2 1 4+A
+Takuma | Hien Shippuu Kyaku | 1 6+B
+Takuma | Zanretsu Ken | 6 4 6+A
+Takuma | Shoran Kyaku | 6 3 2 1 4+B
+Takuma | Super: Haoh Shikou Ken | 6 4 1 2 3 6+A
+Takuma | Hidden: Ryuuko Ranbu | 2 3 6 4 6+A+C
+Eiji | Kikou Hou | 2 3 6+A
+Eiji | Kasumi Giri | 2 1 4+A
+Eiji | Ryuueijin | 2 8+A
+Eiji | Koppa Giri | 6 4 6+A
+Eiji | Ryuuren Kenkyaku | 2 1 4+B
+Eiji | Pegasus Kick | 1 6+B
+Eiji | Super: Zantetsu Ha | 2 3 6 3 2 1 4+A
+Eiji | Hidden: Zantetsu Tourou Ken | 4 1 2 3 6 3 2+B
+Temjin | Tornado Dive | 4 1 2 3 6+A
+Temjin | Wall of Spirit | 2 3 6+A
+Temjin | Rengeki Kenkyaku | 2 1 4+A
+Temjin | Thunder Drop (close) | 6 3 2 1 4+A
+Temjin | Cartwheel Throw (close) | 6 3 2 1 4+B
+Temjin | Super: Fire Tackle | 4 6 4 1 2 3 6+A
+Temjin | Hidden: Temjin Ranbu | 2 1 4 6 3 2+A+C
+Jack | Knuckle Pad | 2 3 6+A
+Jack | Bomber Dance | 2 1 4+A
+Jack | Dynamite Lariat | 6 4 6+A
+Jack | Super Drop Kick | 1 9+B
+Jack | Brain Shocker Bat | 6 4 6+B
+Jack | Super: Super Hip Attack | 4 6 3 2 1 4+B
+Jack | Hidden: Hell Diving (close) | 6 3 2 1 4+A
+Lee | Tetsu no Tsume | 2 3 6+A
+Lee | Kachuu Mouren Kyaku | 2 1 4+A
+Lee | Hyakuretsu Ken | 6 4 6+A
+Lee | Hawk Talon Drop | 2 8+A
+Lee | Super: Shinkuu Kuurensou | 6 4 1 2 3 6+A
+Lee | Hidden: Kachuu Hiensou | 2 1 4 1 2 3 6+A
+King | Venom Strike | 2 3 6+B
+King | Trap Shot | 2 8+B
+King | Tornado Kick | 6 4 6+B
+King | Moushuu Kyaku | 2 1 4+B
+King | Super: Double Strike | 6 4 6 3 2+B
+King | Hidden: Surprise Rose | 4 6 3 2 1+B+C
+Micky | Burning Upper | 2 3 6+A
+Micky | Crazy Upper | 2 8+A
+Micky | Combinations | 2 1 4+A
+Micky | Rolling Upper | 2 3 6+B
+Micky | Chopping Right | 2 1 4+B
+Micky | Super: Comet Gale | 6 4 1 2 3 6+A
+Micky | Hidden: Rush Bomber | 2 1 4 1 2+A
+John | Mega Smash | 2 3 2+A
+John | Flying Attack | 2 1 4+A
+John | Overdrive Kick | 2 1 4+B
+John | Spiral Leg Bomber | 2 8+B
+John | Super: Mega Smasher | 6 4 1 2 3 6+A
+John | Hidden: Atomic Smash | 6 4 1 2 3 6+B+C
+Mr. Big | Drum Shot | 1 6+A
+Mr. Big | Cross Diving | 4 1 2 3 6+A
+Mr. Big | Ground Blaster | 2 3 6+B
+Mr. Big | Spinning Lancer | 4 6 3 2 1 4+B
+Mr. Big | Super: Blaster Wave | 4 1 2 3 6 4+A
+Mr. Big | Hidden: Rising Spear | 2 3 6 3 2 1 4+A

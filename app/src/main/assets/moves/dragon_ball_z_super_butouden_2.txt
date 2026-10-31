@@ -1,0 +1,80 @@
+# Dragon Ball Z: Super Butouden 2 (Super Famicom). Numpad notation for a fighter facing right: 6 forward, 2 down,
+# 3 down-forward; *60 holds for a second. Y punch, B kick, A energy. "Ultimate" moves need power (A+B charges it);
+# "Ultra" moves are done next to the other fighter. Leave the pause menu's "command fixing" on Normal.
+title: Dragon Ball Z: Super Butouden 2
+match: super butouden 2 | super butoden 2 | super butohden 2
+buttons: Y=Y B=B A=A
+checked: no
+Gohan | Bakuretsu Punch | 6 4 6+Y
+Gohan | Bukuu Kyaku (in the air) | 6 2+B
+Gohan | Multiple Energy Bullet | 2 1 4+A
+Gohan | Powerful Energy Bullet | 2 3 6+A
+Gohan | Kiaihou | 6 4 6+A
+Gohan | Shougeki Ha | 2 8+A
+Gohan | Ultimate: Masenkou | 4 1 2 3 6+A
+Gohan | Ultimate: Kamehame Ha | 2 1 4 6+A
+Gohan | Ultra: Bakuretsu Rush | 6 4 2 8+B
+Vegeta | Thrash Arrow | 1 9+B
+Vegeta | Super Dash | 6 4 6+Y
+Vegeta | Driving Elbow | 2 3 6+Y
+Vegeta | Multiple Energy Bullet | 2 1 4+A
+Vegeta | Bakuhatsu Ha | 2 8+A
+Vegeta | Kien Zan | 2 3 6+A
+Vegeta | Ultimate: Big Bang Attack | 4 1 2 3 6+A
+Vegeta | Ultimate: Final Flash | 2 1 4 6+A
+Vegeta | Ultra: Planet Burst | 6 4 2 8+Y
+Trunks | Super Sliding Kick | 2 3 6+B
+Trunks | Lightning Dash | 2 3 6+Y
+Trunks | Baku Ken Ha | 4*60 6+Y
+Trunks | Large Energy Bullet | 2 3 6+A
+Trunks | Multiple Energy Bullet | 2 1 4+A
+Trunks | Energy Bullet | 4 1 2+A
+Trunks | Ultimate: Burning Attack | 4 1 2 3 6+A
+Trunks | Ultimate: Finish Buster | 2 1 4 6+A
+Trunks | Ultra: Tornado Breaker | 6 4 2 8+B
+Piccolo | Sonic Kick | 6 4 6+B
+Piccolo | Bukuu Kyaku (in the air) | 6 2+B
+Piccolo | Mystic Throw | 4*60 6+Y
+Piccolo | Large Energy Bullet | 2 3 6+A
+Piccolo | Kaikou Beam | 4 6+A
+Piccolo | Kaikou Ha | 4 1 2+A
+Piccolo | Ultimate: Makankousappou | 4 1 2 3 6+A
+Piccolo | Ultimate: Gekiretsu Kouzan | 2 1 4 6+A
+Piccolo | Ultra: Chou Bakuretsu Ha | 6 4 2 8+Y
+Cell | Astral Shock | 6 4 6+B
+Cell | Rising Attack | 2 3 6+Y
+Cell | Grand Slider | 2 3 6+B
+Cell | Multiple Energy Bullet | 2 1 4+A
+Cell | Taiyou Ken | 2 8+A
+Cell | Energy Shot | 4 6+A
+Cell | Ultimate: Kamehame Ha | 4 1 2 3 6+A
+Cell | Ultimate: Super Kamehame Ha | 2 1 4 6+A
+Cell | Ultra: Spike Buster | 6 4 2 8+Y
+Cell Junior | Step Up Attack | 1 9+B
+Cell Junior | Spin Liner | 6 4 6+B
+Cell Junior | Double Kick | 4*60 6+B
+Cell Junior | Multiple Energy Bullet | 2 1 4+A
+Cell Junior | Energy Shot | 4 6+A
+Cell Junior | Kien Zan | 2 3 6+A
+Cell Junior | Ultimate: Makankousappou | 4 1 2 3 6+A
+Cell Junior | Ultimate: Kamehame Ha | 2 1 4 6+A
+Zangya | Sharp Shooter | 6 4 6+B
+Zangya | Thrash Liner | 2 3 6+B
+Zangya | Sky Zapper | 2 3 6+Y
+Zangya | Multiple Energy Bullet | 2 1 4+A
+Zangya | Energy Shot | 4 6+A
+Zangya | Ultimate: Spark Laser | 4 1 2 3 6+A
+Zangya | Ultimate: Shoot Blaster | 2 1 4 6+A
+Zangya | Ultra: Lift Strike | 6 4 2 8+B
+Bojack | Bicycle Smash | 1 9+B
+Bojack | Thrash Hammer | 6 4 6+B
+Bojack | Dash Knee Lift | 2 3 6+Y
+Bojack | Energy Shot | 4 6+A
+Bojack | Energy Bullet | 4 1 2+A
+Bojack | Ultimate: Grand Smasher | 4 1 2 3 6+A
+Bojack | Ultimate: Galactic Buster | 2 1 4 6+A
+Bojack | Ultra: Cosmic Bomber | 6 4 2 8+B
+Any | Guard an ultimate (half damage) | 4+A
+Any | Repel an ultimate | 4 1 2+A
+Any | Psychic block | 6 4 6+A
+Any | Energy block | 2 1 4 6+A

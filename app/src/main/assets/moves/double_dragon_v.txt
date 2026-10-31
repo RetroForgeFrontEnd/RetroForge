@@ -1,0 +1,61 @@
+# Double Dragon V: The Shadow Falls (SNES, Mega Drive / Genesis). Numpad notation for a fighter facing right:
+# 6 forward, 2 down, 3 down-forward; *60 holds for a second. LP MP HP punches, LK MK HK kicks, laid out like
+# Street Fighter II on a SNES pad; where any strength works the list uses the hard one. "Close" moves are throws.
+title: Double Dragon V
+match: double dragon v | double dragon 5
+buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
+checked: no
+Billy / Jimmy | Dragon Snake | 2 1 4+HP
+Billy / Jimmy | Dragon Slice | 6 3 2+HP
+Billy / Jimmy | Dragon Shock / Dragon Fire | 4*60 6+HP
+Billy / Jimmy | Dragon Slide | 6 _ 6+HP
+Jawbreaker | Swallow (close) | 6 _ 6+MK
+Jawbreaker | Bite and Toss (close) | 6 _ 6+HK
+Jawbreaker | Flying Headbutt | 6 _ 6+HP
+Jawbreaker | Loogie Hock | 4*60 6+HP
+Jawbreaker | Breath Wave | 2 1 4+HP
+Jawbreaker | Ground Spark | 6 3 2+HK
+Icepick | Ice Dart | 2 3 6+HP
+Icepick | Iceball | 4*60 6+HP
+Icepick | Swordvault Kickspin | 2 1 4+HK
+Icepick | Icicle Hammerhead Dive | 6 _ 6+MP
+Icepick | Sword Overdrive | HP _ HP _ HP _ HP _ HP
+Bones | Eyebeam | 2 1 4+HP
+Bones | Skull Toss | 4*60 6+HP
+Bones | Gun Shot | 6 3 2+HK
+Bones | Long Arm Lash | 6 _ 6+MP
+Bones | Headbutt from Hell | 6 _ 6+MK
+Sickle | Energy Blade | 2 3 6+HP
+Sickle | Whirlwind Slice | 4*60 6+HP
+Sickle | Rolling Sawblade | 2 1 4+HP
+Sickle | Flying Cartwheel Sawblade | 6 3 2+HK
+Blade | Torpedo | 4*60 6+HP
+Blade | Whirlwind Kick | 4*60 6+HK
+Blade | Flashfront Blade | 2 1 4+MP
+Blade | Blade Overdrive | HP _ HP _ HP _ HP _ HP
+Trigger Happy | Rocket Uppercut | 6 3 2+HP
+Trigger Happy | Gunshot | 2 1 4+HK
+Trigger Happy | Fire Blaster | 4*60 6+HP
+Trigger Happy | Burning Kickback Punch | 2 1 4+MP
+Trigger Happy | Shocker | HK _ HK _ HK _ HK _ HK
+Countdown | Laser Bolt | 4*60 6+HP
+Countdown | Knucklespin Twistkick | 4*60 6+HK
+Countdown | Jet Flare | 2 1 4+HP
+Countdown | Missile Shot | 6 3 2+HK
+Countdown | Rocket Dive | 6 _ 6+HK
+Sekka | Flying Claw Slam | 4*60 6+HK
+Sekka | Claw Roll Attack | 2 1 4+HP
+Sekka | Inverted Spinkick | 2 1 4+HK
+Sekka | Blender from Above | 2 _ 2+LK
+Sekka | Clawvault Boomerang Kick | 6 _ 6+HK
+Sekka | Head Bounce Kick (in the air) | 2+HK
+Dominique | Ponytail Beam | 6 3 2+HK
+Dominique | Swoop Hurricane | 2 1 4+HK
+Dominique | Highheel Knife Slide | 2 _ 2+LK
+Shadow Master | Fireball | 2 3 6+HP
+Shadow Master | Dashing Lightning Spear | 4*60 6+HP
+Shadow Master | Crawling Metroid | 4*60 6+HK
+Shadow Master | Teleport near, same side | 6 3 2 1 4+LP
+Shadow Master | Teleport near, other side | 6 3 2 1 4+LK
+Shadow Master | Teleport far, same side | 6 3 2 1 4+MP
+Shadow Master | Teleport far, other side | 6 3 2 1 4+MK
