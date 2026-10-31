@@ -78,8 +78,25 @@ class MainActivity : ComponentActivity() {
         super.startActivityForResult(intent, requestCode, options)
     }
 
+    override fun onStart() {
+        super.onStart()
+        // Saves swapped with the user's other devices on the Wi-Fi: served while RetroForge is on screen, and
+        // swapped with any that are open now (on opening, and on coming back from a game).
+        if (com.retroforge.app.player.PeerSync.isOn(this)) {
+            com.retroforge.app.player.PeerSync.start(this)
+            val app = applicationContext
+            kotlin.concurrent.thread(name = "peer-sync", isDaemon = true) {
+                val changed = com.retroforge.app.player.PeerSync.syncAll(app).mapNotNull { r ->
+                    r.report?.takeIf { it.pulled + it.pushed > 0 }?.let { getString(R.string.peer_sync_toast, r.name, it.pulled, it.pushed) }
+                }
+                if (changed.isNotEmpty()) runOnUiThread { android.widget.Toast.makeText(app, changed.joinToString("\n"), android.widget.Toast.LENGTH_LONG).show() }
+            }
+        }
+    }
+
     override fun onStop() {
         super.onStop()
+        if (!awaitingResult && !isChangingConfigurations) com.retroforge.app.player.PeerSync.stop()
         // Kiosk mode: going Home, to another app or into a game locks it again; a picker opened from Settings
         // doesn't, or the page would lock under it and the chosen file be lost.
         if (!awaitingResult && !isChangingConfigurations) Kiosk.lock()

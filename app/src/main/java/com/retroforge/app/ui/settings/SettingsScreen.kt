@@ -146,6 +146,8 @@ fun SettingsScreen(
 
                 SaveSyncCard()
 
+                PeerSyncCard()
+
                 library?.let { SaveImportCard(it) }
 
                 EmulatorAppsCard()
