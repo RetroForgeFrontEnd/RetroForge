@@ -426,8 +426,11 @@ private fun SectionNav(sections: List<Section>, current: Section, vertical: Bool
     LaunchedEffect(Unit) {
         if (inputMode == InputMode.Keyboard) runCatching { initialFocus.requestFocus() }
     }
+    // The selected tab's colour runs from the wordmark's orange on Home to its cyan on the last tab.
+    val forge = com.retroforge.core.ui.LocalForgeColors.current
     val tab: @Composable (Section, Modifier) -> Unit = { section, modifier ->
         SectionTab(
+            accent = androidx.compose.ui.graphics.lerp(forge.wordmarkRetro, forge.wordmarkForge, sections.indexOf(section) / (sections.size - 1).coerceAtLeast(1).toFloat()),
             label = section.label,
             icon = painterResource(section.icon),
             selected = section == current,

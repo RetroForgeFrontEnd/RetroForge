@@ -39,16 +39,19 @@ fun SectionTab(
     modifier: Modifier = Modifier,
     /** Narrow padding and a smaller one-line label, for a phone's bottom bar. */
     compact: Boolean = false,
+    /** The selected tab's colour; the theme's primary when not given. */
+    accent: Color? = null,
 ) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
     val colors = MaterialTheme.colorScheme
-    val content = if (selected) colors.primary else colors.onSurfaceVariant
+    val tint = accent ?: colors.primary
+    val content = if (selected) tint else colors.onSurfaceVariant
     Surface(
         onClick = onClick,
         modifier = modifier.semantics { this.selected = selected; role = Role.Tab },
         shape = MaterialTheme.shapes.medium,
-        color = if (selected) colors.primary.copy(alpha = 0.14f) else Color.Transparent,
+        color = if (selected) tint.copy(alpha = 0.14f) else Color.Transparent,
         border = if (focused) BorderStroke(3.dp, LocalForgeColors.current.focusRing) else null,
         interactionSource = interaction,
     ) {
