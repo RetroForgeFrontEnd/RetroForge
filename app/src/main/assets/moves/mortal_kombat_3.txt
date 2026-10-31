@@ -1,0 +1,16 @@
+# Mortal Kombat 3, Ultimate Mortal Kombat 3 and Mortal Kombat Trilogy. Numpad notation facing right: 6 forward,
+# 4 back, 2 down; _ lets go. RN is Run.
+title: Mortal Kombat 3
+match: mortal kombat 3 | mortal kombat trilogy
+buttons: HP=X LP=Y BL=R HK=A LK=B RN=L
+checked: no
+Sub-Zero | Ice Ball | 2 3 6+LP
+Sub-Zero | Ice Clone | 2 1 4+LP
+Sub-Zero | Slide | 4+LP+BL+LK
+Scorpion | Spear | 4 _ 4+LP
+Scorpion | Teleport Punch | 2 4+HP
+Kung Lao | Hat Throw | 4 6+LP
+Kabal | Fireball | 4 _ 4+HP
+Sonya | Ring Toss | 2 3 6+LP
+Nightwolf | Arrow | 2 3 6+LP
+Cyrax | Net | 4 _ 4+LK

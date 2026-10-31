@@ -20,3 +20,9 @@ Sagat | Tiger Uppercut | 6 2 3+HP
 M. Bison | Psycho Crusher | 4*60 6+HP
 Balrog | Dash Straight | 4*60 6+HP
 Vega | Rolling Crystal Flash | 4*60 6+HP
+Cammy | Spiral Arrow | 2 3 6+HK
+Cammy | Cannon Spike | 6 2 3+HK
+Fei Long | Rekka Ken | 2 3 6+HP
+Dee Jay | Air Slasher | 4*60 6+HP
+Akuma | Gou Hadouken | 2 3 6+HP
+Akuma | Raging Demon | LP _ LP _ 6 _ LK _ HP

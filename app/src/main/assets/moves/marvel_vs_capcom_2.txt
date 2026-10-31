@@ -1,0 +1,12 @@
+# Marvel vs. Capcom 2. Numpad notation facing right: 6 forward, 2 down. LP/HP/LK/HK and the two assist buttons;
+# check them against the game's button setup and change them below if a move doesn't come out.
+title: Marvel vs. Capcom 2
+match: marvel vs capcom 2 | marvel vs. capcom 2
+buttons: LP=Y HP=X LK=B HK=A A1=L A2=R
+checked: no
+Ryu | Hadouken | 2 3 6+HP
+Ryu | Shinku Hadouken | 2 3 6+LP+HP
+Ken | Shoryuken | 6 2 3+HP
+Ken | Shoryureppa | 2 3 6+LP+HP
+Wolverine | Berserker Barrage | 2 3 6+HP
+Cyclops | Optic Blast | 2 3 6+HP

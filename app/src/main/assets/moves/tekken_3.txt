@@ -1,0 +1,9 @@
+# Tekken 3. Numpad notation facing right: 6 forward, 2 down, 5 neutral (let go of the stick for a frame).
+# 1 left punch, 2 right punch, 3 left kick, 4 right kick. Electric moves need exact timing, which a move here has.
+title: Tekken 3
+match: tekken 3
+buttons: LP=Y RP=X LK=B RK=A
+checked: no
+Paul | Deathfist | 2 3 6+RP
+Jin | Electric Wind God Fist | 6*1 5*1 2*1 3+RP
+Heihachi | Electric Wind God Fist | 6*1 5*1 2*1 3+RP

@@ -1,0 +1,9 @@
+# Fatal Fury (Special, 2, 3, Real Bout). Numpad notation facing right: 6 forward, 2 down. A light punch, B light
+# kick, C heavy punch, D heavy kick, as on the Neo Geo.
+title: Fatal Fury
+match: fatal fury | real bout | garou densetsu
+buttons: A=B B=A C=Y D=X
+checked: no
+Terry | Power Wave | 2 3 6+A
+Terry | Burn Knuckle | 2 1 4+C
+Terry | Rising Tackle | 2*60 8+C

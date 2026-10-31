@@ -86,7 +86,12 @@ class MacrosTest {
         assertEquals("Mortal Kombat", titleFor("Mortal Kombat (USA)"))
         assertEquals("Mortal Kombat II", titleFor("Mortal Kombat II (USA)"))
         assertEquals("The King of Fighters", titleFor("The King of Fighters '98"))
-        assertNull(titleFor("Ultimate Mortal Kombat 3"))
+        assertEquals("Mortal Kombat 3", titleFor("Ultimate Mortal Kombat 3 (USA)"))
+        assertEquals("Mortal Kombat 3", titleFor("Mortal Kombat Trilogy"))
+        assertEquals("Tekken 3", titleFor("Tekken 3 (Europe)"))
+        assertEquals("Marvel vs. Capcom 2", titleFor("Marvel vs. Capcom 2 - New Age of Heroes"))
+        assertEquals("Fatal Fury", titleFor("Fatal Fury Special (USA)"))
+        assertNull(titleFor("Tekken 2"))
     }
 
     @Test
