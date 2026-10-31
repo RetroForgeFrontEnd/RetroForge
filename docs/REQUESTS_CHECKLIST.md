@@ -274,7 +274,8 @@ Requests that were never fully done, or only answered:
 
 | Item | Status |
 |---|---|
-| Push the commits made after the 0.7.1 release (Switch Player links to its own page, setup wording, guide) | ⛔ waiting for the user's OK; they ship with the next update |
+| Push the commits made after the 0.7.1 release (Switch Player links to its own page, setup wording, guide) | ✅ pushed 31 October with the user's OK |
+| 0.8.0 beta | 🔨 version 10 built and installed over 0.7.1 on the S22 (keeps everything). Not released: the user wants every new feature tested first; see docs/TEST_0.8.0.md |
 | Switch Player: a retail game started without keys or firmware opens Switch settings in setup mode | 🟡 built, untested (no retail game on a free device) |
 | Switch Player: Install firmware from a folder of .nca files | 🟡 built, untested |
 | Switch Player: a real Bluetooth controller in game and in the pause menu | 🟡 only injected key presses tested; needs the user's controller |
