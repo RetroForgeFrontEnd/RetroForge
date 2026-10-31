@@ -2228,4 +2228,23 @@
     <string name="link_cable_unplug">Scollega il cavo</string>
     <string name="link_cable_bad_address">%1$s non è un indirizzo come 192.168.1.23.</string>
     <string name="link_cable_not_in_this_core">Questo emulatore non ha il cavo link di rete. Scegli Gambatte in Emulatore → Cambia emulatore.</string>
+    <string name="smart_title">Raccolte intelligenti</string>
+    <string name="smart_card_body">Raccolte che si aggiornano da sole: per genere, decennio, sviluppatore e giocatori, e per ciò che stai giocando, hai finito o non hai mai toccato.</string>
+    <string name="smart_subtitle">Create dai dati dei tuoi giochi e dalla tua cronologia, e aggiornate da sole.</string>
+    <string name="smart_empty">Ancora nessun gioco. Aggiungi una cartella di giochi e le tue raccolte compariranno qui.</string>
+    <string name="smart_need_details">Le raccolte per genere, decennio, sviluppatore e giocatori hanno bisogno dei dati dei giochi: scaricali con lo scraper o tieni file gamelist.xml accanto ai giochi.</string>
+    <string name="smart_group_play">Le tue partite</string>
+    <string name="smart_group_genre">Per genere</string>
+    <string name="smart_group_decade">Per decennio</string>
+    <string name="smart_group_developer">Per sviluppatore</string>
+    <string name="smart_group_players">Giocare insieme</string>
+    <string name="smart_recent">Giocati negli ultimi 30 giorni</string>
+    <string name="smart_most_played">I più giocati</string>
+    <string name="smart_forgotten">Non giocati da sei mesi</string>
+    <string name="smart_unplayed">Mai giocati</string>
+    <string name="smart_decade">Giochi degli anni %1$d</string>
+    <string name="smart_two_players">2 giocatori o più</string>
+    <string name="smart_party">Giochi di gruppo: 4 giocatori o più</string>
+    <string name="smart_filter_unplayed">Non giocati</string>
+    <string name="smart_back">Tutte le raccolte</string>
 </resources>

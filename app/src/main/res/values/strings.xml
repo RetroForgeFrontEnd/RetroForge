@@ -2356,4 +2356,23 @@
     <string name="link_cable_unplug">Unplug the cable</string>
     <string name="link_cable_bad_address">%1$s isn\'t an address like 192.168.1.23.</string>
     <string name="link_cable_not_in_this_core">This emulator has no network link cable. Choose Gambatte under Emulator → Switch emulator.</string>
+    <string name="smart_title">Smart collections</string>
+    <string name="smart_card_body">Collections that keep themselves up to date: by genre, decade, developer and players, and by what you\'re playing, finished or haven\'t touched.</string>
+    <string name="smart_subtitle">Made from your games\' details and your play history, and kept up to date by themselves.</string>
+    <string name="smart_empty">No games yet. Add a game folder and your collections will appear here.</string>
+    <string name="smart_need_details">Genre, decade, developer and player collections need your games\' details: scrape them, or keep gamelist.xml files beside your games.</string>
+    <string name="smart_group_play">Your play</string>
+    <string name="smart_group_genre">By genre</string>
+    <string name="smart_group_decade">By decade</string>
+    <string name="smart_group_developer">By developer</string>
+    <string name="smart_group_players">Play together</string>
+    <string name="smart_recent">Played in the last 30 days</string>
+    <string name="smart_most_played">Played most</string>
+    <string name="smart_forgotten">Not played for six months</string>
+    <string name="smart_unplayed">Never played</string>
+    <string name="smart_decade">%1$ds games</string>
+    <string name="smart_two_players">2 players or more</string>
+    <string name="smart_party">Party games: 4 players or more</string>
+    <string name="smart_filter_unplayed">Not played</string>
+    <string name="smart_back">All collections</string>
 </resources>

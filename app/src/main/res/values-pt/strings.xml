@@ -2228,4 +2228,23 @@
     <string name="link_cable_unplug">Desligar o cabo</string>
     <string name="link_cable_bad_address">%1$s não é um endereço como 192.168.1.23.</string>
     <string name="link_cable_not_in_this_core">Este emulador não tem cabo link em rede. Escolha Gambatte em Emulador → Mudar de emulador.</string>
+    <string name="smart_title">Coleções inteligentes</string>
+    <string name="smart_card_body">Coleções que se mantêm atualizadas sozinhas: por género, década, criador e jogadores, e pelo que está a jogar, terminou ou nunca tocou.</string>
+    <string name="smart_subtitle">Feitas a partir dos dados dos seus jogos e do seu histórico, e atualizadas sozinhas.</string>
+    <string name="smart_empty">Ainda não há jogos. Adicione uma pasta de jogos e as suas coleções aparecem aqui.</string>
+    <string name="smart_need_details">As coleções por género, década, criador e jogadores precisam dos dados dos jogos: obtenha-os com o scraper ou guarde ficheiros gamelist.xml junto aos jogos.</string>
+    <string name="smart_group_play">O que joga</string>
+    <string name="smart_group_genre">Por género</string>
+    <string name="smart_group_decade">Por década</string>
+    <string name="smart_group_developer">Por criador</string>
+    <string name="smart_group_players">Jogar juntos</string>
+    <string name="smart_recent">Jogados nos últimos 30 dias</string>
+    <string name="smart_most_played">Os mais jogados</string>
+    <string name="smart_forgotten">Sem jogar há seis meses</string>
+    <string name="smart_unplayed">Nunca jogados</string>
+    <string name="smart_decade">Jogos dos anos %1$d</string>
+    <string name="smart_two_players">2 jogadores ou mais</string>
+    <string name="smart_party">Jogos de grupo: 4 jogadores ou mais</string>
+    <string name="smart_filter_unplayed">Não jogados</string>
+    <string name="smart_back">Todas as coleções</string>
 </resources>

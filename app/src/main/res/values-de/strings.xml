@@ -2196,4 +2196,23 @@
     <string name="link_cable_unplug">Kabel abziehen</string>
     <string name="link_cable_bad_address">%1$s ist keine Adresse wie 192.168.1.23.</string>
     <string name="link_cable_not_in_this_core">Dieser Emulator hat kein Netzwerk-Link-Kabel. Wähle Gambatte unter Emulator → Emulator wechseln.</string>
+    <string name="smart_title">Intelligente Sammlungen</string>
+    <string name="smart_card_body">Sammlungen, die sich selbst aktuell halten: nach Genre, Jahrzehnt, Entwickler und Spielerzahl und danach, was du spielst, durchgespielt oder noch nicht angefasst hast.</string>
+    <string name="smart_subtitle">Aus den Angaben deiner Spiele und deinem Spielverlauf gemacht und von selbst aktuell gehalten.</string>
+    <string name="smart_empty">Noch keine Spiele. Füge einen Spieleordner hinzu, dann erscheinen hier deine Sammlungen.</string>
+    <string name="smart_need_details">Sammlungen nach Genre, Jahrzehnt, Entwickler und Spielerzahl brauchen die Angaben deiner Spiele: lade sie per Scraper oder lege gamelist.xml-Dateien neben die Spiele.</string>
+    <string name="smart_group_play">Dein Spielen</string>
+    <string name="smart_group_genre">Nach Genre</string>
+    <string name="smart_group_decade">Nach Jahrzehnt</string>
+    <string name="smart_group_developer">Nach Entwickler</string>
+    <string name="smart_group_players">Zusammen spielen</string>
+    <string name="smart_recent">In den letzten 30 Tagen gespielt</string>
+    <string name="smart_most_played">Am meisten gespielt</string>
+    <string name="smart_forgotten">Seit sechs Monaten nicht gespielt</string>
+    <string name="smart_unplayed">Nie gespielt</string>
+    <string name="smart_decade">Spiele der %1$der</string>
+    <string name="smart_two_players">2 Spieler oder mehr</string>
+    <string name="smart_party">Partyspiele: 4 Spieler oder mehr</string>
+    <string name="smart_filter_unplayed">Nicht gespielt</string>
+    <string name="smart_back">Alle Sammlungen</string>
 </resources>
