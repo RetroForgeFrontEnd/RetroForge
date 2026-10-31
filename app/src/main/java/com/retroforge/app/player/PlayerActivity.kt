@@ -1865,7 +1865,7 @@ class PlayerActivity : ComponentActivity() {
                 val coreName = PlayerCores.byId(coreId)?.name ?: coreId
                 when (menuPage) {
                     MenuPage.MAIN -> {
-                        Text(title, color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                        Text(title, color = MenuOrange, fontWeight = FontWeight.Bold, fontSize = 18.sp, textAlign = TextAlign.Center)
                         Text(stringResource(R.string.player_paused, coreName), color = Color(0xFFAAAAB4), fontSize = 13.sp)
                         notice?.let { Text(it, color = MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center) }
                         MenuButton(onClick = { closeMenu() }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_resume)) }
@@ -2328,7 +2328,10 @@ private fun MenuButton(
         onClick = onClick,
         modifier = modifier,
         interactionSource = interaction,
-        border = BorderStroke(if (focused) 3.dp else 1.dp, if (focused) MenuOrange else Color(0xFF55555F)),
+        // Cyan labels, an orange outline (bright and thick on the focused button). Set here: Material's outlined button
+        // otherwise draws its label in grey, whatever the theme's primary colour.
+        colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = MenuCyan),
+        border = BorderStroke(if (focused) 3.dp else 1.5.dp, MenuOrange),
         contentPadding = contentPadding,
         content = content,
     )
