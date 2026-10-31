@@ -47,6 +47,9 @@ object NativePlayer {
 
     /** Draws one frame in every [frames] + 1 (0 draws them all); the game and its sound keep full speed. */
     external fun setFrameSkip(frames: Int)
+
+    /** How much sound is kept queued (16 to 200 ms; 64 by default): less cuts sound lag, more stops crackling. */
+    external fun setAudioBuffer(ms: Int)
     external fun setSurface(surface: Surface?)
 
     /**

@@ -129,6 +129,8 @@ struct Player {
     std::atomic<bool> coreFastForward{false};
     // Frame skip: of every frameSkip + 1 frames, one is drawn; the rest run without a picture (the sound plays on).
     std::atomic<int> frameSkip{0};
+    // How much sound is kept queued, in milliseconds: less cuts sound lag, more stops crackling on busy devices.
+    std::atomic<int> audioBufferMs{64};
     unsigned skipCount = 0;
     bool drawThis = true;
     std::atomic<float> volume{1.0f};
@@ -1134,7 +1136,7 @@ void runLoop() {
             next = clock::now(); // as fast as the device goes (vsync still limits drawing)
         } else if (p.stream) {
             // Audio is the clock: wait while more than ~64 ms of sound is queued. Keeps sound and speed exact.
-            size_t target = static_cast<size_t>(p.deviceRate * 0.064);
+            size_t target = static_cast<size_t>(p.deviceRate * p.audioBufferMs / 1000);
             auto limit = clock::now() + std::chrono::milliseconds(100);
             while (p.running && p.ring.fill() > target && clock::now() < limit) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -1368,6 +1370,10 @@ JNIEXPORT void JNI(setPaused)(JNIEnv *, jobject, jboolean paused) {
 
 JNIEXPORT void JNI(setFastForward)(JNIEnv *, jobject, jboolean on) {
     if (P) P->fastForward = on;
+}
+
+JNIEXPORT void JNI(setAudioBuffer)(JNIEnv *, jobject, jint ms) {
+    if (P) P->audioBufferMs = std::clamp(static_cast<int>(ms), 16, 200);  // the ring holds 250 ms
 }
 
 JNIEXPORT void JNI(setFrameSkip)(JNIEnv *, jobject, jint frames) {

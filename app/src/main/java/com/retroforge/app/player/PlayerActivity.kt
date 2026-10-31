@@ -283,6 +283,8 @@ class PlayerActivity : ComponentActivity() {
     private var fastForwardOn by mutableStateOf(false)
     /** Frames skipped between drawn ones (0 to 3), kept for each system. */
     private var frameSkip by mutableStateOf(0)
+    /** Sound kept queued, in ms, for each system (Sound and controls → Sound buffer). */
+    private var audioBuffer by mutableStateOf(64)
 
     // Netplay (Netplay.kt, netplay.cpp): this game played together with a second device.
     private var netGameId = ""
@@ -341,6 +343,23 @@ class PlayerActivity : ComponentActivity() {
 
     /** Plugs a controller into port 2 for the other player (only port 1 has one otherwise). */
     private fun connectPlayerTwo() = NativePlayer.setPortDevice(1, PlayerCores.portDevice(coreId) ?: 1)
+
+    /**
+     * The player this device's buttons and sticks control: 0 (player 1), or 1 after Pass the controller, for taking turns
+     * in games that give each player their own controller (Super Mario Bros.' Luigi, two-player RPG battles).
+     */
+    @Volatile private var port = 0
+    private var playerTwo by mutableStateOf(false)
+
+    private fun swapPlayers() {
+        val from = port
+        val to = 1 - from
+        if (to == 1) connectPlayerTwo()
+        NativePlayer.setButtons(from, 0)
+        for (stick in 0..1) NativePlayer.setAnalog(from, stick, 0, 0)
+        port = to
+        playerTwo = to == 1
+    }
 
     private fun leaveNetplay() {
         announcer?.stop()
@@ -458,8 +477,8 @@ class PlayerActivity : ComponentActivity() {
             menuCombo = HotkeyCombo.of(extras.getInt(EXTRA_MENU_COMBO, HotkeyCombo.DOWN_SELECT.value)),
             quitCombo = HotkeyCombo.of(extras.getInt(EXTRA_QUIT_COMBO, HotkeyCombo.START_SELECT.value)),
             fastForwardOnR2 = extras.getBoolean(EXTRA_FAST_FORWARD_R2, false),
-            onMask = { if (loaded) NativePlayer.setButtons(0, it) },
-            onAnalog = { stick, x, y -> if (loaded) NativePlayer.setAnalog(0, stick, x, y) },
+            onMask = { if (loaded) NativePlayer.setButtons(port, it) },
+            onAnalog = { stick, x, y -> if (loaded) NativePlayer.setAnalog(port, stick, x, y) },
             onFastForward = { if (loaded) NativePlayer.setFastForward(it) },
             onMenu = { runOnUiThread { openMenu() } },
             onQuit = { runOnUiThread { quit() } },
@@ -574,6 +593,8 @@ class PlayerActivity : ComponentActivity() {
         startAchievements()
         frameSkip = prefs.getInt("frameskip.$system", 0)
         NativePlayer.setFrameSkip(frameSkip)
+        audioBuffer = prefs.getInt("audiobuffer.$system", 64)
+        NativePlayer.setAudioBuffer(audioBuffer)
         NativePlayer.start()
         loadBezel(fileName)
         runOnUiThread {
@@ -1453,7 +1474,7 @@ class PlayerActivity : ComponentActivity() {
                         TouchControls(
                             layout, onMask = { input.setTouch(it) }, onMenu = { openMenu() }, modifier = modifier,
                             compact = compact, landscape = !portrait,
-                            onAnalog = { stick, x, y -> if (loaded) NativePlayer.setAnalog(0, stick, (x * 32767).toInt(), (y * 32767).toInt()) },
+                            onAnalog = { stick, x, y -> if (loaded) NativePlayer.setAnalog(port, stick, (x * 32767).toInt(), (y * 32767).toInt()) },
                         )
                     }
                 }
@@ -1718,6 +1739,14 @@ class PlayerActivity : ComponentActivity() {
                             fastForwardOn = !fastForwardOn
                             NativePlayer.setFastForward(fastForwardOn)
                         }, modifier = wide) { Text("Fast-forward: ${if (fastForwardOn) "On" else "Off"}") }
+                        // Pass the controller: this device plays as player 2 (or back to 1), for games that take turns.
+                        MenuButton(onClick = {
+                            if (netPlaying) { notice = str(R.string.player_swap_off_during_netplay); return@MenuButton }
+                            swapPlayers()
+                            notice = str(if (playerTwo) R.string.player_now_player_2 else R.string.player_now_player_1)
+                        }, modifier = wide) {
+                            Text(stringResource(R.string.player_playing_as, if (playerTwo) 2 else 1))
+                        }
                         // Frame skip: draws fewer frames on slow devices; the game and sound keep full speed.
                         MenuButton(onClick = {
                             frameSkip = (frameSkip + 1) % 4
@@ -1857,6 +1886,15 @@ class PlayerActivity : ComponentActivity() {
                         Text(stringResource(R.string.player_sound_and_controls_2), color = Color.White, fontWeight = FontWeight.Bold)
                         MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         MenuButton(onClick = { chooseVolume() }, modifier = wide) { Text(stringResource(R.string.player_volume, (volume * 100).toInt())) }
+                        // Sound buffer: shorter answers buttons with sound sooner; longer stops crackling on a busy device.
+                        MenuButton(onClick = {
+                            val steps = listOf(32, 48, 64, 96, 128)
+                            audioBuffer = steps[(steps.indexOf(audioBuffer) + 1) % steps.size]
+                            prefs.edit().putInt("audiobuffer.$system", audioBuffer).apply()
+                            NativePlayer.setAudioBuffer(audioBuffer)
+                            notice = str(R.string.player_sound_buffer_hint)
+                        }, modifier = wide) { Text(stringResource(R.string.player_sound_buffer, audioBuffer)) }
+                        notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
                         if (hasTouch) MenuButton(onClick = { chooseTouch(!touchEnabled) }, modifier = wide) {
                             Text(stringResource(R.string.player_touch_controls, if (touchEnabled) stringResource(R.string.settings_on) else stringResource(R.string.player_off)))
                         }

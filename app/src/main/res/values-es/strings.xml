@@ -1960,4 +1960,10 @@
     <string name="states_name">Nombre</string>
     <string name="states_other_emulator">Hecho con %1$s: solo se carga allí</string>
     <string name="states_card_body">Estados guardados del reproductor integrado, cada uno con su imagen. Crea más en el menú de pausa del juego → Estados guardados.</string>
+    <string name="player_playing_as">Pasar el mando: eres el jugador %1$d</string>
+    <string name="player_now_player_2">Tus botones controlan ahora al jugador 2.</string>
+    <string name="player_now_player_1">Tus botones vuelven a controlar al jugador 1.</string>
+    <string name="player_swap_off_during_netplay">Durante el juego en red cada dispositivo mantiene su jugador.</string>
+    <string name="player_sound_buffer">Búfer de sonido: %1$d ms</string>
+    <string name="player_sound_buffer_hint">Más corto: el sonido sigue antes a tus botones. Más largo: sin chasquidos en un dispositivo ocupado. 64 ms va bien casi siempre.</string>
 </resources>

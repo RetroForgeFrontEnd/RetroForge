@@ -2087,4 +2087,10 @@
     <string name="states_name">Name</string>
     <string name="states_other_emulator">Made with %1$s: it only loads there</string>
     <string name="states_card_body">Save states from the built-in player, with a picture of each. Make more in the game\'s pause menu → Save states.</string>
+    <string name="player_playing_as">Pass the controller: you are player %1$d</string>
+    <string name="player_now_player_2">Your buttons now control player 2.</string>
+    <string name="player_now_player_1">Your buttons control player 1 again.</string>
+    <string name="player_swap_off_during_netplay">During netplay each device keeps its own player.</string>
+    <string name="player_sound_buffer">Sound buffer: %1$d ms</string>
+    <string name="player_sound_buffer_hint">Shorter: sound follows your buttons sooner. Longer: no crackling on a busy device. 64 ms suits most.</string>
 </resources>

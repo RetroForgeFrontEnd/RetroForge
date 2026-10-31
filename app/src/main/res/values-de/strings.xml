@@ -1927,4 +1927,10 @@
     <string name="states_name">Name</string>
     <string name="states_other_emulator">Mit %1$s erstellt: lädt nur dort</string>
     <string name="states_card_body">Spielstände aus dem eingebauten Player, jeweils mit Bild. Weitere im Pausenmenü des Spiels → Spielstände.</string>
+    <string name="player_playing_as">Controller weitergeben: du bist Spieler %1$d</string>
+    <string name="player_now_player_2">Deine Tasten steuern jetzt Spieler 2.</string>
+    <string name="player_now_player_1">Deine Tasten steuern wieder Spieler 1.</string>
+    <string name="player_swap_off_during_netplay">Beim Netzwerkspiel behält jedes Gerät seinen Spieler.</string>
+    <string name="player_sound_buffer">Tonpuffer: %1$d ms</string>
+    <string name="player_sound_buffer_hint">Kürzer: Der Ton folgt den Tasten schneller. Länger: kein Knistern auf einem ausgelasteten Gerät. 64 ms passt meist.</string>
 </resources>
