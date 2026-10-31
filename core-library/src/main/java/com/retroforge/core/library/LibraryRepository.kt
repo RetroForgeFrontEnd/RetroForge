@@ -180,6 +180,20 @@ class LibraryRepository(
     fun backlogStatus(game: GameEntity): Flow<BacklogStatus?> =
         dao.backlogStatus(game.rootId, game.relativePath).map { s -> BacklogStatus.entries.firstOrNull { it.name == s } }
 
+    /** true or false when the user marked this game as a ROM hack or not; null when its name decides. */
+    fun hackMark(game: GameEntity): Flow<Boolean?> = dao.hackMark(game.rootId, game.relativePath)
+
+    /** Marks a game as a ROM hack or not ([isHack] null: back to what its name says), and shows it at once. */
+    fun setHackMark(game: GameEntity, isHack: Boolean?) {
+        scope.launch {
+            if (isHack == null) dao.deleteHackMark(game.rootId, game.relativePath)
+            else dao.upsertHackMark(HackMarkEntity(game.rootId, game.relativePath, isHack))
+            val label = hackLabel(game.relativePath, RomNames.parse(game.fileName))
+            val byName = game.copy(hackFolder = label?.ifEmpty { null }, isHack = label != null)
+            dao.updateGame(if (isHack == null) byName else byName.withHackMark(isHack))
+        }
+    }
+
     /** Puts a game in the backlog with [status], or takes it out (null). */
     fun setBacklog(game: GameEntity, status: BacklogStatus?) {
         scope.launch {
@@ -296,9 +310,11 @@ class LibraryRepository(
         val games = dao.allGames()
         val addOns = games.filter { isSwitchAddOn(it.system, it.fileName) }
         if (addOns.isNotEmpty()) dao.deleteGameIds(addOns.map { it.id })
+        val marks = dao.allHackMarks().associateBy({ it.rootId to it.relativePath }, { it.isHack })
         val relabelled = (games - addOns.toSet()).mapNotNull { game ->
             val label = hackLabel(game.relativePath, RomNames.parse(game.fileName))
-            if (label != game.hackFolder) game.copy(hackFolder = label, isHack = label != null) else null
+            val wanted = game.copy(hackFolder = label?.ifEmpty { null }, isHack = label != null).let { g -> marks[g.rootId to g.relativePath]?.let { g.withHackMark(it) } ?: g }
+            if (wanted != game) wanted else null
         }
         if (relabelled.isNotEmpty()) dao.updateGames(relabelled)
     }

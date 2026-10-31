@@ -948,6 +948,9 @@
     <string name="library_rating_5">Classificação: %1$s / 5</string>
     <string name="library_from_your_folder">Da tua pasta \"%1$s\".</string>
     <string name="library_marked_as_a_hack_in_its">Marcado como hack no nome do ficheiro.</string>
+    <string name="library_marked_as_a_hack_by_you">Você marcou isto como ROM hack.</string>
+    <string name="library_this_is_a_rom_hack">Isto é um ROM hack</string>
+    <string name="library_not_a_rom_hack">Não é um ROM hack</string>
     <string name="library_in_2">Em %1$s: %2$s</string>
     <string name="library_downloading_box_art_of_found">A transferir capas: %1$s de %2$s · %3$s encontradas</string>
     <string name="library_box_art_added">Capas: %1$s adicionadas</string>
@@ -1982,6 +1985,8 @@
     <string name="rom_manager_identify_select">Selecione os sistemas a renomear.</string>
     <string name="rom_manager_identify_system_count">%1$s: %2$d para renomear</string>
     <string name="rom_manager_identify_unknown_body">Hacks, traduções, homebrew, cópias ruins ou modificadas, ou versões que as listas não têm. Mantêm o nome.</string>
+    <string name="rom_manager_identify_short_names">Nomes curtos: sem tags como (Rev 1)</string>
+    <string name="rom_manager_identify_unknown_hacks">ROM hacks e traduções também não estão na lista: marque um hack na página dele para ficar com seus hacks.</string>
     <string name="rom_manager_identify_no_list">Sem lista de jogos para: %1$s</string>
     <string name="rom_manager_identify_credit">Listas de jogos do No-Intro e Redump, do libretro-database (CC BY-SA 4.0).</string>
     <string name="rom_manager_identify_confirm_body">Cada jogo recebe o nome No-Intro ou Redump e mantém seu tipo de arquivo (um .zip continua .zip). As faixas e o arquivo cue de um disco são renomeados juntos, e gamelist.xml e playlists .m3u são atualizados. Favoritos, histórico e capas ficam com o jogo. Desfaça em Histórico.</string>

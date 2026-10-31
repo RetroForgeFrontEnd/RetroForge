@@ -366,6 +366,7 @@ private fun SortTab(viewModel: RomManagerViewModel) {
 private fun IdentifyTab(viewModel: RomManagerViewModel) {
     val state by viewModel.identified.collectAsStateWithLifecycle()
     val selected by viewModel.renameSystems.collectAsStateWithLifecycle()
+    val short by viewModel.shortNames.collectAsStateWithLifecycle()
     when (val s = state) {
         Loadable.Idle -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = viewModel::identify) {
             CardTitle(stringResource(R.string.rom_manager_identify_title))
@@ -379,8 +380,8 @@ private fun IdentifyTab(viewModel: RomManagerViewModel) {
         is Loadable.Failed -> { StatusPill(stringResource(R.string.rom_manager_couldn_t_check), StatusTone.BAD); CardBody(s.reason); FocusChip(stringResource(R.string.rom_manager_try_again), onClick = viewModel::identify) }
         is Loadable.Ready -> {
             val report = s.value
-            val rename = report.of(IdentifyOutcome.RENAME)
-            val named = report.of(IdentifyOutcome.NAMED_RIGHT)
+            val rename = report.of(IdentifyOutcome.RENAME, short)
+            val named = report.of(IdentifyOutcome.NAMED_RIGHT, short)
             val unknown = report.of(IdentifyOutcome.UNKNOWN)
             val skipped = report.of(IdentifyOutcome.SKIPPED)
             if (report.unreachable.isNotEmpty()) {
@@ -390,6 +391,8 @@ private fun IdentifyTab(viewModel: RomManagerViewModel) {
             if (report.results.isEmpty() && report.unreachable.isEmpty() && report.noList.isEmpty()) CardBody(stringResource(R.string.rom_manager_identify_no_games))
             CardBody(stringResource(R.string.rom_manager_identify_summary, rename.size + named.size, named.size, unknown.size, skipped.size))
             CardBody(if (rename.isEmpty()) stringResource(R.string.rom_manager_identify_all_named) else stringResource(R.string.rom_manager_identify_select))
+            // Short names leave out "(Rev 1)" and the like; two versions of one game keep their full names apart.
+            FocusChip((if (short) "☑ " else "☐ ") + stringResource(R.string.rom_manager_identify_short_names), onClick = viewModel::toggleShortNames)
             rename.groupBy { it.candidate.system }.forEach { (system, games) ->
                 val on = system in selected
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.toggleRenameSystem(system) }, selected = on) {
@@ -404,6 +407,7 @@ private fun IdentifyTab(viewModel: RomManagerViewModel) {
             if (unknown.isNotEmpty()) FocusCard(modifier = Modifier.fillMaxWidth()) {
                 CardTitle(pluralStr(R.plurals.rom_manager_identify_unknown_title, unknown.size, unknown.size))
                 CardBody(stringResource(R.string.rom_manager_identify_unknown_body))
+                CardBody(stringResource(R.string.rom_manager_identify_unknown_hacks))
                 unknown.groupBy { it.candidate.system }.forEach { (system, games) ->
                     CardBody("${viewModel.systemName(system)}: " + games.take(4).joinToString { it.candidate.title } + if (games.size > 4) stringResource(R.string.rom_manager_and_more_2, games.size - 4) else "")
                 }

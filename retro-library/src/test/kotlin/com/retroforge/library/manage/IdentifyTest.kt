@@ -113,6 +113,28 @@ class IdentifyTest {
         assertEquals(IdentifyOutcome.SKIPPED, out[1].outcome)
     }
 
+    @Test fun shortNamesLeaveOutRevisionsUnlessTwoVersionsMeet() {
+        fun named(path: String) = Identified(IdentifyCandidate("gba", path, "gba", "g"), IdentifyOutcome.NAMED_RIGHT, "g")
+        fun rename(from: String, to: String) = Identified(IdentifyCandidate("gba", from, "gba", "g"), IdentifyOutcome.RENAME, "g", to, listOf(from to to))
+        val out = Identifier.withoutRevisions(
+            listOf(
+                named("gba/Advance Wars (USA) (Rev 1).zip"),
+                rename("gba/fr.zip", "gba/Fire Red (USA, Europe) (Rev 1).zip"),
+                named("gba/Ruby (USA) (Rev 2).zip"),
+                named("gba/Ruby (USA).zip"),
+                named("gba/Emerald (USA, Europe).zip"),
+            ),
+        ) { false }
+        assertEquals("gba/Advance Wars (USA).zip", out[0].newPath)
+        assertEquals(listOf("gba/Advance Wars (USA) (Rev 1).zip" to "gba/Advance Wars (USA).zip"), out[0].renames)
+        assertEquals("gba/Fire Red (USA, Europe).zip", out[1].newPath)
+        // Two versions of Ruby would both be "Ruby (USA)": both keep their names.
+        assertEquals(IdentifyOutcome.NAMED_RIGHT, out[2].outcome)
+        assertEquals(IdentifyOutcome.NAMED_RIGHT, out[3].outcome)
+        assertEquals(IdentifyOutcome.NAMED_RIGHT, out[4].outcome)
+        assertEquals("Game (Japan) (Beta).nes", Identifier.withoutRevision("Game (Japan) (v1.1) (Beta).nes"))
+    }
+
     @Test fun trackNamesFollowTheList() {
         assertEquals(listOf("G (Track 1).bin", "G (Track 2).bin"), Identifier.trackNames("G", "G (Track 1).bin", 2))
         assertEquals(listOf("G.bin"), Identifier.trackNames("G", "G.bin", 1))

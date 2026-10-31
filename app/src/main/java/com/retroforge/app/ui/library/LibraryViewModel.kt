@@ -253,6 +253,8 @@ class LibraryViewModel(
     suspend fun gameFor(system: String, fileName: String): GameEntity? = repository.gameFor(system, fileName)
     fun setBacklog(game: GameEntity, status: com.retroforge.core.library.BacklogStatus?) = repository.setBacklog(game, status)
     fun setFavourite(game: GameEntity, favourite: Boolean) = repository.setFavourite(game, favourite)
+    fun hackMark(game: GameEntity) = repository.hackMark(game)
+    fun setHackMark(game: GameEntity, isHack: Boolean?) = repository.setHackMark(game, isHack)
     fun playlist(id: Long) = repository.playlist(id)
     fun playlistGames(id: Long) = repository.playlistGames(id)
     fun playlistsContaining(game: GameEntity) = repository.playlistsContaining(game)

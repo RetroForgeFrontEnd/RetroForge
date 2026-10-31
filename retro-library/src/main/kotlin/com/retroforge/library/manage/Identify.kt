@@ -283,6 +283,41 @@ object Identifier {
     /** No-Intro and Redump names are already safe on every file system; this guards against the odd one that isn't. */
     internal fun safe(name: String) = name.replace(Regex("""[\\/:*?"<>|]"""), "_").trim()
 
+    /** "(Rev 1)", "(Rev A)", "(v1.1)": the revision tags short names leave out. */
+    private val revisionTag = Regex("""\s*\((?:Rev\s[^)]*|v\d+(?:\.\d+)*[a-z]?)\)""", RegexOption.IGNORE_CASE)
+
+    fun withoutRevision(name: String): String = revisionTag.replace(name, "")
+
+    /**
+     * The same results with revision tags left out of the new names ("Advance Wars (USA).zip", not "… (Rev 1).zip"),
+     * for one-file games (a cue sheet's tracks keep theirs). Where two versions of a game would end up with the same
+     * short name, or another file already has it, each keeps its full name.
+     */
+    fun withoutRevisions(results: List<Identified>, exists: (String) -> Boolean): List<Identified> {
+        val short = results.map { r ->
+            val full = when (r.outcome) {
+                IdentifyOutcome.RENAME -> r.newPath?.takeIf { r.renames.size == 1 }
+                IdentifyOutcome.NAMED_RIGHT -> r.candidate.relativePath
+                else -> null
+            }
+            if (full == null || full.endsWith(".cue", true)) return@map null
+            join(parentOf(full), withoutRevision(nameOf(full))).takeIf { it != full }
+        }
+        // Where each game would end up, to find two landing on one name.
+        val landing = results.zip(short).map { (r, s) -> (s ?: r.newPath ?: r.candidate.relativePath).lowercase() }
+        val counts = landing.groupingBy { it }.eachCount()
+        val sources = results.map { it.candidate.relativePath.lowercase() }.toSet()
+        return results.zip(short).mapIndexed { i, (r, s) ->
+            when {
+                s == null -> r
+                counts.getValue(landing[i]) > 1 -> r
+                s.equals(r.candidate.relativePath, true) -> r.copy(outcome = IdentifyOutcome.NAMED_RIGHT, newPath = null, renames = emptyList())
+                exists(s) && s.lowercase() !in sources -> r
+                else -> r.copy(outcome = IdentifyOutcome.RENAME, newPath = s, renames = listOf(r.candidate.relativePath to s))
+            }
+        }
+    }
+
     /**
      * Drops renames that would clash: two games that would get the same name (the second is a duplicate), or a name
      * another file in the folder already has.

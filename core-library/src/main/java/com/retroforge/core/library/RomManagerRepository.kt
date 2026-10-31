@@ -68,8 +68,14 @@ data class HeaderReport(val checked: Int, val jobs: List<HeaderJob>, val skipped
  * Every game checked against its system's game list; [noList] are systems with no list to check against, [unreachable]
  * those whose list couldn't be downloaded.
  */
-data class IdentifyReport(val results: List<Identified>, val noList: List<String>, val unreachable: List<String> = emptyList()) {
-    fun of(outcome: IdentifyOutcome) = results.filter { it.outcome == outcome }
+/** [shortResults]: the same with revision tags ("(Rev 1)") left out of the new names, for the "Short names" choice. */
+data class IdentifyReport(
+    val results: List<Identified>,
+    val noList: List<String>,
+    val unreachable: List<String> = emptyList(),
+    val shortResults: List<Identified> = results,
+) {
+    fun of(outcome: IdentifyOutcome, short: Boolean = false) = (if (short) shortResults else results).filter { it.outcome == outcome }
 }
 
 /** A game found outside its system's folder, and the folder it would move to. */
@@ -265,7 +271,8 @@ class RomManagerRepository(
                 }
             }
         }
-        IdentifyReport(Identifier.resolveClashes(results) { files.exists(it) }, noList, unreachable)
+        val resolved = Identifier.resolveClashes(results) { files.exists(it) }
+        IdentifyReport(resolved, noList, unreachable, Identifier.withoutRevisions(resolved) { files.exists(it) })
     }
 
     fun rename(root: RootEntity, jobs: List<Identified>) = start(root, "rename", pluralStr(R.plurals.rom_manager_identify_renamed_games, jobs.size, jobs.size)) { files, journal ->

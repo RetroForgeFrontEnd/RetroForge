@@ -65,6 +65,8 @@ object RomNames {
                 lower.startsWith("demo") -> flags += RomFlag.DEMO
                 lower == "sample" -> flags += RomFlag.SAMPLE
                 lower.startsWith("hack") || Regex("""h\d*[a-z]?( .*)?""").matches(lower) -> flags += RomFlag.HACK
+                // "(patched)", "(romhack)", "(mod)": how patching tools and sites name a changed copy of a game.
+                Regex("""patched.*|rom ?hack.*|mod(ded)?( .*)?""").matches(lower) -> flags += RomFlag.HACK
                 Regex("""t[+-].*""").matches(lower) -> flags += RomFlag.TRANSLATION
                 lower == "unl" -> flags += RomFlag.UNLICENSED
                 Regex("""p\d*""").matches(lower) -> flags += RomFlag.PIRATE

@@ -36,6 +36,9 @@ class RomNamesTest {
         assertTrue(RomFlag.PROTO in RomNames.parse("Game (Japan) (Proto 2).zip").flags)
         assertTrue(RomFlag.HACK in RomNames.parse("Game (Hack).zip").flags)
         assertTrue(RomFlag.HACK in RomNames.parse("Game [h1C].zip").flags)
+        assertTrue(RomFlag.HACK in RomNames.parse("Pokemon - FireRed Version (USA, Europe) (Rev 1) (patched).zip").flags)
+        assertTrue(RomFlag.HACK in RomNames.parse("Game (USA) (RomHack).zip").flags)
+        assertTrue(RomFlag.HACK !in RomNames.parse("Mode 7 Racer (USA).zip").flags)
         assertTrue(RomFlag.TRANSLATION in RomNames.parse("Game (J) [T+Eng1.0].zip").flags)
         assertTrue(RomFlag.BAD_DUMP in RomNames.parse("Game [b1].zip").flags)
     }

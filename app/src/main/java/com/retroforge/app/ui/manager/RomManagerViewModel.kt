@@ -104,6 +104,14 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
     }
 
     val identified = MutableStateFlow<Loadable<IdentifyReport>>(Loadable.Idle)
+    /** Leave revision tags such as "(Rev 1)" out of the new names. */
+    val shortNames = MutableStateFlow(false)
+
+    fun toggleShortNames() {
+        shortNames.value = !shortNames.value
+        (identified.value as? Loadable.Ready)?.value?.let { report -> renameSystems.value = report.of(IdentifyOutcome.RENAME, shortNames.value).map { it.candidate.system }.toSet() }
+    }
+
     /** Systems whose games will be renamed. */
     val renameSystems = MutableStateFlow<Set<String>>(emptySet())
     private var identifyJob: Job? = null
@@ -115,7 +123,7 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
             identified.value = Loadable.Loading(0, 0)
             identified.value = try {
                 val report = manager.identify(root) { done, total -> identified.value = Loadable.Loading(done, total) }
-                renameSystems.value = report.of(IdentifyOutcome.RENAME).map { it.candidate.system }.toSet()
+                renameSystems.value = report.of(IdentifyOutcome.RENAME, shortNames.value).map { it.candidate.system }.toSet()
                 Loadable.Ready(report)
             } catch (e: Exception) {
                 if (!isActive) Loadable.Idle else Loadable.Failed(e.message ?: str(R.string.rom_manager_couldn_t_look))
@@ -130,7 +138,7 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
 
     fun toggleRenameSystem(system: String) { renameSystems.value = renameSystems.value.let { if (system in it) it - system else it + system } }
 
-    fun renameJobs() = (identified.value as? Loadable.Ready)?.value?.of(IdentifyOutcome.RENAME).orEmpty().filter { it.candidate.system in renameSystems.value }
+    fun renameJobs() = (identified.value as? Loadable.Ready)?.value?.of(IdentifyOutcome.RENAME, shortNames.value).orEmpty().filter { it.candidate.system in renameSystems.value }
 
     fun askRename() { pending.value = Pending.Rename(renameJobs().size) }
 

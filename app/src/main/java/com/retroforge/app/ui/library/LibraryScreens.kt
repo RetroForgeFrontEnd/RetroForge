@@ -382,6 +382,9 @@ fun GameDetailScreen(
     val chosen by viewModel.chosenCovers.collectAsStateWithLifecycle()
     var duplicates by remember { mutableStateOf<List<GameEntity>>(emptyList()) }
     LaunchedEffect(game) { duplicates = game?.let { viewModel.duplicatesOf(it) }.orEmpty() }
+    // Marked as a ROM hack (or not) by hand; null when its name decides.
+    val hackMark by remember(game?.rootId, game?.relativePath) { game?.let { viewModel.hackMark(it) } ?: kotlinx.coroutines.flow.flowOf(null) }
+        .collectAsStateWithLifecycle(initialValue = null)
     val context = LocalContext.current
 
     val g = game ?: run {
@@ -435,7 +438,13 @@ fun GameDetailScreen(
         if (g.isHack) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
                 StatusPill(stringResource(R.string.library_rom_hack), StatusTone.CAUTION)
-                CardBody(g.hackFolder?.let { stringResource(R.string.library_from_your_folder, it) } ?: stringResource(R.string.library_marked_as_a_hack_in_its))
+                CardBody(
+                    when {
+                        hackMark == true -> stringResource(R.string.library_marked_as_a_hack_by_you)
+                        else -> g.hackFolder?.let { stringResource(R.string.library_from_your_folder, it) } ?: stringResource(R.string.library_marked_as_a_hack_in_its)
+                    },
+                )
+                FocusChip(stringResource(R.string.library_not_a_rom_hack), onClick = { viewModel.setHackMark(g, if (hackMark == true) null else false) })
             }
         }
         FocusCard(modifier = Modifier.fillMaxWidth()) {
@@ -443,6 +452,8 @@ fun GameDetailScreen(
             CardBody(g.fileName)
             CardBody(stringResource(R.string.library_in_2, rootsById[g.rootId]?.name ?: stringResource(R.string.library_your_folder), g.relativePath))
             if (g.sizeBytes > 0) CardBody(Formatter.formatFileSize(context, g.sizeBytes))
+            // For hacks whose name doesn't say so: moves the game to the system's ROM hacks tab.
+            if (!g.isHack) FocusChip(stringResource(R.string.library_this_is_a_rom_hack), onClick = { viewModel.setHackMark(g, if (hackMark == false) null else true) })
         }
         if (duplicates.isNotEmpty()) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {

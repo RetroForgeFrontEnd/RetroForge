@@ -184,6 +184,20 @@ data class BacklogEntity(val rootId: Long, val relativePath: String, val status:
 
 enum class BacklogStatus { WANT, PLAYING, FINISHED, DROPPED }
 
+/**
+ * A game marked as a ROM hack, or as not one, by hand: for hacks whose file name doesn't say so ("Advance Wars Alpha").
+ * Keyed by folder + path like favourites, so it survives rescans.
+ */
+@Entity(
+    tableName = "hack_marks",
+    primaryKeys = ["rootId", "relativePath"],
+    foreignKeys = [ForeignKey(entity = RootEntity::class, parentColumns = ["id"], childColumns = ["rootId"], onDelete = ForeignKey.CASCADE)],
+)
+data class HackMarkEntity(val rootId: Long, val relativePath: String, val isHack: Boolean)
+
+/** This game with a hand mark applied; a game marked as not a hack loses its hack label too. */
+fun GameEntity.withHackMark(isHack: Boolean): GameEntity = copy(isHack = isHack, hackFolder = if (isHack) hackFolder else null)
+
 /** A game in the backlog, with its status. */
 data class BacklogGame(@androidx.room.Embedded val game: GameEntity, val status: String, val updatedAt: Long) {
     val backlogStatus: BacklogStatus? get() = BacklogStatus.entries.firstOrNull { it.name == status }
@@ -412,6 +426,24 @@ interface LibraryDao {
     @Query("UPDATE OR IGNORE game_edits SET relativePath = :to WHERE rootId = :rootId AND relativePath = :from")
     suspend fun relinkEdit(rootId: Long, from: String, to: String)
 
+    @Query("UPDATE OR IGNORE hack_marks SET relativePath = :to WHERE rootId = :rootId AND relativePath = :from")
+    suspend fun relinkHackMark(rootId: Long, from: String, to: String)
+
+    @Query("SELECT * FROM hack_marks")
+    suspend fun allHackMarks(): List<HackMarkEntity>
+
+    @Query("SELECT * FROM hack_marks WHERE rootId = :rootId")
+    suspend fun hackMarksFor(rootId: Long): List<HackMarkEntity>
+
+    @Query("SELECT isHack FROM hack_marks WHERE rootId = :rootId AND relativePath = :path")
+    fun hackMark(rootId: Long, path: String): Flow<Boolean?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertHackMark(mark: HackMarkEntity)
+
+    @Query("DELETE FROM hack_marks WHERE rootId = :rootId AND relativePath = :path")
+    suspend fun deleteHackMark(rootId: Long, path: String)
+
     @Query("SELECT * FROM game_edits WHERE rootId = :rootId")
     suspend fun editsFor(rootId: Long): List<GameEditEntity>
 
@@ -461,6 +493,7 @@ interface LibraryDao {
         relinkCover(rootId, from, to)
         relinkEdit(rootId, from, to)
         relinkBacklog(rootId, from, to)
+        relinkHackMark(rootId, from, to)
     }
 
     /** Replaces a folder's index in one transaction, so an interrupted scan leaves the previous index intact. */
@@ -468,7 +501,9 @@ interface LibraryDao {
     suspend fun replaceIndex(root: RootEntity, games: List<GameEntity>, problems: List<ProblemEntity>, layout: String, unrecognised: String, at: Long) {
         // Hand edits win over what the scan found; the scanned values are kept up to date for "Reset".
         val edits = editsFor(root.id).associateBy { it.relativePath }
-        val merged = games.map { game ->
+        val marks = hackMarksFor(root.id).associateBy({ it.relativePath }, { it.isHack })
+        val merged = games.map { scanned ->
+            val game = marks[scanned.relativePath]?.let { scanned.withHackMark(it) } ?: scanned
             val edit = edits[game.relativePath] ?: return@map game
             upsertEdit(edit.copy(scanned = game.details()))
             game.withDetails(edit.edited)
@@ -485,11 +520,11 @@ interface LibraryDao {
     entities = [
         RootEntity::class, GameEntity::class, ProblemEntity::class, PlayEntity::class, CoverEntity::class,
         FavouriteEntity::class, PlaylistEntity::class, PlaylistItemEntity::class, GameEditEntity::class,
-        BacklogEntity::class,
+        BacklogEntity::class, HackMarkEntity::class,
     ],
-    version = 6,
+    version = 7,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5), AutoMigration(from = 5, to = 6)],
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5), AutoMigration(from = 5, to = 6), AutoMigration(from = 6, to = 7)],
 )
 abstract class LibraryDatabase : RoomDatabase() {
     abstract fun dao(): LibraryDao
