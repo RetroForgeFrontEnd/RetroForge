@@ -243,6 +243,7 @@ Requests that were never fully done, or only answered:
 | Big screen mode for TVs | 📋 to do: a TV home screen for televisions and Android TV boxes, with large artwork, animated backgrounds and horizontal shelves, full controller navigation and TV remote support (D-pad, OK, Back) |
 | Gaming passport | 📋 to do: a profile of your play history: every system played, total hours, favourite genres, series and developers, games finished and being played, milestones and a yearly summary (builds on the backlog and playtime records) |
 | Capture studio | 📋 to do: record gameplay in the built-in player, screenshots and short clips, highlight reels, overlays with the console, game title and playtime, and sharing clips to social apps or a PC (screenshots already exist in the game's menu) |
+| RetroForge AI: a gaming assistant | 📋 to do: ask about a game from the app or the pause menu (objectives, puzzles, a hard boss, hidden items), game recommendations from your collection, help with emulator settings and problems, and searching your own manuals and guides; needs an AI service (the user's own key or account) |
 
 ## Future plans (30 October)
 
