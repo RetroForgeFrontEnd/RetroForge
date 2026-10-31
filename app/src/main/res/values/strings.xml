@@ -2517,4 +2517,9 @@
     <string name="game_copy_copying">Copying to the phone… %1$d%%</string>
     <string name="game_copy_ready">%1$s is ready</string>
     <string name="game_copy_tap_to_play">Tap to play.</string>
+    <string name="settings_size">Size</string>
+    <string name="settings_size_body">Make RetroForge\'s words, logos, game pictures and buttons bigger or smaller. Only RetroForge changes, not the rest of the phone.</string>
+    <string name="settings_size_smaller">Smaller</string>
+    <string name="settings_size_bigger">Bigger</string>
+    <string name="settings_size_normal">Normal size</string>
 </resources>

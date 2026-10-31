@@ -157,6 +157,12 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
     val userThemes by container.themes.userThemes.collectAsStateWithLifecycle()
     val theme = remember(settings.themeId, userThemes) { container.themes.find(settings.themeId) }
 
+    // Settings → Looks and sounds → Size: everything drawn in dp and sp (words, logos, tiles) scales together.
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    val scale = settings.uiScale / 100f
+    androidx.compose.runtime.CompositionLocalProvider(
+        androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(density.density * scale, density.fontScale),
+    ) {
     RetroForgeTheme(theme = theme, dark = dark) {
         // null until settings have loaded, so returning users never see the notice flash up.
         val acknowledged by settingsViewModel.noticeAcknowledged.collectAsStateWithLifecycle()
@@ -424,6 +430,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
                 }
             }
         }
+    }
     }
 }
 

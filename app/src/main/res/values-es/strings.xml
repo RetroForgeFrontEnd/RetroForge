@@ -2390,4 +2390,9 @@
     <string name="game_copy_copying">Copiando al teléfono… %1$d%%</string>
     <string name="game_copy_ready">%1$s está listo</string>
     <string name="game_copy_tap_to_play">Toca para jugar.</string>
+    <string name="settings_size">Tamaño</string>
+    <string name="settings_size_body">Agranda o reduce los textos, logotipos, imágenes de juegos y botones de RetroForge. Solo cambia RetroForge, no el resto del teléfono.</string>
+    <string name="settings_size_smaller">Más pequeño</string>
+    <string name="settings_size_bigger">Más grande</string>
+    <string name="settings_size_normal">Tamaño normal</string>
 </resources>

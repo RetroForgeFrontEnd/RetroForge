@@ -59,6 +59,10 @@ class SettingsViewModel(private val repository: SettingsRepository) : ViewModel(
         viewModelScope.launch { repository.setThemeMode(mode) }
     }
 
+    fun setUiScale(percent: Int) {
+        viewModelScope.launch { repository.setUiScale(percent) }
+    }
+
     fun setShowPcSection(show: Boolean) {
         viewModelScope.launch { repository.setShowPcSection(show) }
     }

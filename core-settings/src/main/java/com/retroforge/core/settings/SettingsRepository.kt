@@ -19,6 +19,8 @@ data class AppSettings(
     /** Active theme id (built-in or the user's own); see ThemeStore. */
     val themeId: String = "forge-neon",
     val showPcSection: Boolean = true,
+    /** Size of RetroForge's words, logos and pictures, in percent of normal (Android's own sizes times this). */
+    val uiScale: Int = 100,
     /** Version of the "no games or BIOS included" notice the user has acknowledged; 0 = never. */
     val noticeAcknowledged: Int = 0,
     val setupDone: Boolean = false,
@@ -55,6 +57,7 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
                 ?: AppSettings().themeMode,
             themeId = prefs[THEME_ID] ?: AppSettings().themeId,
             showPcSection = prefs[SHOW_PC] ?: AppSettings().showPcSection,
+            uiScale = prefs[UI_SCALE] ?: 100,
             noticeAcknowledged = prefs[NOTICE] ?: 0,
             setupDone = prefs[SETUP_DONE] ?: false,
             biosFolderUri = prefs[BIOS_FOLDER],
@@ -77,6 +80,10 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
 
     suspend fun setThemeMode(mode: ThemeMode) {
         store.edit { it[THEME_MODE] = mode.name }
+    }
+
+    suspend fun setUiScale(percent: Int) {
+        store.edit { it[UI_SCALE] = percent }
     }
 
     suspend fun setShowPcSection(show: Boolean) {
@@ -146,6 +153,7 @@ class SettingsRepository(private val store: DataStore<Preferences>) {
         val THEME_MODE = stringPreferencesKey("theme_mode")
         val THEME_ID = stringPreferencesKey("theme_id")
         val SHOW_PC = booleanPreferencesKey("show_pc_section")
+        val UI_SCALE = intPreferencesKey("ui_scale_percent")
         val EMULATORS = stringPreferencesKey("emulator_choices")
         val HOTKEYS = booleanPreferencesKey("retroarch_hotkeys")
         val MENU_COMBO = intPreferencesKey("retroarch_menu_combo")
