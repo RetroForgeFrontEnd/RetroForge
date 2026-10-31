@@ -115,7 +115,7 @@ class MacrosTest {
         assertEquals("Mortal Kombat 4", titleFor("Mortal Kombat Gold (USA)"))
         assertEquals("Punch-Out!!", titleFor("Mike Tyson's Punch-Out!! (USA)"))
         assertNull(titleFor("Super Punch-Out!! (USA)"))
-        assertEquals("Samurai Shodown", titleFor("Samurai Shodown II"))
+        assertEquals("Samurai Shodown II", titleFor("Samurai Shodown II"))
         assertEquals("Sonic the Hedgehog", titleFor("Sonic The Hedgehog (W) (REV00) [!]"))
         assertEquals("Sonic the Hedgehog 3", titleFor("Sonic The Hedgehog 3 (USA)"))
         assertEquals("Sonic the Hedgehog 3", titleFor("Sonic 3 & Knuckles"))
@@ -130,6 +130,13 @@ class MacrosTest {
         assertNull(titleFor("Clay Fighter 2 - Judgment Clay (USA)"))
         assertEquals("Eternal Champions", titleFor("Eternal Champions (USA)"))
         assertNull(titleFor("Eternal Champions - Challenge from the Dark Side (USA)"))
+        assertEquals("Samurai Shodown II", titleFor("Samurai Shodown II / Shin Samurai Spirits"))
+        assertEquals("Samurai Shodown", titleFor("Samurai Shodown III"))
+        assertEquals("X-Men: Children of the Atom", titleFor("X-Men - Children of the Atom (USA)"))
+        assertEquals("Capcom crossovers", titleFor("X-Men vs. Street Fighter (USA)"))
+        assertEquals("Fighter's History Dynamite", titleFor("Fighter's History Dynamite"))
+        assertEquals("Fighter's History Dynamite", titleFor("Karnov's Revenge"))
+        assertNull(titleFor("Fighter's History (USA)"))
         assertNull(titleFor("Tekken 2"))
     }
 

@@ -12,3 +12,57 @@ Demitri | Demon Cradle | 6 2 3+HP
 Demitri | Bat Spin | 2 1 4+HK
 Felicia | Rolling Buckler | 2 3 6+HP
 Felicia | Delta Kick | 6 2 3+HK
+# From here on, the first game's (The Night Warriors) inputs; later games kept most of them. "Special" moves need the
+# special gauge full. A light punch (LP) ... Z heavy kick (HK); *60 charges for a second.
+Demitri | Midnight Pleasure (special) | 2 6 3+LP+MP+HP
+Demitri | Demon Stolen (throw) | 6 3 2 1 4 7 8+HP
+Jon Talbain | Horizontal Beast Rush | 2 3 6+HP
+Jon Talbain | Rising Beast Rush | 6 2 3+HP
+Jon Talbain | Climb Laser | 2 8+HK
+Jon Talbain | Wild Circular (throw) | 6 3 2 1 4+HK
+Victor | Giga Hammer | 4*60 6+HP
+Victor | Giga Buster | 4*60 6+HK
+Victor | High Giga Buster | 1 9+HK
+Victor | Giga Burn | 2 1 4+HK
+Victor | Gyro Crush | 2 1 4 6+HP
+Victor | Giga Brood (special) | 4*60 6+LP+MP+HP
+Victor | Thunder Break (special) | 2*60 8+HP
+Victor | Electric Slam (throw) | 2 1 4+HP
+Victor | Mega Shock (throw) | 2 3 6+HK
+Lord Raptor | Death Hurricane | 2 1 4+HK
+Lord Raptor | Hell's Gate | 4 1 2 3 6+HK
+Lord Raptor | Soul Javelin | 2 8+HK
+Lord Raptor | Death Voltage (special) | 6 3 2 1 4+HK
+Lord Raptor | Evil Scream (special) | 6 4+LP+MP+HP
+Lord Raptor | Skull Punish (throw) | 2 3 6 9+HP
+Morrigan | Valkyrie Turn (special) | 2 1 4+HK _ HP
+Morrigan | Hell Ride (throw) | 2 1 4+HP
+Anakaris | Mirror Door Wrap | 2 3 6+HP
+Anakaris | Coffin Dance (near) | LP+MP+HP
+Anakaris | Coffin Dance (far) | LK+MK+HK
+Anakaris | Swallow | 6 3 2 1 4+HP
+Anakaris | Spit | 2 3 6+HK
+Anakaris | Cobra Blow | 6 4 6+HP
+Felicia | Rolling Punch | 6 3 2 1+HP
+Felicia | Sand Splash | 2 3 6+HP
+Felicia | Rolling Flash (special) | 2 3 6 4 1 2+LP+MP+HP
+Felicia | Panic Nail (throw) | 2 1 4+HK
+Bishamon | Snap Sword | 4 1 2 3 6+HP
+Bishamon | High Quick Slash | 4*60 6+HP
+Bishamon | Low Quick Slash | 4*60 6+HK
+Bishamon | Rising Slash | 6 2 3+HP
+Bishamon | High Quadruple Slash (special) | 4*60 6 4 6+HP
+Bishamon | Low Quadruple Slash (special) | 4*60 6 4 6+HK
+Bishamon | Big Blue Hand (special) | 2 1 4+HP
+Bishamon | The Skinner (throw) | 2 1 2 3 6+HP
+Rikuo | Sonic Wave | 2 3 6+HP
+Rikuo | Poison Breath | 4 1 2 3 6+HK
+Rikuo | Screw Jet | 4 6+HP
+Rikuo | Aqua Splash (special) | 2 1 4+LP+MP+HP
+Rikuo | Grab, Knee, Toss (throw) | 6 3 2 1 4+HP
+Sasquatch | Big Snow | 4 1 2 3 6+HP
+Sasquatch | Big Typhoon | 6 2 3+HK
+Sasquatch | Big Towers | 2 _ 2+LP+MP+HP
+Sasquatch | Big Freezer (special) | 4 1 2 3 6+LP+MP+HP
+Sasquatch | Big Shake (throw) | 6 3 2+HP
+Sasquatch | Big Brunch (throw) | 2 1 4+HK

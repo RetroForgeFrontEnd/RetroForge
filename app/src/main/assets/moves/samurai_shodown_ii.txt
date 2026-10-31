@@ -1,0 +1,97 @@
+# Samurai Shodown II (Neo Geo; Shin Samurai Spirits). Numpad notation for a fighter facing right: 6 forward, 2 down,
+# 3 down-forward. A light slash, B medium slash, C light kick, D medium kick; A+B heavy slash, C+D heavy kick.
+# Slash moves use B and kick moves D; change to A or A+B. POW moves need the POW gauge full.
+title: Samurai Shodown II
+match: samurai shodown ii | samurai shodown 2 | shin samurai spirits | samurai spirits 2
+buttons: A=B B=A C=Y D=X
+checked: no
+Haohmaru | Ougi Senpuu Retsu Zan | 2 3 6+B
+Haohmaru | Kogetsu Zan | 6 1 2 3+B
+Haohmaru | Leaping Somersault Slice | 6 1 2 3+D
+Haohmaru | Fake Tornado | 2 3 6+D
+Haohmaru | Sake Attack | 2 1 4+A
+Haohmaru | Walking Sword Spin | 3 4 1 2 3 6 4 2 1+B+C
+Haohmaru | POW: Big Slash | 6 3 2 1 4 6+A
+Cham Cham | Boomerang | 2 3 6+B
+Cham Cham | Boomerang (up) | 2 1 4+B
+Cham Cham | Paku Paku spin | 6 3 2 1 4+C
+Cham Cham | Paku Paku skull | 6 3 2 1 4+D
+Cham Cham | Paku Paku fireball | 6 3 2 1 4+C+D
+Cham Cham | Leaping Face Rip | 2 3 6+D
+Cham Cham | POW: Big Charge | 6 4 1 2 3 6+A
+Charlotte | Energy Wall | 1 2 3+B
+Charlotte | Splash Fount | B _ B _ B _ B _ B
+Charlotte | Triangle | 6 2 3+B
+Charlotte | POW: Giant Star | 6 3 2 1 4 6+B
+Earthquake | Buzzsaw | B _ B _ B _ B _ B
+Earthquake | Mirror Images (left) | 6 4 1 2 3 6+A
+Earthquake | Mirror Images (right) | 6 4 1 2 3 6+B
+Earthquake | Vanish and drop | 6 3 2 1 4+B+C+D
+Earthquake | Fire Breath | 2 1 4+B
+Earthquake | POW: Grab | 6 3 2 1 4 6+A
+Galford | Plasma Blade | 2 3 6+B
+Galford | Mirror Images (left) | 6 4 1 2 3 6+A
+Galford | Mirror Images (right) | 6 4 1 2 3 6+B
+Galford | Vanish and drop | 6 3 2 1 4+B+C+D
+Galford | Rush Dog | 2 1 4+B
+Galford | Machine Gun Dog | 2 1 4+C
+Galford | Dog from above | 2 1 4+D
+Galford | Throw | 6 2 3+D
+Galford | POW: Dog Attack | 6 3 2 1 4 6+D
+Gen-an | Poison Gas | 2 3 6+B
+Gen-an | Claw Shot | 6 3 2 1 4+B
+Gen-an | Rolling Claws | 6 2 3+B
+Gen-an | Skin Shed | 3 2 1+B+C+D
+Gen-an | POW: Grab | 6 3 2 1 4 6+A+B
+Genjuro | Rising Sword Slash | 6 2 3+B
+Genjuro | Sliding Slash | 2 3 6+B
+Genjuro | Card Throw | 2 1 4+B
+Genjuro | POW: Rising Slash | 6 3 2 1 4 6+A
+Hanzo | Fire Snake | 6 3 2 1+B
+Hanzo | Mirror Images (left) | 6 4 1 2 3 6+A
+Hanzo | Mirror Images (right) | 6 4 1 2 3 6+B
+Hanzo | Vanish and drop | 6 3 2 1 4+B+C+D
+Hanzo | Throw | 6 2 3+D
+Hanzo | POW: Fire Pillar | 6 3 2 1 4 6+D
+Jubei | Ground Wave | 2 3 6+B
+Jubei | Multiple Slashes | B _ B _ B _ B _ B
+Jubei | Charge and Rising Slash | 6 2 3+B
+Jubei | Charge | 6 2 3+A
+Jubei | Counter | 2 1 4 6+B
+Jubei | POW: Energy Column | 6 3 2 1 4 6+C
+Kyoshiro | Fire Breath | 2 3 6+B
+Kyoshiro | Flaming Drill | 6 3 2 1 4+D
+Kyoshiro | Jump and Spin | 6 2 3+B
+Kyoshiro | Fan Throw | 2 1 4+B
+Kyoshiro | POW: Ground Spin | 6 4 1 2 3 6+C
+Nakoruru | Upward Rush | 2 3 6+B
+Nakoruru | Horizontal Rush | 4 1 2+B
+Nakoruru | Reflect | 2 1 4+B
+Nakoruru | Roll | 1+A+B
+Nakoruru | Hawk Attack | 6 3 2 1 4+B
+Nakoruru | Ride the Hawk | 2 1 4+C
+Nakoruru | Cape Flick | 2 1 4 6 3 2+B+C
+Nakoruru | POW: Hawk Attack | 6 4 1 2 3 6+A
+Nicotine | Electric Hawk | 2 3 6+B
+Nicotine | Flaming Ape | 2 3 6+D
+Nicotine | Staff Rush | 6 3 2 1 4+B
+Nicotine | Confusion Card | 4 2 1+A+B
+Nicotine | POW: Giant Beast | 6 4 1 2 3 6+D
+Sieger | Leaping Stomp | 6 3 2 1 4+D
+Sieger | Flamethrower | 2 3 6 A _ A _ A _ A
+Sieger | Reflect | 3+B+C
+Sieger | Knee Slide | 2 3 6+C
+Sieger | Grab | 6 3 2 1 4 6+A+B
+Sieger | POW: Leaping Stomp | 6 3 2 1 4 6+C+D
+Ukyo | Apple Slice | 2 1 4+B
+Ukyo | Fake Apple Slice | 2 1 4+D
+Ukyo | Sliding Slash (forward) | 2 3 6+C
+Ukyo | Sliding Slash (down) | 2 3 6+D
+Ukyo | Sliding Slash (up) | 2 3 6+C+D
+Ukyo | Hopping Shot | 4 _ 4 1 2 3 6+B
+Ukyo | POW: Apple and Spin | 6 4 1 2 3 6+A+B
+Wan-Fu | Weapon Throw | 2 1 4+B
+Wan-Fu | Flame Pillar | 6 2 3+B
+Wan-Fu | Pillar Spin | 2 3 6+B
+Wan-Fu | Charge POW | 2 1 4+C+D
+Wan-Fu | POW: Weapon Throw | 6 4 1 2 3 6+B

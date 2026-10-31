@@ -1,0 +1,52 @@
+# Fighter's History Dynamite (Neo Geo; Karnov's Revenge). Numpad notation for a fighter facing right: 6 forward,
+# 2 down, 3 down-forward; *60 charges for a second. A weak punch, B strong punch, C weak kick, D strong kick. P moves
+# use B and K moves D; change to A or C for the weak version.
+title: Fighter's History Dynamite
+match: fighter s history dynamite | karnov s revenge
+buttons: A=B B=A C=Y D=X
+checked: no
+Ray | Big Tornado | 2 3 6+B
+Ray | Dynamite Tackle | 6 _ 6 B
+Ray | Wheel Kick | 2 1 4+D
+Ray | Thunder Dynamite Tackle | 4*60 6 _ 6 A+B
+Feilin | Touroh Zan | 2 3 6+B
+Feilin | Hakkaku Soubi Ken | 2*60 8+B
+Ryoko | Zenten Ukemi | 4*60 6+B
+Ryoko | Ippon Seoi (near) | 6 3 2 1 4+B
+Ryoko | Kataguruma (close) | 6 9 8 7 4+B
+Matlock | Spinning Wave | 4*60 6+B
+Matlock | Overhead Kick | 4*60 6+D
+Matlock | Road Hurricane | 2*60 8+D
+Samchay | Maddron Jusarop | 2 3 6+B
+Samchay | Ti-Kaukoun | 2 3 6+D
+Samchay | Pap Soukau | B+D
+Lee | Zesshou Hou | 2 3 6+B
+Lee | Super Zesshou Hou | 2 3 6 4+B
+Lee | Senkyuu Tai | 2 3 6+D
+Mizoguchi | Tiger Bazooka | 2 3 6+B
+Mizoguchi | Koryuu Sai | 4 1 2+B
+Mizoguchi | Renzoku Keri | 2 3 6+D
+Mizoguchi | Gottsui Tiger Bazooka | 2 3 6+A+B+C+D
+Mizoguchi | Shoten Sai | 4 1 2+A+B+C+D
+Jean | Needle Shower | B _ B _ B _ B _ B
+Jean | Ball Rose | 4 6+B
+Jean | Sliding Kick | 3+D
+Jean | Flic Flac | 2*60 8+D
+Jean | Rondato | 6*60 2 1 4+D
+Jean | Chojaku Needle Shower | A+B+C+D
+Marstorius | Dash Lariat | 4*60 6+B
+Marstorius | Moonsault Press | 2*60 8+B
+Marstorius | Double German | 6 3 2 1 4+B
+Marstorius | Drill Power Slam | 6 9 8 7 4+B
+Marstorius | Kneel Kick | 4*60 6+D
+Yungmie | Fire Kick | A+C _ A+C _ A+C _ A+C _ A+C
+Zazie | Vulcan Hook | B _ B _ B _ B _ B
+Zazie | Hellfire | 2 1 4+B
+Zazie | Ducking | 6 _ 6 D
+Zazie | Step Back | 6 4+D
+Zazie | Deshi Kakato | 8 2+D
+Zazie | Chojaku Vulcan Hook | A+B+C+D
+Clown | Pick-a-Card | 4*60 6+B
+Clown | Head Stamp | 1*60 9+B
+Clown | Spin Attack | 1*60 6+D
+Clown | Spin Drop | 1*60 8+D

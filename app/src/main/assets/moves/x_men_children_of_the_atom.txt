@@ -1,0 +1,67 @@
+# X-Men: Children of the Atom (arcade, Saturn, PlayStation). Numpad notation for a fighter facing right: 6 forward,
+# 2 down, 3 down-forward. LP MP HP jab, strong and fierce punch; LK MK HK short, forward and roundhouse kick. P moves
+# use HP and K moves HK; change to a lighter button for the slower version. Hyper-X moves need a full X-power meter.
+title: X-Men: Children of the Atom
+match: x men children of the atom
+buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
+checked: no
+Colossus | Giant Swing | 2 3 6+HP
+Colossus | Power Tackle | 2 3 6+HK
+Colossus | Body Press (on a fallen fighter) | 2+HP
+Colossus | Super Armor | 2 1 4+LP+MP+HP
+Colossus | Hyper-X: Super Dive | 2 3 6+LP+MP+HP
+Cyclops | Optic Blast | 2 3 6+HP
+Cyclops | Gene Splice | 6 2 3+HP
+Cyclops | Control Beam | 2 1 4+HP
+Cyclops | Hyper-X: Mega Optic Blast | 2 3 6+LP+MP+HP
+Iceman | Ice Beam | 2 3 6+HP
+Iceman | Ice Avalanche | HP+HK
+Iceman | Ice Fist | 2 1 4+LP+MP+HP
+Iceman | Hyper-X: Arctic Attack | 2 3 6+LP+MP+HP
+Omega Red | Carbonadium Coil | 2 3 6+HP
+Omega Red | Omega Strike | 2 3 6+HK
+Omega Red | Hyper-X: Omega Destroyer | 2 3 6+LP+MP+HP
+Psylocke | Psi-Flash | 2 3 6+HP
+Psylocke | Psi-Blade Spin | 2 3 6+HK
+Psylocke | Ninjitsu | 2 1 4+HP
+Psylocke | Hyper-X: Psi-Spear | 2 3 6+LP+MP+HP
+Sentinel | Rocket Punch | 2 3 6+HP
+Sentinel | Sentinel Force | 2 3 6+HK
+Sentinel | Body Press (on a fallen fighter) | 2+HP
+Sentinel | Flying | 2 1 4+LP+MP+HP
+Sentinel | Hyper-X: Plasma Storm | 2 3 6+LP+MP+HP
+Silver Samurai | Shuriken | 2 3 6+HP
+Silver Samurai | Hyakuretsu Toh | HP _ HP _ HP _ HP _ HP
+Silver Samurai | Blink | 2 3 6+HK
+Silver Samurai | Touki | 2 1 4+HP
+Silver Samurai | Bushin | 2 1 4+LK+MK+HK
+Silver Samurai | Hyper-X: Raimei Ken | 2 3 6+LP+MP+HP
+Silver Samurai | Hyper-X: Triple Shuriken | 2 1 4+LP+MP+HP
+Spiral | Dancing Swords | 6 3 2 1 4+LP+MP+HP
+Spiral | Sword Toss (with halo) | 2 3 6+HP
+Spiral | Six-Hand Grapple | 2 8+HP
+Spiral | Sword Explosion (with halo) | 2 3 6+HK
+Spiral | Switch Dance | 2 1 4+LP
+Spiral | Teleport Dance | 2 1 4+MP
+Spiral | Power Dance | 2 1 4+LK
+Spiral | Speed Dance | 2 1 4+MK
+Spiral | Dimensional Dance | 2 1 4+HK
+Spiral | Hyper-X: Metamorphose | 2 3 6+LP+MP+HP
+Storm | Typhoon | 2 3 6+HP
+Storm | Lightning Attack | HP+HK
+Storm | Flying | 2 1 4+LP+MP+HP
+Storm | Kaze Okoshi | 2 1 4+LK+MK+HK
+Storm | Hyper-X: Lightning Storm | 2 3 6+LP+MP+HP
+Wolverine | Tornado Claw | 6 2 3+HP
+Wolverine | Drill Claw | HP+HK
+Wolverine | Berserker Charge | 2 1 4+LP+MP+HP
+Wolverine | Healing Factor | 2 1 4+LK+MK+HK
+Wolverine | Hyper-X: Berserker Barrage | 2 3 6+LP+MP+HP
+Akuma | Gou Hadouken | 2 3 6+HP
+Akuma | Shakunetsu Hadouken | 4 1 2 3 6+HP
+Akuma | Gou Shoryuken | 6 2 3+HP
+Akuma | Tatsumaki Zankuu Kyaku | 2 1 4+HK
+Akuma | Ashura Senkuu (forward) | 6 2 3+LP+MP+HP
+Akuma | Ashura Senkuu (back) | 4 2 1+LP+MP+HP
+Akuma | Hyper-X: Messatsu Gou Hadou | 2 3 6 2 3 6+HP
+Akuma | Hyper-X: Messatsu Gou Shoryu | 6 2 3 6 2 3+HP

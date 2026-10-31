@@ -1,7 +1,8 @@
-# Samurai Shodown (Neo Geo, 1 to 4). Numpad notation for a fighter facing right: 6 forward, 2 down, 3 down-forward.
+# Samurai Shodown (Neo Geo, 1, III and IV; II has its own list). Numpad notation for a fighter facing right: 6 forward, 2 down, 3 down-forward.
 # A light slash, B medium slash, C light kick, D medium kick; A+B is the heavy slash.
 title: Samurai Shodown
 match: samurai shodown | samurai spirits
+not: samurai shodown ii | samurai shodown 2 | shin samurai spirits | samurai spirits 2
 buttons: A=B B=A C=Y D=X
 checked: no
 Haohmaru | Cyclone Slash | 2 3 6+B

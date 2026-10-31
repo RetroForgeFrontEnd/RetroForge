@@ -8,6 +8,62 @@ buttons: QP=Y MP=X FP=L QK=B MK=A FK=R
 checked: no
 Jago | Endokuken | 2 3 6+FP
 Jago | Tiger Fury | 6 2 3+FP
+Jago | Wind Kick | 2 1 4+FK
+Jago | Laser Sword | 2 1 4+FP
+TJ Combo | Swinging Backhand | 4 6+QP
+TJ Combo | Rollercoaster | 4 6+MP
+TJ Combo | Power Line | 4 6+FP
+TJ Combo | Straight Knee | 4 6+QK
+TJ Combo | Flying Knee | 4 6+FK
+Glacius | Ice Lance | 6 2 QP
+Glacius | Liquidize | 6 3 2 1 4+FP
+Glacius | Puddle Port | 4 1 2 3 6+QK
+Glacius | Puddle Punch | 4 1 2 3 6+FK
+Glacius | Hail | 4 1 2 3 6+FP
+Glacius | Shoulder Slam | 4 6+FP
+Spinal | Absorption Shield | 4+QP
+Spinal | Flaming Skull | 4 1 2 3 6+FP
+Spinal | Teleport (in front) | 2 _ 2 _ 2 FP
+Spinal | Teleport (behind) | 2 _ 2 _ 2 FK
+Spinal | Charge | 6 _ 6 MP
+Spinal | Slide | 2 FK
+Spinal | Sword Slash | 4 6+MP
+Orchid | Laser Boomerang | 2 3 6+MP
+Orchid | Spinning Slash | 6 3 2 1 4+FK
+Orchid | Helicopter Kick | 4 6+MK
+Orchid | Helicopter Blade | 6 2 1+FP
+Orchid | Dash Attack | 6 3 2+FP
+Orchid | Tiger | 4 6+FP
+Orchid | Backflip Kick | 4+FK
+Chief Thunder | Head Attack | 6 3 2 1 4+FP
+Chief Thunder | Reverse Head Attack | 4 1 2 3 6+FP
+Chief Thunder | Tomahawk Throw | 4 1 2 3 6+FK
+Chief Thunder | Spinning Chop | 4 6+FP
+Fulgore | Plasma Bolts | 4 1 2 3 6+FP
+Fulgore | Electric Charge | 4 6+FK
+Fulgore | Uppercut | 6 2 3+FP
+Fulgore | Lightning Bolt | 2 1 4+FK
+Fulgore | Reflector | 6 3 2 1 4+FP
+Fulgore | Teleport (near) | 4 2 4+FP
+Fulgore | Teleport (far) | 4 2 4+FK
+Cinder | Human Fireball | 6 _ 6 FP
+Cinder | Flame Thrower | 6 _ 6 FK
+Cinder | Flip Kick | 6 2 3+FK
+Cinder | Flaming Palm | 4 _ 4 QP
+Cinder | Outline | 6 3 2 1 4+MP
+Cinder | Invisible | 6 3 2 1 4+FP
+Sabrewulf | Spinning Claw | 4 6+FP
+Sabrewulf | Lunge | 6 3 2 1 4+FK
+Sabrewulf | Throw Bat | 4 1 2 3 6+FP
+Sabrewulf | Big Slash | 4 6+MK
+Sabrewulf | Rolling Slash | 4 6+QK
+Riptor | Fireball | 6 3 2 1 4+FP
+Riptor | Charge | 4 6+FP
+Riptor | Leaping Claws | 4 6+FK
+Riptor | Tail Flip | 6 3 2 1 4+MK
+Riptor | Uppercut Slash | 6 3 2 1 4+QP
+Riptor | Big Leap | 4 1 2 3 6+QK
+Riptor | Low Flame | 2 1 4+FK
 TJ Combo | Humiliation | 2 _ 2 _ 2 QP
 TJ Combo | No Mercy 1 (close) | 4 _ 4 6 _ 6 MP
 TJ Combo | No Mercy 2 (close) | 4 1 2 3 6 FK
