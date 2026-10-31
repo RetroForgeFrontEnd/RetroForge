@@ -57,6 +57,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        awaitingResult = false
         // Dual-screen devices: the second display shows RetroForge's art, or the open game's box (Settings → Dual screen).
         val prefs = (application as RetroForgeApplication).container.viewPrefs
         com.retroforge.app.ui.SecondScreen.show(this, prefs.getBoolean(com.retroforge.app.ui.settings.DUAL_SCREEN_BROWSE, false))
@@ -67,11 +68,21 @@ class MainActivity : ComponentActivity() {
         com.retroforge.app.ui.SecondScreen.hide()
     }
 
-    override fun onUserLeaveHint() {
-        super.onUserLeaveHint()
-        // Kiosk mode: going Home or to another app locks it again. Android's own pickers (a file, a folder) that
-        // RetroForge opens don't count, so choosing a file in Settings doesn't lock the page under it.
-        Kiosk.lock()
+    /** A picker (a file, a folder) is open for RetroForge: its answer comes back here, so that isn't leaving. */
+    private var awaitingResult = false
+
+    @Deprecated("Deprecated in ComponentActivity; still how ActivityResultLaunchers start their activity.")
+    override fun startActivityForResult(intent: android.content.Intent, requestCode: Int, options: Bundle?) {
+        awaitingResult = true
+        @Suppress("DEPRECATION")
+        super.startActivityForResult(intent, requestCode, options)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Kiosk mode: going Home, to another app or into a game locks it again; a picker opened from Settings
+        // doesn't, or the page would lock under it and the chosen file be lost.
+        if (!awaitingResult && !isChangingConfigurations) Kiosk.lock()
     }
 
     // Gamepad buttons the UI did not consume are translated here rather than relying on each
