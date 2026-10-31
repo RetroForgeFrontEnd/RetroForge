@@ -28,3 +28,59 @@ Fei Long | Rekka Ken | 2 3 6+HP
 Dee Jay | Air Slasher | 4*60 6+HP
 Akuma | Gou Hadouken | 2 3 6+HP
 Akuma | Raging Demon | LP _ LP _ 6 _ LK _ HP
+# From here on, Super Street Fighter II Turbo's inputs (most work in the earlier games too); supers are Super Turbo only.
+Ryu | Fire Hadouken | 4 1 2 3 6+HP
+Ryu | Super: Shinkuu Hadouken | 2 3 6 2 3 6+HP
+Ken | Fire Shoryuken | 6 2 3+HP
+Ken | Scythe Kick | 2 3 6+HK
+Ken | Super: Shoryureppa | 6 2 3 6 2 3+HP
+E. Honda | Hundred Hand Slap | HP _ HP _ HP _ HP _ HP
+E. Honda | Super Sumo Drop | 2*60 8+HK
+E. Honda | Oicho Throw (close) | 2 1 4+HP
+E. Honda | Super: Super Killer Head Ram | 4*60 6 4 6+HP
+Chun-Li | Lightning Legs | HK _ HK _ HK _ HK _ HK
+Chun-Li | Kikouken | 4*60 6+HP
+Chun-Li | Spinning Bird Kick (Super) | 4*60 6+HK
+Chun-Li | Super: Senretsu Kyaku | 4*60 6 4 6+HK
+Blanka | Vertical Rolling | 2*60 8+HK
+Blanka | Backstep Rolling | 4*60 6+HK
+Blanka | Electricity | HP _ HP _ HP _ HP _ HP
+Blanka | Super: Ground Shave Rolling | 4*60 6 4 6+HP
+Zangief | Flying Power Bomb (far) | 6 3 2 1 4 7 8+HK
+Zangief | Spinning Lariat | LP+MP+HP
+Zangief | Banishing Flat | 6 3 2+HP
+Zangief | Super: Final Atomic Buster (close) | 6 3 2 1 4 7 8 9 6 3 2 1 4 7 8+HP
+Guile | Super: Double Somersault | 1*60 3 1 9+HK
+Dhalsim | Yoga Blast | 4 1 2 3 6+HK
+Dhalsim | Yoga Teleport (forward) | 4 2 1+LP+MP+HP
+Dhalsim | Yoga Teleport (back) | 6 2 3+LP+MP+HP
+Dhalsim | Super: Yoga Inferno | 4 1 2 3 6 4 1 2 3 6+HP
+T. Hawk | Rising Hawk | 6 2 3+HP
+T. Hawk | Mexican Typhoon (close) | 6 3 2 1 4 7 8+HP
+T. Hawk | Super: Double Typhoon (close) | 6 3 2 1 4 7 8 9 6 3 2 1 4 7 8+HP
+Cammy | Spinning Knuckle | 4 1 6+HP
+Cammy | Hooligan Combination | 1 2 3 6 9+HP
+Cammy | Super: Spin Drive Smasher | 6 2 3 6 2 3+HK
+Fei Long | Flame Kick | 4 2 1+HK
+Fei Long | Chicken Wing | 2 6 9+HK
+Fei Long | Super: Rekka Shinken | 2 3 6 2 3 6+HP
+Dee Jay | Double Rolling Sobat | 4*60 6+HK
+Dee Jay | Machine Gun Upper | 2*60 8+HP
+Dee Jay | Jackknife Maximum | 2*60 8+HK
+Dee Jay | Super: Sobat Carnival | 4*60 6 4 6+HK
+Balrog | Dash Upper | 4*60 6+HK
+Balrog | Buffalo Headbutt | 2*60 8+HP
+Balrog | Dash Low Straight | 1*60 3+HP
+Balrog | Turn Punch | LP+MP+HP*120
+Balrog | Super: Crazy Buffalo | 4*60 6 4 6+HP
+Vega | Backflip | LP+MP+HP
+Vega | Scarlet Terror | 1*60 6+HK
+Vega | Sky High Claw | 2*60 8+HP
+Vega | Flying Barcelona Attack | 2*60 8+HK
+Vega | Super: Rolling Izuna Drop | 1*60 3 1 9+HK
+Sagat | Tiger Shot (low) | 2 3 6+HK
+Sagat | Tiger Knee | 2 6 9+HK
+Sagat | Super: Tiger Genocide | 2 3 6 2 3 6+HP
+M. Bison | Double Knee Press | 4*60 6+HK
+M. Bison | Head Stomp | 2*60 8+HK
+M. Bison | Super: Knee Press Nightmare | 4*60 6 4 6+HK
