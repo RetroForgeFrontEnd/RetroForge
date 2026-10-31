@@ -17,7 +17,7 @@
     <string name="filter_smooth">Suave</string>
     <string name="filter_crt">Linhas CRT</string>
     <string name="filter_lcd">Grelha LCD</string>
-    <string name="filter_crt_curved">CRT, ecrã curvo</string>
+    <string name="filter_crt_curved">CRT, tela curva</string>
     <string name="filter_lcd_ghosting">LCD, com rasto</string>
     <string name="filter_scale2x">Pixel art suave (Scale2x)</string>
 </resources>

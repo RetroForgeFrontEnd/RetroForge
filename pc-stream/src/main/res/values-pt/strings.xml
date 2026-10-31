@@ -24,9 +24,9 @@
 \n
 \nEste processo pode demorar alguns segundos…</string>
     <string name="pacing_balanced">Balanceado</string>
-    <string name="nettest_text_success">A sua rede não parece estar a bloquear o Moonlight. Se ainda tiver problemas a se conectar, verifique as configurações de firewall do seu PC.
+    <string name="nettest_text_success">Sua rede não parece estar bloqueando o Moonlight. Se ainda tiver problemas para se conectar, verifique as configurações de firewall do seu PC.
 \n
-\nSe estiver a tentar transmitir pela Internet, instale o Moonlight Internet Hosting Tool no seu PC e execute o Internet Streaming Tester para verificar a conexão com a Internet do seu PC.</string>
+\nSe estiver tentando transmitir pela Internet, instale o Moonlight Internet Hosting Tool no seu PC e execute o Internet Streaming Tester para verificar a conexão com a Internet do seu PC.</string>
     <string name="nettest_text_failure">A conexão de rede atual do seu aparelho parece estar a bloquear o Moonlight. A transmissão pela Internet pode não funcionar enquanto estiver conectado a esta rede.
 \n
 \nAs seguintes portas de rede estão bloqueadas:
@@ -68,7 +68,7 @@
     <string name="applist_quit_app">Saindo</string>
     <string name="applist_quit_success">Saiu com sucesso</string>
     <string name="applist_quit_fail">Falha ao sair</string>
-    <string name="text_native_res_dialog">Os modos de resolução nativa não são oficialmente suportados pelo GeForce Experience, portanto, ele não definirá a resolução da ecrã do host. Precisará configurá-lo manualmente durante o jogo.
+    <string name="text_native_res_dialog">Os modos de resolução nativa não são oficialmente suportados pelo GeForce Experience, portanto, ele não definirá a resolução da tela do host. Precisará configurá-lo manualmente durante o jogo.
 \n
 \nSe optar por criar uma resolução personalizada no Painel de controle da NVIDIA para corresponder à resolução do seu aparelho, certifique-se de ter lido e entendido o aviso da NVIDIA sobre possíveis danos ao monitor, instabilidade do PC e outros problemas potenciais.
 \n
@@ -87,31 +87,31 @@
     <string name="summary_checkbox_xb1_driver">Ativa um driver USB integrado para aparelhos sem suporte nativo aos controles Xbox</string>
     <string name="title_checkbox_usb_bind_all">Substituir o suporte nativo ao gamepad do Xbox</string>
     <string name="summary_checkbox_usb_bind_all">Use o driver USB do Moonlight para todos os gamepads suportados, mesmo se houver suporte nativo ao controle Xbox</string>
-    <string name="title_checkbox_mouse_emulation">Emulação de rato pelo gamepad</string>
-    <string name="summary_checkbox_mouse_emulation">Segure o botão Start para mudar o gamepad ao modo de rato</string>
-    <string name="summary_checkbox_flip_face_buttons">Inverte os botões A/B e X/Y dos gamepads e controles de ecrã</string>
-    <string name="title_checkbox_absolute_mouse_mode">Modo de rato para área de trabalho remota</string>
-    <string name="summary_checkbox_absolute_mouse_mode">Isso pode alterar a aceleração do rato para se comportar mais naturalmente para uso em desktop remoto, mas é incompatível com muitos jogos.</string>
-    <string name="category_on_screen_controls_settings">Configurações de Controles de Ecrã</string>
-    <string name="title_checkbox_show_onscreen_controls">Mostrar controles no ecrã</string>
-    <string name="summary_checkbox_show_onscreen_controls">Ativa o controle virtual no ecrã de toque</string>
+    <string name="title_checkbox_mouse_emulation">Emulação de mouse pelo controle</string>
+    <string name="summary_checkbox_mouse_emulation">Segure o botão Start para mudar o controle para o modo mouse</string>
+    <string name="summary_checkbox_flip_face_buttons">Inverte os botões A/B e X/Y dos controles físicos e na tela</string>
+    <string name="title_checkbox_absolute_mouse_mode">Modo mouse para área de trabalho remota</string>
+    <string name="summary_checkbox_absolute_mouse_mode">Isso pode alterar a aceleração do mouse para se comportar mais naturalmente em área de trabalho remota, mas é incompatível com muitos jogos.</string>
+    <string name="category_on_screen_controls_settings">Configurações dos controles na tela</string>
+    <string name="title_checkbox_show_onscreen_controls">Mostrar controles na tela</string>
+    <string name="summary_checkbox_show_onscreen_controls">Ativa o controle virtual na tela de toque</string>
     <string name="summary_only_l3r3">Esconde todos os botões virtuais exceto o L3 e R3</string>
     <string name="dialog_title_reset_osc">Resetar Layout</string>
-    <string name="toast_reset_osc_success">Controles de ecrã redefinidos para o padrão</string>
-    <string name="title_osc_opacity">Mudar a opacidade dos controles de ecrã</string>
+    <string name="toast_reset_osc_success">Controles na tela redefinidos para o padrão</string>
+    <string name="title_osc_opacity">Mudar a opacidade dos controles na tela</string>
     <string name="dialog_title_osc_opacity">Mudar opacidade</string>
     <string name="suffix_osc_opacity">%</string>
     <string name="category_ui_settings">Configurações de Interface</string>
     <string name="title_checkbox_enable_pip">Ativar modo Picture-in-Picture</string>
     <string name="summary_checkbox_enable_pip">Permite que a transmissão seja visualizada (mas não controlada) enquanto usa outros apps</string>
-    <string name="summary_checkbox_small_icon_mode">Diminui o tamanho dos ícones permitindo que mais apps sejam visíveis no ecrã</string>
+    <string name="summary_checkbox_small_icon_mode">Diminui o tamanho dos ícones, permitindo que mais apps caibam na tela</string>
     <string name="summary_checkbox_host_audio">Reproduz o áudio do computador e deste aparelho</string>
     <string name="category_advanced_settings">Configurações Avançadas</string>
     <string name="title_unlock_fps">Liberar todas as taxas de quadros possíveis</string>
     <string name="summary_unlock_fps">Transmitir a 90 ou 120 FPS pode reduzir a latência em aparelhos de última geração, mas pode causar atraso ou instabilidade em aparelhos que não suportam</string>
     <string name="title_checkbox_reduce_refresh_rate">Permitir redução de taxa de atualização</string>
     <string name="summary_checkbox_reduce_refresh_rate">Taxas menores de atualização do display podem gravar energia ao custo de latência de video adicional</string>
-    <string name="summary_checkbox_disable_warnings">Desativa as mensagens de aviso de conexão no ecrã durante a transmissão</string>
+    <string name="summary_checkbox_disable_warnings">Desativa as mensagens de aviso de conexão na tela durante a transmissão</string>
     <string name="summary_disable_frame_drop">Talvez reduza o micro-stuttering em alguns aparelhos, mas pode aumentar a latência</string>
     <string name="summary_video_format">HEVC reduz os requisitos de largura de banda de vídeo, mas requer um aparelho mais atual</string>
     <string name="title_enable_hdr">Ativar HDR (Experimental)</string>
@@ -132,7 +132,7 @@
     <string name="title_frame_pacing">Ritmo de quadros</string>
     <string name="pacing_smoothness">Preferir vídeo mais suave (pode aumentar significativamente a latência)</string>
     <string name="summary_seekbar_deadzone">Nota: Alguns jogos podem impor uma zona morta maior do que o Moonlight está configurado para usar.</string>
-    <string name="dialog_text_reset_osc">Tem certeza de que deseja apagar o layout salvo dos controles de ecrã\?</string>
+    <string name="dialog_text_reset_osc">Tem certeza de que deseja apagar o layout salvo dos controles na tela\?</string>
     <string name="category_host_settings">Configurações de Host</string>
     <string name="pacing_balanced_alt">Equilibrado com limite de FPS</string>
     <string name="audioconf_71surround">7.1 Surround</string>
@@ -184,22 +184,22 @@
     <string name="title_fps_list">Taxa de quadros por segundo</string>
     <string name="title_seekbar_bitrate">Taxa de bits</string>
     <string name="summary_seekbar_bitrate">Aumente para uma melhor qualidade de imagem. Diminua para melhorar o desempenho em conexões mais lentas.</string>
-    <string name="title_checkbox_stretch_video">Esticar vídeo ao ecrã cheio</string>
+    <string name="title_checkbox_stretch_video">Esticar o vídeo para a tela cheia</string>
     <string name="resolution_prefix_native">Nativa</string>
-    <string name="resolution_prefix_native_fullscreen">Ecrã Cheio Nativo</string>
+    <string name="resolution_prefix_native_fullscreen">Tela cheia nativa</string>
     <string name="category_audio_settings">Configurações de Áudio</string>
     <string name="summary_audio_config_list">Ativa o som Surround 5.1 ou 7.1 para sistemas de home theater</string>
     <string name="category_input_settings">Configurações de Controles</string>
-    <string name="title_checkbox_touchscreen_trackpad">Usar o ecrã como um trackpad</string>
-    <string name="summary_checkbox_touchscreen_trackpad">Se ativado, o ecrã sensível ao toque funciona como um trackpad. Se desativado, o ecrã controla diretamente o cursor do rato.</string>
+    <string name="title_checkbox_touchscreen_trackpad">Usar a tela como um trackpad</string>
+    <string name="summary_checkbox_touchscreen_trackpad">Se ativado, a tela de toque funciona como um trackpad. Se desativado, a tela controla diretamente o cursor do mouse.</string>
     <string name="summary_checkbox_multi_controller">Desmarque esta opção para forçar o gamepad a estar sempre presente</string>
     <string name="title_checkbox_vibrate_fallback">Emular suporte rumble com vibração</string>
     <string name="title_checkbox_vibrate_osc">Ativar vibração</string>
-    <string name="summary_checkbox_vibrate_osc">Vibra o seu aparelho para emular rumble nos controles de ecrã</string>
+    <string name="summary_checkbox_vibrate_osc">Vibra o aparelho para emular rumble nos controles na tela</string>
     <string name="title_only_l3r3">Mostrar somente L3 e R3</string>
-    <string name="title_reset_osc">Limpar o layout salvo dos controles de ecrã</string>
-    <string name="summary_reset_osc">Redefine todos os controles no ecrã para tamanho e posição padrão dele</string>
-    <string name="summary_osc_opacity">Deixe os controles de ecrã mais/menos transparentes</string>
+    <string name="title_reset_osc">Limpar o layout salvo dos controles na tela</string>
+    <string name="summary_reset_osc">Redefine todos os controles na tela para o tamanho e a posição padrão</string>
+    <string name="summary_osc_opacity">Deixa os controles na tela mais/menos transparentes</string>
     <string name="title_language_list">Idioma</string>
     <string name="summary_language_list">Idioma para ser usado no Moonlight</string>
     <string name="title_checkbox_small_icon_mode">Mostrar ícones menores</string>
@@ -241,7 +241,7 @@
     <string name="resolution_4k">4K</string>
     <string name="fps_30">30 FPS</string>
     <string name="pacing_latency">Preferir baixa latência</string>
-    <string name="title_checkbox_mouse_nav_buttons">Ativar os botões de voltar e avançar do rato</string>
+    <string name="title_checkbox_mouse_nav_buttons">Ativar os botões de voltar e avançar do mouse</string>
     <string name="summary_checkbox_mouse_nav_buttons">Ativar esta opção pode bugar o clique com o botão direito em alguns aparelhos com bugs</string>
     <string name="title_checkbox_flip_face_buttons">Inverter botões</string>
     <string name="title_privacy_policy">Política de privacidade</string>
@@ -249,9 +249,9 @@
     <string name="resolution_480p">480p</string>
     <string name="resolution_720p">720p</string>
     <string name="summary_frame_pacing">Especifique o equilíbrio entre latência e suavidade do vídeo</string>
-    <string name="analogscroll_none">Nenhum (ambos os sticks movem o rato)</string>
+    <string name="analogscroll_none">Nenhum (os dois analógicos movem o mouse)</string>
     <string name="analogscroll_right">Stick analógico direito</string>
     <string name="analogscroll_left">Stick analógico esquerdo</string>
     <string name="title_analog_scrolling">Usar um stick analógico para fazer scroll</string>
-    <string name="summary_analog_scrolling">Selecciona um stick analógico para fazer scroll quando a emulação de rato está ativada</string>
+    <string name="summary_analog_scrolling">Selecione um analógico para rolar quando a emulação de mouse estiver ativada</string>
 </resources>

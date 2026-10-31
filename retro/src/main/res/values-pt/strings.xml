@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="retro_arch_hotkeys_couldn_t_create_the_hotkey_file">não foi possível criar o ficheiro de atalhos</string>
+    <string name="retro_arch_hotkeys_couldn_t_create_the_hotkey_file">não foi possível criar o arquivo de atalhos</string>
     <string name="retro_arch_hotkeys_couldn_t_write">não foi possível escrever</string>
     <string name="retro_arch_launcher_retroarch_s_game_activity_wasn_t">Não foi encontrada a atividade de jogo do RetroArch. Atualiza o RetroArch.</string>
     <string name="retro_arch_launcher_android_refused_to_start_retroarch">O Android recusou iniciar o RetroArch: %1$s</string>
     <string name="retro_arch_launcher_couldn_t_start_retroarch">Não foi possível iniciar o RetroArch: %1$s</string>
-    <string name="standalone_launcher_the_emulator_s_game_screen_wasn">Não foi encontrado o ecrã de jogo do emulador. Atualiza o emulador.</string>
+    <string name="standalone_launcher_the_emulator_s_game_screen_wasn">A tela de jogo do emulador não foi encontrada. Atualize o emulador.</string>
     <string name="standalone_launcher_android_refused_to_start_the_emulator">O Android recusou iniciar o emulador: %1$s</string>
     <string name="standalone_launcher_couldn_t_start_the_emulator">Não foi possível iniciar o emulador: %1$s</string>
     <string name="hotkey_off">Desligado</string>

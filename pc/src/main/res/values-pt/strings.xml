@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="gpu_drivers_unknown_gpu">GPU desconhecida</string>
-    <string name="gpu_drivers_custom_drivers_turnip_only_work_on">Os drivers personalizados (Turnip) só funcionam em GPU Qualcomm Adreno. Esta GPU usa o driver que veio com o telemóvel; as atualizações do sistema são a forma de ter um mais recente. Os emuladores continuam a funcionar com esse driver.</string>
-    <string name="gpu_drivers_adreno_turnip_support_for_8xx_gpus">Adreno %1$s: o suporte do Turnip para GPU 8xx é novo. Usa compilações marcadas a8xx e mantém o driver do telemóvel se um jogo correr pior.</string>
-    <string name="gpu_drivers_adreno_turnip_often_runs_switch_ps2">Adreno %1$s: o Turnip costuma correr jogos de Switch, PS2, GameCube e PC melhor do que o driver do telemóvel. Se um jogo falhar, volta ao driver do sistema nesse emulador.</string>
+    <string name="gpu_drivers_custom_drivers_turnip_only_work_on">Os drivers personalizados (Turnip) só funcionam em GPUs Qualcomm Adreno. Esta GPU usa o driver que veio com o celular; as atualizações do sistema são a forma de ter um mais recente. Os emuladores continuam funcionando com esse driver.</string>
+    <string name="gpu_drivers_adreno_turnip_support_for_8xx_gpus">Adreno %1$s: o suporte do Turnip para GPUs 8xx é novo. Use builds marcadas a8xx e mantenha o driver do celular se um jogo rodar pior.</string>
+    <string name="gpu_drivers_adreno_turnip_often_runs_switch_ps2">Adreno %1$s: o Turnip costuma rodar jogos de Switch, PS2, GameCube e PC melhor do que o driver do celular. Se um jogo falhar, volte ao driver do sistema nesse emulador.</string>
     <string name="gpu_drivers_adreno_is_older_than_turnip_supports">A Adreno %1$s é mais antiga do que o Turnip suporta (Adreno 6xx e mais recentes).</string>
     <string name="gpu_drivers_the_download_answered">a transferência respondeu %1$s</string>
     <string name="gpu_drivers_couldn_t_save">não foi possível guardar %1$s</string>
