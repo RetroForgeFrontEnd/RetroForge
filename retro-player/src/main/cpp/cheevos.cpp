@@ -38,6 +38,10 @@ rc_libretro_memory_regions_t regions{};
 bool regionsReady = false;
 uint32_t consoleId = 0;
 int framesSinceRegions = 0;
+// A game to identify once the core has run a little: some cores (mGBA) send their memory map only then, and
+// rcheevos turns off every achievement whose memory it can't read when the game loads.
+bool pendingLoad = false;
+int pendingFrames = 0;
 cheevos::MemoryData memoryData = nullptr;
 cheevos::MemorySize memorySize = nullptr;
 
@@ -80,6 +84,8 @@ void initRegions() {
     retro_memory_map map{descriptors.data(), static_cast<unsigned>(descriptors.size())};
     regionsReady = rc_libretro_memory_init(&regions, haveMap ? &map : nullptr, coreMemoryInfo, consoleId) != 0;
     framesSinceRegions = 0;
+    LOGI("Memory for console %u: %s, %zu descriptors, %u regions, %zu bytes", consoleId, haveMap ? "core's map" : "no map",
+         descriptors.size(), regions.count, regions.total_size);
 }
 
 uint32_t RC_CCONV readMemory(uint32_t address, uint8_t *buffer, uint32_t bytes, rc_client_t *) {
@@ -186,6 +192,8 @@ void setMemoryMap(const retro_memory_map *map) {
         descriptors.push_back(d);
     }
     for (size_t i = 0; i < descriptors.size(); i++) descriptors[i].addrspace = map->descriptors[i].addrspace ? addressSpaces[i].c_str() : nullptr;
+    // A map that arrives after the game started (mGBA's) replaces the guess made without it.
+    if (consoleId && memoryData) initRegions();
 }
 
 void setCoreMemory(MemoryData data, MemorySize size) {
@@ -196,6 +204,13 @@ void setCoreMemory(MemoryData data, MemorySize size) {
 
 void frame() {
     std::lock_guard<std::mutex> l(lock);
+    if (client && pendingLoad && (haveMap || ++pendingFrames >= 30)) {
+        pendingLoad = false;
+        initRegions();
+        const std::vector<uint8_t> &bytes = contentBytes();
+        rc_client_begin_identify_and_load_game(client, consoleId, contentPath().c_str(),
+                                               bytes.empty() ? nullptr : bytes.data(), bytes.size(), onGameLoaded, nullptr);
+    }
     if (!client || !rc_client_is_game_loaded(client)) return;
     // Some cores only hand over their memory after a few frames.
     if ((!regionsReady || regions.total_size == 0) && ++framesSinceRegions >= 60) initRegions();
@@ -216,6 +231,7 @@ void shutdown() {
     memorySize = nullptr;
     haveMap = false;
     descriptors.clear();
+    pendingLoad = false;
 }
 
 }  // namespace cheevos
@@ -265,16 +281,14 @@ JNIEXPORT void JNI(cheevosLogout)(JNIEnv *, jobject) {
     if (client) rc_client_logout(client);
 }
 
-// Identifies the loaded game for [console] (rcheevos' console id) and starts its achievements.
+// Identifies the loaded game for [console] (rcheevos' console id) and starts its achievements, from [cheevos::frame]
+// once the core has sent its memory map or run half a second without one.
 JNIEXPORT void JNI(cheevosLoadGame)(JNIEnv *, jobject, jint console) {
-    std::lock_guard<std::mutex> core(coreLock());
     std::lock_guard<std::mutex> l(lock);
     if (!client) return;
     consoleId = static_cast<uint32_t>(console);
-    initRegions();
-    const std::vector<uint8_t> &bytes = contentBytes();
-    rc_client_begin_identify_and_load_game(client, consoleId, contentPath().c_str(),
-                                           bytes.empty() ? nullptr : bytes.data(), bytes.size(), onGameLoaded, nullptr);
+    pendingLoad = true;
+    pendingFrames = 0;
 }
 
 // Web requests to make: "id, url, content type, post data" each, fields split by \x1f. Also lets rcheevos
