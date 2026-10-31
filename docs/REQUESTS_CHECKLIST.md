@@ -242,6 +242,7 @@ Requests that were never fully done, or only answered:
 | Smart collections | 📋 to do: collections made and kept up to date by themselves from genre, year, developer or player count (Best RPGs, 1990s arcade games, couch co-op), and filters by backlog status, playtime and last played (these last now exist from the backlog and playtime work) |
 | Big screen mode for TVs | 📋 to do: a TV home screen for televisions and Android TV boxes, with large artwork, animated backgrounds and horizontal shelves, full controller navigation and TV remote support (D-pad, OK, Back) |
 | Gaming passport | 📋 to do: a profile of your play history: every system played, total hours, favourite genres, series and developers, games finished and being played, milestones and a yearly summary (builds on the backlog and playtime records) |
+| Capture studio | 📋 to do: record gameplay in the built-in player, screenshots and short clips, highlight reels, overlays with the console, game title and playtime, and sharing clips to social apps or a PC (screenshots already exist in the game's menu) |
 
 ## Future plans (30 October)
 
