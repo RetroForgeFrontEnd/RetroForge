@@ -2248,4 +2248,27 @@
     <string name="smart_party">Jeux de groupe : 4 joueurs ou plus</string>
     <string name="smart_filter_unplayed">Pas joués</string>
     <string name="smart_back">Toutes les collections</string>
+    <string name="passport_title">Passeport de joueur</string>
+    <string name="passport_card_body">Votre historique de jeu au même endroit : systèmes, heures, genres, séries et développeurs préférés, étapes et chaque année.</string>
+    <string name="passport_subtitle">D\'après votre liste de jeux, les jeux lancés et le temps du lecteur intégré. Le temps passé dans d\'autres applis d\'émulation n\'est pas compté.</string>
+    <string name="passport_empty">Rien joué pour l\'instant. Lancez un jeu, ou marquez-en un comme en cours ou fini sur sa page, et votre passeport se remplit.</string>
+    <string name="passport_time">%1$s de jeu</string>
+    <string name="passport_no_time">Aucun temps enregistré pour l\'instant</string>
+    <string name="passport_played">%1$s joués</string>
+    <string name="passport_finished_n">Finis : %1$d</string>
+    <string name="passport_playing_n">En cours : %1$d</string>
+    <string name="passport_milestones">Étapes</string>
+    <string name="passport_no_milestones">Aucune étape pour l\'instant.</string>
+    <string name="passport_next">Prochaine : %1$s (%2$d sur %3$d)</string>
+    <string name="passport_m_finished">Jeux finis : %1$d</string>
+    <string name="passport_m_hours">Heures de jeu : %1$d</string>
+    <string name="passport_m_systems">Systèmes joués : %1$d</string>
+    <string name="passport_m_games">Jeux joués : %1$d</string>
+    <string name="passport_systems">Systèmes joués</string>
+    <string name="passport_genres">Genres préférés</string>
+    <string name="passport_series">Séries préférées</string>
+    <string name="passport_developers">Développeurs préférés</string>
+    <string name="passport_need_details">Les genres et développeurs préférés ont besoin des infos de vos jeux : récupérez-les avec le scraper ou gardez des fichiers gamelist.xml à côté de vos jeux.</string>
+    <string name="passport_years">Année par année</string>
+    <string name="passport_finished_games">Finis : %1$s</string>
 </resources>

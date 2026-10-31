@@ -2375,4 +2375,27 @@
     <string name="smart_party">Party games: 4 players or more</string>
     <string name="smart_filter_unplayed">Not played</string>
     <string name="smart_back">All collections</string>
+    <string name="passport_title">Gaming passport</string>
+    <string name="passport_card_body">Your play history in one place: systems, hours, favourite genres, series and developers, milestones and each year.</string>
+    <string name="passport_subtitle">From your backlog, the games you\'ve started and the built-in player\'s playtime. Time in other emulator apps isn\'t counted.</string>
+    <string name="passport_empty">Nothing played yet. Start a game, or mark one as playing or finished on its page, and your passport fills in.</string>
+    <string name="passport_time">%1$s played</string>
+    <string name="passport_no_time">No time recorded yet</string>
+    <string name="passport_played">%1$s played</string>
+    <string name="passport_finished_n">Finished: %1$d</string>
+    <string name="passport_playing_n">Playing: %1$d</string>
+    <string name="passport_milestones">Milestones</string>
+    <string name="passport_no_milestones">No milestones yet.</string>
+    <string name="passport_next">Next: %1$s (%2$d of %3$d)</string>
+    <string name="passport_m_finished">Games finished: %1$d</string>
+    <string name="passport_m_hours">Hours played: %1$d</string>
+    <string name="passport_m_systems">Systems played: %1$d</string>
+    <string name="passport_m_games">Games played: %1$d</string>
+    <string name="passport_systems">Systems played</string>
+    <string name="passport_genres">Favourite genres</string>
+    <string name="passport_series">Favourite series</string>
+    <string name="passport_developers">Favourite developers</string>
+    <string name="passport_need_details">Favourite genres and developers need your games\' details: scrape them, or keep gamelist.xml files beside your games.</string>
+    <string name="passport_years">Year by year</string>
+    <string name="passport_finished_games">Finished: %1$s</string>
 </resources>

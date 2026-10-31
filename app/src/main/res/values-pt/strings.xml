@@ -2247,4 +2247,27 @@
     <string name="smart_party">Jogos de grupo: 4 jogadores ou mais</string>
     <string name="smart_filter_unplayed">Não jogados</string>
     <string name="smart_back">Todas as coleções</string>
+    <string name="passport_title">Passaporte de jogo</string>
+    <string name="passport_card_body">O seu histórico de jogo num só sítio: sistemas, horas, géneros, séries e criadores favoritos, marcos e cada ano.</string>
+    <string name="passport_subtitle">Da sua lista de pendentes, dos jogos que iniciou e do tempo do leitor integrado. O tempo noutras apps de emulador não conta.</string>
+    <string name="passport_empty">Ainda não jogou nada. Inicie um jogo, ou marque um como a jogar ou terminado na página dele, e o passaporte vai-se preenchendo.</string>
+    <string name="passport_time">%1$s jogados</string>
+    <string name="passport_no_time">Ainda sem tempo registado</string>
+    <string name="passport_played">%1$s jogados</string>
+    <string name="passport_finished_n">Terminados: %1$d</string>
+    <string name="passport_playing_n">A jogar: %1$d</string>
+    <string name="passport_milestones">Marcos</string>
+    <string name="passport_no_milestones">Ainda sem marcos.</string>
+    <string name="passport_next">Seguinte: %1$s (%2$d de %3$d)</string>
+    <string name="passport_m_finished">Jogos terminados: %1$d</string>
+    <string name="passport_m_hours">Horas jogadas: %1$d</string>
+    <string name="passport_m_systems">Sistemas jogados: %1$d</string>
+    <string name="passport_m_games">Jogos jogados: %1$d</string>
+    <string name="passport_systems">Sistemas jogados</string>
+    <string name="passport_genres">Géneros favoritos</string>
+    <string name="passport_series">Séries favoritas</string>
+    <string name="passport_developers">Criadores favoritos</string>
+    <string name="passport_need_details">Os géneros e criadores favoritos precisam dos dados dos jogos: obtenha-os com o scraper ou guarde ficheiros gamelist.xml junto aos jogos.</string>
+    <string name="passport_years">Ano a ano</string>
+    <string name="passport_finished_games">Terminados: %1$s</string>
 </resources>

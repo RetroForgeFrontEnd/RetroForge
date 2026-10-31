@@ -74,6 +74,7 @@ fun RetroScreen(
     onOpenBacklog: () -> Unit = {},
     onOpenPlaytime: () -> Unit = {},
     onOpenSmart: () -> Unit = {},
+    onOpenPassport: () -> Unit = {},
 ) {
     val roots by viewModel.roots.collectAsStateWithLifecycle()
     val systems by viewModel.systems.collectAsStateWithLifecycle()
@@ -191,6 +192,10 @@ fun RetroScreen(
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenSmart) {
                 CardTitle(stringResource(R.string.smart_title))
                 CardBody(stringResource(R.string.smart_card_body))
+            }
+            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenPassport) {
+                CardTitle(stringResource(R.string.passport_title))
+                CardBody(stringResource(R.string.passport_card_body))
             }
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenBacklog) {
                 CardTitle(stringResource(R.string.backlog_title))
