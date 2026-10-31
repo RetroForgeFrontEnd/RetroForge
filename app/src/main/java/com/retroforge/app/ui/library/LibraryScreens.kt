@@ -355,6 +355,7 @@ fun SystemGamesScreen(viewModel: LibraryViewModel, system: String, onOpenGame: (
                 if (layout == GameLayout.SHELF) Box3dBatch(viewModel, shown)
                 ControllerTextField(value = filter, onValueChange = { filter = it }, singleLine = true, label = { Text(stringResource(R.string.library_filter)) }, modifier = Modifier.fillMaxWidth())
                 SystemCoverBatch(viewModel, system, games.orEmpty(), chosen)
+                ScanForNewGames(viewModel)
                 val apps = remember(system) { viewModel.standaloneOptions(system).map { (_, app) -> app.id to app.name } }
                 com.retroforge.app.ui.settings.SystemDriverCard(system, remember(system) { viewModel.systemCore(system) }, apps)
                 if (games.orEmpty().any { it.duplicateKey != null }) {
@@ -505,6 +506,22 @@ private fun SystemCoverBatch(viewModel: LibraryViewModel, system: String, games:
             FocusChip(stringResource(R.string.library_download_box_art_for_without_artwork, plural(missing, "game")), onClick = { viewModel.covers.downloadMissing(system, games) })
         }
     }
+}
+
+/**
+ * Looks through every game folder again, network drives too, for games added since the last scan, without going to
+ * Retro → Game folders. All of them, since a new game for this system can be in any folder.
+ */
+@Composable
+private fun ScanForNewGames(viewModel: LibraryViewModel) {
+    val roots by viewModel.roots.collectAsStateWithLifecycle()
+    val scans by viewModel.scans.collectAsStateWithLifecycle()
+    val running = scans.values.any { it is ScanState.Running }
+    FocusChip(
+        stringResource(if (running) R.string.library_looking else R.string.library_scan_for_new_games),
+        enabled = !running && !roots.isNullOrEmpty(),
+        onClick = { roots.orEmpty().forEach(viewModel::rescan) },
+    )
 }
 
 /** Netplay from the Retro tab: games friends are hosting on this Wi-Fi, each opening your copy of that game. */
