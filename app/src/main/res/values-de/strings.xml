@@ -254,6 +254,7 @@
     <string name="library_read_the_manual">Anleitung lesen</string>
     <string name="library_delete_this_game">Dieses Spiel löschen…</string>
     <string name="library_no_gamelist_xml_details_for_this">Keine gamelist.xml-Angaben für dieses Spiel; der Titel stammt aus dem Dateinamen.</string>
+    <string name="library_no_gamelist_xml_title_from_param_sfo">Keine gamelist.xml-Angaben für dieses Spiel; der Titel stammt aus seiner param.sfo.</string>
     <string name="library_rom_hack">ROM-Hack</string>
     <string name="library_file">Datei</string>
     <string name="library_other_copies_in_your_library">Andere Kopien in deiner Bibliothek</string>
@@ -2258,4 +2259,8 @@
     <string name="dlc_bad_rap">Die .rap-Lizenz passt nicht: Es wurde nichts installiert.</string>
     <string name="dlc_no_space">Nicht genug freier Speicher für die Installation.</string>
     <string name="dlc_failed">Konnte nicht installiert werden: %1$s</string>
+    <string name="dlc_body_ps4">Erweiterungen für dieses Spiel, kopiert in den RetroForge PS4 Player. Wähle einen DLC-Ordner, den du von deiner PS4 gedumpt hast (er hat einen eigenen sce_sys-Ordner). Erneutes Importieren ersetzt ihn.</string>
+    <string name="dlc_add_folder">DLC-Ordner hinzufügen</string>
+    <string name="dlc_not_dlc">Dieser Ordner ist keine Erweiterung, sondern ein Spiel, ein Update oder etwas anderes.</string>
+    <string name="dlc_unreadable">Der Ordner konnte nicht gelesen werden.</string>
 </resources>

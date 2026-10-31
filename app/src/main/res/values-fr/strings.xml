@@ -254,6 +254,7 @@
     <string name="library_read_the_manual">Lire le manuel</string>
     <string name="library_delete_this_game">Supprimer ce jeu…</string>
     <string name="library_no_gamelist_xml_details_for_this">Pas d\'infos gamelist.xml pour ce jeu ; le titre vient du nom du fichier.</string>
+    <string name="library_no_gamelist_xml_title_from_param_sfo">Aucune info gamelist.xml pour ce jeu ; le titre vient de son param.sfo.</string>
     <string name="library_rom_hack">ROM hack</string>
     <string name="library_file">Fichier</string>
     <string name="library_other_copies_in_your_library">Autres copies dans votre bibliothèque</string>
@@ -2291,4 +2292,8 @@
     <string name="dlc_bad_rap">La licence .rap ne correspond pas : rien n\'a été installé.</string>
     <string name="dlc_no_space">Pas assez d\'espace libre pour l\'installer.</string>
     <string name="dlc_failed">Impossible de l\'installer : %1$s</string>
+    <string name="dlc_body_ps4">Contenus additionnels pour ce jeu, copiés dans le RetroForge PS4 Player. Choisis un dossier de DLC que tu as dumpé depuis ta PS4 (il a son propre dossier sce_sys). L\'importer à nouveau le remplace.</string>
+    <string name="dlc_add_folder">Ajouter un dossier de DLC</string>
+    <string name="dlc_not_dlc">Ce dossier n\'est pas un contenu additionnel : c\'est un jeu, une mise à jour ou autre chose.</string>
+    <string name="dlc_unreadable">Impossible de lire ce dossier.</string>
 </resources>

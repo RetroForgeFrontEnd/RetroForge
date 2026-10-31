@@ -255,6 +255,7 @@
     <string name="library_read_the_manual">Read the manual</string>
     <string name="library_delete_this_game">Delete this game…</string>
     <string name="library_no_gamelist_xml_details_for_this">No gamelist.xml details for this game; the title comes from its file name.</string>
+    <string name="library_no_gamelist_xml_title_from_param_sfo">No gamelist.xml details for this game; the title comes from its param.sfo.</string>
     <string name="library_rom_hack">ROM hack</string>
     <string name="library_file">File</string>
     <string name="library_other_copies_in_your_library">Other Copies in Your Library</string>
@@ -2418,4 +2419,8 @@
     <string name="dlc_bad_rap">The .rap licence doesn\'t match: nothing was installed.</string>
     <string name="dlc_no_space">Not enough free space to install it.</string>
     <string name="dlc_failed">Couldn\'t install it: %1$s</string>
+    <string name="dlc_body_ps4">Add-ons for this game, copied into the RetroForge PS4 Player. Pick a DLC folder you dumped from your PS4 (it has its own sce_sys folder). Importing it again replaces it.</string>
+    <string name="dlc_add_folder">Add a DLC folder</string>
+    <string name="dlc_not_dlc">That folder isn\'t an add-on: it\'s a game, an update or something else.</string>
+    <string name="dlc_unreadable">Couldn\'t read that folder.</string>
 </resources>

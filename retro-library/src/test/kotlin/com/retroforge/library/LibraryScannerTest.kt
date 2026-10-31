@@ -79,6 +79,51 @@ class LibraryScannerTest {
         )
     }
 
+    /** A param.sfo with UTF-8 text entries, as PS4 dumps have. */
+    private fun paramSfo(vararg entries: Pair<String, String>): ByteArray {
+        val keys = java.io.ByteArrayOutputStream()
+        val data = java.io.ByteArrayOutputStream()
+        val index = java.nio.ByteBuffer.allocate(entries.size * 16).order(java.nio.ByteOrder.LITTLE_ENDIAN)
+        for ((key, value) in entries) {
+            val bytes = value.toByteArray() + 0
+            index.putShort(keys.size().toShort()).putShort(0x0204).putInt(bytes.size).putInt(bytes.size).putInt(data.size())
+            keys.write(key.toByteArray() + 0)
+            data.write(bytes)
+        }
+        val keyStart = 20 + entries.size * 16
+        val header = java.nio.ByteBuffer.allocate(20).order(java.nio.ByteOrder.LITTLE_ENDIAN)
+            .putInt(0x46535000).putInt(0x101).putInt(keyStart).putInt(keyStart + keys.size()).putInt(entries.size)
+        return header.array() + index.array() + keys.toByteArray() + data.toByteArray()
+    }
+
+    @Test
+    fun ps4GamesAreDumpedFoldersWithTheirTitleFromParamSfo() {
+        val sfo = paramSfo("CATEGORY" to "gd", "TITLE" to "Sonic Mania", "TITLE_ID" to "CUSA07023")
+        val roms = dir(
+            "roms",
+            dir(
+                "ps4",
+                dir("CUSA07023", file("eboot.bin"), dir("sce_sys", binary("param.sfo", sfo))),
+                dir("CUSA07023-UPDATE", file("eboot.bin"), dir("sce_sys")),
+                dir("Bloodborne", file("EBOOT.BIN"), dir("sce_sys")),
+                dir("Some DLC", dir("sce_sys", file("param.sfo"))),
+            ),
+        )
+        val games = scanner.scan(roms).games.filter { it.system == "ps4" }.sortedBy { it.relativePath }
+        assertEquals(listOf("ps4/Bloodborne", "ps4/CUSA07023"), games.map { it.relativePath })
+        assertEquals("Sonic Mania", games.single { it.fileName == "CUSA07023" }.displayTitle)
+        assertEquals("Bloodborne", games.single { it.fileName == "Bloodborne" }.displayTitle)
+    }
+
+    @Test
+    fun paramSfoReadsTextAndNumbersAndShrugsOffJunk() {
+        val sfo = ParamSfo.parse(paramSfo("TITLE" to "Gravity Rush", "TITLE_ID" to "CUSA01113"))
+        assertEquals("Gravity Rush", sfo["TITLE"])
+        assertEquals("CUSA01113", sfo["TITLE_ID"])
+        assertTrue(ParamSfo.parse(ByteArray(10)).isEmpty())
+        assertTrue(ParamSfo.parse("not a param.sfo at all, just text".toByteArray()).isEmpty())
+    }
+
     @Test
     fun deniedFolderIsReportedAndTheRestStillScans() {
         val result = scanner.scan(retrobatLikeRoms())

@@ -249,6 +249,10 @@ class LibraryScanner(private val rules: SystemRules) {
                     child.isDirectory && child.name.lowercase() in HOLDING_FOLDERS -> Unit
                     // EmulationStation treats a folder named like a game ("Skate (EUR).ps3", "XCOM.pc") as one game.
                     child.isDirectory && !inMedia && ext.isNotEmpty() && ext in rule.extensions -> romFiles += FileEntry(childPath, child)
+                    // PS4 games are dumped folders, named anything: one with an eboot.bin is a game. Updates, patches and
+                    // mods sit beside the game as "<ID>-UPDATE" / "-patch" / "-mods" and are the player's, not games.
+                    child.isDirectory && !inMedia && rule.id == "ps4" && ps4Extra.containsMatchIn(child.name) -> Unit
+                    child.isDirectory && !inMedia && rule.id == "ps4" && hasEboot(child) -> romFiles += FileEntry(childPath, child)
                     child.isDirectory -> {
                         val media = inMedia || child.name.lowercase() in mediaFolders
                         if (depth < maxDepth) walk(child, childPath, depth + 1, media) else tooDeep++
@@ -279,8 +283,10 @@ class LibraryScanner(private val rules: SystemRules) {
 
         val hidden = referencedByPlaylists(romFiles, prefix, problems)
         return romFiles.filter { it.path.lowercase() !in hidden && !isSwitchAddOn(rule.id, it.node.name) }.map { entry ->
-            // Arcade romsets are named by short names ("sf2.zip"): shown by their full titles.
-            val name = ArcadeNames.named(rule.id, entry.node.name, RomNames.parse(entry.node.name))
+            // Arcade romsets are named by short names ("sf2.zip"): shown by their full titles. PS4 folders take the title
+            // inside their param.sfo, so a folder named "CUSA12345" still shows the game's name.
+            val sfoTitle = if (rule.id == "ps4" && entry.node.isDirectory) ps4Title(entry.node) else null
+            val name = ArcadeNames.named(rule.id, entry.node.name, RomNames.parse(sfoTitle ?: entry.node.name))
             // A playlist RetroForge (or the user) made has no gamelist entry of its own: borrow its first disc's.
             val meta = metadata[entry.path.lowercase()] ?: if (isPlaylist(entry)) firstDisc(entry)?.let { metadata[it] } else null
             val image = listOfNotNull(meta?.image, meta?.thumbnail, meta?.marquee)
@@ -384,6 +390,19 @@ fun hackLabel(path: String, name: RomName): String? =
  * A Switch update or DLC rather than a game: its title id ([0100C2700C252800], [0100DCA0064A7001]) doesn't end in 000
  * as a game's does. Emulators install these on top of the game; they don't start on their own.
  */
+private val ps4Extra = Regex("""-(update|patch|mods)$""", RegexOption.IGNORE_CASE)
+
+private fun hasEboot(folder: ScanNode): Boolean =
+    runCatching { folder.children().any { !it.isDirectory && it.name.equals("eboot.bin", ignoreCase = true) } }.getOrDefault(false)
+
+/** The game's title from sce_sys/param.sfo, or null. */
+private fun ps4Title(folder: ScanNode): String? = runCatching {
+    val sys = folder.children().firstOrNull { it.isDirectory && it.name.equals("sce_sys", ignoreCase = true) } ?: return null
+    val sfo = sys.children().firstOrNull { !it.isDirectory && it.name.equals("param.sfo", ignoreCase = true) } ?: return null
+    if (sfo.size > ParamSfo.MAX_BYTES) return null
+    ParamSfo.parse(sfo.open().use { it.readBytes() })["TITLE"]?.lines()?.first()?.trim()?.takeIf { it.isNotEmpty() }
+}.getOrNull()
+
 fun isSwitchAddOn(system: String, fileName: String): Boolean =
     system == "switch" && switchTitleId.findAll(fileName).any { !it.groupValues[1].endsWith("000") }
 

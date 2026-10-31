@@ -254,6 +254,7 @@
     <string name="library_read_the_manual">Ler o manual</string>
     <string name="library_delete_this_game">Apagar este jogo…</string>
     <string name="library_no_gamelist_xml_details_for_this">Sem dados de gamelist.xml para este jogo; o título vem do nome do arquivo.</string>
+    <string name="library_no_gamelist_xml_title_from_param_sfo">Sem dados do gamelist.xml para este jogo; o título vem do seu param.sfo.</string>
     <string name="library_rom_hack">ROM hack</string>
     <string name="library_file">Arquivo</string>
     <string name="library_other_copies_in_your_library">Outras cópias na sua biblioteca</string>
@@ -2290,4 +2291,8 @@
     <string name="dlc_bad_rap">A licença .rap não corresponde: nada foi instalado.</string>
     <string name="dlc_no_space">Sem espaço livre suficiente para o instalar.</string>
     <string name="dlc_failed">Não foi possível instalar: %1$s</string>
+    <string name="dlc_body_ps4">Conteúdos adicionais para este jogo, copiados para o RetroForge PS4 Player. Escolhe uma pasta de DLC que extraíste da tua PS4 (tem a sua própria pasta sce_sys). Importá-la de novo substitui-a.</string>
+    <string name="dlc_add_folder">Adicionar uma pasta de DLC</string>
+    <string name="dlc_not_dlc">Essa pasta não é um conteúdo adicional: é um jogo, uma atualização ou outra coisa.</string>
+    <string name="dlc_unreadable">Não foi possível ler essa pasta.</string>
 </resources>

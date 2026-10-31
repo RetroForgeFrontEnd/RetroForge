@@ -31,16 +31,32 @@ import com.retroforge.core.ui.FocusChip
 import com.retroforge.core.ui.str
 
 /**
- * DLC for players that install it in the background: the PS3 Player takes a .pkg (and its .rap licence, if it has one).
- * The player shows only Android's progress notification and reports back by broadcast.
+ * DLC for players that install it in the background: the PS3 Player takes a .pkg (and its .rap licence, if it has one),
+ * the PS4 Player a dumped add-on folder. Each shows only Android's progress notification and reports back by broadcast.
  */
 object GameDlc {
     private const val PS3 = "com.retroforge.ps3player"
     private const val PS3_INSTALL = "com.retroforge.ps3player.action.INSTALL_DLC"
     private const val PS3_PROGRESS = "com.retroforge.ps3player.DLC_PROGRESS"
+    private const val PS4 = "com.retroforge.ps4player"
+    private const val PS4_IMPORT = "com.retroforge.ps4player.action.IMPORT_DLC_FOLDER"
+    private const val PS4_PROGRESS = "com.retroforge.ps4player.DLC_PROGRESS"
 
-    fun supported(context: Context, system: String): Boolean =
-        system == "ps3" && runCatching { context.packageManager.getPackageInfo(PS3, 0) }.isSuccess
+    private fun installed(context: Context, pkg: String) = runCatching { context.packageManager.getPackageInfo(pkg, 0) }.isSuccess
+
+    fun supported(context: Context, system: String): Boolean = when (system) {
+        "ps3" -> installed(context, PS3)
+        "ps4" -> installed(context, PS4)
+        else -> false
+    }
+
+    /** Starts copying the dumped add-on in [tree] (a picked folder) into the PS4 Player. */
+    fun importPs4(context: Context, tree: Uri) {
+        val intent = Intent(PS4_IMPORT).setClassName(PS4, "$PS4.install.InstallService").setData(tree)
+            .putExtra("reply_package", context.packageName)
+            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
+        ContextCompat.startForegroundService(context, intent)
+    }
 
     /** Starts the install of [pkg], with [rap] as its licence when given. */
     fun installPs3(context: Context, pkg: Uri, rap: Uri?) {
@@ -53,16 +69,18 @@ object GameDlc {
         ContextCompat.startForegroundService(context, intent)
     }
 
-    fun progressFilter() = IntentFilter(PS3_PROGRESS)
+    fun progressFilter() = IntentFilter(PS3_PROGRESS).apply { addAction(PS4_PROGRESS) }
 
     /** What to show for one progress broadcast. */
     fun describe(intent: Intent): String = when (intent.getStringExtra("state")) {
         "queued" -> str(R.string.dlc_queued)
         "running" -> str(R.string.dlc_installing, intent.getIntExtra("percent", 0))
-        "done" -> str(R.string.dlc_done, intent.getStringExtra("title_id").orEmpty()) +
+        "done" -> str(R.string.dlc_done, intent.getStringExtra("title")?.takeIf { it.isNotBlank() } ?: intent.getStringExtra("title_id").orEmpty()) +
             if (intent.getBooleanExtra("rap_installed", false)) " " + str(R.string.dlc_licence_added) else ""
         else -> when (intent.getStringExtra("error")) {
             "not_a_pkg" -> str(R.string.dlc_not_a_pkg)
+            "not_dlc" -> str(R.string.dlc_not_dlc)
+            "unreadable" -> str(R.string.dlc_unreadable)
             "bad_rap" -> str(R.string.dlc_bad_rap)
             "no_space" -> str(R.string.dlc_no_space)
             else -> str(R.string.dlc_failed, intent.getStringExtra("message").orEmpty())
@@ -94,6 +112,12 @@ fun GameDlcCard(system: String) {
         }
         pkg = null
     }
+    val pickFolder = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { tree ->
+        tree ?: return@rememberLauncherForActivityResult
+        runCatching { GameDlc.importPs4(context, tree) }
+            .onSuccess { status = str(R.string.dlc_queued) }
+            .onFailure { e -> status = str(R.string.dlc_failed, e.message.orEmpty()) }
+    }
     val pickPkg = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri ?: return@rememberLauncherForActivityResult
         pkg = uri
@@ -101,9 +125,11 @@ fun GameDlcCard(system: String) {
     }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle(stringResource(R.string.dlc_title))
-        CardBody(stringResource(R.string.dlc_body_ps3))
+        CardBody(stringResource(if (system == "ps4") R.string.dlc_body_ps4 else R.string.dlc_body_ps3))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (pkg == null) {
+            if (system == "ps4") {
+                FocusChip(stringResource(R.string.dlc_add_folder), onClick = { pickFolder.launch(null) })
+            } else if (pkg == null) {
                 FocusChip(stringResource(R.string.dlc_add), onClick = { pickPkg.launch(arrayOf("*/*")) })
             } else {
                 FocusChip(stringResource(R.string.dlc_choose_rap), onClick = { pickRap.launch(arrayOf("*/*")) })

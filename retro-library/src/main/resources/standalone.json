@@ -115,6 +115,18 @@
    ]
   },
   {
+   "id": "RETROFORGE_PS4",
+   "name": "RetroForge PS4 Player",
+   "page": "https://github.com/RetroForgeFrontEnd/RetroForge/releases",
+   "obtainium": null,
+   "packages": [
+    {
+     "package": "com.retroforge.ps4player",
+     "activity": "com.retroforge.ps4player.LaunchActivity"
+    }
+   ]
+  },
+  {
    "id": "RETROFORGE_SWITCH",
    "name": "RetroForge Switch Player",
    "page": "https://github.com/RetroForgeFrontEnd/RetroForge-Switch-Player/releases",
@@ -581,6 +593,13 @@
     "emulator": "PLAY!",
     "label": "Play!",
     "command": "%ACTION%=android.intent.action.VIEW %DATA%=%ROMSAF%"
+   }
+  ],
+  "ps4": [
+   {
+    "emulator": "RETROFORGE_PS4",
+    "label": "RetroForge PS4 Player",
+    "command": "%ACTION%=com.retroforge.ps4player.action.LAUNCH %EXTRA_game_dir%=%ROM%"
    }
   ],
   "ps3": [

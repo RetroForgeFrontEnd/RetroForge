@@ -254,6 +254,7 @@
     <string name="library_read_the_manual">Leggi il manuale</string>
     <string name="library_delete_this_game">Elimina questo gioco…</string>
     <string name="library_no_gamelist_xml_details_for_this">Nessun dato gamelist.xml per questo gioco; il titolo viene dal nome del file.</string>
+    <string name="library_no_gamelist_xml_title_from_param_sfo">Nessun dato gamelist.xml per questo gioco; il titolo viene dal suo param.sfo.</string>
     <string name="library_rom_hack">ROM hack</string>
     <string name="library_file">File</string>
     <string name="library_other_copies_in_your_library">Altre copie nella tua libreria</string>
@@ -2290,4 +2291,8 @@
     <string name="dlc_bad_rap">La licenza .rap non corrisponde: non è stato installato nulla.</string>
     <string name="dlc_no_space">Spazio libero insufficiente per installarlo.</string>
     <string name="dlc_failed">Impossibile installarlo: %1$s</string>
+    <string name="dlc_body_ps4">Contenuti aggiuntivi per questo gioco, copiati nel RetroForge PS4 Player. Scegli una cartella di DLC estratta dalla tua PS4 (ha una sua cartella sce_sys). Importarla di nuovo la sostituisce.</string>
+    <string name="dlc_add_folder">Aggiungi una cartella di DLC</string>
+    <string name="dlc_not_dlc">Quella cartella non è un contenuto aggiuntivo: è un gioco, un aggiornamento o altro.</string>
+    <string name="dlc_unreadable">Impossibile leggere quella cartella.</string>
 </resources>
