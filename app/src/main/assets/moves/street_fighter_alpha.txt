@@ -1,7 +1,7 @@
-# Street Fighter Alpha / Zero (1, 2 and 3). Numpad notation for a fighter facing right: 6 forward, 4 back, 2 down.
+# Street Fighter Alpha / Zero 2 and 3. Numpad notation for a fighter facing right: 6 forward, 4 back, 2 down.
 # P moves use the heavy button; change HP/HK to LP/MP or LK/MK for the slower versions.
 title: Street Fighter Alpha
-match: street fighter alpha | street fighter zero
+match: street fighter alpha 2 | street fighter alpha 3 | street fighter zero 2 | street fighter zero 3
 buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
 buttons.psx: LP=Y MP=X HP=R LK=B MK=A HK=R2
 checked: no

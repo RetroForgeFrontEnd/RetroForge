@@ -1,0 +1,93 @@
+# Street Fighter Alpha: Warriors' Dreams / Street Fighter Zero (the first Alpha). Numpad notation for a fighter
+# facing right: 6 forward, 4 back, 2 down; *60 charges for a second. P moves use the heavy button; change HP/HK to
+# LP/MP or LK/MK for the slower versions. Supers need a level of super meter.
+title: Street Fighter Alpha: Warriors' Dreams
+match: street fighter alpha | street fighter zero
+not: street fighter alpha 2 | street fighter alpha 3 | street fighter zero 2 | street fighter zero 3 | anthology
+buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
+buttons.psx: LP=Y MP=X HP=R LK=B MK=A HK=R2
+checked: no
+Ryu | Hadouken | 2 3 6+HP
+Ryu | Shakunetsu Hadouken (red fireball) | 4 1 2 3 6+HP
+Ryu | Hurricane Kick | 2 1 4+HK
+Ryu | Shoryuken | 6 2 3+HP
+Ryu | Super: Shinku Hadouken | 2 3 6 2 3 6+HP
+Ryu | Super: Shinku Tatsumaki | 2 1 4 2 1 4+HK
+Ken | Hadouken | 2 3 6+HP
+Ken | Shoryuken | 6 2 3+HP
+Ken | Hurricane Kick | 2 1 4+HK
+Ken | Ground Roll | 2 1 4+HP
+Ken | Super: Shoryureppa | 2 3 6 2 3 6+HP
+Ken | Super: Shinryuken | 2 3 6 2 3 6+HK
+Akuma | Gou Hadouken | 2 3 6+HP
+Akuma | Shakunetsu Hadouken (red fireball) | 4 1 2 3 6+HP
+Akuma | Air Hadouken (in the air) | 2 3 6+HP
+Akuma | Dive Kick (in the air) | 2+MK
+Akuma | Hurricane Kick | 2 1 4+HK
+Akuma | Gou Shoryuken | 6 2 3+HP
+Akuma | Ground Roll | 2 1 4+HP
+Akuma | Teleport forward, near | 6 2 3+LK+MK+HK
+Akuma | Teleport forward, far | 6 2 3+LP+MP+HP
+Akuma | Teleport back, near | 4 2 1+LK+MK+HK
+Akuma | Teleport back, far | 4 2 1+LP+MP+HP
+Akuma | Super: Messatsu Gou Shoryu | 2 3 6 2 3 6+HP
+Akuma | Super: Tenma Gou Zankuu (in the air) | 2 3 6 2 3 6+HP
+Akuma | Super: Messatsu Gou Hadou | 6 3 2 1 4 6 3 2 1 4+HP
+Adon | Jaguar Knee | 6 2 3+HK
+Adon | Jaguar Kick | 4 2 1+HK
+Adon | Rising Jaguar (wall pounce) | 6 3 2 1 4+HK
+Adon | Super: Kickboxer Fury | 2 3 6 2 3 6+HP
+Adon | Super: Slice & Dice | 2 1 4 2 1 4+HK
+Birdie | Bull Head | 4*60 6+HP
+Birdie | Super: Bull Revenger | 2 3 6 2 3 6+HP
+Birdie | Super: The Birdie | 4*60 6 4 6+HP
+Bison | Psycho Shot | 4*60 6+HP
+Bison | Head Press | 2*60 8+HK
+Bison | Somersault Skull Diver | 2*60 8+HP
+Bison | Teleport | 6 2 3+LP+MP+HP
+Bison | Super: Psycho Crusher | 4*60 6 4 6+HP
+Bison | Super: Knee Press Nightmare | 4*60 6 4 6+HK
+Charlie | Sonic Boom | 4*60 6+HP
+Charlie | Flash Kick | 2*60 8+HK
+Charlie | Super: Sonic Break | 4*60 6 4 6+HP
+Charlie | Super: Somersault Justice | 1*60 3 1 8+HK
+Charlie | Super: Crossfire Blitz | 4*60 6 4 6+HK
+Chun-Li | Hyakuretsu Kyaku | HK _ HK _ HK _ HK _ HK
+Chun-Li | Air Stomp (in the air) | 2+MK
+Chun-Li | Spinning Bird Kick | 2*60 8+HK
+Chun-Li | Kikouken | 4*60 6+HP
+Chun-Li | Hazan Shuu (split kick) | 6 3 2 1 4+HK
+Chun-Li | Super: Senretsu Kyaku | 4*60 6 4 6+HK
+Chun-Li | Super: Kikoushou | 2 3 6 2 3 6+HP
+Chun-Li | Super: Hazan Tenshou Kyaku | 4*60 6 4 6+HK
+Dan | Gadouken | 2 3 6+HP
+Dan | Dankuu Kyaku | 2 1 4+HK
+Dan | Kouryuken | 6 2 3+HP
+Dan | Super: Shinkuu Gadouken | 2 3 6 2 3 6+HP
+Dan | Super: Kouryu Rekka | 2 1 4 2 1 4+HK
+Dan | Super: Hisshou Buraiken | 2 3 6 2 3 6+HK
+Guy | Bushin Senpuu Kyaku | 2 1 4+HK
+Guy | Hayagake | 2 3 6+HK
+Guy | Houzantou (leap) | 2 3 6+HP
+Guy | Super: Bushin Hassou Ken | 2 3 6 2 3 6+HP
+Guy | Super: Bushin Gorai Kyaku | 2 3 6 2 3 6+HK
+Rose | Slide | 3+MK
+Rose | Soul Spark | 2 3 6+HP
+Rose | Soul Reflect | 2 1 4+HP
+Rose | Soul Throw | 6 2 3+HP
+Rose | Super: Aura Soul Spark | 2 1 4 2 1 4+HP
+Rose | Super: Aura Soul Throw | 2 3 6 2 3 6+HP
+Rose | Super: Soul Illusion | 2 3 6 2 3 6+HK
+Sagat | Tiger Shot (high) | 2 3 6+HP
+Sagat | Tiger Shot (low) | 2 3 6+HK
+Sagat | Tiger Uppercut | 6 2 3+HP
+Sagat | Tiger Knee | 6 2 3+HK
+Sagat | Super: Tiger Genocide | 2 3 6 2 3 6+HK
+Sagat | Super: Tiger Raid | 2 1 4 2 1 4+HK
+Sagat | Super: Tiger Cannon | 2 3 6 2 3 6+HP
+Sodom | Slide | 2+HK
+Sodom | Jigoku Scrape | 6 2 3+HP
+Sodom | Butsumetsu Buster (close) | 6 3 2 1 4 7 8+HP
+Sodom | Daikyou Burning (close) | 6 3 2 1 4 7 8+HK
+Sodom | Super: Meido no Miyage | 2 3 6 2 3 6+HP
+Sodom | Super: Tenchuu Satsu (close) | 6 3 2 1 4 7 8 6 3 2 1 4 7 8+HP
