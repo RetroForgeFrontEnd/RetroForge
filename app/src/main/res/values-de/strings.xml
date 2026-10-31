@@ -340,7 +340,7 @@
     <string name="media_use_retroforge_s_film_folders">RetroForges Filmordner nutzen</string>
     <string name="media_watch_your_films_in_retroforge">Sieh deine Filme in RetroForge</string>
     <string name="media_use_retroforge_s_film_folders_makes">„RetroForges Filmordner nutzen“ erstellt Movies/RetroForge auf deinem Handy, mit einem Ordner Films und einem Ordner 3D Films darin. Wähle „Diesen Ordner verwenden“, wenn Android fragt, kopiere Filme hinein (USB-Kabel oder Dateimanager) und drück Erneut suchen. Oder wähle einen Ordner, in dem du schon Filme hast, auf dem Handy, einer SD-Karte oder einem USB-Laufwerk. RetroForge liest ihn nur.</string>
-    <string name="media_3d_films_side_by_side_or">3D-Filme (nebeneinander oder übereinander) bekommen ein 3D-Abzeichen und laufen in den Cardboard-Modi. So schaust du sie: Einstellungen → So benutzt du RetroForge → Medien.</string>
+    <string name="media_3d_films_side_by_side_or">3D-Filme (nebeneinander oder übereinander) bekommen ein 3D-Abzeichen und laufen in den Cardboard-Modi. So schaust du sie: Einstellungen → Hilfe und Info → So benutzt du RetroForge → Medien.</string>
     <string name="media_looking_for_films">Suche nach Filmen…</string>
     <string name="media_no_films_found_in_that_folder">In diesem Ordner wurden keine Filme gefunden (mp4, mkv, avi, mov und andere).</string>
     <string name="media_no_3d_films_yet_films_with">Noch keine 3D-Filme. Filme mit 3D, SBS, HSBS, TAB oder HOU im Namen (oder in einem Ordner „3D Films“) erscheinen hier.</string>
@@ -1919,6 +1919,7 @@
     <string name="ra_signing_in">Anmeldung…</string>
     <string name="player_frame_skip">Frames überspringen: %1$s</string>
     <string name="states_menu">Spielstände ›</string>
+    <string name="states_menu_title">Spielstände</string>
     <string name="states_title">Spielstände</string>
     <string name="states_new">Neuer Spielstand</string>
     <string name="states_quick">Schnellspeicher</string>

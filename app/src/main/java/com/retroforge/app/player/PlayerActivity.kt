@@ -1769,15 +1769,16 @@ class PlayerActivity : ComponentActivity() {
     /** Save states: a new one in the next slot, and every state of this game for this emulator (load, overwrite, delete). */
     @Composable
     private fun StatesPage(wide: Modifier, first: FocusRequester) {
-        Text(stringResource(R.string.states_title), color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+        Text(stringResource(R.string.states_menu_title), color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
         notice?.let { Text(it, color = MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center) }
+        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
         MenuButton(onClick = {
             val slot = SaveStates.nextSlot(SaveStates.list(statesDir, saveBase), coreId)
             saveStateTo(SaveStates.slotFile(statesDir, saveBase, coreId, slot)) { saved ->
                 notice = if (saved) str(R.string.states_saved_as, str(R.string.states_slot, slot)) else str(R.string.player_this_emulator_can_t_save_states)
                 refreshStates()
             }
-        }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.states_new)) }
+        }, modifier = wide) { Text(stringResource(R.string.states_new)) }
         if (stateList.isEmpty()) Text(stringResource(R.string.states_none), color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
         val dates = remember { java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.MEDIUM, java.text.DateFormat.SHORT) }
         stateList.forEach { s ->
@@ -1798,7 +1799,7 @@ class PlayerActivity : ComponentActivity() {
                         saveStateTo(s.file) { saved -> notice = if (saved) str(R.string.player_state_saved) else str(R.string.player_this_emulator_can_t_save_states); refreshStates() }
                     }, modifier = Modifier.weight(1f), contentPadding = small) { Text(stringResource(R.string.states_overwrite), fontSize = 13.sp, maxLines = 1) }
                     MenuButton(onClick = {
-                        if (stateToDelete == s.file) { SaveStates.delete(s); stateToDelete = null; refreshStates() } else stateToDelete = s.file
+                        if (stateToDelete == s.file) { SaveStates.delete(s); stateToDelete = null; notice = null; refreshStates() } else stateToDelete = s.file
                     }, modifier = Modifier.weight(1f), contentPadding = small) {
                         Text(stringResource(if (stateToDelete == s.file) R.string.states_delete_sure else R.string.files_delete), fontSize = 13.sp, maxLines = 1)
                     }
@@ -1843,17 +1844,13 @@ class PlayerActivity : ComponentActivity() {
         LaunchedEffect(menuPage) { runCatching { first.requestFocus() } }
         Box(Modifier.fillMaxSize().background(Color(0xCC000000)), contentAlignment = Alignment.Center) {
           Column(Modifier.width(320.dp).heightIn(max = 560.dp).background(Color(0xFF1C1C22), RoundedCornerShape(16.dp))) {
-            // A header that doesn't scroll: back (on sub-pages) and close (back to the game) are always in reach.
+            // A header that doesn't scroll: close (back to the game) is always in reach. Each sub-page starts with its
+            // own ‹ Back, which takes the controller's focus, and the Back key works too.
             androidx.compose.foundation.layout.Row(
                 Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (menuPage != MenuPage.MAIN) {
-                    androidx.compose.material3.TextButton(onClick = { menuPage = MenuPage.MAIN }) { Text(stringResource(R.string.player_back), color = MenuCyan) }
-                } else {
-                    androidx.compose.foundation.layout.Spacer(Modifier.width(1.dp))
-                }
                 androidx.compose.material3.TextButton(onClick = { closeMenu() }) { Text("✕", color = MenuCyan, fontSize = 20.sp) }
             }
             Column(

@@ -341,7 +341,7 @@
     <string name="media_use_retroforge_s_film_folders">Use RetroForge\'s film folders</string>
     <string name="media_watch_your_films_in_retroforge">Watch Your Films in RetroForge</string>
     <string name="media_use_retroforge_s_film_folders_makes">\"Use RetroForge\'s film folders\" makes Movies/RetroForge on your phone, with a Films folder and a 3D Films folder inside. Choose \"Use this folder\" when Android asks, then copy films into them (USB cable or a file manager) and press Look again. Or choose any folder you already keep films in, on the phone, an SD card or a USB drive. RetroForge only reads it.</string>
-    <string name="media_3d_films_side_by_side_or">3D films (side by side or top and bottom) get a 3D badge and play in Cardboard modes. How to watch: Settings → How to use RetroForge → Media.</string>
+    <string name="media_3d_films_side_by_side_or">3D films (side by side or top and bottom) get a 3D badge and play in Cardboard modes. How to watch: Settings → Help and about → How to use RetroForge → Media.</string>
     <string name="media_looking_for_films">Looking for films…</string>
     <string name="media_no_films_found_in_that_folder">No films found in that folder (mp4, mkv, avi, mov and others).</string>
     <string name="media_no_3d_films_yet_films_with">No 3D films yet. Films with 3D, SBS, HSBS, TAB or HOU in their name (or in a \"3D Films\" folder) show here.</string>
@@ -476,7 +476,7 @@
     <string name="built_in_player_the_emulator_each_system_uses_tap">The emulator each system uses (tap to change):</string>
     <string name="built_in_player_graphics_and_resolution">Graphics and Resolution</string>
     <string name="built_in_player_resolution_makes_3d_games_sharper_than">Resolution makes 3D games sharper than the console did: 2× looks like 720p, 3× like 1080p, up to 10× for PSP, but higher needs a faster phone. Graphics: GameCube, Wii and PS2 use Vulkan; other systems use OpenGL, with Vulkan (experimental) as an option that can be faster (switch back if a game goes black). Both can be changed in a game\'s menu too.</string>
-    <string name="built_in_player_disc_games_play_straight_away_or">Disc games: play straight away or copy first</string>
+    <string name="built_in_player_disc_games_play_straight_away_or">Disc Games: Play Straight Away or Copy First</string>
     <string name="built_in_player_big_disc_games_playstation_dreamcast_saturn">Big disc games (PlayStation, Dreamcast, Saturn …) and arcade games start straight away from your folder or network drive, without copying. If they stutter on slow Wi-Fi, choose Copy first: the game is copied to the phone before it starts, and the last two are kept so they start faster next time. Some emulators always copy.</string>
     <string name="built_in_player_back_up_saves_and_settings">Back Up Saves and Settings</string>
     <string name="built_in_player_puts_your_game_saves_save_states">Puts your game saves, save states, cheats, settings, favourites and playlists into one zip file. Keep it somewhere safe, or restore it on a new phone (add your game folders first, so favourites and playlists find their games). Restoring replaces files with the same name and keeps the rest.</string>
@@ -2079,6 +2079,7 @@
     <string name="ra_signing_in">Signing in…</string>
     <string name="player_frame_skip">Frame skip: %1$s</string>
     <string name="states_menu">Save states ›</string>
+    <string name="states_menu_title">Save states</string>
     <string name="states_title">Save States</string>
     <string name="states_new">New save state</string>
     <string name="states_quick">Quick save</string>
