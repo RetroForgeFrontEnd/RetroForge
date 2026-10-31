@@ -2132,4 +2132,27 @@
     <string name="guides_title">Guides and maps</string>
     <string name="guides_hint">Guides and maps: put images or PDFs whose names start with the game\'s name in a \"guides\" folder in its system folder (or a folder named after the game inside it), and they show here and in the game\'s menu.</string>
     <string name="player_notes">Notes and guides ›</string>
+    <string name="save_import_title">Import saves from other emulators</string>
+    <string name="save_import_body">Bring saves from other emulators and devices into the built-in player: PlayStation memory cards (.mcr, .mcd, .mc, .gme, .vm1) and single saves (.mcs), Nintendo 64 saves (.eep, .mpk, .sra, .fla) and cartridge saves (.sav, .srm). RetroForge works out which game a save belongs to, converts it and puts it where the player reads it; PlayStation saves are added to the game\'s card beside the ones already there, and the game\'s old save is kept as a copy. Quit the game first.</string>
+    <string name="save_import_choose">Choose a save file</string>
+    <string name="save_import_unknown">RetroForge doesn\'t know this kind of save file.</string>
+    <string name="save_import_ps1_card">PlayStation memory card: %1$s</string>
+    <string name="save_import_ps1_single">PlayStation save: %1$s</string>
+    <string name="save_import_empty_card">no saves</string>
+    <string name="save_import_n64_eeprom">Nintendo 64 save (EEPROM)</string>
+    <string name="save_import_n64_pak">Nintendo 64 Controller Pak</string>
+    <string name="save_import_n64_sram">Nintendo 64 save (SRAM)</string>
+    <string name="save_import_n64_flash">Nintendo 64 save (FlashRAM)</string>
+    <string name="save_import_n64_all">Nintendo 64 save from RetroArch or RetroForge (all of it)</string>
+    <string name="save_import_battery">Cartridge save (%1$s)</string>
+    <string name="save_import_pick_game">Which game is it for? Best matches first.</string>
+    <string name="save_import_find_game">Find another game</string>
+    <string name="save_import_no_games">No games in your library this save could belong to.</string>
+    <string name="save_import_best">Best match</string>
+    <string name="save_import_swap">Byte order: %1$s</string>
+    <string name="save_import_as_is">as it is</string>
+    <string name="save_import_swapped">swapped (try this if the game finds no save)</string>
+    <string name="save_import_done">Imported into %1$s.</string>
+    <string name="save_import_done_kept">Imported into %1$s. Its old save is kept as %2$s.</string>
+    <string name="save_import_full">%1$s\'s memory card is full: %2$s blocks free, %3$s needed.</string>
 </resources>

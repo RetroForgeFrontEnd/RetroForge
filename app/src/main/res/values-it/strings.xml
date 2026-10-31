@@ -2004,4 +2004,27 @@
     <string name="guides_title">Guide e mappe</string>
     <string name="guides_hint">Guide e mappe: metti immagini o PDF il cui nome inizia con quello del gioco in una cartella \"guides\" nella cartella del sistema (o in una cartella col nome del gioco al suo interno) e compariranno qui e nel menu del gioco.</string>
     <string name="player_notes">Note e guide ›</string>
+    <string name="save_import_title">Importa salvataggi da altri emulatori</string>
+    <string name="save_import_body">Porta nel lettore integrato i salvataggi di altri emulatori e dispositivi: memory card PlayStation (.mcr, .mcd, .mc, .gme, .vm1) e salvataggi singoli (.mcs), salvataggi Nintendo 64 (.eep, .mpk, .sra, .fla) e di cartucce (.sav, .srm). RetroForge capisce a quale gioco appartiene un salvataggio, lo converte e lo mette dove il lettore lo legge; quelli PlayStation si aggiungono alla scheda del gioco accanto a quelli già presenti, e il vecchio salvataggio resta come copia. Chiudi prima il gioco.</string>
+    <string name="save_import_choose">Scegli un file di salvataggio</string>
+    <string name="save_import_unknown">RetroForge non conosce questo tipo di file di salvataggio.</string>
+    <string name="save_import_ps1_card">Memory card PlayStation: %1$s</string>
+    <string name="save_import_ps1_single">Salvataggio PlayStation: %1$s</string>
+    <string name="save_import_empty_card">nessun salvataggio</string>
+    <string name="save_import_n64_eeprom">Salvataggio Nintendo 64 (EEPROM)</string>
+    <string name="save_import_n64_pak">Controller Pak Nintendo 64</string>
+    <string name="save_import_n64_sram">Salvataggio Nintendo 64 (SRAM)</string>
+    <string name="save_import_n64_flash">Salvataggio Nintendo 64 (FlashRAM)</string>
+    <string name="save_import_n64_all">Salvataggio Nintendo 64 da RetroArch o RetroForge (completo)</string>
+    <string name="save_import_battery">Salvataggio di cartuccia (%1$s)</string>
+    <string name="save_import_pick_game">Per quale gioco è? Prima le corrispondenze migliori.</string>
+    <string name="save_import_find_game">Cerca un altro gioco</string>
+    <string name="save_import_no_games">Nessun gioco della tua libreria può essere quello di questo salvataggio.</string>
+    <string name="save_import_best">Corrispondenza migliore</string>
+    <string name="save_import_swap">Ordine dei byte: %1$s</string>
+    <string name="save_import_as_is">così com\'è</string>
+    <string name="save_import_swapped">invertito (provalo se il gioco non trova il salvataggio)</string>
+    <string name="save_import_done">Importato in %1$s.</string>
+    <string name="save_import_done_kept">Importato in %1$s. Il vecchio salvataggio resta come %2$s.</string>
+    <string name="save_import_full">La memory card di %1$s è piena: %2$s blocchi liberi, ne servono %3$s.</string>
 </resources>

@@ -2005,4 +2005,27 @@
     <string name="guides_title">Guides et cartes</string>
     <string name="guides_hint">Guides et cartes : placez des images ou des PDF dont le nom commence par celui du jeu dans un dossier « guides » du dossier du système (ou dans un dossier au nom du jeu à l\'intérieur), et ils s\'affichent ici et dans le menu du jeu.</string>
     <string name="player_notes">Notes et guides ›</string>
+    <string name="save_import_title">Importer des sauvegardes d\'autres émulateurs</string>
+    <string name="save_import_body">Importez dans le lecteur intégré des sauvegardes d\'autres émulateurs et appareils : cartes mémoire PlayStation (.mcr, .mcd, .mc, .gme, .vm1) et sauvegardes seules (.mcs), sauvegardes Nintendo 64 (.eep, .mpk, .sra, .fla) et de cartouches (.sav, .srm). RetroForge trouve à quel jeu appartient une sauvegarde, la convertit et la place là où le lecteur la lit ; les sauvegardes PlayStation s\'ajoutent à celles déjà sur la carte du jeu, et l\'ancienne sauvegarde est gardée en copie. Quittez le jeu d\'abord.</string>
+    <string name="save_import_choose">Choisir un fichier de sauvegarde</string>
+    <string name="save_import_unknown">RetroForge ne connaît pas ce type de fichier de sauvegarde.</string>
+    <string name="save_import_ps1_card">Carte mémoire PlayStation : %1$s</string>
+    <string name="save_import_ps1_single">Sauvegarde PlayStation : %1$s</string>
+    <string name="save_import_empty_card">aucune sauvegarde</string>
+    <string name="save_import_n64_eeprom">Sauvegarde Nintendo 64 (EEPROM)</string>
+    <string name="save_import_n64_pak">Controller Pak Nintendo 64</string>
+    <string name="save_import_n64_sram">Sauvegarde Nintendo 64 (SRAM)</string>
+    <string name="save_import_n64_flash">Sauvegarde Nintendo 64 (FlashRAM)</string>
+    <string name="save_import_n64_all">Sauvegarde Nintendo 64 de RetroArch ou RetroForge (complète)</string>
+    <string name="save_import_battery">Sauvegarde de cartouche (%1$s)</string>
+    <string name="save_import_pick_game">Pour quel jeu ? Les meilleures correspondances d\'abord.</string>
+    <string name="save_import_find_game">Chercher un autre jeu</string>
+    <string name="save_import_no_games">Aucun jeu de votre bibliothèque ne correspond à cette sauvegarde.</string>
+    <string name="save_import_best">Meilleure correspondance</string>
+    <string name="save_import_swap">Ordre des octets : %1$s</string>
+    <string name="save_import_as_is">tel quel</string>
+    <string name="save_import_swapped">inversé (essayez si le jeu ne trouve pas la sauvegarde)</string>
+    <string name="save_import_done">Importée dans %1$s.</string>
+    <string name="save_import_done_kept">Importée dans %1$s. Son ancienne sauvegarde est gardée sous %2$s.</string>
+    <string name="save_import_full">La carte mémoire de %1$s est pleine : %2$s blocs libres, %3$s nécessaires.</string>
 </resources>

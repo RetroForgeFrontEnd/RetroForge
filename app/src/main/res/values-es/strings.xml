@@ -2005,4 +2005,27 @@
     <string name="guides_title">Guías y mapas</string>
     <string name="guides_hint">Guías y mapas: pon imágenes o PDF cuyo nombre empiece por el del juego en una carpeta \"guides\" dentro de la carpeta del sistema (o en una carpeta con el nombre del juego dentro de ella) y aparecerán aquí y en el menú del juego.</string>
     <string name="player_notes">Notas y guías ›</string>
+    <string name="save_import_title">Importar partidas de otros emuladores</string>
+    <string name="save_import_body">Lleva partidas de otros emuladores y dispositivos al reproductor integrado: tarjetas de memoria de PlayStation (.mcr, .mcd, .mc, .gme, .vm1) y partidas sueltas (.mcs), partidas de Nintendo 64 (.eep, .mpk, .sra, .fla) y de cartuchos (.sav, .srm). RetroForge averigua de qué juego es cada partida, la convierte y la pone donde el reproductor la lee; las de PlayStation se añaden a la tarjeta del juego junto a las que ya tiene, y la partida anterior se guarda como copia. Cierra el juego antes.</string>
+    <string name="save_import_choose">Elegir un archivo de partida</string>
+    <string name="save_import_unknown">RetroForge no conoce este tipo de archivo de partida.</string>
+    <string name="save_import_ps1_card">Tarjeta de memoria de PlayStation: %1$s</string>
+    <string name="save_import_ps1_single">Partida de PlayStation: %1$s</string>
+    <string name="save_import_empty_card">sin partidas</string>
+    <string name="save_import_n64_eeprom">Partida de Nintendo 64 (EEPROM)</string>
+    <string name="save_import_n64_pak">Controller Pak de Nintendo 64</string>
+    <string name="save_import_n64_sram">Partida de Nintendo 64 (SRAM)</string>
+    <string name="save_import_n64_flash">Partida de Nintendo 64 (FlashRAM)</string>
+    <string name="save_import_n64_all">Partida de Nintendo 64 de RetroArch o RetroForge (completa)</string>
+    <string name="save_import_battery">Partida de cartucho (%1$s)</string>
+    <string name="save_import_pick_game">¿De qué juego es? Primero las mejores coincidencias.</string>
+    <string name="save_import_find_game">Buscar otro juego</string>
+    <string name="save_import_no_games">Ningún juego de tu biblioteca puede ser el de esta partida.</string>
+    <string name="save_import_best">Mejor coincidencia</string>
+    <string name="save_import_swap">Orden de bytes: %1$s</string>
+    <string name="save_import_as_is">tal cual</string>
+    <string name="save_import_swapped">invertido (pruébalo si el juego no encuentra la partida)</string>
+    <string name="save_import_done">Importada en %1$s.</string>
+    <string name="save_import_done_kept">Importada en %1$s. Su partida anterior se guarda como %2$s.</string>
+    <string name="save_import_full">La tarjeta de memoria de %1$s está llena: %2$s bloques libres, se necesitan %3$s.</string>
 </resources>

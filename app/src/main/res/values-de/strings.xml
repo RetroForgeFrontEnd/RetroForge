@@ -1972,4 +1972,27 @@
     <string name="guides_title">Lösungen und Karten</string>
     <string name="guides_hint">Lösungen und Karten: Lege Bilder oder PDFs, deren Name mit dem Spielnamen beginnt, in einen Ordner \"guides\" im Systemordner (oder dort in einen Ordner mit dem Namen des Spiels), dann erscheinen sie hier und im Spielmenü.</string>
     <string name="player_notes">Notizen und Lösungen ›</string>
+    <string name="save_import_title">Spielstände aus anderen Emulatoren importieren</string>
+    <string name="save_import_body">Bring Spielstände aus anderen Emulatoren und Geräten in den eingebauten Player: PlayStation-Memory-Cards (.mcr, .mcd, .mc, .gme, .vm1) und einzelne Spielstände (.mcs), Nintendo-64-Spielstände (.eep, .mpk, .sra, .fla) und Modul-Spielstände (.sav, .srm). RetroForge erkennt, zu welchem Spiel ein Spielstand gehört, wandelt ihn um und legt ihn dorthin, wo der Player ihn liest; PlayStation-Spielstände kommen zu den vorhandenen auf die Karte des Spiels, und der alte Spielstand bleibt als Kopie erhalten. Beende das Spiel vorher.</string>
+    <string name="save_import_choose">Spielstand-Datei wählen</string>
+    <string name="save_import_unknown">Diese Art Spielstand-Datei kennt RetroForge nicht.</string>
+    <string name="save_import_ps1_card">PlayStation-Memory-Card: %1$s</string>
+    <string name="save_import_ps1_single">PlayStation-Spielstand: %1$s</string>
+    <string name="save_import_empty_card">keine Spielstände</string>
+    <string name="save_import_n64_eeprom">Nintendo-64-Spielstand (EEPROM)</string>
+    <string name="save_import_n64_pak">Nintendo-64-Controller-Pak</string>
+    <string name="save_import_n64_sram">Nintendo-64-Spielstand (SRAM)</string>
+    <string name="save_import_n64_flash">Nintendo-64-Spielstand (FlashRAM)</string>
+    <string name="save_import_n64_all">Nintendo-64-Spielstand aus RetroArch oder RetroForge (vollständig)</string>
+    <string name="save_import_battery">Modul-Spielstand (%1$s)</string>
+    <string name="save_import_pick_game">Für welches Spiel ist er? Beste Treffer zuerst.</string>
+    <string name="save_import_find_game">Anderes Spiel suchen</string>
+    <string name="save_import_no_games">Kein Spiel in deiner Bibliothek passt zu diesem Spielstand.</string>
+    <string name="save_import_best">Bester Treffer</string>
+    <string name="save_import_swap">Byte-Reihenfolge: %1$s</string>
+    <string name="save_import_as_is">unverändert</string>
+    <string name="save_import_swapped">vertauscht (versuche das, wenn das Spiel keinen Spielstand findet)</string>
+    <string name="save_import_done">In %1$s importiert.</string>
+    <string name="save_import_done_kept">In %1$s importiert. Der alte Spielstand bleibt als %2$s erhalten.</string>
+    <string name="save_import_full">Die Memory Card von %1$s ist voll: %2$s Blöcke frei, %3$s nötig.</string>
 </resources>

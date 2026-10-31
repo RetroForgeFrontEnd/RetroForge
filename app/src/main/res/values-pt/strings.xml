@@ -2004,4 +2004,27 @@
     <string name="guides_title">Guias e mapas</string>
     <string name="guides_hint">Guias e mapas: coloque imagens ou PDF cujo nome comece pelo do jogo numa pasta \"guides\" na pasta do sistema (ou numa pasta com o nome do jogo dentro dela) e aparecem aqui e no menu do jogo.</string>
     <string name="player_notes">Notas e guias ›</string>
+    <string name="save_import_title">Importar jogos gravados de outros emuladores</string>
+    <string name="save_import_body">Traga jogos gravados de outros emuladores e aparelhos para o reprodutor integrado: cartões de memória PlayStation (.mcr, .mcd, .mc, .gme, .vm1) e gravações soltas (.mcs), gravações de Nintendo 64 (.eep, .mpk, .sra, .fla) e de cartuchos (.sav, .srm). O RetroForge descobre a que jogo pertence cada gravação, converte-a e põe-na onde o reprodutor a lê; as de PlayStation juntam-se às que já estão no cartão do jogo, e a gravação antiga fica guardada como cópia. Feche o jogo antes.</string>
+    <string name="save_import_choose">Escolher um ficheiro de gravação</string>
+    <string name="save_import_unknown">O RetroForge não conhece este tipo de ficheiro de gravação.</string>
+    <string name="save_import_ps1_card">Cartão de memória PlayStation: %1$s</string>
+    <string name="save_import_ps1_single">Gravação PlayStation: %1$s</string>
+    <string name="save_import_empty_card">sem gravações</string>
+    <string name="save_import_n64_eeprom">Gravação de Nintendo 64 (EEPROM)</string>
+    <string name="save_import_n64_pak">Controller Pak de Nintendo 64</string>
+    <string name="save_import_n64_sram">Gravação de Nintendo 64 (SRAM)</string>
+    <string name="save_import_n64_flash">Gravação de Nintendo 64 (FlashRAM)</string>
+    <string name="save_import_n64_all">Gravação de Nintendo 64 do RetroArch ou RetroForge (completa)</string>
+    <string name="save_import_battery">Gravação de cartucho (%1$s)</string>
+    <string name="save_import_pick_game">Para que jogo é? Primeiro as melhores correspondências.</string>
+    <string name="save_import_find_game">Procurar outro jogo</string>
+    <string name="save_import_no_games">Nenhum jogo da sua biblioteca pode ser o desta gravação.</string>
+    <string name="save_import_best">Melhor correspondência</string>
+    <string name="save_import_swap">Ordem dos bytes: %1$s</string>
+    <string name="save_import_as_is">tal como está</string>
+    <string name="save_import_swapped">invertida (experimente se o jogo não encontrar a gravação)</string>
+    <string name="save_import_done">Importada para %1$s.</string>
+    <string name="save_import_done_kept">Importada para %1$s. A gravação antiga fica como %2$s.</string>
+    <string name="save_import_full">O cartão de memória de %1$s está cheio: %2$s blocos livres, são precisos %3$s.</string>
 </resources>

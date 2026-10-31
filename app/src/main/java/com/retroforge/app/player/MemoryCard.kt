@@ -120,6 +120,32 @@ class MemoryCard(val data: ByteArray) {
             return card
         }
 
+        /**
+         * A card holding the one save of a single-save file (.mcs from memory card managers: the save's 128-byte
+         * directory entry, then its blocks), so it can be copied onto a game's card like any other.
+         */
+        fun fromSingleSave(bytes: ByteArray): MemoryCard {
+            val blocks = (bytes.size - FRAME) / BLOCK
+            require(bytes.size == FRAME + blocks * BLOCK && blocks in 1..15 && (bytes[0].toInt() and 0xFF) == FIRST) {
+                str(R.string.memory_not_a_playstation_memory_card)
+            }
+            val card = blank()
+            val d = card.data
+            for (i in 0 until blocks) {
+                val block = i + 1
+                System.arraycopy(bytes, FRAME + i * BLOCK, d, block * BLOCK, BLOCK)
+                val o = block * FRAME
+                if (i == 0) System.arraycopy(bytes, 0, d, o, FRAME) else java.util.Arrays.fill(d, o, o + FRAME, 0)
+                d[o] = (if (i == 0) FIRST else if (i == blocks - 1) LAST else MIDDLE).toByte()
+                // The next block, stored as its number minus one; the last has none.
+                val next = if (i == blocks - 1) 0xFFFF else block
+                d[o + 8] = (next and 0xFF).toByte()
+                d[o + 9] = (next shr 8).toByte()
+                card.checksum(block)
+            }
+            return card
+        }
+
         /** Card files from other emulators: raw 128 KB images, or DexDrive .gme (3904-byte header in front). */
         fun read(bytes: ByteArray): MemoryCard = when {
             bytes.size == SIZE -> MemoryCard(bytes)

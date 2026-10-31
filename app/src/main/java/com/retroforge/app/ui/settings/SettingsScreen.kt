@@ -146,6 +146,8 @@ fun SettingsScreen(
 
                 SaveSyncCard()
 
+                library?.let { SaveImportCard(it) }
+
                 EmulatorAppsCard()
 
                 viewPrefs?.let { DualScreenCard(it) }
