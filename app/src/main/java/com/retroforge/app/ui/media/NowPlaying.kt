@@ -120,7 +120,7 @@ fun NowPlayingPage(player: Player, onClose: () -> Unit) {
                         }
                         Column(Modifier.weight(1f)) {
                             Text(meta.title?.toString().orEmpty(), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp, maxLines = 3, overflow = TextOverflow.Ellipsis)
-                            meta.artist?.let { Text(it.toString(), color = MenuCyan, fontSize = 15.sp, maxLines = 2) }
+                            meta.artist?.let { Text(it.toString(), color = MenuOrange, fontSize = 15.sp, maxLines = 2) }
                             meta.albumTitle?.let { Text(it.toString(), color = MenuGrey, fontSize = 13.sp, maxLines = 2) }
                         }
                     }
