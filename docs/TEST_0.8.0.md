@@ -26,6 +26,8 @@ Nothing goes to GitHub until every row is ✅ (or the user agrees to leave it ou
 | Save swap | Two devices pair with the code and swap a newer save | 📋 needs two devices |
 | Tournaments | All four formats to a champion | ✅ emulator, 31 Oct; S22 screen opens |
 | Kiosk mode | PIN set; Settings, ROM Manager, delete ask for it; wrong tries wait | ✅ S22, 31 Oct: PIN set, Settings locked after leaving, 5 wrong tries wait 30 s, turned off. Fixed: a page open when the PIN was set stayed open after leaving (fix checked on the S22) |
+| Smart collections | Retro → Smart collections: backlog, recent, most played, never played, genre, decade, developer, players; each opens with its games | ✅ emulator-5556 (made-up gamelist details) and S22, 31 Oct: real play history gives Played in the last 30 days (6), Played most (4), Never played (22); no genre/decade ones on the S22 as its games have no gamelist details |
+| Gaming passport | Retro → Gaming passport: total time, systems, finished and playing, milestones, bars, year by year | ✅ emulator-5556 and S22, 31 Oct: 32 min, 7 games, 4 systems, milestones reached and next shown |
 | Retro news | Feeds load; filters; a story opens | ✅ emulator, 31 Oct: stories load; News, Modding, Emulators and All filters right; a story opens in the browser |
 | CitraVR on Quest | A 3DS game opens in CitraVR | 📋 needs a Quest |
 | Colours | Cyan and orange in the pause menu, tabs orange to cyan | ✅ emulator, 31 Oct: pause menu cyan ✕, orange focus ring, D-pad moves; tabs orange to cyan |
