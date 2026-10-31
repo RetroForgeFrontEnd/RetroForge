@@ -1,0 +1,51 @@
+# Clay Fighter and Clay Fighter Tournament Edition (SNES). Numpad notation for a fighter facing right: 6 toward the
+# other fighter, 4 away, 2 down; *60 holds for a second. Light, medium and brutal punches and kicks sit like Street
+# Fighter II's; P moves use the brutal button, change HP/HK to LP/MP or LK/MK for slower versions.
+title: Clay Fighter
+match: clay fighter | clayfighter
+not: clay fighter 2 | clayfighter 2 | judgment clay | clay fighter 63 | clayfighter 63 | sculptor
+buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
+checked: no
+Bad Mr. Frosty | Frozen Fist | 2 3 6+HP
+Bad Mr. Frosty | Ice Ball | 4 1 2 3 6+HP
+Bad Mr. Frosty | Shoulder Charge | 4 6+HP
+Bad Mr. Frosty | Snow Ball | 4*120 6+HP
+Bad Mr. Frosty | Arcing Snowball | 2*120 8+HK
+Bad Mr. Frosty | Foot Slide | 2 3 6+HK
+Bad Mr. Frosty | Flying Headbutt | 6 3+HP
+Bad Mr. Frosty | Big Arm Sideswipe Hack | 2*180 8+HP
+Taffy | Taffy Whack Punch | 4 6+HP
+Taffy | Taffy Whack Kick | 4 6+HK
+Taffy | Two-fisted Charge | 4*120 6+HP
+Taffy | Taffy Tornado | 4 1 2 3 6+HP
+Taffy | Aerial Tornado | 6 3+HP
+Taffy | Dizzy Fake | 2 1 4+HP
+Tiny | Sucker Punch | 2 3 6+HP
+Tiny | Backfist Whip | 2 1 4+HP
+Tiny | Medicine Ball | 4*120 6+HP
+Tiny | Arcing Ball | 2*120 8+HK
+Blob | Clay Spit | 2 3 6+HP
+Blob | Somersault Headbutt | 2 1 4+HP
+Blob | Slide Smack | 4 1 2 3 6+HK
+Blob | Buzzsaw | 4*120 6+HP
+Blob | Flying Roundhouse | 4 6 2 3+HK
+Blue Suede Goo | Humming Attack | 2 3 6+HP
+Blue Suede Goo | Hair Blade | 2 1 4+HP
+Blue Suede Goo | Hair Slice | 6 3 2+HK
+Blue Suede Goo | Song of Pain | 4 1 2 3 6 4 1 2 3 6+HK
+Ickybod Clay | Ecto Ball | 2 3 6+HP
+Ickybod Clay | Ecto Punch | 6 3+HP
+Ickybod Clay | Dart Dive | 4*120 6+HP
+Ickybod Clay | Teleport (right side) | HP+HK
+Ickybod Clay | Teleport (middle) | MP+MK
+Ickybod Clay | Teleport (left side) | LP+LK
+Helga | Viking Ram | 2 3 6+HP
+Helga | Jumping Uppercut | 2 3 6+HK
+Helga | Yodel | 4*120 1 2 3 6+HP
+Helga | Valkyrie's Ride | 4*120 1 2 3 6+HK
+Bonker | Flying Pie | 2 3 6+HP
+Bonker | Cruising Pie | 2 3 6+HK
+Bonker | Cutting Cartwheel | 4*120 6+HP
+Bonker | Clown Dive | 2*120 8+HP
+Bonker | Cream Spray | 4 1 2 3 6+HP
+Bonker | Aerial Shuffle | 4 1 2 3 6+HK

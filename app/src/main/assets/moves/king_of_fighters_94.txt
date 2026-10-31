@@ -1,0 +1,111 @@
+# The King of Fighters '94 (Neo Geo). Numpad notation for a fighter facing right: 6 forward, 2 down, 3 down-forward;
+# *60 charges for a second. A light punch, B light kick, C heavy punch, D heavy kick. P moves use C and K moves D;
+# change to A or B for the light version. Supers need the life bar flashing red or a full POW gauge. "Close" moves
+# are throws: do them next to the other fighter.
+title: The King of Fighters '94
+match: king of fighters 94 | kof 94
+buttons: A=B B=A C=Y D=X
+checked: no
+Kyo | 108 Shiki Yami Barai | 2 3 6+C
+Kyo | 100 Shiki Oniyaki | 6 2 3+C
+Kyo | Oboro Guruma | 4 2 1+D
+Kyo | Super: Orochinagi | 2 1 4 1 2 3 6+C
+Benimaru | Raijin Ken | 6 2 3+C
+Benimaru | Iai Geri | 2 3 6+D
+Benimaru | Shinkuu Katate Goma | 6 3 2 1 4+D
+Benimaru | Super: Raikou Ken | 2 3 6 2 3+C
+Goro Daimon | Jirai Shin | 6 2 3+C
+Goro Daimon | Cho Ukemi | 2 1 4+D
+Goro Daimon | Tenchi Gaeshi (close) | 6 3 2 1 4 6+C
+Goro Daimon | Cho Ohsoto Gari (close) | 6 1 2 3+D
+Goro Daimon | Super: Jigoku Gokuraku Otoshi (close) | 6 3 2 1 4 6 3 2 1 4+C
+Terry | Power Wave | 2 3 6+C
+Terry | Burn Knuckle | 2 1 4+C
+Terry | Rising Tackle | 2*60 8+C
+Terry | Crack Shoot | 2 1 4 7+D
+Terry | Super: Power Geyser | 2 1 4 1 6+B+C
+Andy | Hishouken | 2 1 4+C
+Andy | Zanei Ken | 1*60 6+C
+Andy | Kuuha Dan | 1*60 9+D
+Andy | Super: Cho Reppa Dan | 2*60 3 6+B+D
+Joe | Bakuretsu Ken | C _ C _ C _ C _ C
+Joe | Hurricane Upper | 4 1 2 3 6+C
+Joe | Slash Kick | 1*60 9+D
+Joe | Tiger Kick | 2 3 6 9+D
+Joe | Super: Screw Upper | 6 1 2 3+B+C
+Ryo | Ko'ou Ken | 2 3 6+C
+Ryo | Kohou | 6 2 3+C
+Ryo | Zanretsu Ken | 6 3 2 1 4+C
+Ryo | Hien Shippuu Kyaku | 1*60 6+D
+Ryo | Haoh Shoukou Ken | 6 4 1 2 3 6+C
+Ryo | Super: Ryuuko Ranbu | 2 3 6 3 2 1 4+C
+Robert | Ryuugeki Ken | 2 3 6+C
+Robert | Ryuuga | 6 2 3+C
+Robert | Genei Kyaku | 6 3 2 1 4+D
+Robert | Hien Shippuu Kyaku | 1*60 6+D
+Robert | Haoh Shoukou Ken | 6 4 1 2 3 6+C
+Robert | Super: Ryuuko Ranbu | 2 3 6 3 2 1 4+C
+Takuma | Ko'ou Ken | 2 3 6+C
+Takuma | Zanretsu Ken | 6 3 2 1 4+C
+Takuma | Hien Shippuu Kyaku | 1*60 6+D
+Takuma | Shoran Kyaku (close) | 6 3 2 1 4+D
+Takuma | Haoh Shikou Ken | 6 4 1 2 3 6+C
+Takuma | Super: Ryuuko Ranbu | 2 3 6 4 6+A+C
+Heidern | Cross Cutter | 4*60 6+C
+Heidern | Moon Slasher | 2*60 8+C
+Heidern | Neck Rolling | 2*60 8+D
+Heidern | Storm Bringer (close) | 6 3 2 1 4+C
+Heidern | Super: Final Bringer | 4*60 1 2 8+B+C
+Ralf / Clark | Vulcan Punch | C _ C _ C _ C _ C
+Ralf / Clark | Gatling Attack | 4*60 6+C
+Ralf / Clark | Super Argentine Backbreaker (close) | 4 1 2 3 6+D
+Ralf | Super: Bari Bari Vulcan Punch | 1*60 4 6+C
+Clark | Super: Ultra Argentine Backbreaker (close) | 6 3 2 1 4 6 3 2 1 4+C
+Athena | Psycho Ball | 2 1 4+C
+Athena | Psycho Barrier | 4 1 2 3 6+D
+Athena | Super: Shining Crystal Bit | 4 6 3 2 1 4 7+B+C
+Kensou | Choukyuudan | 2 1 4+C
+Kensou | Ryuurenga | 4 1 2 3 6+C
+Kensou | Ryuu Gakusai | 4 2 1+D
+Kensou | Super: Shinryuu Tenbu Kyaku | 2 3 6 4 6+D
+Chin | Hyoutan Geki | 2 1 4+C
+Chin | Kisui Shuu | 4 2 1+C
+Chin | Kaiten Teki Kuutotsu Ken | 4 1 2 3 6+D
+Chin | Super: Gouran Enhou | 2 3 6 2 3+C
+Kim | Hienzan | 2*60 8+D
+Kim | Hangetsu Zan | 2 1 4+D
+Kim | Super: Houou Kyaku | 2 1 4 1 6+B+D
+Chang | Daikaiten | C _ C _ C _ C _ C
+Chang | Funsai Geki | 4*60 6+C
+Chang | Super: Daibousou | 2 3 6 3 2 1 4+C
+Choi | Kaiten Hienzan | 4*60 6+C
+Choi | Tatsumaki Shippuu Zan | 2*60 8+C
+Choi | Hishou Kuuretsu Zan | 2*60 8+D
+Choi | Super: Chozetsu Tatsumaki Shinkuu Zan | 4*60 1 2 8+B+C
+Brian | Brian Tornado | 6 2 3+C
+Brian | Hyper Tackle | 6 3 2 1 4+C
+Brian | Super: Big Bang Tackle | 2 1 4 6 3 2 1 4+C
+Heavy D! | Rolling Sobat Dash | 6 2 3+C
+Heavy D! | Soul Flower | 4 1 2 3 6+C
+Heavy D! | Blast Upper | 2 3 6 9+D
+Heavy D! | Super: D. Crazy | 2 3 6 3 2 1 4+C
+Lucky | Death Bound | 2 3 6+C
+Lucky | Cyclone Break | 2 1 4 7+D
+Lucky | Lucky Vision | 4 1 2 3 6+D
+Lucky | Super: Hell Bound | 2 1 4 1 6+B+C
+King | Venom Strike | 2 3 6+D
+King | Moushuu Kyaku | 2 1 4+D
+King | Tornado Kick | 4 2 1+D
+King | Trap Shot | 6 2 3+D
+King | Double Strike | 6 4 6 3 2+D
+King | Super: Illusion Dance | 4 6 3 2 1 4+B+D
+Yuri | Ko'ou Ken | 2 3 6+C
+Yuri | Saiha | 2 1 4+C
+Yuri | Hyakuretsu Binta (close) | 6 2 3+C
+Yuri | Raiou Ken | 2 3 6+D
+Yuri | Haoh Shoukou Ken | 6 4 1 2 3 6+C
+Yuri | Super: Houou Kyaku | 6 4 6 3 2 1 4+B+C
+Mai | Kachousen | 2 3 6+C
+Mai | Ryuuenbu | 2 1 4+C
+Mai | Musasabi no Mai | 2*60 8+C
+Mai | Shinobi Bachi | 4 1 2 3 6+D

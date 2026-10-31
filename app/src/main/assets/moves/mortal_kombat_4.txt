@@ -9,6 +9,89 @@ checked: no
 Scorpion | Spear | 4 _ 4+LP
 Sub-Zero | Ice Blast | 2 6+LP
 Liu Kang | High Fireball | 6 _ 6+HP
+Sub-Zero | Ice Clone | 2 4 LP
+Sub-Zero | Slide | BL+LK+LP
+Sub-Zero | Weapon: Ice Staff | 2 6 HK
+Scorpion | Teleport Punch | 2 4 HP
+Scorpion | Fire Breath | 2 6 LP
+Scorpion | Weapon: Long Sword | 6 _ 6 HK
+Raiden | Lightning Bolt | 2 4 LP
+Raiden | Torpedo | 6 _ 6 LK
+Raiden | Teleport | 2 8
+Raiden | Weapon: Warhammer | 6 _ 6 HK
+Liu Kang | Low Fireball | 6 _ 6 LP
+Liu Kang | Flying Kick | 6 _ 6 HK
+Liu Kang | Bicycle Kick | LK*190 _
+Liu Kang | Weapon: Dragon Sword | 4 6 LK
+Jax | Missile | 2 4 LP
+Jax | Ground Pound | 6 _ 6 2 LK
+Jax | Dash Punch | 6 2 4 LP
+Jax | Weapon: Spiked Club | 2 6 HP
+Sonya | Ring Toss | 2 6 LP
+Sonya | Leg Throw | 2 2+BL+LP
+Sonya | Square Wave Punch | 6 4 HP
+Sonya | Bicycle Kick | 4 _ 4 2 HK
+Sonya | Cartwheel | 2 6 LK
+Sonya | Weapon: Wind Blade | 6 _ 6 LK
+Johnny Cage | Low Blow | BL+LP
+Johnny Cage | Shadow Kick | 4 6 LK
+Johnny Cage | Dashing Uppercut | 4 2 4 HP
+Johnny Cage | Low Fireball | 2 4 LP
+Johnny Cage | High Fireball | 2 6 HP
+Johnny Cage | Weapon: Broad Sword | 6 2 6 LK
+Reptile | Acid Spit | 2 6 HP
+Reptile | Invisibility | 2 6 BL+LK
+Reptile | Dash Punch | 4 6 LP
+Reptile | Super Crawl | 6 _ 6 4 LP
+Reptile | Weapon: Battle Axe | 4 _ 4 HK
+Quan Chi | Green Skull | 6 _ 6 LP
+Quan Chi | Weapon Steal | 6 4 HP
+Quan Chi | Teleport Stomp | 6 2 LK
+Quan Chi | Dash Kick | 6 _ 6 HK
+Quan Chi | Weapon: Spiked Mace | 2 4 HK
+Kai | Falling Fireball | 4 _ 4 HP
+Kai | Rising Fireball | 6 _ 6 LP
+Kai | Air Fist | 2 6 HP
+Kai | Hand Walk | BL+LK
+Kai | Weapon: Ghurka Knife | 2 4 LP
+Reiko | Shurikens | 2 6 LP
+Reiko | Teleport | 2 8
+Reiko | Circle Teleport | 4 6 HK
+Reiko | Flip Kick | 4 2 6 LK
+Reiko | Weapon: Spiked Club | 2 4 HP
+Jarek | Red Star | 2 6 LP
+Jarek | Cannonball | 4 6 LK
+Jarek | Vertical Cannonball | 6 2 6 HP
+Jarek | Ground Slam | 4 2 4 HK
+Jarek | Weapon: Black Dragon Sword | 6 _ 6 HP
+Tanya | Fireball | 2 6 HP
+Tanya | Downward Fire | 2 4 LP
+Tanya | Split Kick | 6 2 4 LK
+Tanya | Corkscrew Kick | 6 _ 6 LK
+Tanya | Weapon: Boomerang | 6 _ 6 HK
+Fujin | Whirlwind Spin | 6 2 LP
+Fujin | Levitate Opponent | 6 2 6 HP
+Fujin | Flying Knee | 2 6 HK
+Fujin | Dive Kick | 8 2 LK
+Fujin | Weapon: Crossbow | 2 4 HP
+Noob Saibot | Fireball | 2 6 LP
+Noob Saibot | Teleport | 2 8
+Noob Saibot | Weapon: Scythe | 6 _ 6 HK
+Shinnok | As Fujin | 6 _ 6 4 HK
+Shinnok | As Jarek | 4 _ 4 _ 4 LK
+Shinnok | As Jax | 6 2 6 HK
+Shinnok | As Johnny Cage | 2 _ 2 HP
+Shinnok | As Kai | 6 _ 6 _ 6 LK
+Shinnok | As Liu Kang | 4 _ 4 6 HK
+Shinnok | As Quan Chi | 4 6 4 6 LK
+Shinnok | As Raiden | 2 6 _ 6 HP
+Shinnok | As Reiko | 4 _ 4 _ 4 BL
+Shinnok | As Reptile | 4 _ 4 6 BL
+Shinnok | As Scorpion | 6 4 LP
+Shinnok | As Sonya | 6 2 6 HP
+Shinnok | As Sub-Zero | 2 4 LP
+Shinnok | As Tanya | 4 6 2 BL
+Shinnok | Weapon: Battle Staff | 4 6 LP
 Jax | Fatality 1 | LK*180 6+LK 5+LK 6+LK 2+LK 6+LK _
 Quan Chi | Fatality 1 | LK*300 6+LK 2+LK 6+LK _
 Johnny Cage | Fatality 1 | 6 4 2 _ 2 HK

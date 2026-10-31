@@ -1,0 +1,83 @@
+# Eternal Champions (Mega Drive / Genesis, six-button pad). Numpad notation for a fighter facing right: 6 toward the
+# other fighter, 4 away, 2 down, 8 up; 4*35 charges back for half a second. A B C are the kicks, X Y Z the punches,
+# as on the six-button pad. Special moves use Inner Strength.
+title: Eternal Champions
+match: eternal champions
+not: challenge from the dark side
+buttons: A=Y B=B C=A X=L Y=X Z=R
+checked: no
+Blade | Stun Beam | 4*35 6+Z
+Blade | Personal Shield | X+Y+Z
+Blade | Tracking Blade | 4*35 6+X+Y
+Blade | Straight Blade | 4*35 6+Y+Z
+Blade | Projectile Containment Field | A+B
+Blade | Wild Fury Attack | A+B+C
+Blade | Backfire | A+C
+Blade | Inner Strength Drain | 4*35 6+C
+Jetta | Flying Choke Hold | 4*35 6+Z
+Jetta | Phase | X+Y+Z*60
+Jetta | Ricochet Left | 2*35 8+A
+Jetta | Ricochet Right | 2*35 8+C
+Jetta | Bladerang (one hit) | 4*35 6+X
+Jetta | Bladerang (two hits) | 4*35 6+Y
+Jetta | Ceiling Grab | 2*35 8+Y
+Jetta | Corkscrew (left) | A+B
+Jetta | Corkscrew (right) | B+C
+Larcen | Ceiling Crawl | 2*60 8+C
+Larcen | Air Sweep | A+C
+Larcen | Long Distance Sweep | 4*35 6+Z
+Larcen | Power Sweep | A+B+C*90
+Larcen | Sai Throw | 4*35 6+Y
+Larcen | Swinging Hammer Fist | X+Y+Z
+Midknight | Life Drain (close) | 6+X+Y+Z
+Midknight | Ceiling Ram (close) | 2*35 8+C
+Midknight | Bedazzle | X+Y+Z
+Midknight | Dispel | A+B+C
+Midknight | Mist Attack | A+C
+Midknight | Flying Wall Smash | 4*35 6+Z
+Midknight | Overhead Stomach Punch (close) | 6+A+B+C
+Rax | Lock and Load | A+B
+Rax | Air Jets | 2*35 8+B
+Rax | Cyber Punch | X+Y+Z
+Rax | Cyber Kick | A+B+C
+Rax | Jet Knee Smash | 4*35 6+C
+Rax | Overload | A+C
+Rax | Turbine | 4*35 6+A
+Shadow | Shadow Mode | A+B+C*180
+Shadow | Twirling Fan (1 twirl) | 4*35 6+A
+Shadow | Twirling Fan (2 twirls) | 4*35 6+B
+Shadow | Twirling Fan (3 twirls) | 4*35 6+C
+Shadow | High Jump Angle Kick | 2*35 8+B
+Shadow | Smoke Screen | X+Y+Z
+Shadow | Smoke Screen (left) | X+Y+Z _ A+B
+Shadow | Smoke Screen (right) | X+Y+Z _ B+C
+Shadow | Smoke Screen (left ceiling) | X+Y+Z _ X+Y
+Shadow | Smoke Screen (right ceiling) | X+Y+Z _ Y+Z
+Shadow | Ninja Shuriken | 4*35 6+Y
+Shadow | Ninja Knife | 4*35 9+Y
+Shadow | Ninja Smoke Bomb | 4*35 3+Y
+Shadow | Flying Mine | 4*35 6+Z
+Shadow | Flying Step (short) | A+B
+Shadow | Flying Step (medium) | B+C
+Shadow | Flying Step (super) | A+C
+Slash | Massive Club Swing | X+Y+Z
+Slash | Double Footed Swing Kick | A+C
+Slash | De-Claw | 4*35 6+Z
+Slash | Power Thud Club Swing | Y+Z
+Slash | Spinal Crush (close) | 6+Y
+Slash | Running Head Butt | 4*35 6+C
+Trident | Depth Charge Field | X+Y
+Trident | Bio-Drain Field | Y+Z
+Trident | Bio-Stun Field | A+B
+Trident | Repulser Field | B+C
+Trident | Spinning Trident | X+Y+Z
+Trident | Sliding Spinning Trident | 4*35 6+Y
+Trident | Plasma Bolt | 4*35 6+Z
+Trident | Liquid Mode | A+B+C
+Xavier | Dragon Trap | 4*35 6+Z
+Xavier | Snap Back | 4*35 6+X
+Xavier | Identity Change | X+Y+Z
+Xavier | Midas Touch | 4*35 6+Y
+Xavier | Attract and Smack | A+B+C
+Xavier | Swap Spell | X+Y
+Xavier | Confusion Spell | A+C

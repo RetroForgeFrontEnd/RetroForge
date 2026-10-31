@@ -3,6 +3,7 @@ title: Mortal Kombat
 match: mortal kombat
 not: mortal kombat ii | mortal kombat 2 | mortal kombat 3 | mortal kombat 4 | mortal kombat trilogy | mortal kombat mythologies | mortal kombat gold | mortal kombat advance | deadly alliance | tournament edition | deception | armageddon | shaolin monks | special forces
 buttons: HP=Y LP=B BL=R HK=X LK=A
+buttons.megadrive genesis: HP=L LP=Y BL=X HK=R LK=A
 # Motions are read slowly: each step held 5 frames.
 step: 5
 checked: yes

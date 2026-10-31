@@ -120,6 +120,16 @@ class MacrosTest {
         assertEquals("Sonic the Hedgehog 3", titleFor("Sonic The Hedgehog 3 (USA)"))
         assertEquals("Sonic the Hedgehog 3", titleFor("Sonic 3 & Knuckles"))
         assertNull(titleFor("Sonic The Hedgehog 2 (World)"))
+        assertEquals("The King of Fighters '94", titleFor("The King of Fighters '94 (Japan)"))
+        assertEquals("The King of Fighters", titleFor("The King of Fighters '95"))
+        assertEquals("Art of Fighting", titleFor("Art of Fighting (USA)"))
+        assertEquals("Art of Fighting", titleFor("Ryuuko no Ken"))
+        assertNull(titleFor("Art of Fighting 2"))
+        assertEquals("Clay Fighter", titleFor("Clay Fighter (USA)"))
+        assertEquals("Clay Fighter", titleFor("ClayFighter - Tournament Edition (USA)"))
+        assertNull(titleFor("Clay Fighter 2 - Judgment Clay (USA)"))
+        assertEquals("Eternal Champions", titleFor("Eternal Champions (USA)"))
+        assertNull(titleFor("Eternal Champions - Challenge from the Dark Side (USA)"))
         assertNull(titleFor("Tekken 2"))
     }
 

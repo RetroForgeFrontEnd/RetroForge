@@ -1,0 +1,35 @@
+# Art of Fighting (Neo Geo, SNES; Ryuuko no Ken). Numpad notation for a fighter facing right: 6 forward, 2 down,
+# 3 down-forward. A punch, B kick, C strong attack (or throw up close), D taunt. Special moves use spirit.
+title: Art of Fighting
+match: art of fighting | ryuuko no ken | ryuko no ken
+not: art of fighting 2 | art of fighting 3 | ryuuko no ken 2 | ryuko no ken 2 | ryuuko no ken gaiden | path of the warrior
+buttons: A=B B=A C=Y D=X
+checked: no
+Ryo / Robert | Ko'ou Ken / Ryuugeki Ken | 2 3 6+A
+Ryo / Robert | Kohou / Ryuuga | 6 2 3+A
+Ryo / Robert | Hien Shippuu Kyaku | 1 6+B
+Ryo / Robert | Zanretsu Ken / Genei Kyaku | 6 4 6+C
+Ryo / Robert | Haoh Shoukou Ken | 6 4 1 2 3 6+A
+Todo | Kasane Ate | 2 3 6+A
+Jack | Extreme Drop Kick | 1 6+B
+Jack | Sliding Kick | 2 3 6+B
+Jack | Knuckle Pad | 2 3 6+A
+Jack | Sliding Knee | 2 3 6+C
+Lee | Iron Nails (low) | 2 3 6+A
+Lee | Iron Nails (high) | 2 3 6+B
+Lee | Flying Combo Kick | 1 6+B
+Lee | Hyakuretsu Ken | 6 4 6+C
+King | Venom Strike | 2 3 6+B
+King | Flying Knee | 1 6+B
+King | Reppuu Kyaku | 2 1 4+B
+Micky | Burning Upper | 2 3 6+A
+Micky | Rolling Upper | 2 3 6+B
+John | Mega Smash | 2 3 6+A
+John | Overdrive Kick | 2 1 4+B
+John | Flying Attack | 1 6+A
+Mr. Big | Ground Flame | 4 1 2 3 6+A
+Mr. Karate | Ko'ou Ken | 2 3 6+A
+Mr. Karate | Kohou | 6 2 3+A
+Mr. Karate | Hien Shippuu Kyaku | 1 6+B
+Mr. Karate | Zanretsu Ken | 6 4 6+C
+Mr. Karate | Haoh Shoukou Ken | 6 4 1 2 3 6+A

@@ -1,7 +1,8 @@
-# The King of Fighters (Neo Geo, 94 to 2002). Numpad notation for a fighter facing right: 6 forward, 2 down.
+# The King of Fighters (Neo Geo, 95 to 2002; '94 has its own list). Numpad notation for a fighter facing right: 6 forward, 2 down.
 # A light punch, B light kick, C heavy punch, D heavy kick. P moves use C; change to A for the light version.
 title: The King of Fighters
 match: king of fighters | kof
+not: king of fighters 94 | kof 94
 buttons: A=B B=A C=Y D=X
 checked: no
 Kyo | 100 Shiki Oniyaki | 6 2 3+C
