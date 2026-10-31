@@ -1,0 +1,42 @@
+# Killer Instinct (arcade and SNES). Numpad notation for a fighter facing right: 6 forward, 4 back, 2 down, 3
+# down-forward. QP MP FP quick, medium and fierce punch; QK MK FK the kicks. Finishers are done when the other
+# fighter's last bar flashes: a Humiliation only if you haven't lost a bar.
+title: Killer Instinct
+match: killer instinct
+not: killer instinct 2 | killer instinct gold
+buttons: QP=Y MP=X FP=L QK=B MK=A FK=R
+checked: no
+Jago | Endokuken | 2 3 6+FP
+Jago | Tiger Fury | 6 2 3+FP
+TJ Combo | Humiliation | 2 _ 2 _ 2 QP
+TJ Combo | No Mercy 1 (close) | 4 _ 4 6 _ 6 MP
+TJ Combo | No Mercy 2 (close) | 4 1 2 3 6 FK
+Jago | Humiliation | 6 3 2 1 4 MK
+Jago | No Mercy 1 (one width) | 4 6 _ 6 QP
+Jago | No Mercy 2 (anywhere) | 4 _ 4 6 _ 6 MP
+Glacius | Humiliation | 6 _ 6 4 QK
+Glacius | No Mercy 1 (two widths) | 4 1 2 3 6 MP
+Glacius | No Mercy 2 (one width) | 6 3 2 1 4 MK
+Glacius | No Mercy 3 (two widths) | 4 _ 4 _ 4 FK
+Spinal | Humiliation | 4 1 2 3 6 FK
+Spinal | No Mercy 1 (far) | 4 _ 4 _ 4 MK
+Spinal | No Mercy 2 (close) | 4 _ 4 6 QK
+Orchid | Humiliation | 6 3 2 1 4 FP
+Orchid | No Mercy 1 (one width, then FK close) | 2 6 4 QK
+Orchid | No Mercy 2 (one width) | 4 6 _ 6 QP
+Chief Thunder | Humiliation | 2 _ 2 _ 2 6 QK
+Chief Thunder | No Mercy 1 (half screen) | 4 2 6 FP
+Chief Thunder | No Mercy 2 (close) | 6 2 4 FK
+Fulgore | Humiliation | 4 1 2 3 6 MK
+Fulgore | No Mercy 1 (two widths) | 6 2 1 FP
+Fulgore | No Mercy 2 (three-quarter screen) | 4 2 6 FK
+Cinder | Humiliation | 4 _ 4 _ 4 FK
+Cinder | No Mercy 1 (two widths) | 4 _ 4 _ 4 MP
+Cinder | No Mercy 2 (two widths) | 4 2 6 QK
+Sabrewulf | Humiliation | 6 _ 6 _ 6 QP
+Sabrewulf | No Mercy 1 (close) | 4 _ 4 _ 4 MK
+Sabrewulf | No Mercy 2 (one width) | 4 _ 4 6 MP
+Riptor | Humiliation | 2 _ 2 6 _ 6 FP
+Riptor | No Mercy 1 (close) | 4 2 6 MP
+Riptor | No Mercy 2 (anywhere) | 4 _ 4 _ 4 MK
+Riptor | No Mercy 3 (two widths) | 6 _ 6 4 FK

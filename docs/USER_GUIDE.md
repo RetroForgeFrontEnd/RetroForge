@@ -85,6 +85,7 @@ A rough guide only: the same chip runs some games of a system perfectly and stru
 - Play together shows on the games it suits: NES, SNES, Mega Drive, Master System, PC Engine, PlayStation, Atari,
   arcade and the two-player Game Boy. Handhelds, computers and 3D systems (N64, GameCube, PS2) don't have it.
 - During netplay fast-forward is off, and only player 1 can load a state or restart. If the two games drift apart, player 1's game is sent again automatically.
+- Pass the controller (in the game's menu) is for one device: it switches your controls between player 1 and player 2, so two people can share one phone or tablet (to pick player 2's fighter, say). Over Play together each device is already its own player, so games where you take turns (a level each, as in Mario) work as normal: when it's your friend's turn, they play on their own device. Handing a one-player game over to your friend isn't possible yet.
 
 ## The in-game menu
 
@@ -95,6 +96,15 @@ A rough guide only: the same chip runs some games of a system perfectly and stru
 - Widescreen (N64 and Dreamcast): switches the game to 16:9 and restarts it by itself.
 - Cheats: pick from libretro's cheat database for the game, or type your own codes.
 - Carry on where you left off: quitting saves a state and the next start continues from it (Settings to switch off).
+
+## Moves and turbo
+
+- Moves and turbo (in the game's menu, built-in player). Turbo: while you hold a turbo button it presses itself again and again, for shoot-'em-ups, beat-'em-ups and button-mashing games. It works in every game.
+- Games with a move list (fighting games such as Street Fighter, Mortal Kombat, Tekken 3 and The King of Fighters, wrestling games, and cheat codes in games like Contra): tap up to 4 moves to put them on screen as buttons, then tap one to do it: special moves, combos, fatalities, finishers or a whole cheat code.
+- Which way you face: moves are done for a fighter facing right. When your fighter is on the right, facing left, tap ⇄ on screen first (it shows ←), or the move comes out backwards and a Shoryuken turns into a plain punch. Tap it again when you swap back.
+- With a controller: hold Select and press the move's last button (Select + heavy punch for a Hadouken). On an Xbox controller Select is the View button. If two moves on screen end with the same button (Hadouken and Shoryuken both end with heavy punch), Select + that button does the left one: tap the other on screen, or put only one of them up.
+- The moves use the game's own default buttons. If you changed the buttons in the game's options, set them the same in Moves and turbo (tap each of the game's buttons to change it). Moves are off during Play together, to keep it fair.
+- Your own move lists: put a text file per game in Android/data/com.retroforge.app/files/moves (copy the layout of RetroForge's own). Yours are used before RetroForge's.
 
 ## Touch controls, controllers and Remap buttons
 

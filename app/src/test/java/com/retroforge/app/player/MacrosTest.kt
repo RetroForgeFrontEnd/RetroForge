@@ -77,6 +77,9 @@ class MacrosTest {
             g!!
         }
         games.forEach { g ->
+            (g.systemButtons.values + listOf(g.buttons)).forEach { layout ->
+                assertEquals(g.title, g.buttons.map { it.first }.toSet(), layout.map { it.first }.toSet())
+            }
             g.moves.forEach { m -> assert(Macros.finalButtons(m.inputs).all { it in g.buttons.toMap() }) { "${g.title}: ${m.name}" } }
         }
         fun titleFor(name: String) = Macros.gameFor(name, games)?.title
@@ -91,6 +94,32 @@ class MacrosTest {
         assertEquals("Tekken 3", titleFor("Tekken 3 (Europe)"))
         assertEquals("Marvel vs. Capcom 2", titleFor("Marvel vs. Capcom 2 - New Age of Heroes"))
         assertEquals("Fatal Fury", titleFor("Fatal Fury Special (USA)"))
+        assertEquals("Capcom crossovers", titleFor("Marvel vs. Capcom - Clash of Super Heroes"))
+        assertEquals("Capcom crossovers", titleFor("X-Men vs. Street Fighter"))
+        assertEquals("Contra", titleFor("Contra (USA)"))
+        assertEquals("Super C", titleFor("Super C (USA)"))
+        assertNull(titleFor("Contra III - The Alien Wars (USA)"))
+        assertEquals("Darkstalkers", titleFor("Darkstalkers 3"))
+        assertEquals("Night Warriors", titleFor("Night Warriors - Darkstalkers' Revenge"))
+        assertEquals("Night Warriors", titleFor("Vampire Hunter - Darkstalkers' Revenge"))
+        assertEquals("Gradius", titleFor("Gradius (USA)"))
+        assertNull(titleFor("Gradius III (USA)"))
+        assertEquals("Life Force", titleFor("Life Force (USA)"))
+        assertEquals("Killer Instinct", titleFor("Killer Instinct (USA)"))
+        assertNull(titleFor("Killer Instinct Gold (USA)"))
+        assertEquals("Mega Man", titleFor("Mega Man 4 (USA)"))
+        assertEquals("Mega Man X", titleFor("Mega Man X (USA)"))
+        assertEquals("Mega Man X2", titleFor("Mega Man X2 (USA)"))
+        assertNull(titleFor("Mega Man 2 (USA)"))
+        assertEquals("Mortal Kombat 4", titleFor("Mortal Kombat 4 (USA)"))
+        assertEquals("Mortal Kombat 4", titleFor("Mortal Kombat Gold (USA)"))
+        assertEquals("Punch-Out!!", titleFor("Mike Tyson's Punch-Out!! (USA)"))
+        assertNull(titleFor("Super Punch-Out!! (USA)"))
+        assertEquals("Samurai Shodown", titleFor("Samurai Shodown II"))
+        assertEquals("Sonic the Hedgehog", titleFor("Sonic The Hedgehog (W) (REV00) [!]"))
+        assertEquals("Sonic the Hedgehog 3", titleFor("Sonic The Hedgehog 3 (USA)"))
+        assertEquals("Sonic the Hedgehog 3", titleFor("Sonic 3 & Knuckles"))
+        assertNull(titleFor("Sonic The Hedgehog 2 (World)"))
         assertNull(titleFor("Tekken 2"))
     }
 
@@ -100,6 +129,14 @@ class MacrosTest {
         assertEquals(5, game.step)
         assertEquals(5 + 5 + 1, Macros.frames(game.moves.single().inputs, true, game.buttons.toMap(), game.step).size)
         assertEquals(3, Macros.parse("title: Fast\nX | Y | 4")!!.step)
+    }
+
+    @Test
+    fun aSystemCanHaveItsOwnLayout() {
+        val game = Macros.parse("title: T\nbuttons: LP=Y\nbuttons.megadrive genesis: LP=L\nX | Y | LP")!!
+        assertEquals(listOf("LP" to Pad.Y), game.buttonsFor("snes"))
+        assertEquals(listOf("LP" to Pad.L), game.buttonsFor("megadrive"))
+        assertEquals(listOf("LP" to Pad.L), game.buttonsFor("genesis"))
     }
 
     @Test
@@ -113,5 +150,18 @@ class MacrosTest {
         assertEquals(setOf("LP", "BL", "LK"), Macros.finalButtons("4+LP+BL+LK"))
         assertEquals(setOf("BL"), Macros.finalButtons("BL*4 8+BL 5+BL 8+BL*3"))
         assertEquals(emptySet<String>(), Macros.finalButtons("2 8"))
+        assertEquals(emptySet<String>(), Macros.finalButtons("8 _ 8 START"))
+    }
+
+    @Test
+    fun aCheatCodeListNeverMirrors() {
+        assertEquals(false, Macros.parse("title: Codes\nfacing: no\nX | Y | 6 6 4")!!.facing)
+        assertEquals(true, Macros.parse("title: Fight\nX | Y | 6 6 4")!!.facing)
+    }
+
+    @Test
+    fun startAndSelectPressThosePadButtons() {
+        assertEquals(Pad.bit(Pad.START), Macros.frames("START", facingRight = true, buttons = buttons).first())
+        assertEquals(Pad.bit(Pad.SELECT), Macros.frames("SELECT", facingRight = true, buttons = buttons).first())
     }
 }

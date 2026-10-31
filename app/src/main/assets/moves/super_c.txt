@@ -1,0 +1,9 @@
+# Super C (NES; Probotector II in Europe). A cheat code: directions are the pad's own (6 right, 4 left).
+title: Super C
+match: super c | probotector ii
+facing: no
+# Each press held 6 frames, so the game reads them all.
+step: 6
+buttons: B=B A=A
+checked: no
+Title screen | 10 lives | 6 4 2 8 A B START

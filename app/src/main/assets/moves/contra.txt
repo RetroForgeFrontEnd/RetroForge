@@ -1,0 +1,10 @@
+# Contra (NES; Probotector in Europe). A cheat code, not a move: directions are the pad's own (6 right, 4 left).
+title: Contra
+match: contra | probotector
+not: contra iii | contra 3 | super contra | super c | hard corps | contra force | contra 4 | shattered soldier | neo contra | alien wars | legacy of war | rogue corps | operation galuga | probotector ii
+facing: no
+# Each press held 6 frames, so the game reads them all.
+step: 6
+buttons: B=B A=A
+checked: no
+Title screen | 30 lives (Konami code) | 8 _ 8 2 _ 2 4 6 4 6 B A START

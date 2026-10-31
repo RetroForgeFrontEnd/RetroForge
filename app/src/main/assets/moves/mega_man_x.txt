@@ -1,0 +1,9 @@
+# Mega Man X (SNES). Numpad notation for X facing right: 6 forward, 2 down, 3 down-forward. The Hadouken needs every
+# heart tank, sub tank, armour part and weapon, from the capsule in Armored Armadillo's stage, and full health.
+title: Mega Man X
+match: mega man x | rockman x
+buttons: SHOOT=Y JUMP=B DASH=A
+checked: no
+X | Charged shot | SHOOT*120 _
+X | Dash jump | DASH*4 DASH+JUMP*10
+X | Hadouken | 2 3 6+SHOOT

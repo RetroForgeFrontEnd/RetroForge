@@ -1,0 +1,9 @@
+# Mega Man 4 to 7 (NES and SNES). Numpad notation for Mega Man facing right: 6 forward, 2 down. A charged shot holds
+# the shot button while it charges, then lets go.
+title: Mega Man
+match: mega man 4 | mega man 5 | mega man 6 | mega man 7 | rockman 4 | rockman 5 | rockman 6 | rockman 7
+buttons: SHOOT=B JUMP=A
+buttons.snes: SHOOT=Y JUMP=B
+checked: no
+Mega Man | Charged shot | SHOOT*100 _
+Mega Man | Slide | 2+JUMP

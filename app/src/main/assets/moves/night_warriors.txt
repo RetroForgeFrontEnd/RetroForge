@@ -1,0 +1,36 @@
+# Night Warriors: Darkstalkers' Revenge (Vampire Hunter). Numpad notation for a fighter facing right: 6 forward,
+# 4 back, 2 down, 3 down-forward. These are the ES and EX specials (two or three buttons), which use the super meter.
+title: Night Warriors
+match: night warriors | vampire hunter | darkstalkers revenge
+not: vampire hunter 2
+buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
+checked: no
+Anakaris | Naraku no Ana | 4 1 2 3 6+LK+MK
+Anakaris | Pharaoh Magic (half screen) | MK LP 2 LK MP
+Anakaris | Pharaoh Split | LP _ LP 2 MK HK
+Bishamon | Oni Kubi Hineri (close) | 6 3 2 1 4+LP+MP
+Bishamon | Kasane Giri | 4 1 2 3+LK+MK
+Demitri | Demon Blast | 2 6 3+LK+MK
+Demitri | Midnight Pleasure (close) | 2 6 3+LP+MP
+Donovan | Change Immortal | MP LP 4 LK MK
+Donovan | Press of Death (medium range) | 4 1 2 3 6+MK
+Felicia | Dancing Flash | 6 2 3+LP+MP
+Felicia | Please Help Me | 4 1 2 3 6+LK+MK
+Jon Talbain | Mirage Body | 4 1 2 3 6+LK+MK
+Jon Talbain | Dragon Cannon | 6 3 2 1 4+LP+MP
+Hsien-Ko | Chireitou | 4 1 2 3+LK+MK
+Hsien-Ko | Tenraiha | LK HK MP _ MP 8
+Lord Raptor | Evil Scream (half screen) | 6 4+LP+MP
+Lord Raptor | Death Voltage (half screen) | 6 3 2 1+LK+MK
+Lord Raptor | Hell Dunk | 6 2 3+LP+MP
+Morrigan | Darkness Illusion (sweep range) | LP _ LP 6 LK HP
+Morrigan | Astral Vision | LP _ LP 6 MP HP
+Huitzil | Confusioner | 6 2 3+LK+MK+HK
+Pyron | Cosmo Disruption | 4 1 2 3 6+LP+MP
+Rikuo | Aqua Spread (half screen) | 6 3 2+LP+MP
+Rikuo | Water Jail | 6 2 3+LP+MP
+Rikuo | Sea Rage | 4 1 2 3+LP+MP
+Sasquatch | Big Freezer | 4 1 2 3+LP+MP
+Sasquatch | Big Ice Burn | 4 1 2 3+LK+MK
+Victor | Thunder Break | 2*120 8+LP+MP
+Victor | Great Gerdenheim (then a punch) | 4 1 2 3+LK+MK

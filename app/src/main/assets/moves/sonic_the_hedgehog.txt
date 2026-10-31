@@ -1,0 +1,12 @@
+# Sonic the Hedgehog (Mega Drive / Genesis). Cheat codes: directions are the pad's own (6 right, 4 left). The
+# Mega Drive's A, B and C are on the RetroPad's Y, B and A.
+title: Sonic the Hedgehog
+match: sonic the hedgehog
+not: sonic the hedgehog 2 | sonic the hedgehog 3 | sonic the hedgehog cd | sonic the hedgehog spinball | sonic the hedgehog pocket | sonic the hedgehog chaos | sonic the hedgehog triple trouble | sonic the hedgehog 4 | sonic the hedgehog genesis
+facing: no
+# Each press held 6 frames, so the game reads them all.
+step: 6
+buttons: A=Y B=B C=A
+checked: no
+Title screen | Level select | 8 _ 2 _ 4 _ 6 A*20 A+START
+Title screen | Debug mode (B turns you into objects) | 8 C 2 C 4 C 6 C A*20 A+START

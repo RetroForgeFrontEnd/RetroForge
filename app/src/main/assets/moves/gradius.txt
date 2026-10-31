@@ -1,0 +1,11 @@
+# Gradius (NES). A cheat code: directions are the pad's own (6 right, 4 left). It pauses, enters the Konami code
+# and carries on; it works once per stage.
+title: Gradius
+match: gradius
+not: gradius ii | gradius iii | gradius iv | gradius v | gradius 2 | gradius 3 | gradius gaiden | gradius galaxies | gradius the interstellar | nemesis 2 | nemesis 3 | gradius rebirth
+facing: no
+# Each press held 6 frames, so the game reads them all.
+step: 6
+buttons: B=B A=A
+checked: no
+In a stage | Full power-up (Konami code) | START*6 _*20 8 _ 8 2 _ 2 4 6 4 6 B A _*20 START*6

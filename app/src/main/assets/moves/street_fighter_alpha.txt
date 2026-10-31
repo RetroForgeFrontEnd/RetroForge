@@ -3,6 +3,7 @@
 title: Street Fighter Alpha
 match: street fighter alpha | street fighter zero
 buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
+buttons.psx: LP=Y MP=X HP=R LK=B MK=A HK=R2
 checked: no
 Ryu / Ken | Hadouken | 2 3 6+HP
 Ryu / Ken | Shoryuken | 6 2 3+HP

@@ -1,0 +1,9 @@
+# Mega Man X2 (SNES). Numpad notation for X facing right: 6 forward, 2 down, 3 down-forward. The Shoryuken needs the
+# capsule in the Central Computer stage and full health.
+title: Mega Man X2
+match: mega man x2 | rockman x2
+buttons: SHOOT=Y JUMP=B DASH=A
+checked: no
+X | Charged shot | SHOOT*120 _
+X | Dash jump | DASH*4 DASH+JUMP*10
+X | Shoryuken | 6 2 3+SHOOT

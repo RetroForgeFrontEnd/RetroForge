@@ -1,0 +1,13 @@
+# Punch-Out!! and Mike Tyson's Punch-Out!! (NES). Directions are the pad's own: 8 up (punches go to the face),
+# 4 and 6 dodge, 2 _ 2 ducks. LP left punch, RP right punch. The Star Punch needs a star.
+title: Punch-Out!!
+match: punch out
+not: super punch out
+facing: no
+buttons: LP=B RP=A
+checked: no
+Little Mac | Face combo | 8+LP _ 8+RP _ 8+LP _ 8+RP
+Little Mac | Body combo | LP _ RP _ LP _ RP
+Little Mac | Dodge left, counter | 4*10 _ 8+RP _ 8+LP
+Little Mac | Dodge right, counter | 6*10 _ 8+LP _ 8+RP
+Little Mac | Star Punch | START

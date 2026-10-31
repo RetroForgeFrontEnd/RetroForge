@@ -1,7 +1,7 @@
 # Mortal Kombat (1992). Numpad notation for a fighter facing right: 6 forward, 4 back, 2 down; _ lets go.
 title: Mortal Kombat
 match: mortal kombat
-not: mortal kombat ii | mortal kombat 2 | mortal kombat 3 | mortal kombat 4 | mortal kombat trilogy | mortal kombat mythologies
+not: mortal kombat ii | mortal kombat 2 | mortal kombat 3 | mortal kombat 4 | mortal kombat trilogy | mortal kombat mythologies | mortal kombat gold | mortal kombat advance | deadly alliance | tournament edition | deception | armageddon | shaolin monks | special forces
 buttons: HP=Y LP=B BL=R HK=X LK=A
 # Motions are read slowly: each step held 5 frames.
 step: 5

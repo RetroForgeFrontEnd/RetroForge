@@ -3,6 +3,8 @@
 title: Street Fighter II
 match: street fighter ii | street fighter 2 | sf2
 buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
+buttons.megadrive genesis: LP=L MP=X HP=R LK=Y MK=B HK=A
+buttons.psx: LP=Y MP=X HP=R LK=B MK=A HK=R2
 checked: yes
 Ryu / Ken | Hadouken | 2 3 6+HP
 Ryu / Ken | Shoryuken | 6 2 3+HP

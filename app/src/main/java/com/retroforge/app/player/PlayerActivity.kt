@@ -504,7 +504,7 @@ class PlayerActivity : ComponentActivity() {
         val saved = prefs.getString("movebuttons.$system.${game.title}", null).orEmpty().split(',').mapNotNull { pair ->
             pair.split('=').takeIf { it.size == 2 }?.let { (name, pad) -> pad.toIntOrNull()?.let { name to it } }
         }.toMap()
-        moveButtons = game.buttons.toMap() + saved
+        moveButtons = game.buttonsFor(system).toMap() + saved
         val chosen = prefs.getString("moves.$saveBase", null).orEmpty().split('\n').toSet()
         movesOnScreen = game.moves.filter { "${it.fighter}|${it.name}" in chosen }
     }
@@ -529,7 +529,7 @@ class PlayerActivity : ComponentActivity() {
 
     private fun playMove(move: Macros.Move) {
         if (!loaded || netPlaying) return
-        NativePlayer.playMacro(port, Macros.frames(move.inputs, facingRight, moveButtons, movesGame?.step ?: 3))
+        NativePlayer.playMacro(port, Macros.frames(move.inputs, facingRight || movesGame?.facing == false, moveButtons, movesGame?.step ?: 3))
     }
     private var playerTwo by mutableStateOf(false)
 
@@ -1699,6 +1699,7 @@ class PlayerActivity : ComponentActivity() {
         }
         val touchControlsShown = touchEnabled && showTouch && !vr && phase == Phase.Playing && !menuOpen
         val movesShown = movesOnScreen.isNotEmpty() && phase == Phase.Playing && !menuOpen && !netPlaying
+        val flip: (() -> Unit)? = if (movesGame?.facing == false) null else ({ facingRight = !facingRight })
         // No background here: the game surface sits behind the window, and anything painted would cover it.
         Box(Modifier.fillMaxSize()) {
             BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -1712,7 +1713,7 @@ class PlayerActivity : ComponentActivity() {
                             layout, onMask = { input.setTouch(it) }, onMenu = { openMenu() }, modifier = modifier,
                             compact = compact, landscape = !portrait, fastForward = intent.getBooleanExtra(EXTRA_FAST_FORWARD_R2, false),
                             onAnalog = { stick, x, y -> if (loaded) NativePlayer.setAnalog(port, stick, (x * 32767).toInt(), (y * 32767).toInt()) },
-                            extra = if (movesShown) ({ MoveButtons(movesOnScreen, facingRight, onFlip = { facingRight = !facingRight }, onMove = ::playMove, Modifier) }) else null,
+                            extra = if (movesShown) ({ MoveButtons(movesOnScreen, facingRight, onFlip = flip, onMove = ::playMove, Modifier) }) else null,
                         )
                     }
                 }
@@ -1752,7 +1753,7 @@ class PlayerActivity : ComponentActivity() {
             }
             // Drawn last, so the console look and the controls never cover them. With touch controls they sit beside those instead.
             if (movesShown && !touchControlsShown) {
-                MoveButtons(movesOnScreen, facingRight, onFlip = { facingRight = !facingRight }, onMove = ::playMove,
+                MoveButtons(movesOnScreen, facingRight, onFlip = flip, onMove = ::playMove,
                     modifier = Modifier.align(Alignment.TopCenter).padding(top = 8.dp))
             }
             if (netShowStatus) {
@@ -2254,7 +2255,7 @@ class PlayerActivity : ComponentActivity() {
                             Text(stringResource(R.string.moves_buttons), color = MenuGrey, fontSize = 13.sp, textAlign = TextAlign.Center)
                             MenuGrid(
                                 columns,
-                                *game.buttons.map { (name, _) ->
+                                *game.buttonsFor(system).map { (name, _) ->
                                     val pad = moveButtons[name]
                                     Tile("$name: ${Macros.padButtons.firstOrNull { it.first == pad }?.second ?: "?"}") {
                                         val list = Macros.padButtons
@@ -2526,13 +2527,14 @@ private fun MenuGrid(columns: Int, vararg tiles: Tile?) {
 
 /** The moves put on screen from Moves and turbo, with ⇄ for which way the fighter faces. */
 @Composable
-private fun MoveButtons(moves: List<Macros.Move>, facingRight: Boolean, onFlip: () -> Unit, onMove: (Macros.Move) -> Unit, modifier: Modifier) {
+private fun MoveButtons(moves: List<Macros.Move>, facingRight: Boolean, onFlip: (() -> Unit)?, onMove: (Macros.Move) -> Unit, modifier: Modifier) {
     // On a dark backing, so the buttons read over bright games too.
     androidx.compose.foundation.layout.Row(
         modifier.background(Color.Black.copy(alpha = 0.6f), androidx.compose.foundation.shape.RoundedCornerShape(10.dp)).padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        MenuButton(onClick = onFlip, contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)) {
+        // No ⇄ for cheat codes, whose directions don't turn round.
+        if (onFlip != null) MenuButton(onClick = onFlip, contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)) {
             Text(if (facingRight) "⇄ →" else "← ⇄", fontSize = 12.sp)
         }
         moves.forEach { move ->

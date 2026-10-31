@@ -1,0 +1,14 @@
+# Darkstalkers: The Night Warriors, Vampire Savior and Darkstalkers Chronicle. Numpad notation for a fighter facing
+# right: 6 forward, 4 back, 2 down, 3 down-forward. P moves use HP; change to LP or MP for the slower versions.
+title: Darkstalkers
+match: darkstalkers | vampire savior | vampire the night warriors | vampire hunter 2
+not: darkstalkers revenge
+buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
+checked: no
+Morrigan | Soul Fist | 2 3 6+HP
+Morrigan | Shadow Blade | 6 2 3+HP
+Demitri | Chaos Flare | 2 3 6+HP
+Demitri | Demon Cradle | 6 2 3+HP
+Demitri | Bat Spin | 2 1 4+HK
+Felicia | Rolling Buckler | 2 3 6+HP
+Felicia | Delta Kick | 6 2 3+HK

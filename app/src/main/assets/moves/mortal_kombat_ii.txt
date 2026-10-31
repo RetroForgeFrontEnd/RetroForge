@@ -2,8 +2,11 @@
 title: Mortal Kombat II
 match: mortal kombat ii | mortal kombat 2
 buttons: HP=Y LP=B BL=R HK=X LK=A
+buttons.megadrive genesis: HP=L LP=Y BL=X HK=R LK=A
 # Motions are read slowly: each step held 5 frames.
 step: 5
+# Finishers come after "Finish him": a Fatality where the note says; a Babality or Friendship only if you used
+# no punches in the round you won.
 checked: no
 Liu Kang | High Fireball | 6 _ 6+HP
 Liu Kang | Flying Kick | 6 _ 6+HK
@@ -21,3 +24,63 @@ Mileena | Sai Throw | HP*120 _
 Reptile | Acid Spit | 6 _ 6+HP
 Shang Tsung | Fireball | 4 _ 4+HP
 Baraka | Blade Spark | 2 4+HP
+Reptile | Fatality: Tongue (jump distance) | 4 _ 4 2 LP
+Reptile | Fatality: Slice (invisible, close) | 6 _ 6 2 HK
+Reptile | Babality | 2 4 _ 4 LK
+Reptile | Friendship | 4 _ 4 2 LK
+Sub-Zero | Fatality: Ice Blow (far) | LP 4+LP 5+LP 4+LP 2+LP 6+LP
+Sub-Zero | Fatality: Deep Freeze (one step) | 6 _ 6 2 HK
+Sub-Zero | Fatality: Shatter (after Deep Freeze) | 6 2 6 _ 6 HP
+Sub-Zero | Babality | 2 4 _ 4 HK
+Sub-Zero | Friendship | 4 _ 4 2 LK
+Scorpion | Fatality: Toasty (two steps) | BL 8+BL 5+BL 8+BL HP
+Scorpion | Fatality: Slice (close) | HP 2+HP 6+HP 5+HP 6+HP 5+HP 6+HP
+Scorpion | Babality | 2 4 _ 4 HK
+Scorpion | Friendship | 4 _ 4 2 HK
+Johnny Cage | Fatality: Torso Rip (close) | 2 _ 2 6 _ 6 LP
+Johnny Cage | Fatality: Uppercut (close) | 6 _ 6 2 8
+Johnny Cage | Babality | 4 _ 4 _ 4 HK
+Johnny Cage | Friendship | 2 _ 2 _ 2 _ 2 HK
+Baraka | Fatality: Decapitation (close) | 4 _ 4 _ 4 _ 4 HP
+Baraka | Fatality: Blade Lift (close) | 4 6 2 6 LP
+Baraka | Babality | 6 _ 6 _ 6 HK
+Baraka | Friendship | BL 8+BL 5+BL 8+BL 6 _ 6 HK
+Kung Lao | Fatality: Hat Slice (one step) | 6 _ 6 _ 6 LK
+Kung Lao | Fatality: Hat Split (far) | LP 4+LP 5+LP 4+LP 6+LP 8
+Kung Lao | Babality | 4 _ 4 6 _ 6 HK
+Kung Lao | Friendship | 4 _ 4 _ 4 2 HK
+Raiden | Babality | 2 _ 2 BL 8+BL HK
+Raiden | Friendship | 2 4 6 HK
+Jax | Fatality: Arm Rip (close) | LP 6+LP 5+LP 6+LP 5+LP 6+LP
+Jax | Fatality: Head Clap (one step) | BL _ BL _ BL _ BL LP
+Jax | Babality | BL 2+BL 8+BL 2+BL 8+BL LK
+Jax | Friendship | 2 _ 2 BL 8+BL 5+BL 8+BL LK
+Liu Kang | Fatality: Dragon (close) | 2 6 4 _ 4 HK
+Liu Kang | Babality | 2 _ 2 6 4 LK
+Liu Kang | Friendship | 6 4 _ 4 _ 4 LK
+Kitana | Fatality: Kiss (close) | BL _ BL _ BL HK
+Kitana | Fatality: Fan Slice (close) | LK 6+LK 5+LK 6+LK 2+LK 6+LK
+Kitana | Babality | 2 _ 2 _ 2 LK
+Kitana | Friendship | 2 _ 2 _ 2 _ 2 BL 8+BL LK
+Mileena | Fatality: Spit (close) | 6 4 6 LP
+Mileena | Babality | 2 _ 2 _ 2 HK
+Mileena | Friendship | 2 _ 2 _ 2 BL 8+BL HK
+Shang Tsung | Fatality: Kintaro (close) | BL 8+BL 2+BL 8+BL LK
+Shang Tsung | Babality | 4 6 2 HK
+Shang Tsung | Friendship | 4 _ 4 2 6 HK
+Reptile | Stage: Pit or Tomb (close) | 2 _ 2 6 _ 6 BL
+Sub-Zero | Stage: Pit or Tomb (close) | 2 _ 2 6 _ 6 BL
+Scorpion | Stage: Pit or Tomb (close) | 2 _ 2 6 _ 6 BL
+Johnny Cage | Stage: Pit or Tomb (close) | 2 _ 2 _ 2 HK
+Baraka | Stage: Pit or Tomb (close) | 6 _ 6 2 HK
+Kung Lao | Stage: Pit or Tomb (close) | 6 _ 6 _ 6 HP
+Jax | Stage: Pit or Tomb (close) | BL 8+BL 5+BL 8+BL 2 LK
+Liu Kang | Stage: Pit or Tomb (close) | 2 4 6 _ 6 LK
+Kitana | Stage: Pit or Tomb (close) | 6 2 6 HK
+Mileena | Stage: Pit or Tomb (close) | 6 2 6 LK
+Raiden | Fatality: Electrocution (close) | LK*180 _
+Mileena | Fatality: Inhale (close) | HK*120 _
+Shang Tsung | Fatality: Soul Steal (one step) | HK*240 _
+Shang Tsung | Stage: Pit or Tomb (close) | 2 _ 2 8 2+BL
+Raiden | Stage: Pit or Tomb (close) | BL 8+BL 5+BL 8+BL
+Everyone | Stage: Dead Pool (close) | LP+LK*10 2+LP+LK+HP

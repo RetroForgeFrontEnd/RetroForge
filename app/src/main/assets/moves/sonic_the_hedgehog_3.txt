@@ -1,0 +1,10 @@
+# Sonic the Hedgehog 3 and Sonic 3 & Knuckles (Mega Drive / Genesis). A cheat code: directions are the pad's own.
+# Enter it on the SEGA screen, while Sonic runs across; "Level select" then shows on the title menu.
+title: Sonic the Hedgehog 3
+match: sonic the hedgehog 3 | sonic 3 knuckles | sonic 3 and knuckles
+facing: no
+# Each press held 6 frames, so the SEGA screen reads them all.
+step: 6
+buttons: A=Y B=B C=A
+checked: no
+SEGA screen | Level select | 8 _ 8 _ 2 _ 2 _ 8 _ 8 _ 8 _ 8

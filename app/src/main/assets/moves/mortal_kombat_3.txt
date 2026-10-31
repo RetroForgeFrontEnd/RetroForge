@@ -1,10 +1,12 @@
 # Mortal Kombat 3, Ultimate Mortal Kombat 3 and Mortal Kombat Trilogy. Numpad notation facing right: 6 forward,
 # 4 back, 2 down; _ lets go. RN is Run.
 title: Mortal Kombat 3
-match: mortal kombat 3 | mortal kombat trilogy
+match: mortal kombat 3 | mortal kombat trilogy | mortal kombat advance
 buttons: HP=Y LP=B BL=R HK=X LK=A RN=L
 # Motions are read slowly: each step held 5 frames.
 step: 5
+# Finishers are Ultimate Mortal Kombat 3's; Mortal Kombat 3 and Trilogy differ for some fighters. Animalities are
+# arcade only and Brutalities console only. A Babality or Friendship needs you not to block in the round you won.
 checked: no
 Sub-Zero | Ice Ball | 2 3 6+LP
 Sub-Zero | Ice Clone | 2 1 4+LP
@@ -16,3 +18,106 @@ Kabal | Fireball | 4 _ 4+HP
 Sonya | Ring Toss | 2 3 6+LP
 Nightwolf | Arrow | 2 3 6+LP
 Cyrax | Net | 4 _ 4+LK
+Cyrax | Fatality 1 (close) | 2 6 2 6 BL
+Cyrax | Fatality 2 (almost full screen) | 6 _ 6 _ 6 LK
+Cyrax | Animality (arcade) | RN _ RN _ RN BL
+Cyrax | Babality | 2 6 _ 6 4 HP
+Cyrax | Friendship | RN LP RN LK
+Cyrax | Brutality (console) | HP LP HK LK HP LP LK HK HP LK _ LK
+Ermac | Fatality 1 (close) | RN BL RN _ RN HK
+Ermac | Fatality 2 (mid range) | 2 8 2 _ 2 _ 2 BL
+Ermac | Babality | 2 _ 2 6 2 HK
+Ermac | Friendship | 6 _ 6 _ 6 HP
+Ermac | Brutality (console) | HP _ HP LP BL HK LK BL HP LP LK HK
+Jax | Fatality 1 | 8 _ 8 2 6 8 BL
+Jax | Fatality 2 | RN BL RN _ RN LK
+Jax | Animality (arcade) | LK 6+LK 5+LK 6+LK 2+LK 6+LK
+Jax | Babality | 2 _ 2 _ 2 LK
+Jax | Friendship | LK RN _ RN LK
+Jax | Brutality (console) | HP _ HP _ HP BL LP HP _ HP _ HP BL LP HP
+Jade | Fatality 1 (close) | 8 _ 8 2 6 HP
+Jade | Fatality 2 (close) | RN _ RN _ RN BL RN
+Jade | Babality | 2 _ 2 6 2 HK
+Jade | Friendship | 4 2 4 _ 4 HK
+Jade | Brutality (console) | HP LK HP LP HK _ HK LK BL HP HK
+Kano | Fatality 1 | LP 6+LP 2+LP 5+LP 2+LP 6+LP
+Kano | Fatality 2 (close) | LP BL _ BL HK
+Kano | Animality (arcade) | HP BL+HP 5+HP BL+HP 5+HP BL+HP
+Kano | Babality | 6 _ 6 2 _ 2 LK
+Kano | Friendship | LK RN _ RN HK
+Kano | Brutality (console) | HP LP BL HP BL HK LK BL HK LK
+Kabal | Fatality 1 (half screen) | 2 _ 2 4 6 BL
+Kabal | Fatality 2 (close) | RN BL _ BL _ BL HK
+Kabal | Animality (arcade, close) | HP 6+HP 5+HP 6+HP 2+HP 6+HP
+Kabal | Babality | RN _ RN LK
+Kabal | Friendship | RN LK RN _ RN 8
+Kabal | Brutality (console) | HP BL LK _ LK _ LK HK LP _ LP _ LP HP LP HP
+Kung Lao | Fatality 1 (close) | 6 _ 6 4 2 HP
+Kung Lao | Fatality 2 (half screen) | RN BL RN BL 2
+Kung Lao | Animality (arcade) | RN _ RN _ RN _ RN BL
+Kung Lao | Babality | 2 _ 2 6 _ 6 HP
+Kung Lao | Friendship | RN LP RN LK
+Kung Lao | Brutality (console) | HP LP LK HK BL HP LP LK HK BL HP
+Kitana | Fatality 1 (close) | RN _ RN BL _ BL LK
+Kitana | Fatality 2 (close) | 4 2 6 _ 6 HK
+Kitana | Babality | 6 _ 6 2 6 HK
+Kitana | Friendship | 2 4 6 _ 6 LP
+Kitana | Brutality (console) | HP _ HP BL HK BL LK BL LP BL HP BL
+Liu Kang | Fatality 1 | 6 _ 6 2 _ 2 LK
+Liu Kang | Animality (arcade, mid range) | 2 _ 2 8
+Liu Kang | Babality | 2 _ 2 _ 2 HK
+Liu Kang | Friendship | 2 _ 2 _ 2 RN
+Liu Kang | Brutality (console) | HP LP HP BL LK HK _ HK LK HK LP HP
+Mileena | Fatality 1 (mid range) | 4 _ 4 _ 4 6 LK
+Mileena | Fatality 2 (close) | 2 6 2 6 LP
+Mileena | Babality | 2 _ 2 6 _ 6 HP
+Mileena | Friendship | 2 _ 2 4 6 HP
+Mileena | Brutality (console) | HP LP _ LP HP BL HK LK _ LK HK BL HP
+Nightwolf | Fatality 1 (close) | 8 _ 8 4 6 BL
+Nightwolf | Fatality 2 | 4 _ 4 2 HP
+Nightwolf | Babality | 6 4 6 4 LP
+Nightwolf | Friendship | HP RN _ RN _ RN 2
+Nightwolf | Brutality (console) | HP _ HP HK LK _ LK BL _ BL LP _ LP HP HK
+Reptile | Fatality 1 (jump distance) | 4 6 2 BL
+Reptile | Fatality 2 (mid range) | 6 _ 6 8 _ 8 HK
+Reptile | Babality | 6 _ 6 4 2 LK
+Reptile | Friendship (close) | 2 6 _ 6 4 HK
+Sonya | Fatality 1 | 4 6 2 _ 2 RN
+Sonya | Fatality 2 | BL+RN 8+BL+RN 5+BL+RN 8+BL+RN 4+BL+RN 2+BL+RN
+Sonya | Babality | 2 _ 2 _ 2 LK
+Sonya | Friendship | 4 6 2 6 RN
+Sonya | Brutality (console) | HP LK BL HP LK BL HP BL HK LK HP
+Scorpion | Fatality 1 (mid range) | 2 _ 2 8 HK
+Scorpion | Fatality 2 (close) | 6 _ 6 2 8 RN
+Scorpion | Babality | 2 4 _ 4 6 HP
+Scorpion | Friendship | 4 6 _ 6 4 LK
+Scorpion | Brutality (console) | HP _ HP BL HK _ HK LK HK HP _ HP LP HP
+Smoke | Fatality 1 (half screen) | BL 8+BL 5+BL 8+BL 6+BL 2+BL
+Smoke | Fatality 2 (mid range) | BL+RN 2+BL+RN 5+BL+RN 2+BL+RN 6+BL+RN 8+BL+RN
+Smoke | Babality | 2 _ 2 4 _ 4 HK
+Smoke | Friendship | RN _ RN _ RN HK
+Smoke | Brutality (console) | HP LK _ LK HK BL _ BL LP _ LP HP _ HP BL _ BL
+Sub-Zero | Fatality 1 (close) | BL _ BL RN BL RN
+Sub-Zero | Fatality 2 (outside mid range) | 4 _ 4 2 4 RN
+Sub-Zero | Babality | 2 4 _ 4 HK
+Sub-Zero | Friendship | LK RN _ RN 8
+Sub-Zero | Brutality (console) | HP LK HK LP HP HK _ HK HP _ HP LP HP
+Sektor | Fatality 1 (mid range) | LP RN _ RN BL
+Sektor | Fatality 2 (half screen) | 6 _ 6 _ 6 4 BL
+Sektor | Babality | 4 2 _ 2 _ 2 HK
+Sektor | Friendship | RN _ RN _ RN _ RN 2
+Sektor | Brutality (console) | HP _ HP _ HP BL LP HP _ HP _ HP BL LP HP
+Sindel | Fatality 1 | RN _ RN BL RN BL
+Sindel | Fatality 2 | RN _ RN BL _ BL _ BL+RN
+Sindel | Babality | RN _ RN _ RN 8
+Sindel | Friendship | RN _ RN _ RN _ RN _ RN 8
+Sindel | Brutality (console) | HP BL LK BL LK HK BL HK LK BL LP
+Shang Tsung | Fatality 1 (close) | LP 2+LP 6+LP 5+LP 6+LP 2+LP
+Shang Tsung | Fatality 2 (close) | LP LP+RN BL+LP LP+RN BL+LP
+Shang Tsung | Babality | RN _ RN _ RN LK
+Shang Tsung | Friendship | LK RN _ RN 2
+Shang Tsung | Brutality (console) | HP BL _ BL _ BL LK HP LP _ LP BL HK LK
+Sheeva | Fatality 1 (close) | 6 2 _ 2 6 LP
+Sheeva | Fatality 2 (close) | HK 4+HK 6+HK 5+HK 6+HK
+Sheeva | Babality | 2 _ 2 _ 2 4 HK
+Sheeva | Friendship | 6 _ 6 2 6 5*30 HP

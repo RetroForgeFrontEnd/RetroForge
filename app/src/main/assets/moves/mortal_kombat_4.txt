@@ -1,0 +1,71 @@
+# Mortal Kombat 4 and Mortal Kombat Gold. Numpad notation for a fighter facing right: 6 forward, 4 back, 2 down;
+# _ lets go. RN is Run. Fatalities are done close after "Finish him"; stage ones on Goro's Lair (spikes) and the Prison (fan).
+title: Mortal Kombat 4
+match: mortal kombat 4 | mortal kombat gold
+buttons: HP=Y LP=B BL=R HK=X LK=A RN=L
+# Motions are read slowly: each step held 5 frames.
+step: 5
+checked: no
+Scorpion | Spear | 4 _ 4+LP
+Sub-Zero | Ice Blast | 2 6+LP
+Liu Kang | High Fireball | 6 _ 6+HP
+Jax | Fatality 1 | LK*180 6+LK 5+LK 6+LK 2+LK 6+LK _
+Quan Chi | Fatality 1 | LK*300 6+LK 2+LK 6+LK _
+Johnny Cage | Fatality 1 | 6 4 2 _ 2 HK
+Johnny Cage | Fatality 2 | 2 _ 2 6 2 BL
+Johnny Cage | Stage: Goro's Lair | 4 6 _ 6 LK
+Johnny Cage | Stage: Prison | 2 6 _ 6 HK
+Fujin | Fatality 1 | BL+RN _ BL+RN _ BL+RN _ BL+RN _ BL+RN
+Fujin | Fatality 2 | 2 6 _ 6 8 BL
+Fujin | Stage: Goro's Lair | 4 6 4 HP
+Fujin | Stage: Prison | 2 _ 2 _ 2 HK
+Jarek | Fatality 1 | 6 4 6 _ 6 LK
+Jarek | Fatality 2 | 8 _ 8 6 _ 6 BL
+Jarek | Stage: Goro's Lair | 4 6 _ 6 LP
+Jarek | Stage: Prison | 6 2 6 HK
+Jax | Fatality 2 | 4 6 _ 6 2 BL
+Jax | Stage: Goro's Lair | 6 _ 6 4 HP
+Jax | Stage: Prison | 6 _ 6 4 LK
+Kai | Fatality 1 | BL 8+BL 6+BL 8+BL 4+BL BL+HK
+Kai | Fatality 2 | 8 _ 8 _ 8 2 BL
+Kai | Stage: Goro's Lair | 4 6 2 HK
+Kai | Stage: Prison | 6 _ 6 2 BL
+Liu Kang | Fatality 1 | 6 _ 6 _ 6 2 BL+HK+LK
+Liu Kang | Fatality 2 | 6 2 _ 2 8 HP
+Liu Kang | Stage: Goro's Lair | 6 _ 6 4 HK
+Liu Kang | Stage: Prison | 6 _ 6 4 LP
+Quan Chi | Fatality 2 | 8 _ 8 2 _ 2 LP
+Quan Chi | Stage: Goro's Lair | 6 _ 6 4 LK
+Quan Chi | Stage: Prison | 6 _ 6 2 HP
+Raiden | Fatality 1 | BL 6+BL 4+BL 8+BL 5+BL 8+BL BL+HK
+Raiden | Fatality 2 | 2 8 _ 8 _ 8 HP
+Raiden | Stage: Goro's Lair | 6 _ 6 2 LP
+Raiden | Stage: Prison | 2 6 4 BL
+Reiko | Fatality 1 | 6 2 6 BL+HK+LK+LP
+Reiko | Fatality 2 | 4 _ 4 2 _ 2 HK
+Reiko | Stage: Goro's Lair | 6 _ 6 2 LK
+Reiko | Stage: Prison | 2 _ 2 4 LP
+Reptile | Fatality 1 | HK+HP+LK+LP 8+HK+HP+LK+LP
+Reptile | Fatality 2 | 8 2 _ 2 _ 2 HP
+Reptile | Stage: Goro's Lair | 2 _ 2 6 HK
+Reptile | Stage: Prison | 2 6 _ 6 LP
+Scorpion | Fatality 1 | 4 6 _ 6 4 BL
+Scorpion | Fatality 2 | 4 6 2 8 HP
+Scorpion | Stage: Goro's Lair | 4 6 _ 6 LK
+Scorpion | Stage: Prison | 6 2 _ 2 LK
+Sonya | Fatality 1 | BL 2+BL 5+BL 2+BL 5+BL 2+BL 8+BL BL+RN
+Sonya | Fatality 2 | 8 2 _ 2 HK
+Sonya | Stage: Goro's Lair | 6 2 6 HP
+Sonya | Stage: Prison | 2 4 _ 4 HK
+Sub-Zero | Fatality 1 | 6 4 6 2 BL+HP+RN
+Sub-Zero | Fatality 2 | 4 _ 4 2 4 HP
+Sub-Zero | Stage: Goro's Lair | 2 _ 2 _ 2 LK
+Sub-Zero | Stage: Prison | BL 2+BL 8+BL 5+BL 8+BL 5+BL 8+BL HK
+Shinnok | Fatality 1 | 2 4 6 2 RN
+Shinnok | Fatality 2 | 2 8 _ 8 2 BL
+Shinnok | Stage: Goro's Lair | 2 6 4 HP
+Shinnok | Stage: Prison | 2 _ 2 6 HK
+Tanya | Fatality 1 | 2 _ 2 8 2 BL+HP
+Tanya | Fatality 2 | 2 6 2 6 HK
+Tanya | Stage: Goro's Lair | 6 _ 6 _ 6 LP
+Tanya | Stage: Prison | 4 6 2 HP

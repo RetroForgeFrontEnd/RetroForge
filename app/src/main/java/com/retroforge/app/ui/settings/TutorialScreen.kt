@@ -32,6 +32,7 @@ private val topics get() = listOf(
         str(R.string.tutorial_over_the_internet_when_you_host),
         str(R.string.tutorial_input_delay_settings_playing_play_together),
         str(R.string.tutorial_during_netplay_both_devices_run_at),
+        str(R.string.tutorial_pass_controller),
         str(R.string.tutorial_play_together_shows_on_the_games),
     )),
     Topic(str(R.string.tutorial_getting_started), listOf(
@@ -102,6 +103,14 @@ private val topics get() = listOf(
         str(R.string.tutorial_widescreen_n64_and_dreamcast_switches_the),
         str(R.string.tutorial_cheats_pick_from_libretro_s_cheat),
         str(R.string.tutorial_carry_on_where_you_left_off),
+    )),
+    Topic(str(R.string.moves_title), listOf(
+        str(R.string.tutorial_moves_turbo),
+        str(R.string.tutorial_moves_on_screen),
+        str(R.string.tutorial_moves_facing),
+        str(R.string.tutorial_moves_controller),
+        str(R.string.tutorial_moves_buttons),
+        str(R.string.tutorial_moves_own_lists),
     )),
     Topic(str(R.string.tutorial_touch_controls_controllers_and_remap_buttons), listOf(
         str(R.string.tutorial_on_screen_buttons_are_drawn_for),

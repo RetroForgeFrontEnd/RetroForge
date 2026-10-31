@@ -3,6 +3,7 @@
 title: Marvel vs. Capcom 2
 match: marvel vs capcom 2 | marvel vs. capcom 2
 buttons: LP=Y HP=X LK=B HK=A A1=L A2=R
+buttons.dreamcast: LP=Y HP=X LK=B HK=A A1=L2 A2=R2
 checked: no
 Ryu | Hadouken | 2 3 6+HP
 Ryu | Shinku Hadouken | 2 3 6+LP+HP

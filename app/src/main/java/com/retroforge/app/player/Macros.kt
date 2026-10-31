@@ -10,7 +10,8 @@ import com.retroforge.player.Pad
  * joined with `+` to the game's buttons by their names (LP, HP, BL …). Each step lasts three frames (or the game's
  * `step:`, as Mortal Kombat reads slower motions), or `*n` frames
  * (`4*60` holds back for a second, for charge moves), and `_` lets go of everything for two frames, so `6 _ 6` is
- * two taps. Facing left mirrors forward and back.
+ * two taps. Facing left mirrors forward and back, unless the list says `facing: no` (cheat codes, where 6 is always
+ * right). START and SELECT press those buttons, for codes entered on a title screen.
  */
 object Macros {
 
@@ -19,7 +20,9 @@ object Macros {
     /**
      * One game's move list. [buttons] are the game's own buttons in order, each with the RetroPad button it's on unless
      * the user changes it; [checked] is false until someone has tried the moves in the game. [step] is how many frames
-     * each step lasts unless it says otherwise.
+     * each step lasts unless it says otherwise. [systemButtons] are the layouts on systems whose version of the game
+     * puts the buttons elsewhere (system id → buttons), used instead of [buttons] there. [facing] is false when forward and
+     * back are always right and left.
      */
     data class Game(
         val title: String,
@@ -29,7 +32,12 @@ object Macros {
         val checked: Boolean,
         val moves: List<Move>,
         val step: Int = 3,
-    )
+        val systemButtons: Map<String, List<Pair<String, Int>>> = emptyMap(),
+        val facing: Boolean = true,
+    ) {
+        /** The game's buttons on [system]: its own layout there, or the usual one. */
+        fun buttonsFor(system: String): List<Pair<String, Int>> = systemButtons[system] ?: buttons
+    }
 
     /**
      * Reads a move list file:
@@ -38,6 +46,7 @@ object Macros {
      * match: street fighter ii | street fighter 2
      * not: (titles that look alike but are other games)
      * buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
+     * buttons.megadrive genesis: LP=L MP=X HP=R LK=Y MK=B HK=A
      * checked: no
      * step: 3
      * Ryu / Ken | Hadouken | 2 3 6+HP
@@ -49,8 +58,10 @@ object Macros {
         var match = emptyList<String>()
         var not = emptyList<String>()
         var buttons = emptyList<Pair<String, Int>>()
+        val systemButtons = HashMap<String, List<Pair<String, Int>>>()
         var checked = false
         var step = 3
+        var facing = true
         val moves = ArrayList<Move>()
         fun phrases(v: String) = v.split('|').map(::plain).filter { it.isNotBlank() }
         for (raw in text.lines()) {
@@ -64,16 +75,23 @@ object Macros {
                 key == "not" -> not = phrases(value)
                 '|' !in line && key == "checked" -> checked = value.lowercase() in setOf("yes", "true")
                 '|' !in line && key == "step" -> step = value.toIntOrNull()?.coerceIn(1, 30) ?: 3
-                '|' !in line && key == "buttons" -> buttons = value.split(Regex("""\s+""")).mapNotNull { pair ->
-                    val (name, pad) = pair.split('=').takeIf { it.size == 2 } ?: return@mapNotNull null
-                    padButtons.firstOrNull { it.second.equals(pad, ignoreCase = true) }?.let { name.uppercase() to it.first }
-                }
+                '|' !in line && key == "facing" -> facing = value.lowercase() !in setOf("no", "false")
+                '|' !in line && key == "buttons" -> buttons = layout(value)
+                // buttons.megadrive genesis: … (one or more system ids)
+                '|' !in line && key.startsWith("buttons.") ->
+                    key.removePrefix("buttons.").split(Regex("""[\s,]+""")).filter { it.isNotEmpty() }.forEach { systemButtons[it] = layout(value) }
                 else -> line.split('|').map { it.trim() }.takeIf { it.size == 3 && it.all(String::isNotEmpty) }
                     ?.let { (fighter, name, inputs) -> moves += Move(fighter, name, inputs) }
             }
         }
         if (title.isBlank() || moves.isEmpty()) return null
-        return Game(title, match.ifEmpty { listOf(plain(title)) }, not, buttons, checked, moves, step)
+        if (buttons.isEmpty()) buttons = systemButtons.values.firstOrNull().orEmpty()
+        return Game(title, match.ifEmpty { listOf(plain(title)) }, not, buttons, checked, moves, step, systemButtons, facing)
+    }
+
+    private fun layout(value: String): List<Pair<String, Int>> = value.split(Regex("""\s+""")).mapNotNull { pair ->
+        val (name, pad) = pair.split('=').takeIf { it.size == 2 } ?: return@mapNotNull null
+        padButtons.firstOrNull { it.second.equals(pad, ignoreCase = true) }?.let { name.uppercase() to it.first }
     }
 
     /** The move list among [games] for a game, from its title (any version: Turbo, Champion Edition …). */
@@ -94,7 +112,10 @@ object Macros {
     /** The game's buttons in a move's last step (Hadouken's HP), for Select + that button. */
     fun finalButtons(inputs: String): Set<String> =
         inputs.trim().split(Regex("""\s+""")).lastOrNull { it != "_" }.orEmpty().substringBefore('*').split('+')
-            .filter { it.isNotEmpty() && it.singleOrNull()?.isDigit() != true }.map { it.uppercase() }.toSet()
+            .filter { it.isNotEmpty() && it.singleOrNull()?.isDigit() != true }.map { it.uppercase() }.filter { it !in fixedButtons }.toSet()
+
+    /** Buttons a move names directly rather than through the game's layout. */
+    private val fixedButtons = mapOf("START" to Pad.START, "SELECT" to Pad.SELECT)
 
     private fun plain(s: String) = s.lowercase().replace(Regex("[^a-z0-9]+"), " ").trim()
 
@@ -110,7 +131,7 @@ object Macros {
             var mask = 0
             for (part in body.split('+')) {
                 mask = mask or (part.singleOrNull()?.digitToIntOrNull()?.let { direction(it, facingRight) }
-                    ?: buttons[part.uppercase()]?.let(Pad::bit) ?: 0)
+                    ?: (buttons[part.uppercase()] ?: fixedButtons[part.uppercase()])?.let(Pad::bit) ?: 0)
             }
             repeat(count.coerceIn(1, 600)) { out += mask }
         }

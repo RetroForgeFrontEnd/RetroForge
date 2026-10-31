@@ -1,0 +1,13 @@
+# Ryu and Ken in Capcom's crossovers and Street Fighter EX: X-Men vs. Street Fighter, Marvel Super Heroes vs. Street
+# Fighter, Marvel vs. Capcom and Street Fighter EX. Numpad notation facing right: 6 forward, 4 back, 2 down.
+title: Capcom crossovers
+match: x men vs street fighter | marvel super heroes vs street fighter | marvel vs capcom | street fighter ex
+not: marvel vs capcom 2 | marvel vs capcom 3 | marvel vs capcom infinite
+buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
+buttons.psx: LP=Y MP=X HP=R LK=B MK=A HK=R2
+checked: no
+Ryu / Ken | Hadouken | 2 3 6+HP
+Ryu / Ken | Shoryuken | 6 2 3+HP
+Ryu / Ken | Hurricane Kick | 2 1 4+HK
+Ryu | Super: Shinku Hadouken | 2 3 6 2 3 6+HP
+Ken | Super: Shoryureppa | 2 3 6 2 3 6+HP
