@@ -163,6 +163,8 @@ fun SettingsScreen(
 
                 if (SwitchPlayer.installed(LocalContext.current)) SwitchSettingsCard(stringResource(R.string.switch_settings_title), setup = false)
 
+                Ps3OnlineCard()
+
                 RetroAchievementsCard()
 
                 NetplayCard()

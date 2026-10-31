@@ -2304,4 +2304,27 @@
     <string name="online_no_rooms">Ancora nessuna stanza su questa Wi-Fi. Chiedi a chi ospita di avviare il gioco con Ospita una stanza, poi cerca di nuovo.</string>
     <string name="online_join_room">Entra con %1$s: %2$s</string>
     <string name="local_network_denied">Il Netplay ha bisogno del permesso per raggiungere i dispositivi della tua Wi-Fi. Consentilo quando richiesto, o in Impostazioni Android → App → RetroForge → Autorizzazioni → Dispositivi nelle vicinanze.</string>
+    <string name="ps3_online_title">PS3 online (RPCN)</string>
+    <string name="ps3_online_body">Gioca le modalità online dei giochi PS3 con gli amici tramite RPCN, il sostituto gratuito del PSN usato da RPCS3. Un account, creato qui; i giochi lo usano al prossimo avvio.</string>
+    <string name="ps3_online_signed_in">Accesso eseguito come %1$s.</string>
+    <string name="ps3_online_not_signed_in">Accesso non eseguito.</string>
+    <string name="ps3_online_name">Nome RPCN</string>
+    <string name="ps3_online_password">Password</string>
+    <string name="ps3_online_email">Email (per il tuo token)</string>
+    <string name="ps3_online_token">Token (dall\'email di RPCN)</string>
+    <string name="ps3_online_create_body">RPCN ti invia un token via email. Poi scegli Ho un account e accedi con nome, password e quel token.</string>
+    <string name="ps3_online_sign_in">Accedi</string>
+    <string name="ps3_online_sign_out">Esci</string>
+    <string name="ps3_online_create">Crea account</string>
+    <string name="ps3_online_new_account">Crea un nuovo account</string>
+    <string name="ps3_online_have_account">Ho un account</string>
+    <string name="ps3_online_working">Chiedo a RPCN…</string>
+    <string name="ps3_online_created">Account creato. Prendi il token dalla tua email, poi accedi con quello.</string>
+    <string name="ps3_online_signed_out">Uscito. I giochi tornano a essere offline.</string>
+    <string name="ps3_online_taken">Quel nome è già preso. Provane un altro.</string>
+    <string name="ps3_online_bad_login">Nome o password errati.</string>
+    <string name="ps3_online_bad_token">Quel token non è giusto. Copialo dall\'email di RPCN.</string>
+    <string name="ps3_online_unreachable">Impossibile raggiungere RPCN. Controlla la connessione a internet.</string>
+    <string name="ps3_online_invalid">Controlla il nome (da 3 a 16 lettere, numeri, - o _) e l\'email.</string>
+    <string name="ps3_online_failed">Qualcosa è andato storto: %1$s</string>
 </resources>
