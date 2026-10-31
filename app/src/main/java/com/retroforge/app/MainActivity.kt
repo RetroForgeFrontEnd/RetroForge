@@ -67,10 +67,11 @@ class MainActivity : ComponentActivity() {
         com.retroforge.app.ui.SecondScreen.hide()
     }
 
-    override fun onStop() {
-        super.onStop()
-        // Kiosk mode: leaving RetroForge (for another app or a game) locks it again.
-        if (!isChangingConfigurations) Kiosk.lock()
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        // Kiosk mode: going Home or to another app locks it again. Android's own pickers (a file, a folder) that
+        // RetroForge opens don't count, so choosing a file in Settings doesn't lock the page under it.
+        Kiosk.lock()
     }
 
     // Gamepad buttons the UI did not consume are translated here rather than relying on each
