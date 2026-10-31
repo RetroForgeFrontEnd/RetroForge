@@ -236,6 +236,9 @@ Requests that were never fully done, or only answered:
 | Quality-of-life patch collections | 📋 to do: one-tap QoL patches by game (60 fps, widescreen, faster text, slow-down removed) from public patch collections, applied on a copy or as soft patches, like translation patching |
 | Voice chat in netplay | 📋 to do: push-to-talk or open voice between the players in a netplay game, over the same connection, with mute and volume in the pause menu |
 | Second screen on another device | 📋 to do: send the DS or 3DS bottom screen (and later a Wii U GamePad view) to a nearby phone, tablet or second monitor on the same Wi-Fi, with touch sent back to the game |
+| Time machine: rewind your gameplay | 📋 to do: a rolling buffer of recent play in the built-in player; hold a button to rewind 5, 10, 30 or 60 seconds to recover from a death or mistake, and save a replay of something special |
+| Advanced accessibility centre | 📋 to do: one-handed controller layouts, hold-to-toggle for buttons, adjustable game speed, colour filters and visual adjustments, and customisable vibration and audio cues, to open older games to more players |
+| Party mode: a multiplayer hub | 📋 to do: several Bluetooth controllers with players assigned automatically, a collection of multiplayer games (from the players count in game details) filtered by 2, 3 or 4 players, and a party playlist for friends, for handhelds and TV setups |
 
 ## Future plans (30 October)
 
