@@ -5,7 +5,7 @@ Nothing goes to GitHub until every row is ✅ (or the user agrees to leave it ou
 | Feature | What to check | Status |
 |---|---|---|
 | Update over 0.7.1 | Installs over 0.7.1 without uninstalling; games, saves and settings kept | ✅ S22, 31 Oct |
-| RetroAchievements | Sign in (the user types the password), an unlock pop-up, the list in the pause menu, hardcore; a CHD disc game | 🟡 S22, 31 Oct: signed in; Metroid Fusion (25) and Emerald (197) load with every achievement live after the memory-map fix; list in the pause menu; game page shows the count. Still to see: an unlock pop-up, and hardcore (RetroAchievements shows "Unknown Emulator" until they approve RetroForge) |
+| RetroAchievements | Sign in (the user types the password), an unlock pop-up, the list in the pause menu, hardcore; a CHD disc game | 🟡 S22, 31 Oct: signed in; Metroid Fusion (25) and Emerald (197) load with every achievement live after the memory-map fix; list in the pause menu with badge pictures; the game page shows "0 of 25 earned · 0 of 353 points" for Metroid after one play. Still to see: an unlock pop-up, and hardcore (RetroAchievements shows "Unknown Emulator" until they approve RetroForge) |
 | Save states | Make, load, overwrite, delete in the pause menu; Play from here, Rename, Delete on the game page | ✅ S22, 31 Oct: made, loaded (went back), renamed, played from, deleted. Fixed: the page didn't show the resume point just written on quitting |
 | Pass the controller | Player 1's controller plays as player 2 | 📋 needs a controller |
 | Sound buffer | Crackle-free sound at each setting | 🟡 S22: every setting cycles and the sound keeps playing (checked at 128 ms); listening for crackle needs the user |
