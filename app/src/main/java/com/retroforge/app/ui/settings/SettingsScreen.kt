@@ -195,6 +195,12 @@ fun SettingsScreen(
 
                 ScreenScraperCard(settings.screenScraperUser, viewModel::setScreenScraperLogin)
 
+                FocusCard(modifier = Modifier.fillMaxWidth()) {
+                    CardTitle(stringResource(R.string.library_scrape_all_artwork))
+                    CardBody(stringResource(R.string.settings_scrape_all_artwork_about))
+                    com.retroforge.app.ui.library.ScrapeAllArtwork((LocalContext.current.applicationContext as com.retroforge.app.RetroForgeApplication).container.covers)
+                }
+
                 BezelsCard(playerSystems)
 
             }

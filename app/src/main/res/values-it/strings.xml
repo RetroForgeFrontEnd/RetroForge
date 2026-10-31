@@ -2409,4 +2409,7 @@
     <string name="tutorial_moves_controller">Con un controller: tieni premuto Select e premi l\'ultimo tasto della mossa (Select + pugno forte per un Hadouken). Su un controller Xbox, Select è il tasto Visualizza. Se due mosse sullo schermo finiscono con lo stesso tasto (Hadouken e Shoryuken finiscono entrambe con pugno forte), Select + quel tasto fa quella a sinistra: tocca l\'altra sullo schermo, o mettine solo una.</string>
     <string name="tutorial_moves_buttons">Le mosse usano i tasti predefiniti del gioco. Se hai cambiato i tasti nelle opzioni del gioco, impostali allo stesso modo in Mosse e turbo (tocca ogni tasto del gioco per cambiarlo). Le mosse sono disattivate in Gioca insieme, per correttezza.</string>
     <string name="tutorial_moves_own_lists">Le tue liste mosse: metti un file di testo per gioco in Android/data/com.retroforge.app/files/moves (con lo stesso formato di quelle di RetroForge). Le tue vengono usate prima di quelle di RetroForge.</string>
+    <string name="library_scrape_all_artwork">Scarica tutte le copertine</string>
+    <string name="library_every_game_has_box_art">Ogni gioco ha già la copertina.</string>
+    <string name="settings_scrape_all_artwork_about">Copertine per ogni gioco che non ne ha, tutti i sistemi insieme: prima quelle gratuite di libretro, poi ScreenScraper per il resto.</string>
 </resources>

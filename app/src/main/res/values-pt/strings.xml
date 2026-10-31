@@ -2409,4 +2409,7 @@
     <string name="tutorial_moves_controller">Com um controle: segure Select e aperte o último botão do golpe (Select + soco forte para um Hadouken). Num controle Xbox, Select é o botão Exibir. Se dois golpes na tela terminam com o mesmo botão (Hadouken e Shoryuken terminam com soco forte), Select + esse botão faz o da esquerda: toque no outro na tela, ou coloque só um deles.</string>
     <string name="tutorial_moves_buttons">Os golpes usam os botões padrão do jogo. Se você mudou os botões nas opções do jogo, ajuste-os igual em Golpes e turbo (toque em cada botão do jogo para mudar). Os golpes ficam desligados no Jogar juntos, para ser justo.</string>
     <string name="tutorial_moves_own_lists">Suas próprias listas: coloque um arquivo de texto por jogo em Android/data/com.retroforge.app/files/moves (no formato das do RetroForge). As suas são usadas antes das do RetroForge.</string>
+    <string name="library_scrape_all_artwork">Buscar todas as capas</string>
+    <string name="library_every_game_has_box_art">Todos os jogos já têm capa.</string>
+    <string name="settings_scrape_all_artwork_about">Capas para todos os jogos que não têm, todos os sistemas de uma vez: primeiro as capas grátis do libretro, depois o ScreenScraper para o resto.</string>
 </resources>

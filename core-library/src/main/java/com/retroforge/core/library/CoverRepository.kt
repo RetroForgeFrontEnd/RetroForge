@@ -57,8 +57,10 @@ class CoverRepository(
     screenScraperApp: () -> ScreenScraperApp? = { null },
     screenScraperUser: () -> ScreenScraperUser? = { null },
     private val clock: () -> Long = System::currentTimeMillis,
+    /** For ScreenScraper lookups, which can be slow to answer. */
+    screenScraperHttp: HttpGet = http,
 ) {
-    val screenScraper = ScreenScraper(http, screenScraperApp, screenScraperUser)
+    val screenScraper = ScreenScraper(screenScraperHttp, screenScraperApp, screenScraperUser)
     private val dao = db.dao()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val indexLock = Mutex()
@@ -197,6 +199,43 @@ class CoverRepository(
         }
     }
 
+    /**
+     * Box art for every game in the library without any, all systems at once: libretro's free covers first, then
+     * ScreenScraper for the rest when it can be used. Reports through [batch] with [ALL_SYSTEMS] as the system.
+     */
+    fun downloadAllMissing() {
+        batchJob?.cancel()
+        batchJob = scope.launch {
+            val existing = dao.covers().first().map { it.rootId to it.relativePath }.toSet()
+            val todo = dao.allGames().filter { it.imageDocumentId == null && (it.rootId to it.relativePath) !in existing }
+            // One index per libretro folder; null when there's no folder or it couldn't be reached.
+            val indexes = mutableMapOf<String, List<String>?>()
+            var found = 0
+            var failed = 0
+            // ScreenScraper is given up on after a few failures in a row (a bad login, the server down, no quota).
+            var ssFailures = 0
+            todo.forEachIndexed { i, game ->
+                if (!isActive) return@launch
+                _batch.value = CoverBatch.Running(ALL_SYSTEMS, i, todo.size, found)
+                val folder = LibretroThumbnails.folderFor(game.system)
+                val names = folder?.let { indexes.getOrPut(it) { runCatching { index(it) }.getOrNull() } }
+                val libretro = names?.let { LibretroThumbnails.match(it, folder, ThumbnailType.BOXART, game.fileName, 1).firstOrNull() }
+                if (libretro != null) {
+                    if (save(game, libretro.url, SOURCE_LIBRETRO, null).isSuccess) found++ else failed++
+                } else if (screenScraper.available && ssFailures < 3 && game.system in ScreenScraper.systemIds) {
+                    screenScraperCovers(game).onSuccess { covers ->
+                        ssFailures = 0
+                        val best = covers.firstOrNull { it.type != "box-3D" } ?: covers.firstOrNull()
+                        if (best != null) {
+                            if (save(game, best.url, SOURCE_SCREENSCRAPER, null, ScreenScraper.withoutCredentials(best.url)).isSuccess) found++ else failed++
+                        }
+                    }.onFailure { ssFailures++; failed++ }
+                }
+            }
+            _batch.value = CoverBatch.Finished(ALL_SYSTEMS, found, todo.size - found - failed, failed)
+        }
+    }
+
     fun cancelBatch() {
         batchJob?.cancel()
         _batch.value = null
@@ -278,6 +317,8 @@ class CoverRepository(
         const val SOURCE_LIBRETRO = "libretro"
         const val SOURCE_STEAMGRIDDB = "steamgriddb"
         const val SOURCE_SCREENSCRAPER = "screenscraper"
+        /** The [CoverBatch] system for [downloadAllMissing]. */
+        const val ALL_SYSTEMS = "*"
         const val SOURCE_DEVICE = "device"
         private const val MD5_MAX_BYTES = 64L * 1024 * 1024
         private const val INDEX_MAX_AGE_MS = 7L * 24 * 60 * 60 * 1000

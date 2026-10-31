@@ -16,13 +16,14 @@ fun interface HttpGet {
 }
 
 /** HTTPS only. Redirects are followed only within HTTPS (HttpURLConnection never crosses protocols). */
-class JvmHttpGet(private val userAgent: String) : HttpGet {
+/** [readTimeoutMs] is how long a read waits for anything to arrive; ScreenScraper can take over 20 s to answer. */
+class JvmHttpGet(private val userAgent: String, private val readTimeoutMs: Int = 20_000) : HttpGet {
     override fun get(url: String, headers: Map<String, String>, maxBytes: Long): HttpResponse {
         require(url.startsWith("https://")) { "only https:// is allowed" }
         val connection = URL(url).openConnection() as HttpsURLConnection
         try {
             connection.connectTimeout = 10_000
-            connection.readTimeout = 20_000
+            connection.readTimeout = readTimeoutMs
             connection.instanceFollowRedirects = true
             connection.setRequestProperty("User-Agent", userAgent)
             headers.forEach(connection::setRequestProperty)

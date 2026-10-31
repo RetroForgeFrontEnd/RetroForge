@@ -2410,4 +2410,7 @@
     <string name="tutorial_moves_controller">Avec une manette : maintenez Select et appuyez sur le dernier bouton du coup (Select + poing fort pour un Hadouken). Sur une manette Xbox, Select est le bouton Affichage. Si deux coups à l\'écran finissent par le même bouton (Hadouken et Shoryuken finissent tous deux par poing fort), Select + ce bouton fait celui de gauche : touchez l\'autre à l\'écran, ou n\'en affichez qu\'un.</string>
     <string name="tutorial_moves_buttons">Les coups utilisent les boutons par défaut du jeu. Si vous avez changé les boutons dans les options du jeu, réglez-les de même dans Coups et turbo (touchez chaque bouton du jeu pour le changer). Les coups sont désactivés en Jouer ensemble, pour rester équitable.</string>
     <string name="tutorial_moves_own_lists">Vos propres listes : mettez un fichier texte par jeu dans Android/data/com.retroforge.app/files/moves (sur le modèle de ceux de RetroForge). Les vôtres passent avant ceux de RetroForge.</string>
+    <string name="library_scrape_all_artwork">Récupérer toutes les jaquettes</string>
+    <string name="library_every_game_has_box_art">Chaque jeu a déjà sa jaquette.</string>
+    <string name="settings_scrape_all_artwork_about">Une jaquette pour chaque jeu qui n’en a pas, tous les systèmes d’un coup : d’abord les jaquettes gratuites de libretro, puis ScreenScraper pour le reste.</string>
 </resources>

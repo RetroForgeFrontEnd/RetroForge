@@ -2377,4 +2377,7 @@
     <string name="tutorial_moves_controller">Mit Controller: Halte Select und drücke die letzte Taste des Moves (Select + harter Schlag für einen Hadouken). Auf einem Xbox-Controller ist Select die Ansicht-Taste. Enden zwei Moves auf dem Bildschirm mit derselben Taste (Hadouken und Shoryuken enden beide mit hartem Schlag), macht Select + diese Taste den linken: Tippe den anderen auf dem Bildschirm an oder lege nur einen von beiden hin.</string>
     <string name="tutorial_moves_buttons">Die Moves nutzen die Standardtasten des Spiels. Hast du die Tasten in den Optionen des Spiels geändert, stelle sie in Moves und Turbo genauso ein (tippe jede Spieltaste an, um sie zu ändern). Bei Zusammen spielen sind Moves aus, damit es fair bleibt.</string>
     <string name="tutorial_moves_own_lists">Eigene Move-Listen: Lege pro Spiel eine Textdatei in Android/data/com.retroforge.app/files/moves (Aufbau wie bei RetroForges eigenen). Deine haben Vorrang vor denen von RetroForge.</string>
+    <string name="library_scrape_all_artwork">Alle Cover laden</string>
+    <string name="library_every_game_has_box_art">Jedes Spiel hat schon ein Cover.</string>
+    <string name="settings_scrape_all_artwork_about">Cover für jedes Spiel ohne Cover, alle Systeme auf einmal: zuerst die freien Cover von libretro, dann ScreenScraper für den Rest.</string>
 </resources>

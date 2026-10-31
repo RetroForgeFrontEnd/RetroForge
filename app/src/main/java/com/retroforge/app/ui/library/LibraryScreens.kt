@@ -108,6 +108,7 @@ fun RetroScreen(
                 if (ownArt != null) FocusChip(stringResource(R.string.library_back_to_built_in_artwork), onClick = viewModel::clearArtFolder)
             }
             if (indexingArt) LinearProgressIndicator(Modifier.fillMaxWidth())
+            ScrapeAllArtwork(viewModel.covers)
         }
 
         // Find a system or a game by typing, rather than swiping through a hundred systems.

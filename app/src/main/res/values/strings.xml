@@ -2537,4 +2537,7 @@
     <string name="tutorial_moves_controller">With a controller: hold Select and press the move\'s last button (Select + heavy punch for a Hadouken). On an Xbox controller Select is the View button. If two moves on screen end with the same button (Hadouken and Shoryuken both end with heavy punch), Select + that button does the left one: tap the other on screen, or put only one of them up.</string>
     <string name="tutorial_moves_buttons">The moves use the game\'s own default buttons. If you changed the buttons in the game\'s options, set them the same in Moves and turbo (tap each of the game\'s buttons to change it). Moves are off during Play together, to keep it fair.</string>
     <string name="tutorial_moves_own_lists">Your own move lists: put a text file per game in Android/data/com.retroforge.app/files/moves (copy the layout of RetroForge\'s own). Yours are used before RetroForge\'s.</string>
+    <string name="library_scrape_all_artwork">Scrape all artwork</string>
+    <string name="library_every_game_has_box_art">Every game already has box art.</string>
+    <string name="settings_scrape_all_artwork_about">Box art for every game in your library that has none, all systems at once: libretro’s free covers first, then ScreenScraper for the rest.</string>
 </resources>

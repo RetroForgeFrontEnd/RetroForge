@@ -120,6 +120,8 @@ class AppContainer(application: Application) {
         resolver = application.contentResolver,
         screenScraperApp = { screenScraperApp },
         screenScraperUser = { screenScraperUser },
+        // ScreenScraper sometimes takes 20 s or more to answer a lookup.
+        screenScraperHttp = JvmHttpGet("RetroForge/${BuildConfig.VERSION_NAME}", readTimeoutMs = 60_000),
     )
 
     /** RetroForge's developer credentials, only when this build was given them (local.properties). */
