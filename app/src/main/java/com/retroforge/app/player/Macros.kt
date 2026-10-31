@@ -85,6 +85,11 @@ object Macros {
         return (theirs + own).mapNotNull(::parse)
     }
 
+    /** The game's buttons in a move's last step (Hadouken's HP), for Select + that button. */
+    fun finalButtons(inputs: String): Set<String> =
+        inputs.trim().split(Regex("""\s+""")).lastOrNull { it != "_" }.orEmpty().substringBefore('*').split('+')
+            .filter { it.isNotEmpty() && it.singleOrNull()?.isDigit() != true }.map { it.uppercase() }.toSet()
+
     private fun plain(s: String) = s.lowercase().replace(Regex("[^a-z0-9]+"), " ").trim()
 
     /**

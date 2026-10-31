@@ -71,4 +71,12 @@ class MacrosTest {
     fun aFileWithoutMovesIsSkipped() {
         assertNull(Macros.parse("title: Nothing"))
     }
+
+    @Test
+    fun finalButtons() {
+        assertEquals(setOf("HP"), Macros.finalButtons("2 3 6+HP"))
+        assertEquals(setOf("LP", "BL", "LK"), Macros.finalButtons("4+LP+BL+LK"))
+        assertEquals(setOf("BL"), Macros.finalButtons("BL*4 8+BL 5+BL 8+BL*3"))
+        assertEquals(emptySet<String>(), Macros.finalButtons("2 8"))
+    }
 }

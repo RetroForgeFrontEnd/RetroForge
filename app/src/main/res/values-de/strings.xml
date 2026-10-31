@@ -2368,6 +2368,6 @@
     <string name="moves_none">Für dieses Spiel gibt es noch keine Move-Liste. Turbo geht in jedem Spiel.</string>
     <string name="moves_off_netplay">Moves sind beim Netplay aus, damit es fair bleibt.</string>
     <string name="moves_buttons">Welche deiner Tasten welche Spieltaste ist, wie in den Optionen des Spiels eingestellt (zum Ändern tippen):</string>
-    <string name="moves_pick">Tippe auf einen Move, um ihn auf den Bildschirm zu legen (bis zu 4). Tippe dort auf ⇄, wenn dein Kämpfer in die andere Richtung schaut.</string>
+    <string name="moves_pick">Tippe auf einen Move, um ihn auf den Bildschirm zu legen (bis zu 4). Tippe dort auf ⇄, wenn dein Kämpfer in die andere Richtung schaut. Mit Controller: Select halten und die letzte Taste des Moves drücken (HP für einen Hadouken).</string>
     <string name="moves_unchecked">Diese Move-Liste wurde im Spiel noch nicht ausprobiert: Klappt ein Move nicht, prüfe die Tasten unten.</string>
 </resources>

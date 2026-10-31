@@ -518,6 +518,15 @@ class PlayerActivity : ComponentActivity() {
         }.apply()
     }
 
+    /** Select + a button: the first move on screen that ends with the game button on [pad]. */
+    private fun playMoveEndingWith(pad: Int): Boolean {
+        if (!loaded || netPlaying) return false
+        val names = moveButtons.filterValues { it == pad }.keys
+        val move = movesOnScreen.firstOrNull { m -> Macros.finalButtons(m.inputs).any { it in names } } ?: return false
+        runOnUiThread { playMove(move) }
+        return true
+    }
+
     private fun playMove(move: Macros.Move) {
         if (!loaded || netPlaying) return
         NativePlayer.playMacro(port, Macros.frames(move.inputs, facingRight, moveButtons))
@@ -666,7 +675,7 @@ class PlayerActivity : ComponentActivity() {
             onFastForward = { if (loaded) NativePlayer.setFastForward(it) },
             onMenu = { runOnUiThread { openMenu() } },
             onQuit = { runOnUiThread { quit() } },
-        )
+        ).also { it.onSelectWith = ::playMoveEndingWith }
 
         chooseLayout()
         // Back (the gesture, the button and the Back key): Android 16's back gesture only reaches callbacks like this

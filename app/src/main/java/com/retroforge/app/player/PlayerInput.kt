@@ -38,6 +38,13 @@ class PlayerInput(
     /** The user's own buttons for this system: controller key code -> RetroPad button. Wins over [buttonFor]. */
     var remap: Map<Int, Int> = emptyMap()
 
+    /**
+     * Select + a button (Moves and turbo): given the RetroPad button pressed with Select held, returns true when it
+     * played a move, and then neither button reaches the game.
+     */
+    var onSelectWith: ((button: Int) -> Boolean)? = null
+    private var lastMask = 0
+
     /** Set while the Controls page waits for "press the button you want": the next press goes here, not to the game. */
     var capture: ((keyCode: Int) -> Unit)? = null
 
@@ -100,6 +107,16 @@ class PlayerInput(
         } else if (fired(menuCombo, mask)) {
             swallowed = mask
             onMenu()
+        }
+        val pressed = mask and lastMask.inv()
+        lastMask = mask
+        onSelectWith?.let { play ->
+            val select = Pad.bit(Pad.SELECT)
+            val directions = Pad.bit(Pad.UP) or Pad.bit(Pad.DOWN) or Pad.bit(Pad.LEFT) or Pad.bit(Pad.RIGHT)
+            if (mask and select != 0 && touch and select == 0) {
+                val button = (0..15).firstOrNull { pressed and Pad.bit(it) and (select or directions).inv() != 0 }
+                if (button != null && play(button)) swallowed = swallowed or mask
+            }
         }
         mask = mask and swallowed.inv()
 
