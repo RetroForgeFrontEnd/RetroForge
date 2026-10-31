@@ -37,7 +37,7 @@ Nothing goes to GitHub until every row is ✅ (or the user agrees to leave it ou
 | PS3 games | A PS3 game opens in the RetroForge PS3 Player; DLC added from the game page | 🟡 S22, 31 Oct (PS3 chat): Ultimate Marvel vs. Capcom 3 boots and logs in to RPCN |
 | PS3 Online (RPCN) | Settings → Online and friends: sign in, the status shows, sign out | 🟡 S22, 31 Oct (PS3 chat): signed in as the user, game logs in; a match needs a second player |
 | PS4 games | Dumped game folders found (title from param.sfo); open in the PS4 Player; DLC folders added | 🔲 |
-| Switch Play Online | Host a room; another device on the Wi-Fi finds and joins it; up to 4 | 🟡 tablet, 31 Oct, Switch player 0.8.0: hosting 3D World works (game copied from the PC, room on port 24872, answers "who's hosting?" with the game, pause menu Online room shows SM-X210). Joining from the S22 still to do |
+| Switch Play Online | Host a room; another device on the Wi-Fi finds and joins it; up to 4 | ✅ 31 Oct, Switch player 0.8.0: the tablet hosts 3D World; the S22 finds the room on the Wi-Fi, copies the game from the PC (keeps going when you leave RetroForge) and joins; both in the room ("In the room: SM-X210, SM-S901B") |
 | Retro netplay, 4 players | Host and join on the Wi-Fi; Android 17 local network permission asked | 📋 needs two devices |
 | Settings layout | Bold section headings; Playing split into Saves, Online and Controls | ✅ emulator, 31 Oct |
 | Player icons | PS3, PS4 and Switch players show RetroForge's neon icons | 🟡 built; on devices after each player's next install |
