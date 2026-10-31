@@ -23,6 +23,7 @@ import com.retroforge.retro.StandaloneLauncher
 import com.retroforge.retro.RetroArchHotkeys
 import com.retroforge.retro.HotkeyCombo
 import com.retroforge.retro.StoragePaths
+import com.retroforge.library.IntentExtra
 import com.retroforge.library.LaunchCommand
 import com.retroforge.library.LaunchVars
 import com.retroforge.library.StandaloneEmulator
@@ -161,6 +162,7 @@ class LibraryViewModel(
     fun playStandalone(
         context: Context, game: GameEntity, root: RootEntity?, option: StandaloneOption, emulator: StandaloneEmulator,
         onProblem: (LaunchProblem?) -> Unit,
+        extras: List<IntentExtra> = emptyList(),
     ) {
         if (root == null) return onProblem(LaunchProblem.LocationNotSupported)
         val component = standalone.installed(emulator) ?: return onProblem(LaunchProblem.StartFailed(str(R.string.library_isn_t_installed, emulator.name)))
@@ -173,7 +175,7 @@ class LibraryViewModel(
                 romsPath = StoragePaths.filePath(root.treeUri, DocumentsContract.getTreeDocumentId(Uri.parse(root.treeUri))),
             )
             val spec = try {
-                LaunchCommand.parse(option.command, vars)
+                LaunchCommand.parse(option.command, vars).let { it.copy(extras = it.extras + extras) }
             } catch (e: UnsupportedCommandException) {
                 return LaunchProblem.StartFailed(str(R.string.library_can_t_open_this_game, emulator.name, e.message))
             }

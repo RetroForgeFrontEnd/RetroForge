@@ -2423,4 +2423,10 @@
     <string name="dlc_add_folder">Add a DLC folder</string>
     <string name="dlc_not_dlc">That folder isn\'t an add-on: it\'s a game, an update or something else.</string>
     <string name="dlc_unreadable">Couldn\'t read that folder.</string>
+    <string name="online_title">Play Online</string>
+    <string name="online_body">Play with friends over the internet or the same Wi-Fi. The Switch Player puts you in a room, which games see as local wireless play: choose local or wireless play in the game. One person hosts and tells the others their address; over the internet the host opens port %2$d on their router. You show as %1$s (change it in Netplay settings).</string>
+    <string name="online_address">Room address (to join)</string>
+    <string name="online_password">Room password (optional)</string>
+    <string name="online_host">Host a room</string>
+    <string name="online_join">Join</string>
 </resources>

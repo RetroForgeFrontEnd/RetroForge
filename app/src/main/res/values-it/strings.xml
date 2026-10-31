@@ -2295,4 +2295,10 @@
     <string name="dlc_add_folder">Aggiungi una cartella di DLC</string>
     <string name="dlc_not_dlc">Quella cartella non è un contenuto aggiuntivo: è un gioco, un aggiornamento o altro.</string>
     <string name="dlc_unreadable">Impossibile leggere quella cartella.</string>
+    <string name="online_title">Gioca online</string>
+    <string name="online_body">Gioca con gli amici via internet o sulla stessa Wi-Fi. Lo Switch Player vi mette in una stanza, che i giochi vedono come gioco wireless locale: scegli il gioco locale o wireless nel gioco. Una persona ospita e dà agli altri il suo indirizzo; via internet chi ospita apre la porta %2$d sul router. Appari come %1$s (si cambia nelle impostazioni Netplay).</string>
+    <string name="online_address">Indirizzo della stanza (per entrare)</string>
+    <string name="online_password">Password della stanza (facoltativa)</string>
+    <string name="online_host">Ospita una stanza</string>
+    <string name="online_join">Entra</string>
 </resources>

@@ -2296,4 +2296,10 @@
     <string name="dlc_add_folder">Ajouter un dossier de DLC</string>
     <string name="dlc_not_dlc">Ce dossier n\'est pas un contenu additionnel : c\'est un jeu, une mise à jour ou autre chose.</string>
     <string name="dlc_unreadable">Impossible de lire ce dossier.</string>
+    <string name="online_title">Jouer en ligne</string>
+    <string name="online_body">Jouez avec des amis par internet ou sur le même Wi-Fi. Le Switch Player vous place dans un salon, que les jeux voient comme du jeu local sans fil : choisissez le jeu local ou sans fil dans le jeu. Une personne héberge et donne son adresse aux autres ; par internet, l\'hôte ouvre le port %2$d sur sa box. Vous apparaissez comme %1$s (modifiable dans les réglages Netplay).</string>
+    <string name="online_address">Adresse du salon (pour rejoindre)</string>
+    <string name="online_password">Mot de passe du salon (facultatif)</string>
+    <string name="online_host">Héberger un salon</string>
+    <string name="online_join">Rejoindre</string>
 </resources>

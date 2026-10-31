@@ -2263,4 +2263,10 @@
     <string name="dlc_add_folder">DLC-Ordner hinzufügen</string>
     <string name="dlc_not_dlc">Dieser Ordner ist keine Erweiterung, sondern ein Spiel, ein Update oder etwas anderes.</string>
     <string name="dlc_unreadable">Der Ordner konnte nicht gelesen werden.</string>
+    <string name="online_title">Online spielen</string>
+    <string name="online_body">Spiele mit Freunden übers Internet oder im selben WLAN. Der Switch Player bringt euch in einen Raum, den Spiele als lokales Drahtlosspiel sehen: Wähle im Spiel lokales oder drahtloses Spiel. Eine Person hostet und gibt den anderen ihre Adresse; übers Internet öffnet der Host Port %2$d am Router. Du erscheinst als %1$s (änderbar in den Netplay-Einstellungen).</string>
+    <string name="online_address">Raumadresse (zum Beitreten)</string>
+    <string name="online_password">Raumpasswort (optional)</string>
+    <string name="online_host">Raum hosten</string>
+    <string name="online_join">Beitreten</string>
 </resources>

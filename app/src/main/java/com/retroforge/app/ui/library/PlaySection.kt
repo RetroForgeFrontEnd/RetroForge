@@ -86,7 +86,7 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
     // The system's chosen standalone emulator comes first, as the main Play button.
     if (chosen != null) {
         val (option, emulator) = chosen
-        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.playStandalone(context, game, root, option, emulator) { problem = it } }) {
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.playStandalone(context, game, root, option, emulator, onProblem = { problem = it }) }) {
             CardTitle(stringResource(R.string.play_play))
             CardBody(stringResource(
                 if (choices[game.system] == emulator.id) R.string.play_in_your_choice_for else R.string.play_in_app_installed_for,
@@ -367,4 +367,9 @@ private fun StandaloneSection(
             }
         }
     }
+    options.firstOrNull { (_, emulator) -> emulator.id == GameOnline.SWITCH_PLAYER }
+        ?.takeIf { (_, emulator) -> remember(emulator.id, resumes) { viewModel.installedComponent(emulator) } != null }
+        ?.let { (option, emulator) ->
+            GameOnlineCard { extras -> viewModel.playStandalone(context, game, root, option, emulator, onProblem, extras) }
+        }
 }
