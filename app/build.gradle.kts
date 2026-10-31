@@ -90,6 +90,7 @@ dependencies {
     implementation(libs.androidx.webkit)
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
+    implementation(libs.coil.network) // so AsyncImage can load web pictures (RetroAchievements badges)
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
     implementation(libs.smbj)

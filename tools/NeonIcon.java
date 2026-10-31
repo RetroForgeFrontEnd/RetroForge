@@ -36,6 +36,10 @@ public class NeonIcon {
         double baseline = size / 2.0 + rb.getHeight() / 2;
         Shape r = AffineTransform.getTranslateInstance(x0 - rb.getX(), baseline).createTransformedShape(rv.getOutline());
         Shape f = AffineTransform.getTranslateInstance(x0 + rb.getWidth() + gap - fb.getX(), baseline).createTransformedShape(fv.getOutline());
+        // Orbitron builds some letters from overlapping pieces (the R's leg crosses its bowl); join them so only the
+        // letter's outer edge is drawn as a tube.
+        r = new Area(r);
+        f = new Area(f);
 
         // The sign's frame: a rounded rectangle, orange on the left half and cyan on the right.
         double fw = total + 16 * u, fh = rb.getHeight() + 14 * u;

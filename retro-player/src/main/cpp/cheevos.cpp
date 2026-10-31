@@ -147,7 +147,9 @@ void RC_CCONV onLogin(int result, const char *error, rc_client_t *c, void *) {
 void RC_CCONV onGameLoaded(int result, const char *error, rc_client_t *c, void *) {
     const rc_client_game_t *game = rc_client_get_game_info(c);
     if (result != RC_OK || !game || game->id == 0) {
-        say(join({"game", "0", error ? error : rc_error_str(result)}));
+        // The last field says RetroAchievements doesn't know this file (no set for it), not that the request failed.
+        const bool unknown = result == RC_NO_GAME_LOADED || (result == RC_OK && game && game->id == 0);
+        say(join({"game", "0", error ? error : rc_error_str(result), unknown ? "1" : "0"}));
         return;
     }
     rc_client_user_game_summary_t summary{};

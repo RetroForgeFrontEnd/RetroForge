@@ -283,7 +283,21 @@ class PlayerActivity : ComponentActivity() {
         raSession = session
     }
 
+    private val raProgress by lazy { RaProgress(File(filesDir, "player/achievements.properties")) }
+
+    /** Keeps this game's count for its game page, which shows it before Play. */
+    private fun saveAchievementCount(event: RaEvent) {
+        val fileName = intent.getStringExtra(EXTRA_FILE_NAME).orEmpty()
+        when (event) {
+            is RaEvent.GameReady, is RaEvent.Unlocked, is RaEvent.Completed ->
+                raSession?.let { session -> runCatching { raProgress.put(system, fileName, session.achievements()) } }
+            is RaEvent.NoGame -> if (event.unknown) runCatching { raProgress.noSet(system, fileName) }
+            else -> Unit
+        }
+    }
+
     private fun onAchievementEvent(event: RaEvent) {
+        saveAchievementCount(event)
         when (event) {
             is RaEvent.GameReady -> { raGame = event; raPopups += event }
             // A game without a set, signing in, and coming back online need no pop-up.
@@ -1796,10 +1810,11 @@ class PlayerActivity : ComponentActivity() {
     /** The pause menu's list of this game's achievements, unlocked first. */
     @Composable
     private fun AchievementsPage(wide: Modifier, first: FocusRequester) {
-        val unlocked = raList.count { it.unlocked }
+        val set = raList.filterNot { it.isNotice }
+        val unlocked = set.count { it.unlocked }
         Text(raGame?.title ?: stringResource(R.string.ra_achievements), color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
         Text(
-            stringResource(R.string.ra_game_ready, unlocked, raList.size) + if (raAccount.hardcore) " · " + stringResource(R.string.ra_hardcore) else "",
+            stringResource(R.string.ra_game_ready, unlocked, set.size) + if (raAccount.hardcore) " · " + stringResource(R.string.ra_hardcore) else "",
             color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
         )
         raSession?.richPresence()?.takeIf { it.isNotBlank() }?.let { Text(it, color = MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center) }

@@ -647,6 +647,9 @@
     <string name="play_first_time_with_a_core_if">Prima volta con un core? Se RetroArch dice che manca il core, apri RetroArch → Online Updater → Core Downloader e prendi \"%1$s\". Per tornare qui, esci dal gioco dal menu di RetroArch.</string>
     <string name="play_needs_this_system_s_bios_file">%1$s richiede il file BIOS di questo sistema.</string>
     <string name="play_time_played_here">Tempo di gioco qui: %1$s.</string>
+    <string name="play_achievements_count">RetroAchievements: %1$d di %2$d ottenuti · %3$d di %4$d punti.</string>
+    <string name="play_achievements_play_once">RetroAchievements: gioca una volta per vedere i tuoi progressi.</string>
+    <string name="play_achievements_no_set">RetroAchievements non ha obiettivi per questa versione del gioco.</string>
     <string name="play_free_standalone_apps_that_play_games">App autonome gratuite che eseguono giochi %1$s. RetroForge non le include: installa quelle che vuoi.</string>
     <string name="play_play_with">Gioca con %1$s</string>
     <string name="play_get_free">Ottieni %1$s (gratis)</string>

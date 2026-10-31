@@ -28,6 +28,9 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.retroforge.app.player.Playtime
+import com.retroforge.app.player.RaAccount
+import com.retroforge.app.player.RaConsoles
+import com.retroforge.app.player.RaProgress
 import com.retroforge.app.player.SaveStates
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -170,9 +173,17 @@ private fun BuiltInCard(
     val state = states[core.id] ?: viewModel.coreState(core.id)
     // Read again each time this page comes back, e.g. after quitting the game.
     var played by remember { mutableLongStateOf(0L) }
+    // RetroAchievements: this game's count from its last session (null = not played with achievements on yet).
+    var achievements by remember { mutableStateOf<RaProgress.Count?>(null) }
+    var showAchievements by remember { mutableStateOf(false) }
     LifecycleResumeEffect(game.id) {
         val job = scope.launch {
             played = withContext(Dispatchers.IO) { Playtime(File(context.filesDir, "player/playtime.properties")).get(game.system, game.fileName) }
+            val account = RaAccount(context)
+            showAchievements = account.signedIn && account.enabled && RaConsoles.of(game.system) != 0
+            if (showAchievements) achievements = withContext(Dispatchers.IO) {
+                RaProgress(File(context.filesDir, "player/achievements.properties")).get(game.system, game.fileName)
+            }
         }
         onPauseOrDispose { job.cancel() }
     }
@@ -196,6 +207,15 @@ private fun BuiltInCard(
         if (core.needsBios) CardBody(stringResource(R.string.play_needs_this_system_s_bios_file, core.name))
         if (game.system == "saturn") CardBody(stringResource(R.string.play_saturn_in_the_built_in_player))
         if (played > 0) CardBody(stringResource(R.string.play_time_played_here, Playtime.format(played)))
+        if (showAchievements) CardBody(
+            achievements.let { a ->
+                when {
+                    a == null -> stringResource(R.string.play_achievements_play_once)
+                    a.total == 0 -> stringResource(R.string.play_achievements_no_set)
+                    else -> stringResource(R.string.play_achievements_count, a.earned, a.total, a.points, a.totalPoints)
+                }
+            },
+        )
     }
     SaveStatesCard(game, core) { state ->
         onProblem(null)

@@ -11,8 +11,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.Properties
 
 /**
  * The RetroAchievements account: name and sign-in token (never the password), in their own preferences file so the
@@ -69,7 +71,8 @@ sealed interface RaEvent {
     data class SignedIn(val user: String, val token: String, val displayName: String, val points: Int) : RaEvent
     data class SignInFailed(val reason: String) : RaEvent
     data class GameReady(val title: String, val badge: String, val unlocked: Int, val total: Int) : RaEvent
-    data class NoGame(val reason: String) : RaEvent
+    /** [unknown]: RetroAchievements has no set for this file (rather than the request failing). */
+    data class NoGame(val reason: String, val unknown: Boolean = false) : RaEvent
     data class Unlocked(val title: String, val description: String, val points: Int, val badge: String) : RaEvent
     data class Progress(val title: String, val progress: String, val badge: String) : RaEvent
     data class Completed(val title: String) : RaEvent
@@ -82,7 +85,55 @@ sealed interface RaEvent {
 data class RaAchievement(
     val id: Int, val title: String, val description: String, val points: Int, val unlocked: Boolean,
     val badge: String, val progress: String, val percent: Float,
-)
+) {
+    /** rcheevos' own "Unknown Emulator" / "Unsupported Game Version" notices, not part of the game's set. */
+    val isNotice: Boolean get() = id >= 101_000_000
+}
+
+/**
+ * Each game's achievement count from its last session, kept by the player (`player/achievements.properties`,
+ * "system/file" = "earned|total|points earned|points total", or "none" for a game RetroAchievements has no set for)
+ * so the game page can show it before Play.
+ */
+class RaProgress(private val file: File) {
+    data class Count(val earned: Int, val total: Int, val points: Int, val totalPoints: Int)
+
+    private fun read() = Properties().apply { runCatching { file.inputStream().use { load(it) } } }
+
+    /** null = never played with achievements on; [Count.total] 0 = no set for this version. */
+    fun get(system: String, fileName: String): Count? = read().getProperty("$system/$fileName")?.let { value ->
+        if (value == NONE) return Count(0, 0, 0, 0)
+        val n = value.split('|').map { it.toIntOrNull() ?: 0 }
+        if (n.size < 4) null else Count(n[0], n[1], n[2], n[3])
+    }
+
+    fun put(system: String, fileName: String, achievements: List<RaAchievement>) {
+        val set = achievements.filterNot { it.isNotice }
+        if (set.isEmpty()) return
+        val earned = set.filter { it.unlocked }
+        write(system, fileName, "${earned.size}|${set.size}|${earned.sumOf { it.points }}|${set.sumOf { it.points }}")
+    }
+
+    fun noSet(system: String, fileName: String) = write(system, fileName, NONE)
+
+    @Synchronized
+    private fun write(system: String, fileName: String, value: String) {
+        if (fileName.isEmpty()) return
+        val all = read()
+        all.setProperty("$system/$fileName", value)
+        file.parentFile?.mkdirs()
+        val part = File(file.path + ".part")
+        part.outputStream().use { all.store(it, null) }
+        if (!part.renameTo(file)) {
+            file.delete()
+            part.renameTo(file)
+        }
+    }
+
+    private companion object {
+        const val NONE = "none"
+    }
+}
 
 /**
  * Runs rcheevos' web requests (the native side has no HTTP of its own) and hands its events to [onEvent] on the
@@ -154,7 +205,7 @@ class RaSession(private val scope: CoroutineScope, private val onEvent: (RaEvent
         fun at(i: Int) = f.getOrElse(i) { "" }
         return when (f[0]) {
             "login" -> if (at(1) == "1") RaEvent.SignedIn(at(3), at(4), at(5), at(6).toIntOrNull() ?: 0) else RaEvent.SignInFailed(at(2))
-            "game" -> if (at(1) == "1") RaEvent.GameReady(at(4), at(5), at(6).toIntOrNull() ?: 0, at(7).toIntOrNull() ?: 0) else RaEvent.NoGame(at(2))
+            "game" -> if (at(1) == "1") RaEvent.GameReady(at(4), at(5), at(6).toIntOrNull() ?: 0, at(7).toIntOrNull() ?: 0) else RaEvent.NoGame(at(2), at(3) == "1")
             "unlocked" -> RaEvent.Unlocked(at(2), at(3), at(4).toIntOrNull() ?: 0, at(5))
             "progress" -> RaEvent.Progress(at(2), at(3), at(4))
             "completed" -> RaEvent.Completed(at(1))
