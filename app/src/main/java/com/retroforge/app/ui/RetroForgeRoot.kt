@@ -134,6 +134,7 @@ private const val GAME_ROUTE = "retro/game/{id}"
 private const val COVER_ROUTE = "retro/game/{id}/cover"
 private const val EDIT_ROUTE = "retro/game/{id}/edit"
 private const val MANAGER_ROUTE = "retro/manager"
+private const val FILES_ROUTE = "retro/files"
 private const val MANAGER_SORT_ROUTE = "retro/manager/sort"
 private const val PLAYLIST_ROUTE = "retro/playlist/{id}"
 private const val MANAGER_DELETE_ROUTE = "retro/manager/delete/{id}"
@@ -256,6 +257,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
                                 onOpenGame = { nav.navigate("retro/game/$it") },
                                 onOpenPatcher = { nav.navigate(PATCHER_ROUTE) },
                                 onOpenManager = { nav.navigate(MANAGER_ROUTE) },
+                                onOpenFiles = { nav.navigate(FILES_ROUTE) },
                                 onOpenPlaylist = { nav.navigate("retro/playlist/$it") },
                             )
                         }
@@ -267,6 +269,10 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
                                 onOpenGame = { nav.navigate("retro/game/$it") },
                                 onDeleted = { nav.popBackStack() },
                             )
+                        }
+                        composable(FILES_ROUTE) {
+                            val filesViewModel: com.retroforge.app.ui.files.FileBrowserViewModel = viewModel(factory = com.retroforge.app.ui.files.FileBrowserViewModel.factory(container.library, container.contentResolver, container.viewPrefs))
+                            com.retroforge.app.ui.files.FileBrowserScreen(filesViewModel)
                         }
                         composable(MANAGER_ROUTE) {
                             val managerViewModel: RomManagerViewModel = viewModel(factory = RomManagerViewModel.factory(container.library, container.romManager))

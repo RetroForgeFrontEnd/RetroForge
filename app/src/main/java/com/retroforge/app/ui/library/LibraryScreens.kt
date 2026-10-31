@@ -68,6 +68,7 @@ fun RetroScreen(
     onOpenGame: (Long) -> Unit,
     onOpenPatcher: () -> Unit,
     onOpenManager: () -> Unit,
+    onOpenFiles: () -> Unit = {},
     onOpenPlaylist: (Long) -> Unit,
 ) {
     val roots by viewModel.roots.collectAsStateWithLifecycle()
@@ -195,6 +196,11 @@ fun RetroScreen(
                 CardTitle(stringResource(R.string.library_rom_manager))
                 CardBody(stringResource(R.string.library_tidy_duplicate_copies_and_compress_games))
             }
+        }
+
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenFiles) {
+            CardTitle(stringResource(R.string.files_title))
+            CardBody(stringResource(R.string.files_card_body))
         }
 
     }
