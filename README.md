@@ -1,5 +1,7 @@
 ![RetroForge: merging the past, building the future](docs/images/banner.jpg)
 
+<img src="docs/images/logo.png" alt="RetroForge's neon RF logo" width="120">
+
 # RetroForge
 
 A free Android frontend for retro games and PC games, all in one place.
