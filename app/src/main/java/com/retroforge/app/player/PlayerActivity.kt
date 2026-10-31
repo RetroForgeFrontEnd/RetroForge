@@ -493,7 +493,7 @@ class PlayerActivity : ComponentActivity() {
     // Moves and turbo (pause menu): turbo buttons for this system; for fighting games with a move list, the moves on
     // screen and which RetroPad button each of the game's buttons is on, kept per game.
     private var turboMask by androidx.compose.runtime.mutableIntStateOf(0)
-    private val movesGame by lazy { Macros.gameFor(intent.getStringExtra(EXTRA_TITLE).orEmpty()) }
+    private val movesGame by lazy { Macros.gameFor(intent.getStringExtra(EXTRA_TITLE).orEmpty(), Macros.load(this)) }
     private var movesOnScreen by mutableStateOf<List<Macros.Move>>(emptyList())
     private var moveButtons by mutableStateOf<Map<String, Int>>(emptyMap())
     private var facingRight by mutableStateOf(true)
@@ -504,7 +504,7 @@ class PlayerActivity : ComponentActivity() {
         val saved = prefs.getString("movebuttons.$system.${game.title}", null).orEmpty().split(',').mapNotNull { pair ->
             pair.split('=').takeIf { it.size == 2 }?.let { (name, pad) -> pad.toIntOrNull()?.let { name to it } }
         }.toMap()
-        moveButtons = game.layout.buttons.toMap() + saved
+        moveButtons = game.buttons.toMap() + saved
         val chosen = prefs.getString("moves.$saveBase", null).orEmpty().split('\n').toSet()
         movesOnScreen = game.moves.filter { "${it.fighter}|${it.name}" in chosen }
     }
@@ -2217,10 +2217,11 @@ class PlayerActivity : ComponentActivity() {
                             Text(stringResource(R.string.moves_none), color = MenuGrey, fontSize = 13.sp, textAlign = TextAlign.Center)
                         } else {
                             if (netPlaying) Text(stringResource(R.string.moves_off_netplay), color = MenuOrange, fontSize = 13.sp, textAlign = TextAlign.Center)
+                            if (!game.checked) Text(stringResource(R.string.moves_unchecked), color = MenuOrange, fontSize = 13.sp, textAlign = TextAlign.Center)
                             Text(stringResource(R.string.moves_buttons), color = MenuGrey, fontSize = 13.sp, textAlign = TextAlign.Center)
                             MenuGrid(
                                 columns,
-                                *game.layout.buttons.map { (name, _) ->
+                                *game.buttons.map { (name, _) ->
                                     val pad = moveButtons[name]
                                     Tile("$name: ${Macros.padButtons.firstOrNull { it.first == pad }?.second ?: "?"}") {
                                         val list = Macros.padButtons

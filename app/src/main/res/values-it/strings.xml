@@ -2401,4 +2401,5 @@
     <string name="moves_off_netplay">Le mosse sono disattivate nel gioco in rete, per correttezza.</string>
     <string name="moves_buttons">Quale tuo tasto è ogni tasto del gioco, come impostato nelle opzioni del gioco (tocca per cambiare):</string>
     <string name="moves_pick">Tocca una mossa per metterla sullo schermo (fino a 4). Sullo schermo, tocca ⇄ quando il tuo lottatore guarda dall\'altra parte.</string>
+    <string name="moves_unchecked">Questa lista non è ancora stata provata nel gioco: se una mossa non esce, controlla i tasti qui sotto.</string>
 </resources>

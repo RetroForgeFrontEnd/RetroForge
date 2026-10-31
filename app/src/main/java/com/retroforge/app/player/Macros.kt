@@ -13,72 +13,79 @@ import com.retroforge.player.Pad
  */
 object Macros {
 
-    /** A fighting game's own buttons, and which RetroPad button each one is on unless the user changes it. */
-    data class Layout(val buttons: List<Pair<String, Int>>)
-
     data class Move(val fighter: String, val name: String, val inputs: String)
 
-    data class Game(val title: String, val layout: Layout, val moves: List<Move>)
-
-    /** Street Fighter II on the SNES and in the arcade (FinalBurn Neo): punches on top, kicks below. */
-    private val sixButtons = Layout(listOf("LP" to Pad.Y, "MP" to Pad.X, "HP" to Pad.L, "LK" to Pad.B, "MK" to Pad.A, "HK" to Pad.R))
-
-    /** Mortal Kombat's high and low punches and kicks, and block. */
-    private val mortalKombat = Layout(listOf("HP" to Pad.X, "LP" to Pad.Y, "BL" to Pad.R, "HK" to Pad.A, "LK" to Pad.B))
-
-    private val games = listOf(
-        Game(
-            "Street Fighter II", sixButtons,
-            listOf(
-                Move("Ryu / Ken", "Hadouken", "2 3 6+HP"),
-                Move("Ryu / Ken", "Shoryuken", "6 2 3+HP"),
-                Move("Ryu / Ken", "Hurricane Kick", "2 1 4+HK"),
-                Move("Guile", "Sonic Boom", "4*60 6+HP"),
-                Move("Guile", "Flash Kick", "2*60 8+HK"),
-                Move("Chun-Li", "Spinning Bird Kick", "2*60 8+HK"),
-                Move("Blanka", "Rolling Attack", "4*60 6+HP"),
-                Move("E. Honda", "Sumo Headbutt", "4*60 6+HP"),
-                Move("Zangief", "Spinning Piledriver", "6 3 2 1 4 7 8+HP"),
-                Move("Dhalsim", "Yoga Fire", "2 3 6+HP"),
-                Move("Dhalsim", "Yoga Flame", "6 3 2 1 4+HP"),
-                Move("Sagat", "Tiger Shot", "2 3 6+HP"),
-                Move("Sagat", "Tiger Uppercut", "6 2 3+HP"),
-                Move("M. Bison", "Psycho Crusher", "4*60 6+HP"),
-                Move("Balrog", "Dash Straight", "4*60 6+HP"),
-                Move("Vega", "Rolling Crystal Flash", "4*60 6+HP"),
-            ),
-        ),
-        Game(
-            "Mortal Kombat", mortalKombat,
-            listOf(
-                Move("Liu Kang", "Fireball", "6 _ 6+HP"),
-                Move("Liu Kang", "Flying Kick", "6 _ 6+HK"),
-                Move("Sub-Zero", "Freeze", "2 3 6+LP"),
-                Move("Sub-Zero", "Slide", "4+LP+BL+LK"),
-                Move("Sub-Zero", "Fatality: Spine Rip (close)", "6 2 6+HP"),
-                Move("Scorpion", "Spear", "4 _ 4+LP"),
-                Move("Scorpion", "Teleport Punch", "2 4+HP"),
-                Move("Scorpion", "Fatality: Toasty (two steps away)", "BL*4 8+BL 5+BL 8+BL"),
-                Move("Johnny Cage", "Green Bolt", "4 6+LP"),
-                Move("Johnny Cage", "Shadow Kick", "4 6+LK"),
-                Move("Johnny Cage", "Fatality: Uppercut (close)", "6 _ 6 _ 6+HP"),
-                Move("Raiden", "Lightning", "2 6+LP"),
-                Move("Raiden", "Fatality: Electrocution (close)", "6 4 _ 4 _ 4+HP"),
-                Move("Kano", "Fatality: Heart Rip (close)", "4 2 6+LP"),
-                Move("Sonya", "Fatality: Kiss of Death", "6 _ 6 4 _ 4+BL"),
-            ),
-        ),
+    /**
+     * One game's move list. [buttons] are the game's own buttons in order, each with the RetroPad button it's on unless
+     * the user changes it; [checked] is false until someone has tried the moves in the game.
+     */
+    data class Game(
+        val title: String,
+        val match: List<String>,
+        val not: List<String>,
+        val buttons: List<Pair<String, Int>>,
+        val checked: Boolean,
+        val moves: List<Move>,
     )
 
-    /** The move list for a game, from its title (any version: Turbo, Champion Edition, Super …). */
-    fun gameFor(title: String): Game? {
-        val t = title.lowercase().replace(Regex("[^a-z0-9]+"), " ")
-        return when {
-            "street fighter ii" in t || "street fighter 2" in t || "sf2" in t -> games[0]
-            "mortal kombat" in t && Regex("""mortal kombat (ii|2|3|4|trilogy|mythologies)""").find(t) == null -> games[1]
-            else -> null
+    /**
+     * Reads a move list file:
+     * ```
+     * title: Street Fighter II
+     * match: street fighter ii | street fighter 2
+     * not: (titles that look alike but are other games)
+     * buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
+     * checked: no
+     * Ryu / Ken | Hadouken | 2 3 6+HP
+     * ```
+     * Lines starting with # are notes. Null without a title or any moves.
+     */
+    fun parse(text: String): Game? {
+        var title = ""
+        var match = emptyList<String>()
+        var not = emptyList<String>()
+        var buttons = emptyList<Pair<String, Int>>()
+        var checked = false
+        val moves = ArrayList<Move>()
+        fun phrases(v: String) = v.split('|').map(::plain).filter { it.isNotBlank() }
+        for (raw in text.lines()) {
+            val line = raw.trim()
+            if (line.isEmpty() || line.startsWith("#")) continue
+            val key = line.substringBefore(':').trim().lowercase()
+            val value = line.substringAfter(':', "").trim()
+            when {
+                '|' !in line && key == "title" -> title = value
+                key == "match" -> match = phrases(value)
+                key == "not" -> not = phrases(value)
+                '|' !in line && key == "checked" -> checked = value.lowercase() in setOf("yes", "true")
+                '|' !in line && key == "buttons" -> buttons = value.split(Regex("""\s+""")).mapNotNull { pair ->
+                    val (name, pad) = pair.split('=').takeIf { it.size == 2 } ?: return@mapNotNull null
+                    padButtons.firstOrNull { it.second.equals(pad, ignoreCase = true) }?.let { name.uppercase() to it.first }
+                }
+                else -> line.split('|').map { it.trim() }.takeIf { it.size == 3 && it.all(String::isNotEmpty) }
+                    ?.let { (fighter, name, inputs) -> moves += Move(fighter, name, inputs) }
+            }
         }
+        if (title.isBlank() || moves.isEmpty()) return null
+        return Game(title, match.ifEmpty { listOf(plain(title)) }, not, buttons, checked, moves)
     }
+
+    /** The move list among [games] for a game, from its title (any version: Turbo, Champion Edition …). */
+    fun gameFor(title: String, games: List<Game>): Game? {
+        val t = " ${plain(title)} "
+        return games.firstOrNull { g -> g.match.any { " $it " in t } && g.not.none { " $it " in t } }
+    }
+
+    /** Every move list: RetroForge's own (assets/moves) and the user's (the player's "moves" folder), theirs first. */
+    fun load(context: android.content.Context): List<Game> {
+        val own = runCatching { context.assets.list("moves").orEmpty().filter { it.endsWith(".txt") } }.getOrDefault(emptyList())
+            .mapNotNull { name -> runCatching { context.assets.open("moves/$name").bufferedReader().use { it.readText() } }.getOrNull() }
+        val theirs = context.getExternalFilesDir("moves")?.listFiles { f -> f.name.endsWith(".txt") }.orEmpty()
+            .mapNotNull { runCatching { it.readText() }.getOrNull() }
+        return (theirs + own).mapNotNull(::parse)
+    }
+
+    private fun plain(s: String) = s.lowercase().replace(Regex("[^a-z0-9]+"), " ").trim()
 
     /**
      * The per-frame joypad masks for [inputs]: facing right or left, with the game's buttons on the RetroPad buttons

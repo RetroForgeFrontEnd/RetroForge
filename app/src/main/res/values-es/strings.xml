@@ -2402,4 +2402,5 @@
     <string name="moves_off_netplay">Los movimientos se desactivan en el juego en red, para que sea justo.</string>
     <string name="moves_buttons">Qué botón tuyo es cada botón del juego, según las opciones del propio juego (toca para cambiar):</string>
     <string name="moves_pick">Toca un movimiento para ponerlo en pantalla (hasta 4). En pantalla, toca ⇄ cuando tu luchador mire al otro lado.</string>
+    <string name="moves_unchecked">Esta lista aún no se ha probado en el juego: si un movimiento no sale, revisa los botones de abajo.</string>
 </resources>

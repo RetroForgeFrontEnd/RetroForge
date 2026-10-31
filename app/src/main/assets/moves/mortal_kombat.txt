@@ -1,0 +1,21 @@
+# Mortal Kombat (1992). Numpad notation for a fighter facing right: 6 forward, 4 back, 2 down; _ lets go.
+title: Mortal Kombat
+match: mortal kombat
+not: mortal kombat ii | mortal kombat 2 | mortal kombat 3 | mortal kombat 4 | mortal kombat trilogy | mortal kombat mythologies
+buttons: HP=X LP=Y BL=R HK=A LK=B
+checked: no
+Liu Kang | Fireball | 6 _ 6+HP
+Liu Kang | Flying Kick | 6 _ 6+HK
+Sub-Zero | Freeze | 2 3 6+LP
+Sub-Zero | Slide | 4+LP+BL+LK
+Sub-Zero | Fatality: Spine Rip (close) | 6 2 6+HP
+Scorpion | Spear | 4 _ 4+LP
+Scorpion | Teleport Punch | 2 4+HP
+Scorpion | Fatality: Toasty (two steps away) | BL*4 8+BL 5+BL 8+BL
+Johnny Cage | Green Bolt | 4 6+LP
+Johnny Cage | Shadow Kick | 4 6+LK
+Johnny Cage | Fatality: Uppercut (close) | 6 _ 6 _ 6+HP
+Raiden | Lightning | 2 6+LP
+Raiden | Fatality: Electrocution (close) | 6 4 _ 4 _ 4+HP
+Kano | Fatality: Heart Rip (close) | 4 2 6+LP
+Sonya | Fatality: Kiss of Death | 6 _ 6 4 _ 4+BL

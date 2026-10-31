@@ -1,0 +1,22 @@
+# Street Fighter II (SNES and arcade). Numpad notation for a fighter facing right: 6 forward, 4 back, 2 down.
+# P moves use the heavy button; change HP/HK to LP/MP or LK/MK for the slower versions.
+title: Street Fighter II
+match: street fighter ii | street fighter 2 | sf2
+buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
+checked: no
+Ryu / Ken | Hadouken | 2 3 6+HP
+Ryu / Ken | Shoryuken | 6 2 3+HP
+Ryu / Ken | Hurricane Kick | 2 1 4+HK
+Guile | Sonic Boom | 4*60 6+HP
+Guile | Flash Kick | 2*60 8+HK
+Chun-Li | Spinning Bird Kick | 2*60 8+HK
+Blanka | Rolling Attack | 4*60 6+HP
+E. Honda | Sumo Headbutt | 4*60 6+HP
+Zangief | Spinning Piledriver | 6 3 2 1 4 7 8+HP
+Dhalsim | Yoga Fire | 2 3 6+HP
+Dhalsim | Yoga Flame | 6 3 2 1 4+HP
+Sagat | Tiger Shot | 2 3 6+HP
+Sagat | Tiger Uppercut | 6 2 3+HP
+M. Bison | Psycho Crusher | 4*60 6+HP
+Balrog | Dash Straight | 4*60 6+HP
+Vega | Rolling Crystal Flash | 4*60 6+HP

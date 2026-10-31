@@ -43,11 +43,32 @@ class MacrosTest {
     }
 
     @Test
-    fun gamesByTitle() {
-        assertNotNull(Macros.gameFor("Street Fighter II' Turbo - Hyper Fighting (USA)"))
-        assertNotNull(Macros.gameFor("Super Street Fighter II (USA)"))
-        assertNotNull(Macros.gameFor("Mortal Kombat (USA)"))
-        assertNull(Macros.gameFor("Mortal Kombat II (USA)"))
-        assertNull(Macros.gameFor("Super Mario World"))
+    fun readsAMoveListFile() {
+        val game = Macros.parse(
+            """
+            # a note
+            title: Mortal Kombat
+            match: mortal kombat
+            not: mortal kombat ii | ultimate mortal kombat 3
+            buttons: HP=X LP=Y BL=R
+            checked: no
+            Sub-Zero | Freeze | 2 3 6+LP
+            """.trimIndent(),
+        )
+        assertNotNull(game)
+        game!!
+        assertEquals(listOf("HP" to Pad.X, "LP" to Pad.Y, "BL" to Pad.R), game.buttons)
+        assertEquals(false, game.checked)
+        assertEquals(Macros.Move("Sub-Zero", "Freeze", "2 3 6+LP"), game.moves.single())
+        val games = listOf(game)
+        assertNotNull(Macros.gameFor("Mortal Kombat (USA)", games))
+        assertNull(Macros.gameFor("Mortal Kombat II (USA)", games))
+        assertNull(Macros.gameFor("Ultimate Mortal Kombat 3", games))
+        assertNull(Macros.gameFor("Super Mario World", games))
+    }
+
+    @Test
+    fun aFileWithoutMovesIsSkipped() {
+        assertNull(Macros.parse("title: Nothing"))
     }
 }

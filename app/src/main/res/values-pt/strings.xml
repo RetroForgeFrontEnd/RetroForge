@@ -2401,4 +2401,5 @@
     <string name="moves_off_netplay">Os golpes ficam desligados no jogo em rede, para ser justo.</string>
     <string name="moves_buttons">Qual botão seu é cada botão do jogo, como definido nas opções do próprio jogo (toque para mudar):</string>
     <string name="moves_pick">Toque num golpe para colocá-lo na tela (até 4). Na tela, toque em ⇄ quando seu lutador estiver virado para o outro lado.</string>
+    <string name="moves_unchecked">Esta lista ainda não foi testada no jogo: se um golpe não sair, confira os botões abaixo.</string>
 </resources>

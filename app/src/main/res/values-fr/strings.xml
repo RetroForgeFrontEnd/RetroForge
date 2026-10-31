@@ -2402,4 +2402,5 @@
     <string name="moves_off_netplay">Les coups sont désactivés en jeu en réseau, pour rester équitable.</string>
     <string name="moves_buttons">Quel bouton est chaque bouton du jeu, selon les options du jeu (touchez pour changer) :</string>
     <string name="moves_pick">Touchez un coup pour l\'afficher à l\'écran (jusqu\'à 4). À l\'écran, touchez ⇄ quand votre combattant regarde de l\'autre côté.</string>
+    <string name="moves_unchecked">Cette liste n\'a pas encore été essayée dans le jeu : si un coup ne sort pas, vérifiez les boutons ci-dessous.</string>
 </resources>
