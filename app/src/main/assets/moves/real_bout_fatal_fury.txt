@@ -1,0 +1,128 @@
+# Real Bout Fatal Fury (Neo Geo, Saturn, PS1). Numpad notation for a fighter facing right: 6 forward, 2 down,
+# 3 down-forward; *60 charges for a second. A punch, B kick, C heavy attack, D sway. DMs need the life bar red or the
+# power gauge flashing "S"; SDMs need it flashing "P".
+title: Real Bout Fatal Fury
+match: real bout fatal fury | real bout garou densetsu
+not: real bout fatal fury 2 | real bout garou densetsu 2 | special
+buttons: A=B B=A C=Y D=X
+checked: no
+Terry Bogard | Power Wave | 2 3 6+A
+Terry Bogard | Round Wave | 2 3 6+C
+Terry Bogard | Passing Sway | 2 3 6+D
+Terry Bogard | Burn Knuckle | 2 1 4+C
+Terry Bogard | Crack Shoot | 2 1 4+B
+Terry Bogard | Power Dunk | 6 2 3+B
+Terry Bogard | Rising Tackle | 2*60 8+A
+Terry Bogard | DM: Power Guyser | 2 1 4 1 6+B+C
+Terry Bogard | SDM: Triple Guyser | 2 1 4 1 6+C
+Andy Bogard | Shouryuudan | 6 2 3+C
+Andy Bogard | Yami Abise Geri (flame kick) | 2 3 6+B
+Andy Bogard | Hi-shou ken | 2 1 4+A
+Andy Bogard | Geki Hi-shou ken | 2 1 4+C
+Andy Bogard | Ku- Hadan | 1 2 3 6+B
+Andy Bogard | Zan-ei Ken | 1 6+C
+Andy Bogard | Shiranui Illusion (in the air) | 2 3 6+D
+Andy Bogard | Tornado twist kick | 2 1 4+D
+Andy Bogard | DM: Inferno spear | 2*60 3 6+B+C
+Andy Bogard | SDM: Zanei Inferno spear | 1 2 3 6+C
+Joe Higashi | Hurricane uppercut | 4 1 2 3 6+A
+Joe Higashi | Split Hurricane | 4 1 2 3 6+C
+Joe Higashi | Slash kick | 1 6+C
+Joe Higashi | Tiger kick | 6 2 3+B
+Joe Higashi | DM: Screw uppercut | 6 4 1 2 3+B+C
+Joe Higashi | SDM: Sliding Screw uppercut | 6 4 1 2 3+C
+Mai Shiranui | Fan throw | 2 3 6+A
+Mai Shiranui | Triple Fan throw | 2 1 4+C
+Mai Shiranui | Dragon's tail | 2 1 4+A
+Mai Shiranui | Ankle tackle | 4 1 2 3 6+C
+Mai Shiranui | Mussasabi Air tackle (in the air) | 2+A+B
+Mai Shiranui | Fire replicas | 2 _ 2+C
+Mai Shiranui | Shiranui Illusion (in the air) | 2 3 6+D
+Mai Shiranui | DM: Fire ankle tackle | 6 1 6+B+C
+Mai Shiranui | SDM: Leotard Fire ankle tackle | 6 1 6+C
+Geese Howard | Reppu-ken | 2 1 4+A
+Geese Howard | Double Reppu-ken | 2 1 4+C
+Geese Howard | High Tackle throw | 4 1 2 3 6+B
+Geese Howard | Mid Tackle throw | 4 1 2 3 6+C
+Geese Howard | Shippu-ken (in the air) | 2 1 4+A
+Geese Howard | Double Shippu-ken (in the air) | 2 1 4+C
+Geese Howard | Ja-ei-ken | 4*60 6+C
+Geese Howard | DM: Raging Storm | 1 6 3 2 1 4 3+B+C
+Geese Howard | SDM: Thunder Break | 6 3 2+C
+Franco Bash | Double Kong | 2 1 4+C
+Franco Bash | Weaving blow | 4 1 2 3 6+D
+Franco Bash | Power Bicycle | 2 3 6+B
+Franco Bash | Weaving Step | 4*60 6+B
+Franco Bash | Meteor Shot | 2 3 6+A
+Franco Bash | Meteor Tackle | 1 6+C
+Franco Bash | DM: Omega shot | 2 1 4 1 6+B+C
+Franco Bash | SDM: Aarmagedon Buster | 6 3 2 1 4+C
+Mochizuki Sokaku | Spikes | 2 3 6+A
+Mochizuki Sokaku | Posessed Stick | 4 1 2 3 6+B
+Mochizuki Sokaku | Fire Float | 2 4 1+B
+Mochizuki Sokaku | Petite Sokakus | 2 1 4+A
+Mochizuki Sokaku | Demonic Punches | 6 4 6+C
+Mochizuki Sokaku | Lightning Shots | 6 2 3+B
+Mochizuki Sokaku | Aerial Teleport | 6 2 3+A
+Mochizuki Sokaku | DM: Super Lightning Elemental | 6 3 2 3 6+B+C
+Mochizuki Sokaku | SDM: The breath of Lightning | 6 3 2 3 6+C
+Hon Fu | Flaming Knunchucks | 6 2 3+A
+Hon Fu | Aerial smasher | 2 1 4+B
+Hon Fu | Rolling Headbutt | 1*60 6+B
+Hon Fu | Ku-long's Prediction | 4 1 2 3 6+C
+Hon Fu | Berserker flip | 2 1 4+C
+Hon Fu | DM: Explosion roll | 2 1 4 1 6+B+C
+Hon Fu | SDM: Kadentsa's Storm | 2 1 4 1 6+C
+Bob Wilson | Bison Horn | 2*60 8+C
+Bob Wilson | Rolling Turtle | 2 1 4+C
+Bob Wilson | Wild Wolf | 4*60 6+B
+Bob Wilson | Monkey Dance | 6 2 3+B
+Bob Wilson | DM: Dangerous Wolf | 2 _ 2 _ 2+B+C
+Bob Wilson | SDM: MadSpin Wolf | 2 1 4 2 1 4+C
+Blue Mary | Spin Fall | 2 3 6+A
+Blue Mary | M. Spider | 2 3 6+C
+Blue Mary | M. Crab Clutch | 4*60 6+C
+Blue Mary | Mid Tackle Throw | 2 1 4+B
+Blue Mary | High Tackle Throw | 2 1 4+C
+Blue Mary | Quick Sway | 2 1 4+A
+Blue Mary | DM: M. Typhoon | 6 4 1 2 3 6+B+C
+Blue Mary | SDM: M. Diving Smasher | 6 4 1 2 3 6+C
+Ryuji Yamazaki | Sadomaso | 4 1 2 3 6+B
+Ryuji Yamazaki | Quick Reflector | 2 3 6+C
+Ryuji Yamazaki | Knife Slash | 6 1 6+C
+Ryuji Yamazaki | DM: La Guilotinne | 6 3 2 1 6+B+C
+Jin Chonshu | Elbow Smash | 6 _ 6+A
+Jin Chonshu | Energy Ball | 2 3 6+C
+Jin Chonshu | Twisting Uppercut | 6 2 3+C
+Jin Chonshu | DM: Soul Stealer | 2 1 4 6+B+C
+Jin Chonshu | SDM: Emperor's Fury | 2 1 4 6+C
+Jin Chonrei | Elbow Smash | 6 _ 6+A
+Jin Chonrei | Super Elbow Smash | 6 _ 6 _ 6+A
+Jin Chonrei | Energy Ball | 2 3 6+C
+Jin Chonrei | Twisting Uppercut | 6 2 3+C
+Jin Chonrei | Soul Stealer | 2 1 4 6+C
+Jin Chonrei | Energy Reflecter | 2 1 4+B
+Jin Chonrei | Ground Roll | 2 3 6+B
+Jin Chonrei | DM: Emperor's Fury | 6 4 1 2 3+B+C
+Jin Chonrei | SDM: Emperor's Rage | 6 4 1 2 3+C
+Duck King | Head Spin | 2 3 6+C
+Duck King | Dancing Dive | 2 1 4+B
+Duck King | Neo. Blazing Storm | 6 2 3+B
+Duck King | DM: Break Spiral | 4 1 2 3 6 9 2+B+C
+Duck King | SDM: Duck Dance | 2 _ 2+A+B+C
+Duck King | SDM: Break Hurricane (after Duck Dance) | 2 3 6 2 3+B+C
+Duck King | SDM: Dancing Caliver (after Duck Dance) | 2 1 4 2 1+B+C
+Duck King | SDM: Rolling Punisher (after Duck Dance) | 4*60 6 4 6+B+C
+Duck King | SDM: Diving Punisher (after Duck Dance) | 6 3 2+B+C
+Kim Kaphwan | Flip Kick | 2*60 8+B
+Kim Kaphwan | Crecent Kick | 2 1 4+C
+Kim Kaphwan | Air Twister | 6 2 3+A
+Kim Kaphwan | DM: Aerial Raid | 4 1 2 3 6+B+C
+Kim Kaphwan | SDM: Phoenix Combo | 2 1 4 1 6+C
+Billy Kane | Stick Attack | 4*60 6+A
+Billy Kane | Vertical Stick Attack | 2 1 4+A
+Billy Kane | Stick Highjump | 1 2 3 6+B
+Billy Kane | High Stick Counter | 2 1 4+B
+Billy Kane | Mid Stick Counter | 2 1 4+C
+Billy Kane | DM: Flaming Tornado Stick | 2 3 6 3 2 1 4+B+C
+Billy Kane | SDM: Scarlet Uppercut | 6 3 2+C

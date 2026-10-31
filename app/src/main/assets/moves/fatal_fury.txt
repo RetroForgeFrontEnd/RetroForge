@@ -2,7 +2,7 @@
 # kick, C heavy punch, D heavy kick, as on the Neo Geo.
 title: Fatal Fury
 match: fatal fury | real bout | garou densetsu
-not: fatal fury special | garou densetsu special | real bout fatal fury 2 | real bout garou densetsu 2 | fatal fury 3 | garou densetsu 3
+not: fatal fury special | garou densetsu special | real bout fatal fury 2 | real bout garou densetsu 2 | fatal fury 3 | garou densetsu 3 | real bout fatal fury | real bout garou densetsu
 buttons: A=B B=A C=Y D=X
 checked: no
 Terry | Power Wave | 2 3 6+A

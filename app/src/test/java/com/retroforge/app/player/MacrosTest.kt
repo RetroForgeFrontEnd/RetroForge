@@ -161,6 +161,9 @@ class MacrosTest {
         assertEquals("Fatal Fury 3", titleFor("Fatal Fury 3 - Road to the Final Victory"))
         assertEquals("Breakers", titleFor("Breakers"))
         assertNull(titleFor("Breakers Revenge"))
+        assertEquals("Real Bout Fatal Fury", titleFor("Real Bout Fatal Fury (NGM-095)"))
+        assertEquals("Real Bout Fatal Fury 2", titleFor("Real Bout Fatal Fury 2"))
+        assertEquals("Fatal Fury", titleFor("Fatal Fury 2 (USA)"))
     }
 
     @Test
