@@ -10,7 +10,6 @@ PS3, PS4 and Switch
 - PS4 games: point RetroForge at your own dumped game folders; titles come from the game's own data, and they open in the RetroForge PS4 Player (built on shadPS4). DLC folders can be added from the game's page. The guide explains how.
 - The PS3 and PS4 players aren't on GitHub yet; their download pages follow in a later update. RetroForge is ready for them.
 - Switch Play Online: host a room from the game's page, and other players on the same Wi-Fi see it and tap to join. Up to 4 players.
-- Each player app has a RetroForge neon icon with the console's name.
 - You need your own games, keys and firmware from your own consoles. Nothing of Sony's or Nintendo's is included.
 
 Music, radio and films
