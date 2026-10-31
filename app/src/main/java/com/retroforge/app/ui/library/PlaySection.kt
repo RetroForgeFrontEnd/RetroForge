@@ -241,7 +241,15 @@ private fun SaveStatesCard(game: GameEntity, core: PlayerCores.PlayerCore, onPla
     val dir = remember(game.system) { SaveStates.dir(context, game.system) }
     val base = game.fileName.substringBeforeLast('.')
     LifecycleResumeEffect(game.id, changes) {
-        val job = scope.launch { states = withContext(Dispatchers.IO) { SaveStates.list(dir, base) } }
+        // The player's own process writes the resume point as it closes, which can finish seconds after this page is back
+        // (and a FileObserver doesn't see another process's writes there), so look again for a little while.
+        val job = scope.launch {
+            repeat(16) { i ->
+                if (i > 0) kotlinx.coroutines.delay(1_000)
+                val now = withContext(Dispatchers.IO) { SaveStates.list(dir, base) }
+                if (now != states) states = now
+            }
+        }
         onPauseOrDispose { job.cancel() }
     }
     if (states.isEmpty()) return

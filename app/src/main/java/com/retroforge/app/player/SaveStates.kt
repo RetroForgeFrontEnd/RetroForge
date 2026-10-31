@@ -12,9 +12,9 @@ import java.io.File
 object SaveStates {
     enum class Kind { QUICK, AUTO, SLOT }
 
-    data class State(val file: File, val core: String, val kind: Kind, val slot: Int, val name: String?) {
+    /** [modified] is read when the list is made, so a state written again since compares as a change. */
+    data class State(val file: File, val core: String, val kind: Kind, val slot: Int, val name: String?, val modified: Long = file.lastModified()) {
         val picture: File get() = File(file.path + ".png")
-        val modified: Long get() = file.lastModified()
     }
 
     fun dir(context: Context, system: String) = File(context.getExternalFilesDir(null) ?: context.filesDir, "states/$system")
