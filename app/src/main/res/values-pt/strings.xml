@@ -1969,4 +1969,37 @@
     <string name="player_layout_for_controller">Layout para: este controle (%1$s)</string>
     <string name="player_layout_for_game">Layout para: só este jogo</string>
     <string name="player_layout_hint">Selecione para mudar onde estes botões valem. O do jogo vem primeiro, depois o do controle, depois o do sistema.</string>
+    <string name="rom_manager_identify">Identificar</string>
+    <string name="rom_manager_identify_title">Identificar e renomear jogos</string>
+    <string name="rom_manager_identify_body">Compara o checksum de cada jogo com as listas No-Intro (cartuchos) e Redump (discos): quais são cópias boas verificadas, quais não estão nas listas e quais têm um nome diferente do da lista. Você escolhe o que renomear. A lista de cada sistema é baixada uma vez. Jogos de arcade ficam de fora, pois precisam manter os nomes do MAME.</string>
+    <string name="rom_manager_identify_getting_lists">Obtendo as listas de jogos…</string>
+    <string name="rom_manager_identify_checking">Verificando jogo %1$d de %2$d</string>
+    <string name="rom_manager_identify_summary">%1$d verificados (%2$d já com o nome certo), %3$d fora das listas, %4$d deixados como estão.</string>
+    <string name="rom_manager_identify_all_named">Todo jogo verificado já tem o nome da lista.</string>
+    <string name="rom_manager_identify_select">Selecione os sistemas a renomear.</string>
+    <string name="rom_manager_identify_system_count">%1$s: %2$d para renomear</string>
+    <string name="rom_manager_identify_unknown_body">Hacks, traduções, homebrew, cópias ruins ou modificadas, ou versões que as listas não têm. Mantêm o nome.</string>
+    <string name="rom_manager_identify_no_list">Sem lista de jogos para: %1$s</string>
+    <string name="rom_manager_identify_credit">Listas de jogos do No-Intro e Redump, do libretro-database (CC BY-SA 4.0).</string>
+    <string name="rom_manager_identify_confirm_body">Cada jogo recebe o nome No-Intro ou Redump e mantém seu tipo de arquivo (um .zip continua .zip). As faixas e o arquivo cue de um disco são renomeados juntos, e gamelist.xml e playlists .m3u são atualizados. Favoritos, histórico e capas ficam com o jogo. Desfaça em Histórico.</string>
+    <string name="rom_manager_identify_renamed">Renomeados</string>
+    <string name="rom_manager_identify_offline_pill">Sem internet</string>
+    <string name="rom_manager_identify_offline">Não foi possível baixar a lista de jogos de: %1$s. Verifique a conexão e escolha Verificar de novo. Depois de baixada, a lista funciona offline.</string>
+    <string name="rom_manager_identify_no_games">Nenhum jogo encontrado nesta pasta ainda.</string>
+    <plurals name="rom_manager_identify_rename_button">
+        <item quantity="one">Renomear %1$d jogo</item>
+        <item quantity="other">Renomear %1$d jogos</item>
+    </plurals>
+    <plurals name="rom_manager_identify_confirm_title">
+        <item quantity="one">Renomear %1$d jogo?</item>
+        <item quantity="other">Renomear %1$d jogos?</item>
+    </plurals>
+    <plurals name="rom_manager_identify_unknown_title">
+        <item quantity="one">Fora das listas: %1$d jogo</item>
+        <item quantity="other">Fora das listas: %1$d jogos</item>
+    </plurals>
+    <plurals name="rom_manager_identify_left_alone">
+        <item quantity="one">Deixado como está: %1$d jogo</item>
+        <item quantity="other">Deixados como estão: %1$d jogos</item>
+    </plurals>
 </resources>

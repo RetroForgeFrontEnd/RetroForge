@@ -95,4 +95,12 @@
         <item quantity="one">%1$s Kopie nach _duplicates verschoben</item>
         <item quantity="other">%1$s Kopien nach _duplicates verschoben</item>
     </plurals>
+    <string name="rom_manager_identify_couldn_t_read">konnte nicht gelesen werden (%1$s)</string>
+    <string name="rom_manager_identify_renaming">Spiele werden umbenannt</string>
+    <string name="rom_manager_identify_renaming_detail">%1$d Spiele, samt Cue-Dateien, gamelist.xml und Playlists</string>
+    <string name="rom_manager_identify_renamed_title">Spiele umbenannt</string>
+    <plurals name="rom_manager_identify_renamed_games">
+        <item quantity="one">%1$d Spiel nach No-Intro bzw. Redump umbenannt</item>
+        <item quantity="other">%1$d Spiele nach No-Intro bzw. Redump umbenannt</item>
+    </plurals>
 </resources>

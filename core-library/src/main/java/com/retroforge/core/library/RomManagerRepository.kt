@@ -22,6 +22,13 @@ import com.retroforge.library.manage.GameDeleter
 import com.retroforge.library.manage.GameFiles
 import com.retroforge.library.manage.Holding
 import com.retroforge.library.manage.HoldingSummary
+import com.retroforge.library.manage.IdentifyCandidate
+import com.retroforge.library.manage.IdentifyOutcome
+import com.retroforge.library.manage.Identified
+import com.retroforge.library.manage.Identifier
+import com.retroforge.library.manage.Renamer
+import com.retroforge.library.manage.RomChecksum
+import com.retroforge.library.manage.TextFiles
 import com.retroforge.library.manage.Journal
 import com.retroforge.library.manage.MultiDiscPlanner
 import com.retroforge.library.manage.PlaylistJob
@@ -50,6 +57,14 @@ data class CompressReport(val jobs: List<CompressJob>, val skipped: List<Compres
 
 data class PlaylistReport(val jobs: List<PlaylistJob>, val skipped: List<PlaylistSkip>)
 
+/**
+ * Every game checked against its system's game list; [noList] are systems with no list to check against, [unreachable]
+ * those whose list couldn't be downloaded.
+ */
+data class IdentifyReport(val results: List<Identified>, val noList: List<String>, val unreachable: List<String> = emptyList()) {
+    fun of(outcome: IdentifyOutcome) = results.filter { it.outcome == outcome }
+}
+
 /** A game found outside its system's folder, and the folder it would move to. */
 data class SortJob(val path: String, val system: String, val title: String, val folder: String)
 
@@ -67,6 +82,7 @@ class RomManagerRepository(
     private val library: LibraryRepository,
     private val resolver: ContentResolver,
     private val logDir: File,
+    private val gameLists: GameLists? = null,
     private val clock: () -> Long = System::currentTimeMillis,
 ) {
     private val dao = library.database.dao()
@@ -212,6 +228,46 @@ class RomManagerRepository(
         val summary = str(R.string.rom_manager_compressed_of_games_saving_originals_are, r.converted, jobs.size, formatBytes(saved))
         journal.finish(summary)
         ManagerRun.Done(if (r.converted == jobs.size) str(R.string.rom_manager_compression_finished) else str(R.string.rom_manager_compression_stopped), "$summary.", r.problems)
+    }
+
+    /**
+     * Checks every game's checksum against the No-Intro or Redump list for its system, and works out the name each
+     * should have. Reads only (apart from downloading the lists). Arcade sets are left out: they must keep MAME's names.
+     */
+    suspend fun identify(root: RootEntity, onProgress: (Int, Int) -> Unit): IdentifyReport = withContext(Dispatchers.IO) {
+        val lists = gameLists ?: return@withContext IdentifyReport(emptyList(), emptyList())
+        val games = dao.gamesIn(root.id).filter { it.system !in Identifier.arcade }
+            .sortedWith(compareBy({ it.system }, { it.title.lowercase() }))
+        val files = SafCollectionFiles(resolver, Uri.parse(root.treeUri))
+        val results = mutableListOf<Identified>()
+        val noList = mutableListOf<String>()
+        val unreachable = mutableListOf<String>()
+        games.groupBy { it.system }.forEach { (system, list) ->
+            val dat = try { lists.forSystem(system) } catch (_: Exception) { unreachable += system; null }
+            if (dat == null) { if (system !in unreachable) noList += system; onProgress(results.size + list.size, games.size); return@forEach }
+            for (game in list) {
+                if (!isActive) throw CancelledException()
+                onProgress(results.size, games.size)
+                val candidate = IdentifyCandidate(game.system, game.relativePath, systemFolder(root, game), game.title)
+                results += try {
+                    Identifier.identify(candidate, dat, { RomChecksum.of(files, it, system) { !isActive } }, { TextFiles.read(files, it) })
+                } catch (e: CancelledException) {
+                    throw e
+                } catch (e: Exception) {
+                    Identified(candidate, IdentifyOutcome.SKIPPED, reason = str(R.string.rom_manager_identify_couldn_t_read, e.message ?: e.javaClass.simpleName))
+                }
+            }
+        }
+        IdentifyReport(Identifier.resolveClashes(results) { files.exists(it) }, noList, unreachable)
+    }
+
+    fun rename(root: RootEntity, jobs: List<Identified>) = start(root, "rename", pluralStr(R.plurals.rom_manager_identify_renamed_games, jobs.size, jobs.size)) { files, journal ->
+        _run.value = ManagerRun.Running(str(R.string.rom_manager_identify_renaming), str(R.string.rom_manager_identify_renaming_detail, jobs.size), null)
+        val r = Renamer(files).run(jobs, journal) { !isActive }
+        relink(root, journal, r.moves, reverseOnUndo = true)
+        val summary = pluralStr(R.plurals.rom_manager_identify_renamed_games, r.renamed, r.renamed)
+        journal.finish(summary)
+        ManagerRun.Done(str(R.string.rom_manager_identify_renamed_title), str(R.string.rom_manager_undo_from_history_puts_them_back, summary), r.problems)
     }
 
     /** The files deleting [game] would move (an .m3u's discs, a .cue's tracks …). Reads only. */

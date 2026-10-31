@@ -10,6 +10,7 @@ import com.retroforge.hacks.CatalogueStore
 import java.io.File
 import com.retroforge.artwork.JvmHttpGet
 import com.retroforge.core.library.CoverRepository
+import com.retroforge.core.library.GameLists
 import com.retroforge.artwork.ScreenScraperApp
 import com.retroforge.artwork.ScreenScraperUser
 import kotlinx.coroutines.CoroutineScope
@@ -48,7 +49,10 @@ class AppContainer(application: Application) {
     val retroArch = RetroArchLauncher(application)
     val standalone = StandaloneLauncher(application)
     val retroArchHotkeys = RetroArchHotkeys(application)
-    val romManager = RomManagerRepository(library, application.contentResolver, File(application.filesDir, "rom-manager"))
+    val romManager = RomManagerRepository(
+        library, application.contentResolver, File(application.filesDir, "rom-manager"),
+        GameLists(JvmHttpGet("RetroForge/${BuildConfig.VERSION_NAME}"), File(application.filesDir, "game-lists")),
+    )
     /** System artwork read from a theme folder the user chose (never shipped). */
     val systemArt = com.retroforge.core.library.SystemArtStore(application.contentResolver, File(application.filesDir, "system-art.json"))
     /** Small view choices (Retro tab tile style). */

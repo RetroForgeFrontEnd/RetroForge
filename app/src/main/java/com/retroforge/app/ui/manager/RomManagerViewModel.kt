@@ -11,6 +11,10 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.retroforge.core.library.CompressReport
 import com.retroforge.core.library.DuplicateReport
 import com.retroforge.core.library.GameEntity
+import com.retroforge.core.library.IdentifyReport
+import com.retroforge.library.manage.IdentifyOutcome
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.isActive
 import com.retroforge.library.manage.HoldingSummary
 import kotlinx.coroutines.flow.first
 import com.retroforge.core.library.LibraryRepository
@@ -29,7 +33,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 enum class ManagerTab(private val labelId: Int) {
-    DUPLICATES(R.string.rom_manager_duplicates), COMPRESS(R.string.rom_manager_compress_3), MULTI_DISC(R.string.rom_manager_multi_disc), SORT(R.string.rom_manager_sort), HISTORY(R.string.rom_manager_history);
+    DUPLICATES(R.string.rom_manager_duplicates), IDENTIFY(R.string.rom_manager_identify), COMPRESS(R.string.rom_manager_compress_3), MULTI_DISC(R.string.rom_manager_multi_disc), SORT(R.string.rom_manager_sort), HISTORY(R.string.rom_manager_history);
 
     val label: String get() = str(labelId)
 }
@@ -53,6 +57,7 @@ sealed interface Pending {
     data class Purge(val summary: HoldingSummary) : Pending
     data class MakePlaylists(val count: Int) : Pending
     data class SortLoose(val count: Int) : Pending
+    data class Rename(val count: Int) : Pending
 }
 
 class RomManagerViewModel(private val library: LibraryRepository, private val manager: RomManagerRepository) : ViewModel() {
@@ -95,6 +100,37 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
             }
         }
     }
+
+    val identified = MutableStateFlow<Loadable<IdentifyReport>>(Loadable.Idle)
+    /** Systems whose games will be renamed. */
+    val renameSystems = MutableStateFlow<Set<String>>(emptySet())
+    private var identifyJob: Job? = null
+
+    fun identify() {
+        val root = root() ?: return
+        identifyJob?.cancel()
+        identifyJob = viewModelScope.launch {
+            identified.value = Loadable.Loading(0, 0)
+            identified.value = try {
+                val report = manager.identify(root) { done, total -> identified.value = Loadable.Loading(done, total) }
+                renameSystems.value = report.of(IdentifyOutcome.RENAME).map { it.candidate.system }.toSet()
+                Loadable.Ready(report)
+            } catch (e: Exception) {
+                if (!isActive) Loadable.Idle else Loadable.Failed(e.message ?: str(R.string.rom_manager_couldn_t_look))
+            }
+        }
+    }
+
+    fun stopIdentify() {
+        identifyJob?.cancel()
+        identified.value = Loadable.Idle
+    }
+
+    fun toggleRenameSystem(system: String) { renameSystems.value = renameSystems.value.let { if (system in it) it - system else it + system } }
+
+    fun renameJobs() = (identified.value as? Loadable.Ready)?.value?.of(IdentifyOutcome.RENAME).orEmpty().filter { it.candidate.system in renameSystems.value }
+
+    fun askRename() { pending.value = Pending.Rename(renameJobs().size) }
 
     val loose = MutableStateFlow<Loadable<List<com.retroforge.core.library.SortJob>>>(Loadable.Idle)
 
@@ -140,6 +176,7 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
         duplicates.value = Loadable.Idle
         compressible.value = Loadable.Idle
         multiDisc.value = Loadable.Idle
+        stopIdentify()
         pending.value = null
     }
 
@@ -225,6 +262,10 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
             is Pending.SortLoose -> {
                 manager.sortLoose(root, (loose.value as? Loadable.Ready)?.value.orEmpty())
                 loose.value = Loadable.Idle
+            }
+            is Pending.Rename -> {
+                manager.rename(root, renameJobs())
+                identified.value = Loadable.Idle
             }
             null -> Unit
         }

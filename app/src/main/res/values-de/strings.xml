@@ -1937,4 +1937,37 @@
     <string name="player_layout_for_controller">Belegung für: diesen Controller (%1$s)</string>
     <string name="player_layout_for_game">Belegung für: nur dieses Spiel</string>
     <string name="player_layout_hint">Auswählen, um festzulegen, wo diese Belegung gilt. Die eines Spiels geht vor, dann die des Controllers, dann die des Systems.</string>
+    <string name="rom_manager_identify">Erkennen</string>
+    <string name="rom_manager_identify_title">Spiele erkennen und umbenennen</string>
+    <string name="rom_manager_identify_body">Prüft die Prüfsumme jedes Spiels gegen die Spielelisten von No-Intro (Module) und Redump (Discs): welche geprüfte gute Kopien sind, welche nicht in den Listen stehen und welche anders heißen als in der Liste. Du wählst, was umbenannt wird. Die Liste jedes Systems wird einmal heruntergeladen. Arcade-Spiele bleiben außen vor, da sie MAMEs Namen behalten müssen.</string>
+    <string name="rom_manager_identify_getting_lists">Spielelisten werden geholt…</string>
+    <string name="rom_manager_identify_checking">Spiel %1$d von %2$d wird geprüft</string>
+    <string name="rom_manager_identify_summary">%1$d geprüft (%2$d schon richtig benannt), %3$d nicht in den Listen, %4$d übersprungen.</string>
+    <string name="rom_manager_identify_all_named">Jedes geprüfte Spiel hat schon seinen Listennamen.</string>
+    <string name="rom_manager_identify_select">Wähle die Systeme zum Umbenennen.</string>
+    <string name="rom_manager_identify_system_count">%1$s: %2$d umzubenennen</string>
+    <string name="rom_manager_identify_unknown_body">Hacks, Übersetzungen, Homebrew, fehlerhafte oder veränderte Kopien oder Versionen, die die Listen nicht kennen. Sie behalten ihre Namen.</string>
+    <string name="rom_manager_identify_no_list">Keine Spieleliste für: %1$s</string>
+    <string name="rom_manager_identify_credit">Spielelisten von No-Intro und Redump, aus libretro-database (CC BY-SA 4.0).</string>
+    <string name="rom_manager_identify_confirm_body">Jedes Spiel bekommt seinen No-Intro- bzw. Redump-Namen und behält seinen Dateityp (eine .zip bleibt .zip). Spurdateien und Cue-Datei einer Disc werden zusammen umbenannt, gamelist.xml und .m3u-Playlists werden angepasst. Favoriten, Spielverlauf und Cover bleiben beim Spiel. Rückgängig unter Verlauf.</string>
+    <string name="rom_manager_identify_renamed">Umbenannt</string>
+    <string name="rom_manager_identify_offline_pill">Kein Internet</string>
+    <string name="rom_manager_identify_offline">Die Spieleliste konnte nicht geladen werden für: %1$s. Prüfe die Internetverbindung und wähle Erneut prüfen. Einmal geladen, geht es auch offline.</string>
+    <string name="rom_manager_identify_no_games">In diesem Ordner wurden noch keine Spiele gefunden.</string>
+    <plurals name="rom_manager_identify_rename_button">
+        <item quantity="one">%1$d Spiel umbenennen</item>
+        <item quantity="other">%1$d Spiele umbenennen</item>
+    </plurals>
+    <plurals name="rom_manager_identify_confirm_title">
+        <item quantity="one">%1$d Spiel umbenennen?</item>
+        <item quantity="other">%1$d Spiele umbenennen?</item>
+    </plurals>
+    <plurals name="rom_manager_identify_unknown_title">
+        <item quantity="one">Nicht in den Listen: %1$d Spiel</item>
+        <item quantity="other">Nicht in den Listen: %1$d Spiele</item>
+    </plurals>
+    <plurals name="rom_manager_identify_left_alone">
+        <item quantity="one">Übersprungen: %1$d Spiel</item>
+        <item quantity="other">Übersprungen: %1$d Spiele</item>
+    </plurals>
 </resources>

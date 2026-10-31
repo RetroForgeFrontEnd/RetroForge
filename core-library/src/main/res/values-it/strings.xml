@@ -98,4 +98,12 @@
         <item quantity="many">Spostate %1$s copie in _duplicates</item>
         <item quantity="other">Spostate %1$s copie in _duplicates</item>
     </plurals>
+    <string name="rom_manager_identify_couldn_t_read">non si è potuto leggere (%1$s)</string>
+    <string name="rom_manager_identify_renaming">Rinomina dei giochi</string>
+    <string name="rom_manager_identify_renaming_detail">%1$d giochi, con i file cue, gamelist.xml e le playlist</string>
+    <string name="rom_manager_identify_renamed_title">Giochi rinominati</string>
+    <plurals name="rom_manager_identify_renamed_games">
+        <item quantity="one">%1$d gioco rinominato con il nome No-Intro o Redump</item>
+        <item quantity="other">%1$d giochi rinominati con il nome No-Intro o Redump</item>
+    </plurals>
 </resources>

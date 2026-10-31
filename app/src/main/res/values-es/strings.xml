@@ -1970,4 +1970,37 @@
     <string name="player_layout_for_controller">Distribución para: este mando (%1$s)</string>
     <string name="player_layout_for_game">Distribución para: solo este juego</string>
     <string name="player_layout_hint">Selecciona para cambiar dónde se aplican estos botones. Manda la del juego, luego la del mando y luego la del sistema.</string>
+    <string name="rom_manager_identify">Identificar</string>
+    <string name="rom_manager_identify_title">Identificar y renombrar juegos</string>
+    <string name="rom_manager_identify_body">Compara la suma de comprobación de cada juego con las listas de No-Intro (cartuchos) y Redump (discos): cuáles son copias buenas verificadas, cuáles no están en las listas y cuáles tienen otro nombre que el de la lista. Tú eliges qué se renombra. La lista de cada sistema se descarga una vez. Los juegos arcade se dejan fuera, porque deben conservar los nombres de MAME.</string>
+    <string name="rom_manager_identify_getting_lists">Obteniendo las listas de juegos…</string>
+    <string name="rom_manager_identify_checking">Comprobando juego %1$d de %2$d</string>
+    <string name="rom_manager_identify_summary">%1$d verificados (%2$d ya con el nombre correcto), %3$d no están en las listas, %4$d sin tocar.</string>
+    <string name="rom_manager_identify_all_named">Todos los juegos verificados ya tienen el nombre de la lista.</string>
+    <string name="rom_manager_identify_select">Selecciona los sistemas que quieres renombrar.</string>
+    <string name="rom_manager_identify_system_count">%1$s: %2$d para renombrar</string>
+    <string name="rom_manager_identify_unknown_body">Hacks, traducciones, homebrew, copias malas o modificadas, o versiones que las listas no tienen. Conservan su nombre.</string>
+    <string name="rom_manager_identify_no_list">Sin lista de juegos para: %1$s</string>
+    <string name="rom_manager_identify_credit">Listas de juegos de No-Intro y Redump, de libretro-database (CC BY-SA 4.0).</string>
+    <string name="rom_manager_identify_confirm_body">Cada juego toma su nombre de No-Intro o Redump y conserva su tipo de archivo (un .zip sigue siendo .zip). Las pistas y el archivo cue de un disco se renombran juntos, y se actualizan gamelist.xml y las listas .m3u. Favoritos, historial y portadas siguen con el juego. Se deshace desde Historial.</string>
+    <string name="rom_manager_identify_renamed">Renombrados</string>
+    <string name="rom_manager_identify_offline_pill">Sin internet</string>
+    <string name="rom_manager_identify_offline">No se pudo descargar la lista de juegos de: %1$s. Comprueba la conexión a internet y elige Comprobar de nuevo. Una vez descargada, la lista funciona sin conexión.</string>
+    <string name="rom_manager_identify_no_games">Aún no se encontraron juegos en esta carpeta.</string>
+    <plurals name="rom_manager_identify_rename_button">
+        <item quantity="one">Renombrar %1$d juego</item>
+        <item quantity="other">Renombrar %1$d juegos</item>
+    </plurals>
+    <plurals name="rom_manager_identify_confirm_title">
+        <item quantity="one">¿Renombrar %1$d juego?</item>
+        <item quantity="other">¿Renombrar %1$d juegos?</item>
+    </plurals>
+    <plurals name="rom_manager_identify_unknown_title">
+        <item quantity="one">No está en las listas: %1$d juego</item>
+        <item quantity="other">No están en las listas: %1$d juegos</item>
+    </plurals>
+    <plurals name="rom_manager_identify_left_alone">
+        <item quantity="one">Sin tocar: %1$d juego</item>
+        <item quantity="other">Sin tocar: %1$d juegos</item>
+    </plurals>
 </resources>

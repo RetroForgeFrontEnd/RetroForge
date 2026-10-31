@@ -106,4 +106,12 @@
         <item quantity="one">Moved %1$s copy to _duplicates</item>
         <item quantity="other">Moved %1$s copies to _duplicates</item>
     </plurals>
+    <string name="rom_manager_identify_couldn_t_read">couldn\'t be read (%1$s)</string>
+    <string name="rom_manager_identify_renaming">Renaming games</string>
+    <string name="rom_manager_identify_renaming_detail">%1$d games, with their cue sheets, gamelist.xml and playlists</string>
+    <string name="rom_manager_identify_renamed_title">Games renamed</string>
+    <plurals name="rom_manager_identify_renamed_games">
+        <item quantity="one">Renamed %1$d game to its No-Intro or Redump name</item>
+        <item quantity="other">Renamed %1$d games to their No-Intro or Redump names</item>
+    </plurals>
 </resources>

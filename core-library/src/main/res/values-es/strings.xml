@@ -98,4 +98,12 @@
         <item quantity="other">Movidas %1$s copias a _duplicates</item>
     </plurals>
     <string name="rom_manager_made_n_playlists">Creadas %1$s listas</string>
+    <string name="rom_manager_identify_couldn_t_read">no se pudo leer (%1$s)</string>
+    <string name="rom_manager_identify_renaming">Renombrando juegos</string>
+    <string name="rom_manager_identify_renaming_detail">%1$d juegos, con sus archivos cue, gamelist.xml y listas</string>
+    <string name="rom_manager_identify_renamed_title">Juegos renombrados</string>
+    <plurals name="rom_manager_identify_renamed_games">
+        <item quantity="one">%1$d juego renombrado con su nombre de No-Intro o Redump</item>
+        <item quantity="other">%1$d juegos renombrados con su nombre de No-Intro o Redump</item>
+    </plurals>
 </resources>

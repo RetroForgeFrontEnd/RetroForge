@@ -2097,4 +2097,37 @@
     <string name="player_layout_for_controller">Layout for: this controller (%1$s)</string>
     <string name="player_layout_for_game">Layout for: this game only</string>
     <string name="player_layout_hint">Select to change where these buttons apply. A game\'s own layout wins, then the controller\'s, then the system\'s.</string>
+    <string name="rom_manager_identify">Identify</string>
+    <string name="rom_manager_identify_title">Identify and rename games</string>
+    <string name="rom_manager_identify_body">Checks each game\'s checksum against the No-Intro (cartridge) and Redump (disc) game lists: which are verified good copies, which aren\'t in the lists, and which have a different name from the list\'s. You choose what gets renamed. Each system\'s list is downloaded once. Arcade games are left out, since they must keep MAME\'s names.</string>
+    <string name="rom_manager_identify_getting_lists">Getting the game lists…</string>
+    <string name="rom_manager_identify_checking">Checking game %1$d of %2$d</string>
+    <string name="rom_manager_identify_summary">%1$d verified (%2$d already named right), %3$d not in the lists, %4$d left alone.</string>
+    <string name="rom_manager_identify_all_named">Every verified game already has its list name.</string>
+    <string name="rom_manager_identify_select">Select the systems to rename.</string>
+    <string name="rom_manager_identify_system_count">%1$s: %2$d to rename</string>
+    <string name="rom_manager_identify_unknown_body">Hacks, translations, homebrew, bad or modified copies, or versions the lists don\'t have. They keep their names.</string>
+    <string name="rom_manager_identify_no_list">No game list for: %1$s</string>
+    <string name="rom_manager_identify_credit">Game lists by No-Intro and Redump, from libretro-database (CC BY-SA 4.0).</string>
+    <string name="rom_manager_identify_confirm_body">Each game takes its No-Intro or Redump name and keeps its own file type (a .zip stays a .zip). A disc\'s track files and cue sheet are renamed together, and gamelist.xml and .m3u playlists are updated. Favourites, play history and covers stay with the game. Undo it from History.</string>
+    <string name="rom_manager_identify_renamed">Renamed</string>
+    <string name="rom_manager_identify_offline_pill">No internet</string>
+    <string name="rom_manager_identify_offline">Couldn\'t download the game list for: %1$s. Check the internet connection and select Check again. Once downloaded, a list works offline.</string>
+    <string name="rom_manager_identify_no_games">No games found in this folder yet.</string>
+    <plurals name="rom_manager_identify_rename_button">
+        <item quantity="one">Rename %1$d game</item>
+        <item quantity="other">Rename %1$d games</item>
+    </plurals>
+    <plurals name="rom_manager_identify_confirm_title">
+        <item quantity="one">Rename %1$d game?</item>
+        <item quantity="other">Rename %1$d games?</item>
+    </plurals>
+    <plurals name="rom_manager_identify_unknown_title">
+        <item quantity="one">Not in the lists: %1$d game</item>
+        <item quantity="other">Not in the lists: %1$d games</item>
+    </plurals>
+    <plurals name="rom_manager_identify_left_alone">
+        <item quantity="one">Left alone: %1$d game</item>
+        <item quantity="other">Left alone: %1$d games</item>
+    </plurals>
 </resources>

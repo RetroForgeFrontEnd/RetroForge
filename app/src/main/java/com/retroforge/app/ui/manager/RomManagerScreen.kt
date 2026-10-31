@@ -37,6 +37,7 @@ import com.retroforge.core.library.RootEntity
 import com.retroforge.library.manage.CompressFormat
 import com.retroforge.library.manage.DELETED_FOLDER
 import com.retroforge.library.manage.DUPLICATES_FOLDER
+import com.retroforge.library.manage.IdentifyOutcome
 import com.retroforge.library.manage.KeepRule
 import com.retroforge.library.manage.ORIGINALS_FOLDER
 import com.retroforge.library.manage.Sameness
@@ -96,6 +97,7 @@ fun RomManagerScreen(viewModel: RomManagerViewModel, deleteGameId: Long = -1) {
         }
         when (tab) {
             ManagerTab.DUPLICATES -> DuplicatesTab(viewModel)
+            ManagerTab.IDENTIFY -> IdentifyTab(viewModel)
             ManagerTab.COMPRESS -> CompressTab(viewModel)
             ManagerTab.MULTI_DISC -> MultiDiscTab(viewModel)
             ManagerTab.SORT -> SortTab(viewModel)
@@ -179,6 +181,10 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
                 CardBody(
                     stringResource(R.string.rom_manager_each_multi_disc_game_gets_an),
                 )
+            }
+            is Pending.Rename -> {
+                CardTitle(pluralStr(R.plurals.rom_manager_identify_confirm_title, pending.count, pending.count))
+                CardBody(stringResource(R.string.rom_manager_identify_confirm_body))
             }
             is Pending.Undo -> {
                 CardTitle(stringResource(R.string.rom_manager_undo_this))
@@ -351,6 +357,69 @@ private fun SortTab(viewModel: RomManagerViewModel) {
 }
 
 @Composable
+private fun IdentifyTab(viewModel: RomManagerViewModel) {
+    val state by viewModel.identified.collectAsStateWithLifecycle()
+    val selected by viewModel.renameSystems.collectAsStateWithLifecycle()
+    when (val s = state) {
+        Loadable.Idle -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = viewModel::identify) {
+            CardTitle(stringResource(R.string.rom_manager_identify_title))
+            CardBody(stringResource(R.string.rom_manager_identify_body))
+        }
+        is Loadable.Loading -> {
+            CardBody(if (s.total == 0) stringResource(R.string.rom_manager_identify_getting_lists) else stringResource(R.string.rom_manager_identify_checking, s.done + 1, s.total))
+            com.retroforge.app.ui.DownloadBar(s.share)
+            FocusChip(stringResource(R.string.library_stop), onClick = viewModel::stopIdentify)
+        }
+        is Loadable.Failed -> { StatusPill(stringResource(R.string.rom_manager_couldn_t_check), StatusTone.BAD); CardBody(s.reason); FocusChip(stringResource(R.string.rom_manager_try_again), onClick = viewModel::identify) }
+        is Loadable.Ready -> {
+            val report = s.value
+            val rename = report.of(IdentifyOutcome.RENAME)
+            val named = report.of(IdentifyOutcome.NAMED_RIGHT)
+            val unknown = report.of(IdentifyOutcome.UNKNOWN)
+            val skipped = report.of(IdentifyOutcome.SKIPPED)
+            if (report.unreachable.isNotEmpty()) {
+                StatusPill(stringResource(R.string.rom_manager_identify_offline_pill), StatusTone.CAUTION)
+                CardBody(stringResource(R.string.rom_manager_identify_offline, report.unreachable.joinToString { viewModel.systemName(it) }))
+            }
+            if (report.results.isEmpty() && report.unreachable.isEmpty() && report.noList.isEmpty()) CardBody(stringResource(R.string.rom_manager_identify_no_games))
+            CardBody(stringResource(R.string.rom_manager_identify_summary, rename.size + named.size, named.size, unknown.size, skipped.size))
+            CardBody(if (rename.isEmpty()) stringResource(R.string.rom_manager_identify_all_named) else stringResource(R.string.rom_manager_identify_select))
+            rename.groupBy { it.candidate.system }.forEach { (system, games) ->
+                val on = system in selected
+                FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.toggleRenameSystem(system) }, selected = on) {
+                    Text(
+                        (if (on) "☑ " else "☐ ") + stringResource(R.string.rom_manager_identify_system_count, viewModel.systemName(system), games.size),
+                        style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    games.take(4).forEach { CardBody("${it.candidate.relativePath.substringAfterLast('/')} → ${it.newPath.orEmpty().substringAfterLast('/')}") }
+                    if (games.size > 4) CardBody(stringResource(R.string.rom_manager_and_more, games.size - 4))
+                }
+            }
+            if (unknown.isNotEmpty()) FocusCard(modifier = Modifier.fillMaxWidth()) {
+                CardTitle(pluralStr(R.plurals.rom_manager_identify_unknown_title, unknown.size, unknown.size))
+                CardBody(stringResource(R.string.rom_manager_identify_unknown_body))
+                unknown.groupBy { it.candidate.system }.forEach { (system, games) ->
+                    CardBody("${viewModel.systemName(system)}: " + games.take(4).joinToString { it.candidate.title } + if (games.size > 4) stringResource(R.string.rom_manager_and_more_2, games.size - 4) else "")
+                }
+            }
+            if (skipped.isNotEmpty() || report.noList.isNotEmpty()) FocusCard(modifier = Modifier.fillMaxWidth()) {
+                CardTitle(pluralStr(R.plurals.rom_manager_identify_left_alone, skipped.size, skipped.size))
+                skipped.groupBy { it.candidate.system to it.reason.orEmpty() }.forEach { (key, games) ->
+                    CardBody("${viewModel.systemName(key.first)}: ${games.size} × ${key.second}")
+                }
+                if (report.noList.isNotEmpty()) CardBody(stringResource(R.string.rom_manager_identify_no_list, report.noList.joinToString { viewModel.systemName(it) }))
+            }
+            CardBody(stringResource(R.string.rom_manager_identify_credit))
+            val jobs = viewModel.renameJobs()
+            ChipRow {
+                FocusChip(pluralStr(R.plurals.rom_manager_identify_rename_button, jobs.size, jobs.size), onClick = viewModel::askRename, enabled = jobs.isNotEmpty())
+                FocusChip(stringResource(R.string.rom_manager_check_again), onClick = viewModel::identify)
+            }
+        }
+    }
+}
+
+@Composable
 private fun MultiDiscTab(viewModel: RomManagerViewModel) {
     val state by viewModel.multiDisc.collectAsStateWithLifecycle()
     when (val s = state) {
@@ -407,7 +476,7 @@ private fun HistoryTab(viewModel: RomManagerViewModel, root: RootEntity) {
     val format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
     mine.forEach { log ->
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle(when (log.kind) { "compress" -> stringResource(R.string.rom_manager_compressed); "delete" -> stringResource(R.string.rom_manager_deleted); "playlists" -> stringResource(R.string.rom_manager_playlists_made); else -> stringResource(R.string.rom_manager_duplicates_tidied) })
+            CardTitle(when (log.kind) { "compress" -> stringResource(R.string.rom_manager_compressed); "delete" -> stringResource(R.string.rom_manager_deleted); "playlists" -> stringResource(R.string.rom_manager_playlists_made); "rename" -> stringResource(R.string.rom_manager_identify_renamed); else -> stringResource(R.string.rom_manager_duplicates_tidied) })
             CardBody(log.summary)
             CardBody(format.format(Date(log.startedAt)) + " · ${plural(log.steps.size, "change")}" + if (!log.finished) stringResource(R.string.rom_manager_interrupted) else "")
             log.undoneAt?.let { StatusPill(stringResource(R.string.rom_manager_undone, format.format(Date(it))), StatusTone.NEUTRAL) }
