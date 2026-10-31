@@ -31,7 +31,8 @@ your phone or tablet.
 1. Install the game on your PS4 as normal, with its latest update if you want it.
 2. On your jailbroken PS4, run a **game dumper** payload with your homebrew loader. Pick the game, and choose
    to dump the **base game** and the **update merged** into one folder if your dumper offers it.
-3. Dump to the USB drive. When it's done you have a folder named after the game's ID, for example `CUSA12345`.
+3. Dump to the USB drive. When it's done you have the game's folder, usually named after its ID (for example
+   `CUSA12345`) or its title. The name doesn't matter: RetroForge reads the game's ID from inside the folder.
 
 Check the folder before you copy it. It should look like this:
 
@@ -50,8 +51,9 @@ If there's no `eboot.bin`, or the dumper said it couldn't decrypt, the dump didn
 `CUSA12345-UPDATE` (or `CUSA12345-patch`) next to the game: shadPS4 lays it over the game when it starts, and
 RetroForge doesn't list it as a separate game.
 
-**DLC:** dumped DLC folders can't be added yet; that's coming. For now, DLC only comes in through a `.pkg` (see the
-end of this guide).
+**DLC:** dump each add-on with your dumper too. You get a folder with its own `sce_sys/param.sfo` (an add-on, not a
+game). Import it in the PS4 player and it goes where shadPS4 looks for that game's add-ons; importing it again
+replaces it. If the player says "not DLC", the folder is a game or an update, not an add-on.
 
 ## Step 2: Dump the system files (once)
 
@@ -64,7 +66,8 @@ this once.
 
 ## Step 3: Copy to your Android device
 
-1. Copy each game folder (`CUSAxxxxx`) into one folder on your device, for example `PS4 Games`.
+1. Copy each game folder into one folder on your device, for example `PS4 Games`. Keep DLC folders somewhere
+   else; they're imported, not played.
 2. Copy the system dump anywhere on the device. You can delete it after it's imported.
 
 Use the device's own storage or a fast microSD card. PS4 games are big, so leave room for them.
@@ -73,7 +76,7 @@ Use the device's own storage or a fast microSD card. PS4 games are big, so leave
 
 1. **Import the system files.** Give RetroForge the system dump folder or `.zip`. It puts the files where shadPS4
    looks for them and tells you if any modules are still missing.
-2. **Add your games folder.** RetroForge finds every `CUSAxxxxx` folder with an `eboot.bin`, reads each game's
+2. **Add your games folder.** RetroForge finds every folder with an `eboot.bin` and `sce_sys/param.sfo`, reads each game's
    name and icon, and shows it in your library.
 3. Tap a game to play. The first time, Android asks you to let the PS4 player access all files; allow it, or it
    can't read your games folder.
