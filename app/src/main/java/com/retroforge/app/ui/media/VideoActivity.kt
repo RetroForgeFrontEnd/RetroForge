@@ -6,11 +6,8 @@ import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.opengl.GLSurfaceView
 import android.os.Bundle
-import android.view.Gravity
-import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Button
 import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.core.net.toUri
@@ -21,19 +18,29 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.VideoSize
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
+import androidx.media3.ui.SubtitleView
+import androidx.media3.common.text.CueGroup
+import android.view.KeyEvent
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
+import com.retroforge.app.player.MenuCyan
 
 /**
  * Plays one film full screen (Media3 ExoPlayer, Apache 2.0), drawn by [StereoRenderer] so it can also be shown for a
  * Cardboard viewer: a 2D film once per eye, or a 3D film's halves (side by side or top and bottom) one per eye.
  */
-@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class) // PlayerView's shutter, subtitle button and surface view
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class) // SubtitleView
 class VideoActivity : ComponentActivity() {
 
     // The language picked in Settings, on Android 12 and older (newer versions apply it themselves).
     override fun attachBaseContext(newBase: android.content.Context) = super.attachBaseContext(com.retroforge.core.ui.AppLanguage.wrap(newBase))
 
     private var player: ExoPlayer? = null
+    private var eq: android.media.audiofx.Equalizer? = null
     private var renderer: StereoRenderer? = null
     private lateinit var gl: GLSurfaceView
 
@@ -47,6 +54,8 @@ class VideoActivity : ComponentActivity() {
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
         val exo = ExoPlayer.Builder(this).build().also { player = it }
+        // The same EQ as the music player's.
+        eq = SoundEq.attach(this, exo.audioSessionId)
         gl = GLSurfaceView(this).apply { setEGLContextClientVersion(2) }
         val stereo = StereoRenderer(gl) { surface -> runOnUiThread { exo.setVideoSurface(surface) } }.also { renderer = it }
         gl.setRenderer(stereo)
@@ -74,27 +83,27 @@ class VideoActivity : ComponentActivity() {
                     .show()
             }
         })
-        // The controls only: the picture comes from the renderer underneath.
-        val controls = PlayerView(this).apply {
-            this.player = exo
-            setShutterBackgroundColor(Color.TRANSPARENT)
-            setBackgroundColor(Color.TRANSPARENT)
-            setShowSubtitleButton(true)
-            videoSurfaceView?.visibility = View.GONE
-        }
-        exo.setVideoSurface(null) // the controls' own surface is unused; the renderer hands over its surface
-        val modeButton = Button(this).apply {
-            alpha = 0.85f
-            setOnClickListener { choose(stereo.mode.next(), stereo, this) }
+        // Subtitles, drawn over the picture (the picture itself comes from the renderer underneath).
+        val subtitles = SubtitleView(this)
+        exo.addListener(object : Player.Listener {
+            override fun onCues(cueGroup: CueGroup) = subtitles.setCues(cueGroup.cues)
+        })
+        val title = intent.getStringExtra(EXTRA_TITLE).orEmpty()
+        // The controls in the game player's colours and buttons (see VideoControls).
+        val controls = ComposeView(this).apply {
+            setContent {
+                MaterialTheme(colorScheme = darkColorScheme(primary = MenuCyan)) {
+                    VideoControls(exo, title, viewMode, shown = controlsShown, onShown = { controlsShown = it },
+                        onMode = { choose(stereo.mode.next(), stereo) }, onClose = { finish() })
+                }
+            }
         }
         setContentView(FrameLayout(this).apply {
             setBackgroundColor(Color.BLACK)
             addView(gl, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+            addView(subtitles, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
             addView(controls, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-            addView(modeButton, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, Gravity.TOP or Gravity.END))
         })
-        // The View button comes and goes with the playback controls, so nothing stays over the film.
-        controls.setControllerVisibilityListener(PlayerView.ControllerVisibilityListener { visibility -> modeButton.visibility = visibility })
         // 3D films start in their Cardboard mode; anything else as normal.
         val name = intent.getStringExtra(EXTRA_FILE_NAME).orEmpty().replace('.', ' ').replace('_', ' ')
         val start = when {
@@ -102,15 +111,27 @@ class VideoActivity : ComponentActivity() {
             Regex("""\b(tab|htab|ou|hou|half[- ]?ou)\b""", RegexOption.IGNORE_CASE).containsMatchIn(name) -> ViewMode.TOP_BOTTOM
             else -> ViewMode.SIDE_BY_SIDE
         }
-        choose(start, stereo, modeButton)
+        choose(start, stereo)
         exo.setMediaItem(MediaItem.fromUri(uri))
         exo.prepare()
         exo.playWhenReady = true
     }
 
-    private fun choose(mode: ViewMode, stereo: StereoRenderer, button: Button) {
+    private var viewMode by mutableStateOf(ViewMode.NORMAL)
+    private var controlsShown by mutableStateOf(true)
+
+    /** A controller's buttons bring the controls back while they're hidden (the first press only shows them). */
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (!controlsShown && event.keyCode != KeyEvent.KEYCODE_BACK && !KeyEvent.isMediaSessionKey(event.keyCode)) {
+            if (event.action == KeyEvent.ACTION_UP) controlsShown = true
+            return true
+        }
+        return super.dispatchKeyEvent(event)
+    }
+
+    private fun choose(mode: ViewMode, stereo: StereoRenderer) {
         stereo.mode = mode
-        button.text = "View: ${mode.label}"
+        viewMode = mode
         requestedOrientation = if (mode == ViewMode.NORMAL) ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         else ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         gl.requestRender()
@@ -129,6 +150,7 @@ class VideoActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        SoundEq.detach(eq)
         player?.release()
         player = null
         renderer?.release()

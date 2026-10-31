@@ -3,6 +3,11 @@
 
     <!-- Used for hack catalogues the user adds and for cover art (libretro thumbnails, SteamGridDB). -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Music: songs on the phone, and playing on in the background. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <!-- Android 17: reaching other devices on the Wi-Fi (netplay, link cable, online rooms, network drives) needs the
          user's say-so; LocalNetwork asks before the first of those. -->
@@ -67,6 +72,14 @@
             </intent-filter>
         </activity-alias>
 
+        <service
+            android:name=".ui.media.MusicService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+            </intent-filter>
+        </service>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.ports"

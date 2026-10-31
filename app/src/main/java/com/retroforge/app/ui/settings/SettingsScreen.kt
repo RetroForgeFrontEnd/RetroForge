@@ -91,7 +91,7 @@ fun SettingsScreen(
         when (group) {
             "kiosk" -> com.retroforge.app.ui.KioskCard()
             "games" -> {
-                com.retroforge.app.ui.NetworkDrivesCard(str(R.string.settings_games), onUse = library?.let { lib ->
+                com.retroforge.app.ui.NetworkDrivesCard(str(R.string.settings_games), kind = "games", onUse = library?.let { lib ->
                     { uri, progress ->
                         // A short running report while it scans: which system, and how far.
                         val root = lib.addFolderAndWait(uri) { p ->

@@ -33,6 +33,8 @@ data class NetworkShare(
     val user: String,
     val password: String,
     val domain: String = "",
+    /** What it was added for ("games", "films", "music"), so each card shows and removes only its own; "" for drives added before. */
+    val kind: String = "",
 ) {
     val shareName: String get() = share.trim('/', '\\').substringBefore('/').substringBefore('\\')
     /** The folder inside the share that's shown as its top, if one was given. */
@@ -72,7 +74,7 @@ object NetworkDrives {
             val array = JSONArray(text)
             (0 until array.length()).map { array.getJSONObject(it) }.map {
                 NetworkShare(it.getString("id"), it.getString("name"), it.getString("host"), it.getString("share"),
-                    it.optString("user"), it.optString("password"), it.optString("domain"))
+                    it.optString("user"), it.optString("password"), it.optString("domain"), it.optString("kind"))
             }
         }.getOrDefault(emptyList())
     }
@@ -92,7 +94,7 @@ object NetworkDrives {
         val array = JSONArray()
         shares.forEach {
             array.put(JSONObject().put("id", it.id).put("name", it.name).put("host", it.host).put("share", it.share)
-                .put("user", it.user).put("password", it.password).put("domain", it.domain))
+                .put("user", it.user).put("password", it.password).put("domain", it.domain).put("kind", it.kind))
         }
         synchronized(this) {
             val file = listFile(context)

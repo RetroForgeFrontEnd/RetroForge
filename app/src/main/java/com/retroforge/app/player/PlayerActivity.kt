@@ -2356,7 +2356,7 @@ class PlayerActivity : ComponentActivity() {
 
 /** Menu entry with an unmistakable focus outline, for controllers and TV remotes. */
 @Composable
-private fun MenuButton(
+internal fun MenuButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = androidx.compose.material3.ButtonDefaults.ContentPadding,
@@ -2408,6 +2408,6 @@ private fun MenuDivider() {
 
 // The in-game menu's two colours, as in RetroForge's own look: cyan for news and states (saved, connected, unlocked
 // progress), orange for values, focus and things that need attention.
-private val MenuCyan = Color(0xFF3ED6FF)
-private val MenuOrange = Color(0xFFFF8A1F)
-private val MenuGrey = Color(0xFFAAAAB4)
+internal val MenuCyan = Color(0xFF3ED6FF)
+internal val MenuOrange = Color(0xFFFF8A1F)
+internal val MenuGrey = Color(0xFFAAAAB4)

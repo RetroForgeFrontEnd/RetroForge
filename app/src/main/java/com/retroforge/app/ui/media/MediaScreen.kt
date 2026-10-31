@@ -65,6 +65,7 @@ import java.net.URLEncoder
 
 private const val FOLDER = "media_folder"
 private const val TMDB_KEY = "tmdb_key"
+private const val SHOW_MUSIC = "media_show_music"
 
 /**
  * Films on the device, Plex-style: posters in a grid, newest first. Artwork comes from TMDB when the user adds their
@@ -89,7 +90,18 @@ fun MediaScreen(prefs: SharedPreferences) {
         value = folder?.let { tree -> withContext(Dispatchers.IO) { runCatching { scan(context, tree.toUri()) }.getOrDefault(emptyList()) } }
     }
 
-    ScreenFrame(title = stringResource(R.string.media_media), subtitle = stringResource(R.string.media_your_films_with_artwork_played_right)) {
+    // Films or music, remembered between visits.
+    var music by remember { mutableStateOf(prefs.getBoolean(SHOW_MUSIC, false)) }
+    ScreenFrame(title = stringResource(R.string.media_media), subtitle = if (music) null else stringResource(R.string.media_your_films_with_artwork_played_right)) {
+        com.retroforge.app.ui.ChipRow {
+            FocusChip((if (!music) "● " else "") + stringResource(R.string.media_films), onClick = { music = false; prefs.edit().putBoolean(SHOW_MUSIC, false).apply() })
+            FocusChip((if (music) "● " else "") + stringResource(R.string.media_music), onClick = { music = true; prefs.edit().putBoolean(SHOW_MUSIC, true).apply() })
+        }
+        if (music) {
+            MusicSection(prefs)
+            MediaServersCard(prefs)
+            return@ScreenFrame
+        }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             FocusChip(stringResource(R.string.media_use_retroforge_s_film_folders), onClick = { pick.launch(makeFilmFolders()) })
             FocusChip(if (folder == null) stringResource(R.string.media_choose_another_folder) else stringResource(R.string.media_change_folder), onClick = { pick.launch(null) })
@@ -133,7 +145,7 @@ fun MediaScreen(prefs: SharedPreferences) {
             key = new
             refresh++
         }
-        com.retroforge.app.ui.NetworkDrivesCard(str(R.string.media_films), onUse = { uri, progress ->
+        com.retroforge.app.ui.NetworkDrivesCard(str(R.string.media_films), kind = "films", onUse = { uri, progress ->
             progress(str(R.string.media_looking_for_films), null)
             prefs.edit().putString(FOLDER, uri.toString()).apply()
             folder = uri.toString()

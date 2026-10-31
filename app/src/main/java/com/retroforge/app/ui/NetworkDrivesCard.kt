@@ -40,11 +40,13 @@ import kotlinx.coroutines.withContext
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, Float?) -> Unit) -> String)? = null) {
+fun NetworkDrivesCard(what: String, kind: String = "", onUse: (suspend (android.net.Uri, (String, Float?) -> Unit) -> String)? = null) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var changes by remember { mutableIntStateOf(0) }
-    val shares = remember(changes) { NetworkDrives.all(context) }
+    // Only the drives added here (and older ones, from before drives knew what they were for): removing the music
+    // drive mustn't take the games away.
+    val shares = remember(changes) { NetworkDrives.all(context).filter { it.kind == kind || it.kind.isEmpty() } }
     var adding by remember { mutableStateOf(false) }
     var name by remember { mutableStateOf("") }
     var host by remember { mutableStateOf("") }
@@ -81,7 +83,7 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
     }
 
     fun draft() = NetworkShare(NetworkDrives.newId(), name.trim().ifBlank { folder.trim().substringAfterLast('/') }, host.trim(),
-        folder.trim(), user.trim(), password)
+        folder.trim(), user.trim(), password, kind = kind)
 
     val localNetwork = com.retroforge.app.player.rememberLocalNetwork()
     FocusCard(modifier = Modifier.fillMaxWidth()) {
