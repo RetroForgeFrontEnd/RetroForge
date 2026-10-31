@@ -130,7 +130,8 @@ fun ManualViewer(uri: Uri, title: String, onClose: () -> Unit) {
             } else {
                 BoxWithConstraints(Modifier.fillMaxSize()) {
                     val widthPx = with(LocalDensity.current) { maxWidth.toPx().toInt() }
-                    LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // The first page starts below the Close chip, so the chip doesn't cover its top line.
+                    LazyColumn(Modifier.fillMaxSize(), contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 72.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         items(renderer.pageCount) { index ->
                             val page by produceState<Bitmap?>(null, index) {
                                 value = withContext(Dispatchers.IO) {
