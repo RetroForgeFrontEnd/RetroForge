@@ -2297,9 +2297,11 @@
     <string name="dlc_not_dlc">Ce dossier n\'est pas un contenu additionnel : c\'est un jeu, une mise à jour ou autre chose.</string>
     <string name="dlc_unreadable">Impossible de lire ce dossier.</string>
     <string name="online_title">Jouer en ligne</string>
-    <string name="online_body">Jouez avec des amis par internet ou sur le même Wi-Fi. Le Switch Player vous place dans un salon, que les jeux voient comme du jeu local sans fil : choisissez le jeu local ou sans fil dans le jeu. Une personne héberge et donne son adresse aux autres ; par internet, l\'hôte ouvre le port %2$d sur sa box. Vous apparaissez comme %1$s (modifiable dans les réglages Netplay).</string>
-    <string name="online_address">Adresse du salon (pour rejoindre)</string>
+    <string name="online_body">Jouez avec vos amis et votre famille, jusqu\'à 4 joueurs, chacun sur son téléphone ou sa tablette. Les jeux voient le salon comme le jeu local sans fil de la Switch : choisissez le jeu local ou sans fil dans le jeu. Une personne touche Héberger un salon ; sur le même Wi-Fi, les autres le trouvent et touchent Rejoindre. Par internet, l\'hôte ouvre le port %2$d sur sa box et donne son adresse aux autres. Vous apparaissez comme %1$s (modifiable dans les réglages Netplay).</string>
+    <string name="online_address">Ou rejoindre par adresse (par internet)</string>
     <string name="online_password">Mot de passe du salon (facultatif)</string>
     <string name="online_host">Héberger un salon</string>
     <string name="online_join">Rejoindre</string>
+    <string name="online_no_rooms">Aucun salon sur ce Wi-Fi pour l\'instant. Demandez à l\'hôte de lancer le jeu avec Héberger un salon, puis cherchez à nouveau.</string>
+    <string name="online_join_room">Rejoindre %1$s : %2$s</string>
 </resources>

@@ -2296,9 +2296,11 @@
     <string name="dlc_not_dlc">Essa pasta não é um conteúdo adicional: é um jogo, uma atualização ou outra coisa.</string>
     <string name="dlc_unreadable">Não foi possível ler essa pasta.</string>
     <string name="online_title">Jogar online</string>
-    <string name="online_body">Jogue com amigos pela internet ou no mesmo Wi-Fi. O Switch Player coloca-vos numa sala, que os jogos veem como jogo sem fios local: escolha jogo local ou sem fios no jogo. Uma pessoa cria a sala e dá o seu endereço aos outros; pela internet, quem cria abre a porta %2$d no router. Aparece como %1$s (altere nas definições de Netplay).</string>
-    <string name="online_address">Endereço da sala (para entrar)</string>
+    <string name="online_body">Jogue com amigos e família, até 4 jogadores, cada um no seu telemóvel ou tablet. Os jogos veem a sala como o jogo sem fios local da Switch: escolha jogo local ou sem fios no jogo. Uma pessoa toca em Criar sala; no mesmo Wi-Fi os outros encontram-na e tocam em Entrar. Pela internet, quem cria abre a porta %2$d no router e dá o seu endereço aos outros. Aparece como %1$s (altere nas definições de Netplay).</string>
+    <string name="online_address">Ou entre por endereço (pela internet)</string>
     <string name="online_password">Palavra-passe da sala (opcional)</string>
     <string name="online_host">Criar sala</string>
     <string name="online_join">Entrar</string>
+    <string name="online_no_rooms">Ainda não há salas neste Wi-Fi. Peça a quem cria a sala para abrir o jogo com Criar sala e procure de novo.</string>
+    <string name="online_join_room">Entrar com %1$s: %2$s</string>
 </resources>

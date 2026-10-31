@@ -2296,9 +2296,11 @@
     <string name="dlc_not_dlc">Quella cartella non è un contenuto aggiuntivo: è un gioco, un aggiornamento o altro.</string>
     <string name="dlc_unreadable">Impossibile leggere quella cartella.</string>
     <string name="online_title">Gioca online</string>
-    <string name="online_body">Gioca con gli amici via internet o sulla stessa Wi-Fi. Lo Switch Player vi mette in una stanza, che i giochi vedono come gioco wireless locale: scegli il gioco locale o wireless nel gioco. Una persona ospita e dà agli altri il suo indirizzo; via internet chi ospita apre la porta %2$d sul router. Appari come %1$s (si cambia nelle impostazioni Netplay).</string>
-    <string name="online_address">Indirizzo della stanza (per entrare)</string>
+    <string name="online_body">Gioca con amici e famiglia, fino a 4 giocatori, ognuno sul proprio telefono o tablet. I giochi vedono la stanza come il gioco wireless locale della Switch: scegli il gioco locale o wireless nel gioco. Una persona tocca Ospita una stanza; sulla stessa Wi-Fi gli altri la trovano e toccano Entra. Via internet chi ospita apre la porta %2$d sul router e dà agli altri il suo indirizzo. Appari come %1$s (si cambia nelle impostazioni Netplay).</string>
+    <string name="online_address">Oppure entra con un indirizzo (via internet)</string>
     <string name="online_password">Password della stanza (facoltativa)</string>
     <string name="online_host">Ospita una stanza</string>
     <string name="online_join">Entra</string>
+    <string name="online_no_rooms">Ancora nessuna stanza su questa Wi-Fi. Chiedi a chi ospita di avviare il gioco con Ospita una stanza, poi cerca di nuovo.</string>
+    <string name="online_join_room">Entra con %1$s: %2$s</string>
 </resources>

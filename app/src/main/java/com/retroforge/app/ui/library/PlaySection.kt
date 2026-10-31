@@ -370,6 +370,6 @@ private fun StandaloneSection(
     options.firstOrNull { (_, emulator) -> emulator.id == GameOnline.SWITCH_PLAYER }
         ?.takeIf { (_, emulator) -> remember(emulator.id, resumes) { viewModel.installedComponent(emulator) } != null }
         ?.let { (option, emulator) ->
-            GameOnlineCard { extras -> viewModel.playStandalone(context, game, root, option, emulator, onProblem, extras) }
+            GameOnlineCard(game) { extras -> viewModel.playStandalone(context, game, root, option, emulator, onProblem, extras) }
         }
 }
