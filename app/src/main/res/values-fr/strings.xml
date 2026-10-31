@@ -2064,4 +2064,19 @@
     <string name="news_none">Pas encore d\'actus : RetroForge n\'a pas pu joindre les flux. Vérifiez la connexion et choisissez Actualiser.</string>
     <string name="news_failed">Injoignables : %1$s</string>
     <string name="news_more">Voir plus</string>
+    <string name="link_cable_menu">Câble link</string>
+    <string name="link_cable_menu_hosting">Câble link : branché, en attente</string>
+    <string name="link_cable_menu_joined">Câble link : relié à %1$s</string>
+    <string name="link_cable_title">Câble link</string>
+    <string name="link_cable_body">Reliez cette Game Boy à celle d\'un autre appareil sur le même Wi-Fi, pour échanger et combattre (Pokémon Rouge et Bleu, Tetris en duel). Les jeux n\'ont pas besoin d\'être les mêmes. L\'un branche le câble ici ; l\'autre le trouve ci-dessous et le rejoint. Puis utilisez le menu d\'échange ou 2 joueurs du jeu, sur les deux.</string>
+    <string name="link_cable_host">Brancher le câble ici</string>
+    <string name="link_cable_looking">Recherche de Game Boy sur ce Wi-Fi…</string>
+    <string name="link_cable_none">Personne n\'a encore branché de câble sur ce Wi-Fi.</string>
+    <string name="link_cable_join">Se relier à %1$s : %2$s</string>
+    <string name="link_cable_address">Ou l\'adresse de l\'autre appareil (192.168.…)</string>
+    <string name="link_cable_hosting">Le câble est branché. Sur l\'autre appareil, ouvrez son jeu Game Boy, puis Câble link, et choisissez celui-ci (ou tapez %1$s). Puis allez dans le menu d\'échange ou 2 joueurs du jeu.</string>
+    <string name="link_cable_joined">Relié à %1$s. Allez sur les deux dans le menu d\'échange ou 2 joueurs du jeu.</string>
+    <string name="link_cable_unplug">Débrancher le câble</string>
+    <string name="link_cable_bad_address">%1$s n\'est pas une adresse comme 192.168.1.23.</string>
+    <string name="link_cable_not_in_this_core">Cet émulateur n\'a pas de câble link réseau. Choisissez Gambatte dans Émulateur → Changer d\'émulateur.</string>
 </resources>

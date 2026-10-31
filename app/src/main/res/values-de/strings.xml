@@ -2031,4 +2031,19 @@
     <string name="news_none">Noch keine News: RetroForge hat die Feeds nicht erreicht. Prüfe die Verbindung und wähle Aktualisieren.</string>
     <string name="news_failed">Nicht erreichbar: %1$s</string>
     <string name="news_more">Mehr zeigen</string>
+    <string name="link_cable_menu">Link-Kabel</string>
+    <string name="link_cable_menu_hosting">Link-Kabel: eingesteckt, wartet</string>
+    <string name="link_cable_menu_joined">Link-Kabel: verbunden mit %1$s</string>
+    <string name="link_cable_title">Link-Kabel</string>
+    <string name="link_cable_body">Verbinde diesen Game Boy mit einem auf einem anderen Gerät im selben WLAN, zum Tauschen und Kämpfen (Pokémon Rot und Blau, Tetris gegeneinander). Die Spiele müssen nicht gleich sein. Einer steckt hier das Kabel ein, der andere findet ihn unten und verbindet sich. Dann auf beiden das Tausch- oder 2-Spieler-Menü des Spiels nutzen.</string>
+    <string name="link_cable_host">Kabel hier einstecken</string>
+    <string name="link_cable_looking">Suche Game Boys in diesem WLAN …</string>
+    <string name="link_cable_none">In diesem WLAN hat noch niemand eingesteckt.</string>
+    <string name="link_cable_join">Mit %1$s verbinden: %2$s</string>
+    <string name="link_cable_address">Oder die Adresse des anderen Geräts (192.168.…)</string>
+    <string name="link_cable_hosting">Das Kabel ist eingesteckt. Öffne auf dem anderen Gerät sein Game-Boy-Spiel, dann Link-Kabel, und wähle dieses (oder tippe %1$s). Dann ins Tausch- oder 2-Spieler-Menü des Spiels.</string>
+    <string name="link_cable_joined">Mit %1$s verbunden. Geht auf beiden ins Tausch- oder 2-Spieler-Menü des Spiels.</string>
+    <string name="link_cable_unplug">Kabel abziehen</string>
+    <string name="link_cable_bad_address">%1$s ist keine Adresse wie 192.168.1.23.</string>
+    <string name="link_cable_not_in_this_core">Dieser Emulator hat kein Netzwerk-Link-Kabel. Wähle Gambatte unter Emulator → Emulator wechseln.</string>
 </resources>

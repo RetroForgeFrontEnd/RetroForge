@@ -2063,4 +2063,19 @@
     <string name="news_none">Ancora nessuna notizia: RetroForge non è riuscito a raggiungere i feed. Controlla la connessione e scegli Aggiorna.</string>
     <string name="news_failed">Non raggiungibili: %1$s</string>
     <string name="news_more">Mostra altro</string>
+    <string name="link_cable_menu">Cavo link</string>
+    <string name="link_cable_menu_hosting">Cavo link: collegato, in attesa</string>
+    <string name="link_cable_menu_joined">Cavo link: collegato a %1$s</string>
+    <string name="link_cable_title">Cavo link</string>
+    <string name="link_cable_body">Collega questo Game Boy a quello di un altro dispositivo sullo stesso Wi-Fi, per scambi e lotte (Pokémon Rosso e Blu, Tetris uno contro uno). I giochi non devono essere uguali. Uno collega qui il cavo; l\'altro lo trova qui sotto e si unisce. Poi usate su entrambi il menu di scambio o a 2 giocatori del gioco.</string>
+    <string name="link_cable_host">Collega il cavo qui</string>
+    <string name="link_cable_looking">Cerco Game Boy su questo Wi-Fi…</string>
+    <string name="link_cable_none">Nessuno ha ancora collegato il cavo su questo Wi-Fi.</string>
+    <string name="link_cable_join">Collegati a %1$s: %2$s</string>
+    <string name="link_cable_address">Oppure l\'indirizzo dell\'altro dispositivo (192.168.…)</string>
+    <string name="link_cable_hosting">Il cavo è collegato. Sull\'altro dispositivo apri il suo gioco Game Boy, poi Cavo link, e scegli questo (o scrivi %1$s). Poi vai al menu di scambio o a 2 giocatori del gioco.</string>
+    <string name="link_cable_joined">Collegato a %1$s. Andate su entrambi al menu di scambio o a 2 giocatori del gioco.</string>
+    <string name="link_cable_unplug">Scollega il cavo</string>
+    <string name="link_cable_bad_address">%1$s non è un indirizzo come 192.168.1.23.</string>
+    <string name="link_cable_not_in_this_core">Questo emulatore non ha il cavo link di rete. Scegli Gambatte in Emulatore → Cambia emulatore.</string>
 </resources>

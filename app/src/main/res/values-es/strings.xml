@@ -2064,4 +2064,19 @@
     <string name="news_none">Aún no hay noticias: RetroForge no pudo conectar con los feeds. Comprueba la conexión y elige Actualizar.</string>
     <string name="news_failed">No se pudo conectar con: %1$s</string>
     <string name="news_more">Ver más</string>
+    <string name="link_cable_menu">Cable link</string>
+    <string name="link_cable_menu_hosting">Cable link: conectado, esperando</string>
+    <string name="link_cable_menu_joined">Cable link: conectado con %1$s</string>
+    <string name="link_cable_title">Cable link</string>
+    <string name="link_cable_body">Conecta esta Game Boy con otra en otro dispositivo de la misma Wi-Fi, para intercambiar y combatir (Pokémon Rojo y Azul, Tetris uno contra uno). No hace falta que sea el mismo juego. Uno conecta aquí el cable; el otro lo encuentra abajo y se une. Luego usad en los dos el menú de intercambio o de 2 jugadores del juego.</string>
+    <string name="link_cable_host">Conectar el cable aquí</string>
+    <string name="link_cable_looking">Buscando Game Boys en esta Wi-Fi…</string>
+    <string name="link_cable_none">Nadie ha conectado el cable en esta Wi-Fi todavía.</string>
+    <string name="link_cable_join">Conectar con %1$s: %2$s</string>
+    <string name="link_cable_address">O la dirección del otro dispositivo (192.168.…)</string>
+    <string name="link_cable_hosting">El cable está conectado. En el otro dispositivo, abre su juego de Game Boy, luego Cable link, y elige este (o escribe %1$s). Después ve al menú de intercambio o de 2 jugadores del juego.</string>
+    <string name="link_cable_joined">Conectado con %1$s. Id en los dos al menú de intercambio o de 2 jugadores del juego.</string>
+    <string name="link_cable_unplug">Desconectar el cable</string>
+    <string name="link_cable_bad_address">%1$s no es una dirección como 192.168.1.23.</string>
+    <string name="link_cable_not_in_this_core">Este emulador no tiene cable link por red. Elige Gambatte en Emulador → Cambiar de emulador.</string>
 </resources>

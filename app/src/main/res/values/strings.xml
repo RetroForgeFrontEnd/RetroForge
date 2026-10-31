@@ -2191,4 +2191,19 @@
     <string name="news_none">No news yet: RetroForge couldn\'t reach the feeds. Check the connection and choose Refresh.</string>
     <string name="news_failed">Couldn\'t reach: %1$s</string>
     <string name="news_more">Show more</string>
+    <string name="link_cable_menu">Link cable</string>
+    <string name="link_cable_menu_hosting">Link cable: plugged in, waiting</string>
+    <string name="link_cable_menu_joined">Link cable: linked to %1$s</string>
+    <string name="link_cable_title">Link cable</string>
+    <string name="link_cable_body">Link this Game Boy to one on another device on the same Wi-Fi, for trading and battles (Pokémon Red and Blue, Tetris head-to-head). The games needn\'t be the same. One of you plugs in the cable here; the other finds them below and joins. Then use the game\'s own trade or 2-player menu, on both.</string>
+    <string name="link_cable_host">Plug in the cable here</string>
+    <string name="link_cable_looking">Looking for Game Boys on this Wi-Fi…</string>
+    <string name="link_cable_none">Nobody\'s plugged in on this Wi-Fi yet.</string>
+    <string name="link_cable_join">Link to %1$s: %2$s</string>
+    <string name="link_cable_address">Or the other device\'s address (192.168.…)</string>
+    <string name="link_cable_hosting">The cable is plugged in. On the other device, open its Game Boy game, then Link cable, and choose this one (or type %1$s). Then go to the game\'s trade or 2-player menu.</string>
+    <string name="link_cable_joined">Linked to %1$s. Go to the game\'s trade or 2-player menu on both.</string>
+    <string name="link_cable_unplug">Unplug the cable</string>
+    <string name="link_cable_bad_address">%1$s isn\'t an address like 192.168.1.23.</string>
+    <string name="link_cable_not_in_this_core">This emulator has no network link cable. Choose Gambatte under Emulator → Switch emulator.</string>
 </resources>
