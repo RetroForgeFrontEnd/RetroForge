@@ -5,9 +5,10 @@ PS3 and PS4 games, online play, your own music and radio, and a lot more for you
 WHAT'S NEW
 
 PS3, PS4 and Switch
-- PS3 games open in the RetroForge PS3 Player (a separate download, built on RPCS3). Add DLC from a game's page.
+- PS3 games open in the RetroForge PS3 Player (built on RPCS3), with DLC added from a game's page.
 - PS3 online: Settings → Online and friends signs you in to RPCN (a free, fan-run PS3 network), makes an account or signs you out. Games log in by themselves.
-- PS4 games: point RetroForge at your own dumped game folders; titles come from the game's own data, and they open in the RetroForge PS4 Player. DLC folders can be added from the game's page. The guide explains how.
+- PS4 games: point RetroForge at your own dumped game folders; titles come from the game's own data, and they open in the RetroForge PS4 Player (built on shadPS4). DLC folders can be added from the game's page. The guide explains how.
+- The PS3 and PS4 players aren't on GitHub yet; their download pages follow in a later update. RetroForge is ready for them.
 - Switch Play Online: host a room from the game's page, and other players on the same Wi-Fi see it and tap to join. Up to 4 players.
 - Each player app has a RetroForge neon icon with the console's name.
 - You need your own games, keys and firmware from your own consoles. Nothing of Sony's or Nintendo's is included.
@@ -49,6 +50,7 @@ Look and feel
 - Settings headings stand out, and Playing is split into Saves, Online and Controls.
 - Tabs run from orange on Home to cyan on the last tab, with a soft glow.
 - Frame skip and a sound buffer setting in the pause menu, and Pass the controller to play as player 2.
+- A >> fast-forward button on the touch controls for systems whose pads have no R2: tap it on, tap it off.
 - 3DS games can open in CitraVR on Meta Quest, for full 3D.
 
 Updating
