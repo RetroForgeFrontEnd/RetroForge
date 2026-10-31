@@ -59,6 +59,7 @@ fun LinksScreen() {
     val context = LocalContext.current
     var error by remember { mutableStateOf<String?>(null) }
     ScreenFrame(title = stringResource(R.string.links_retro_games_handhelds_and_pc_gaming), subtitle = stringResource(R.string.links_channels_and_sites_worth_following_links)) {
+        NewsSection(onOpen = { error = open(context, it) })
         usefulLinks.forEach { group ->
             Text(group.title, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
             // A to Z, ignoring a leading "The" (The Gaming Historian goes under G).

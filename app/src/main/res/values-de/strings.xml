@@ -2021,4 +2021,14 @@
     <string name="peer_sync_wrong_code">Der Code hat nicht gepasst. Lass auf dem anderen Gerät einen neuen zeigen und versuche es noch einmal.</string>
     <string name="peer_sync_paired_devices">Gekoppelte Geräte</string>
     <string name="peer_sync_forget">Entfernen</string>
+    <string name="news_title">Retro-News</string>
+    <string name="news_body">Die neuesten Retro-Gaming-News, Emulator-Versionen und Mods aus den eigenen Feeds der Seiten und Projekte (in ihrer Sprache). Wähle eine Meldung, um sie auf der Seite zu lesen.</string>
+    <string name="news_all">Alle</string>
+    <string name="news_news">News</string>
+    <string name="news_emulators">Emulatoren</string>
+    <string name="news_modding">Modding</string>
+    <string name="news_refresh">Aktualisieren</string>
+    <string name="news_none">Noch keine News: RetroForge hat die Feeds nicht erreicht. Prüfe die Verbindung und wähle Aktualisieren.</string>
+    <string name="news_failed">Nicht erreichbar: %1$s</string>
+    <string name="news_more">Mehr zeigen</string>
 </resources>

@@ -2054,4 +2054,14 @@
     <string name="peer_sync_wrong_code">Ese código no ha funcionado. Muestra uno nuevo en el otro dispositivo y vuelve a intentarlo.</string>
     <string name="peer_sync_paired_devices">Dispositivos emparejados</string>
     <string name="peer_sync_forget">Olvidar</string>
+    <string name="news_title">Noticias retro</string>
+    <string name="news_body">Las últimas noticias de juegos retro, versiones de emuladores y modding, de los propios feeds de las webs y proyectos (en el idioma en que se escriben). Elige una noticia para leerla en la web.</string>
+    <string name="news_all">Todo</string>
+    <string name="news_news">Noticias</string>
+    <string name="news_emulators">Emuladores</string>
+    <string name="news_modding">Modding</string>
+    <string name="news_refresh">Actualizar</string>
+    <string name="news_none">Aún no hay noticias: RetroForge no pudo conectar con los feeds. Comprueba la conexión y elige Actualizar.</string>
+    <string name="news_failed">No se pudo conectar con: %1$s</string>
+    <string name="news_more">Ver más</string>
 </resources>

@@ -2181,4 +2181,14 @@
     <string name="peer_sync_wrong_code">That code didn\'t work. Show a new one on the other device and try again.</string>
     <string name="peer_sync_paired_devices">Paired devices</string>
     <string name="peer_sync_forget">Forget</string>
+    <string name="news_title">Retro news</string>
+    <string name="news_body">The latest retro gaming news, emulator releases and modding, from the sites\' and projects\' own feeds (in the language they\'re written in). Choose a story to read it on the site.</string>
+    <string name="news_all">All</string>
+    <string name="news_news">News</string>
+    <string name="news_emulators">Emulators</string>
+    <string name="news_modding">Modding</string>
+    <string name="news_refresh">Refresh</string>
+    <string name="news_none">No news yet: RetroForge couldn\'t reach the feeds. Check the connection and choose Refresh.</string>
+    <string name="news_failed">Couldn\'t reach: %1$s</string>
+    <string name="news_more">Show more</string>
 </resources>

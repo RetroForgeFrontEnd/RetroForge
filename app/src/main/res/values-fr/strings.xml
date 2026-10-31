@@ -2054,4 +2054,14 @@
     <string name="peer_sync_wrong_code">Ce code n\'a pas marché. Affichez-en un nouveau sur l\'autre appareil et réessayez.</string>
     <string name="peer_sync_paired_devices">Appareils associés</string>
     <string name="peer_sync_forget">Oublier</string>
+    <string name="news_title">Actus rétro</string>
+    <string name="news_body">Les dernières actus du jeu rétro, sorties d\'émulateurs et modding, depuis les flux des sites et projets eux-mêmes (dans leur langue). Choisissez un article pour le lire sur le site.</string>
+    <string name="news_all">Tout</string>
+    <string name="news_news">Actus</string>
+    <string name="news_emulators">Émulateurs</string>
+    <string name="news_modding">Modding</string>
+    <string name="news_refresh">Actualiser</string>
+    <string name="news_none">Pas encore d\'actus : RetroForge n\'a pas pu joindre les flux. Vérifiez la connexion et choisissez Actualiser.</string>
+    <string name="news_failed">Injoignables : %1$s</string>
+    <string name="news_more">Voir plus</string>
 </resources>
