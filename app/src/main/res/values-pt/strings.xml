@@ -340,7 +340,7 @@
     <string name="media_use_retroforge_s_film_folders">Usar as pastas de filmes do RetroForge</string>
     <string name="media_watch_your_films_in_retroforge">Assista seus filmes no RetroForge</string>
     <string name="media_use_retroforge_s_film_folders_makes">\"Usar as pastas de filmes do RetroForge\" cria Movies/RetroForge no seu celular, com uma pasta Films e uma 3D Films dentro. Escolha \"Usar esta pasta\" quando o Android pedir, copie filmes para elas (cabo USB ou gerenciador de arquivos) e toque em Procurar de novo. Ou escolha qualquer pasta onde você já guarda filmes, no celular, num cartão SD ou num pendrive. O RetroForge só a lê.</string>
-    <string name="media_3d_films_side_by_side_or">Filmes 3D (lado a lado ou em cima e embaixo) ganham um selo 3D e rodam nos modos Cardboard. Como assistir: Configurações → Como usar o RetroForge → Mídia.</string>
+    <string name="media_3d_films_side_by_side_or">Filmes 3D (lado a lado ou em cima e embaixo) ganham um selo 3D e rodam nos modos Cardboard. Como assistir: Configurações → Ajuda e acerca de → Como usar o RetroForge → Mídia.</string>
     <string name="media_looking_for_films">Procurando filmes…</string>
     <string name="media_no_films_found_in_that_folder">Nenhum filme encontrado nessa pasta (mp4, mkv, avi, mov e outros).</string>
     <string name="media_no_3d_films_yet_films_with">Nenhum filme 3D ainda. Filmes com 3D, SBS, HSBS, TAB ou HOU no nome (ou numa pasta \"3D Films\") aparecem aqui.</string>

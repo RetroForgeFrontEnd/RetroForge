@@ -1802,7 +1802,7 @@ class PlayerActivity : ComponentActivity() {
                         saveStateTo(s.file) { saved -> notice = if (saved) str(R.string.player_state_saved) else str(R.string.player_this_emulator_can_t_save_states); refreshStates() }
                     }, modifier = Modifier.weight(1f), contentPadding = small) { Text(stringResource(R.string.states_overwrite), fontSize = 13.sp, maxLines = 1) }
                     MenuButton(onClick = {
-                        if (stateToDelete == s.file) { SaveStates.delete(s); stateToDelete = null; refreshStates() } else stateToDelete = s.file
+                        if (stateToDelete == s.file) { SaveStates.delete(s); stateToDelete = null; notice = null; refreshStates() } else stateToDelete = s.file
                     }, modifier = Modifier.weight(1f), contentPadding = small) {
                         Text(stringResource(if (stateToDelete == s.file) R.string.states_delete_sure else R.string.files_delete), fontSize = 13.sp, maxLines = 1)
                     }

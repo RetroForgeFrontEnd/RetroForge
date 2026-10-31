@@ -19,6 +19,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
 
 /** Pages full of settings (Settings) set this: cards get less padding, and their titles and texts go smaller and shorter. */
@@ -69,8 +74,16 @@ fun FocusCard(
             content = body,
         )
     } else {
+        // Down from the card goes into its own buttons first (the D-pad search would skip past them, as they're
+        // inside the card rather than below it); a card without any moves on as usual.
+        val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
         Surface(
-            modifier = surfaceModifier.focusable(interactionSource = interaction),
+            modifier = surfaceModifier
+                .onPreviewKeyEvent { e ->
+                    focused && e.type == KeyEventType.KeyDown && e.key == Key.DirectionDown &&
+                        focusManager.moveFocus(androidx.compose.ui.focus.FocusDirection.Enter)
+                }
+                .focusable(interactionSource = interaction),
             shape = shape,
             border = border,
             color = cardColor,
