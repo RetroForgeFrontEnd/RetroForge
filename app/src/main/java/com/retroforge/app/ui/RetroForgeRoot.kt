@@ -135,6 +135,8 @@ private const val COVER_ROUTE = "retro/game/{id}/cover"
 private const val EDIT_ROUTE = "retro/game/{id}/edit"
 private const val MANAGER_ROUTE = "retro/manager"
 private const val FILES_ROUTE = "retro/files"
+private const val BACKLOG_ROUTE = "retro/backlog"
+private const val PLAYTIME_ROUTE = "retro/playtime"
 private const val MANAGER_SORT_ROUTE = "retro/manager/sort"
 private const val PLAYLIST_ROUTE = "retro/playlist/{id}"
 private const val MANAGER_DELETE_ROUTE = "retro/manager/delete/{id}"
@@ -259,8 +261,12 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
                                 onOpenManager = { nav.navigate(MANAGER_ROUTE) },
                                 onOpenFiles = { nav.navigate(FILES_ROUTE) },
                                 onOpenPlaylist = { nav.navigate("retro/playlist/$it") },
+                                onOpenBacklog = { nav.navigate(BACKLOG_ROUTE) },
+                                onOpenPlaytime = { nav.navigate(PLAYTIME_ROUTE) },
                             )
                         }
+                        composable(BACKLOG_ROUTE) { com.retroforge.app.ui.library.BacklogScreen(libraryViewModel, onOpenGame = { nav.navigate("retro/game/$it") }) }
+                        composable(PLAYTIME_ROUTE) { com.retroforge.app.ui.library.PlaytimeScreen(libraryViewModel, onOpenGame = { nav.navigate("retro/game/$it") }) }
                         composable(FOLDERS_ROUTE) { LibraryFoldersScreen(libraryViewModel) }
                         composable(PLAYLIST_ROUTE) { entry ->
                             PlaylistScreen(

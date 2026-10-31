@@ -211,7 +211,7 @@ Requests that were never fully done, or only answered:
 |---|---|
 | RetroAchievements | 🔨 in progress: rcheevos (RetroAchievements' own library, MIT) built into the built-in player; sign-in, unlock pop-ups and the achievement list next |
 | Save state manager in the app | 📋 to do: every state per game with its picture and date, rename, delete, load |
-| Smart backlog and playtime analytics | 📋 to do: a backlog (want to play, playing, finished), suggestions from it, and playtime charts per game, system and week |
+| Smart backlog and playtime analytics | ✅ done: each game's page sets Want to play, Playing, Finished or Dropped; Retro → Backlog lists them by status and suggests what to play next (games being played first, then want-to-play ones in a genre you finished or on the system you play most); Retro → Playtime charts the built-in player's time per game, per system and per week (weeks counted from this version on), and how often games were started in other emulators. Tested on the emulator |
 | Peer-to-peer save and memory card sync on the local network | 📋 to do: two devices find each other on the Wi-Fi and swap newer saves and memory cards when RetroForge opens, no network drive needed |
 | Custom soundtracks and a jukebox | 📋 to do: your own music in the menus (and over games if wanted), and a jukebox for game music files |
 | Game notes, strategy guides and map viewer | 📋 to do: notes per game (also in the pause menu), guides and maps from your own files, viewable mid-game |

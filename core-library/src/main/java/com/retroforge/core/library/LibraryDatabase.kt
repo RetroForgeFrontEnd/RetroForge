@@ -171,6 +171,27 @@ data class PlaylistEntity(
 )
 data class PlaylistItemEntity(val playlistId: Long, val rootId: Long, val relativePath: String, val position: Int, val addedAt: Long)
 
+/**
+ * Where a game is in the user's backlog: [BacklogStatus] as text. Keyed by folder + path like favourites, so it
+ * survives rescans.
+ */
+@Entity(
+    tableName = "backlog",
+    primaryKeys = ["rootId", "relativePath"],
+    foreignKeys = [ForeignKey(entity = RootEntity::class, parentColumns = ["id"], childColumns = ["rootId"], onDelete = ForeignKey.CASCADE)],
+)
+data class BacklogEntity(val rootId: Long, val relativePath: String, val status: String, val updatedAt: Long)
+
+enum class BacklogStatus { WANT, PLAYING, FINISHED, DROPPED }
+
+/** A game in the backlog, with its status. */
+data class BacklogGame(@androidx.room.Embedded val game: GameEntity, val status: String, val updatedAt: Long) {
+    val backlogStatus: BacklogStatus? get() = BacklogStatus.entries.firstOrNull { it.name == status }
+}
+
+/** A game that has been played, with its play history. */
+data class PlayedGame(@androidx.room.Embedded val game: GameEntity, val lastPlayedAt: Long, val playCount: Int)
+
 data class PlaylistSummary(val id: Long, val name: String, val games: Int)
 
 data class SystemCount(val system: String, val games: Int, val hacks: Int)
@@ -216,6 +237,9 @@ interface LibraryDao {
     @Query("SELECT id FROM games WHERE system = :system AND fileName = :fileName LIMIT 1")
     suspend fun gameIdFor(system: String, fileName: String): Long?
 
+    @Query("SELECT * FROM games WHERE system = :system AND fileName = :fileName LIMIT 1")
+    suspend fun gameFor(system: String, fileName: String): GameEntity?
+
     @Query("SELECT * FROM games WHERE duplicateKey = :key AND id != :excludeId")
     suspend fun duplicatesOf(key: String, excludeId: Long): List<GameEntity>
 
@@ -248,6 +272,25 @@ interface LibraryDao {
 
     @Query("SELECT play_history.* FROM play_history JOIN games ON games.rootId = play_history.rootId AND games.relativePath = play_history.relativePath WHERE games.id = :gameId")
     fun playFor(gameId: Long): Flow<PlayEntity?>
+
+    @Query(
+        "SELECT games.*, backlog.status AS status, backlog.updatedAt AS updatedAt FROM games JOIN backlog ON games.rootId = backlog.rootId AND games.relativePath = backlog.relativePath ORDER BY backlog.updatedAt DESC",
+    )
+    fun backlogGames(): Flow<List<BacklogGame>>
+
+    @Query("SELECT status FROM backlog WHERE rootId = :rootId AND relativePath = :path")
+    fun backlogStatus(rootId: Long, path: String): Flow<String?>
+
+    @androidx.room.Upsert
+    suspend fun upsertBacklog(entry: BacklogEntity)
+
+    @Query("DELETE FROM backlog WHERE rootId = :rootId AND relativePath = :path")
+    suspend fun removeBacklog(rootId: Long, path: String)
+
+    @Query(
+        "SELECT games.*, play_history.lastPlayedAt AS lastPlayedAt, play_history.playCount AS playCount FROM games JOIN play_history ON games.rootId = play_history.rootId AND games.relativePath = play_history.relativePath ORDER BY play_history.lastPlayedAt DESC",
+    )
+    fun playedGames(): Flow<List<PlayedGame>>
 
     @Query("SELECT * FROM covers")
     fun covers(): Flow<List<CoverEntity>>
@@ -363,6 +406,9 @@ interface LibraryDao {
     @Query("UPDATE OR IGNORE covers SET relativePath = :to WHERE rootId = :rootId AND relativePath = :from")
     suspend fun relinkCover(rootId: Long, from: String, to: String)
 
+    @Query("UPDATE OR IGNORE backlog SET relativePath = :to WHERE rootId = :rootId AND relativePath = :from")
+    suspend fun relinkBacklog(rootId: Long, from: String, to: String)
+
     @Query("UPDATE OR IGNORE game_edits SET relativePath = :to WHERE rootId = :rootId AND relativePath = :from")
     suspend fun relinkEdit(rootId: Long, from: String, to: String)
 
@@ -414,6 +460,7 @@ interface LibraryDao {
         relinkPlay(rootId, from, to)
         relinkCover(rootId, from, to)
         relinkEdit(rootId, from, to)
+        relinkBacklog(rootId, from, to)
     }
 
     /** Replaces a folder's index in one transaction, so an interrupted scan leaves the previous index intact. */
@@ -438,10 +485,11 @@ interface LibraryDao {
     entities = [
         RootEntity::class, GameEntity::class, ProblemEntity::class, PlayEntity::class, CoverEntity::class,
         FavouriteEntity::class, PlaylistEntity::class, PlaylistItemEntity::class, GameEditEntity::class,
+        BacklogEntity::class,
     ],
-    version = 5,
+    version = 6,
     exportSchema = true,
-    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5)],
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5), AutoMigration(from = 5, to = 6)],
 )
 abstract class LibraryDatabase : RoomDatabase() {
     abstract fun dao(): LibraryDao

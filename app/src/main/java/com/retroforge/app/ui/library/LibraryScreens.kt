@@ -70,6 +70,8 @@ fun RetroScreen(
     onOpenManager: () -> Unit,
     onOpenFiles: () -> Unit = {},
     onOpenPlaylist: (Long) -> Unit,
+    onOpenBacklog: () -> Unit = {},
+    onOpenPlaytime: () -> Unit = {},
 ) {
     val roots by viewModel.roots.collectAsStateWithLifecycle()
     val systems by viewModel.systems.collectAsStateWithLifecycle()
@@ -183,6 +185,15 @@ fun RetroScreen(
             }
 
             FavouritesAndPlaylistsSection(viewModel, rootsById, onOpenGame, onOpenPlaylist)
+
+            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenBacklog) {
+                CardTitle(stringResource(R.string.backlog_title))
+                CardBody(stringResource(R.string.backlog_card_body))
+            }
+            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenPlaytime) {
+                CardTitle(stringResource(R.string.playtime_title))
+                CardBody(stringResource(R.string.playtime_card_body))
+            }
 
         }
 
@@ -391,6 +402,7 @@ fun GameDetailScreen(
         CoverControls(g, viewModel, onChangeCover = { onChangeCover(g.id) })
         FocusChip(stringResource(R.string.edit_details_edit_details), onClick = { onEditDetails(g.id) })
         FavouriteAndPlaylists(g, viewModel)
+        BacklogChips(g, viewModel)
         FocusChip(stringResource(R.string.library_delete_this_game), onClick = { onDelete(g.id) })
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             g.description?.let { CardBody(it) }
