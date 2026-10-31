@@ -44,7 +44,7 @@ import java.time.LocalDate
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices, resume: Boolean, onResume: (Boolean) -> Unit, library: LibraryRepository? = null) {
+fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices, resume: Boolean, onResume: (Boolean) -> Unit) {
     var changes by remember { mutableIntStateOf(0) }
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle(stringResource(R.string.built_in_player_built_in_player))
@@ -57,8 +57,6 @@ fun BuiltInPlayerCard(systems: List<Pair<String, String>>, choices: CoreChoices,
         CardBody(stringResource(R.string.built_in_player_when_you_quit_a_game_your))
     }
     CopyFirstCard()
-    SaveBackupCard(library)
-    MemoryCardsCard()
     VideoChoicesCard(systems, choices)
     val switchable = systems.filter { (id, _) -> PlayerCores.choices(id).size > 1 }
     if (switchable.isEmpty()) return
@@ -166,7 +164,7 @@ private fun listsDir(context: Context) = File(context.cacheDir, "backup-lists")
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SaveBackupCard(library: LibraryRepository?) {
+internal fun SaveBackupCard(library: LibraryRepository?) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var status by remember { mutableStateOf<String?>(null) }

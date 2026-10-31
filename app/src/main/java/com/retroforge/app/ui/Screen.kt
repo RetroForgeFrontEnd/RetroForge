@@ -88,11 +88,14 @@ fun ScreenFrame(title: String?, subtitle: String? = null, compact: Boolean = fal
 @Composable
 fun CardTitle(text: String, status: (@Composable () -> Unit)? = null) {
     val compact = LocalCompactCards.current
-    val style = if (compact) MaterialTheme.typography.titleMedium else MaterialTheme.typography.titleLarge
+    // On compact pages (Settings) the title heads its section: larger, bold and in the theme's accent so it stands out.
+    val style = if (compact) MaterialTheme.typography.titleLarge.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+        else MaterialTheme.typography.titleLarge
+    val color = if (compact) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
     if (status != null && compact) {
         // A short pill (On, Off …) sits at the end of the title line; a long one would squeeze the title, so it goes under.
         androidx.compose.ui.layout.Layout(content = {
-            Text(text, style = style, color = MaterialTheme.colorScheme.onSurface)
+            Text(text, style = style, color = color)
             status()
         }) { (title, pill), constraints ->
             val gap = 12.dp.roundToPx()
@@ -116,7 +119,7 @@ fun CardTitle(text: String, status: (@Composable () -> Unit)? = null) {
         }
         return
     }
-    Text(text, style = style, color = MaterialTheme.colorScheme.onSurface)
+    Text(text, style = style, color = color)
     status?.invoke()
 }
 
@@ -138,7 +141,7 @@ fun CardBody(text: String) {
     )
     if (cut || expanded) {
         Text(
-            if (expanded) str(R.string.screen_less) else str(R.string.screen_more),
+            if (expanded) str(R.string.screen_less) + " ▴" else str(R.string.screen_more) + " ▾",
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable { expanded = !expanded }.padding(vertical = 4.dp),

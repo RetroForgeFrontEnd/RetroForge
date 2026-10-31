@@ -71,6 +71,9 @@ fun SettingsScreen(
     val groups = listOf(
         "games" to (str(R.string.settings_games_and_library) to str(R.string.settings_game_folders_and_network_drives_es)),
         "playing" to (str(R.string.settings_playing) to str(R.string.settings_the_built_in_player_saves_backups)),
+        "saves" to (str(R.string.settings_saves_group) to str(R.string.settings_saves_group_body)),
+        "online" to (str(R.string.settings_online_group) to str(R.string.settings_online_group_body)),
+        "controls" to (str(R.string.settings_controls_group) to str(R.string.settings_controls_group_body)),
         "covers" to (str(R.string.settings_covers_and_bezels) to str(R.string.settings_steamgriddb_and_screenscraper_accounts_for_box)),
         "looks" to (str(R.string.settings_looks_and_sounds) to str(R.string.settings_themes_interface_sounds_android_apps_and)),
         "help" to (str(R.string.settings_help_and_about) to str(R.string.settings_how_to_use_retroforge_updates_set)),
@@ -80,10 +83,7 @@ fun SettingsScreen(
     ScreenFrame(title = groups.firstOrNull { it.first == group }?.second?.first ?: str(R.string.settings_settings), compact = true) {
         if (group == null) {
             groups.forEach { (id, text) ->
-                FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { group = id }) {
-                    CardTitle(text.first)
-                    CardBody(text.second)
-                }
+                GroupRow(text.first, text.second, onClick = { group = id })
             }
             return@ScreenFrame
         }
@@ -142,13 +142,7 @@ fun SettingsScreen(
 
             }
             "playing" -> {
-                coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames, library) }
-
-                SaveSyncCard()
-
-                PeerSyncCard()
-
-                library?.let { SaveImportCard(it) }
+                coreChoices?.let { BuiltInPlayerCard(playerSystems, it, settings.resumeGames, viewModel::setResumeGames) }
 
                 EmulatorAppsCard()
 
@@ -162,13 +156,26 @@ fun SettingsScreen(
                 }
 
                 if (SwitchPlayer.installed(LocalContext.current)) SwitchSettingsCard(stringResource(R.string.switch_settings_title), setup = false)
+            }
+            "saves" -> {
+                SaveBackupCard(library)
+
+                MemoryCardsCard()
+
+                SaveSyncCard()
+
+                PeerSyncCard()
+
+                library?.let { SaveImportCard(it) }
+            }
+            "online" -> {
+                NetplayCard()
 
                 Ps3OnlineCard()
 
                 RetroAchievementsCard()
-
-                NetplayCard()
-
+            }
+            "controls" -> {
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenControllerTest) {
                     CardTitle(stringResource(R.string.controller_test_title))
                     CardBody(stringResource(R.string.controller_test_card))
@@ -467,5 +474,22 @@ private fun NetplayCard() {
             com.retroforge.app.player.Netplay.setDelay(context, delay)
         })
         CardBody(stringResource(R.string.settings_buttons_work_this_many_frames_late))
+    }
+}
+
+/** One Settings group on the first page: its name, a one-line summary of what's inside, and an arrow to open it. */
+@Composable
+private fun GroupRow(title: String, summary: String, onClick: () -> Unit) {
+    FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onClick) {
+        androidx.compose.foundation.layout.Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+            androidx.compose.foundation.layout.Column(Modifier.weight(1f)) {
+                CardTitle(title)
+                androidx.compose.material3.Text(summary, style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            }
+            androidx.compose.material3.Text("›", style = androidx.compose.material3.MaterialTheme.typography.headlineMedium,
+                color = androidx.compose.material3.MaterialTheme.colorScheme.primary, modifier = Modifier.padding(start = 12.dp))
+        }
     }
 }

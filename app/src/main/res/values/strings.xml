@@ -1544,7 +1544,7 @@
     <string name="settings_games_and_library">Games and library</string>
     <string name="settings_game_folders_and_network_drives_es">Game folders and network drives, ES-DE collections, texture packs, scanning, the Retro and PC tabs.</string>
     <string name="settings_playing">Playing</string>
-    <string name="settings_the_built_in_player_saves_backups">The built-in player, saves, backups and save syncing, emulator apps, dual screens, GPU drivers, netplay, RetroArch hotkeys.</string>
+    <string name="settings_the_built_in_player_saves_backups">The built-in player, emulator apps, Switch settings, GPU drivers, dual screens, memory.</string>
     <string name="settings_covers_and_bezels">Covers and bezels</string>
     <string name="settings_steamgriddb_and_screenscraper_accounts_for_box">SteamGridDB and ScreenScraper accounts for box art, and Bezel Project bezels round the game.</string>
     <string name="settings_looks_and_sounds">Looks and sounds</string>
@@ -2455,4 +2455,10 @@
     <string name="ps3_online_unreachable">Couldn\'t reach RPCN. Check your internet connection.</string>
     <string name="ps3_online_invalid">Check the name (3 to 16 letters, numbers, - or _) and the email.</string>
     <string name="ps3_online_failed">Something went wrong: %1$s</string>
+    <string name="settings_saves_group">Saves and backups</string>
+    <string name="settings_saves_group_body">Back up saves, sync them between devices, bring in saves from other emulators.</string>
+    <string name="settings_online_group">Online and friends</string>
+    <string name="settings_online_group_body">Netplay with friends, PS3 Online (RPCN), RetroAchievements.</string>
+    <string name="settings_controls_group">Controllers and hotkeys</string>
+    <string name="settings_controls_group_body">Test a controller, RetroArch hotkeys, hold R2 to fast-forward.</string>
 </resources>

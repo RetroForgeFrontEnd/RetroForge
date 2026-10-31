@@ -1413,7 +1413,7 @@
     <string name="settings_games_and_library">Giochi e libreria</string>
     <string name="settings_game_folders_and_network_drives_es">Cartelle dei giochi e unità di rete, raccolte ES-DE, pacchetti di texture, scansione, le schede Retro e PC.</string>
     <string name="settings_playing">Gioco</string>
-    <string name="settings_the_built_in_player_saves_backups">Il lettore integrato, salvataggi, backup e sincronizzazione, app di emulazione, doppio schermo, driver GPU, netplay, scorciatoie di RetroArch.</string>
+    <string name="settings_the_built_in_player_saves_backups">Il lettore integrato, app di emulazione, impostazioni Switch, driver GPU, doppio schermo, memoria.</string>
     <string name="settings_covers_and_bezels">Copertine e cornici</string>
     <string name="settings_steamgriddb_and_screenscraper_accounts_for_box">Account SteamGridDB e ScreenScraper per le copertine e cornici Bezel Project intorno al gioco.</string>
     <string name="settings_looks_and_sounds">Aspetto e suoni</string>
@@ -2327,4 +2327,10 @@
     <string name="ps3_online_unreachable">Impossibile raggiungere RPCN. Controlla la connessione a internet.</string>
     <string name="ps3_online_invalid">Controlla il nome (da 3 a 16 lettere, numeri, - o _) e l\'email.</string>
     <string name="ps3_online_failed">Qualcosa è andato storto: %1$s</string>
+    <string name="settings_saves_group">Salvataggi e backup</string>
+    <string name="settings_saves_group_body">Fai il backup dei salvataggi, sincronizzali tra dispositivi, importa quelli di altri emulatori.</string>
+    <string name="settings_online_group">Online e amici</string>
+    <string name="settings_online_group_body">Netplay con gli amici, PS3 online (RPCN), RetroAchievements.</string>
+    <string name="settings_controls_group">Controller e scorciatoie</string>
+    <string name="settings_controls_group_body">Prova un controller, scorciatoie di RetroArch, tieni premuto R2 per l\'avanti veloce.</string>
 </resources>
