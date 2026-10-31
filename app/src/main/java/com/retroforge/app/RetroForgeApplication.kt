@@ -143,5 +143,5 @@ class RetroForgeApplication : Application(), coil3.SingletonImageLoader.Factory 
 }
 
 /** Bumped when the game-name rules change, so libraries indexed before are relabelled once. */
-private const val NAME_RULES = 2
+private const val NAME_RULES = 3 // 3: (patched), (romhack) and (mod) mark hacks
 private const val NAME_RULES_KEY = "name_rules"

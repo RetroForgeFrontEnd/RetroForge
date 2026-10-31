@@ -16,6 +16,7 @@ Nothing goes to GitHub until every row is ✅ (or the user agrees to leave it ou
 | ROM Manager: identify and rename | No-Intro and Redump matches on RetroBatTest; rename and undo | 🟡 emulator |
 | ROM Manager: header fixer | Fix and undo; originals kept | 🟡 emulator |
 | ROM Manager: RVZ, Z3DS, GDI to CHD | Compressed games play in Dolphin, Azahar, the built-in player | 🟡 checked with the emulators' own tools |
+| ROM hacks labelled | "(patched)" files show as hacks; "This is a ROM hack" / "Not a ROM hack" on a game page; Identify's Short names drop (Rev 1) | 🟡 S22, 31 Oct: patched FireRed moved to the GBA hacks tab after the update; Advance Wars Alpha marked, unmarked and marked again (left marked). Short names: unit tests pass; needs the No-Intro lists on a device |
 | Soft patching | A patch beside a game plays patched; the game page shows it | 🟡 emulator |
 | Backlog | Set a status on a game page; it shows in Backlog with a suggestion | ✅ S22, 31 Oct: Playing set on Advance Wars, listed with a "Carry on" suggestion, taken out again |
 | Playtime | Charts per game, system, week | ✅ S22, 31 Oct (real playtime shown) |
