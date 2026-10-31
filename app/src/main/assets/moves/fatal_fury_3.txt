@@ -1,0 +1,77 @@
+# Fatal Fury 3: Road to the Final Victory (Neo Geo, Saturn). Numpad notation for a fighter facing right: 6 forward,
+# 2 down, 3 down-forward; *60 charges for a second. A light punch, B light kick, C heavy punch, D heavy kick. Where
+# a move takes A or C (B or D) the list uses the heavy one. Desperation moves need the life bar flashing; hidden
+# moves need it flashing too. Yamazaki and the Jin twins are only playable on the home versions.
+title: Fatal Fury 3
+match: fatal fury 3 | garou densetsu 3
+buttons: A=B B=A C=Y D=X
+checked: no
+Terry | Burn Knuckle | 2 1 4+C
+Terry | Power Wave | 2 3 6+C
+Terry | Power Dunk | 6 2 3+D
+Terry | Crack Shoot | 2 1 4 7+D
+Terry | Desperation: Power Geyser | 2 1 4 1 6+C+D
+Andy | Zan'ei Ken | 1 6+C
+Andy | Hishou Ken | 2 1 4+C
+Andy | Shouryuu Dan | 6 2 3+C
+Andy | Shiranui Kumo Karami | 2*60 8+D
+Andy | Gen'ei Shiranui (in the air) | 2 3 6+D
+Andy | Desperation: Chou Reppa Dan | 2*60 3 6+C+D
+Joe | Hurricane Upper | 4 1 2 3 6+C
+Joe | Slash Kick | 1*60 6+D
+Joe | Yokogin Kakato | 2 1 4+D
+Joe | Tiger Kick | 2 3 6 9+D
+Joe | Feint Tiger Kick | 6 2 3+A+C
+Joe | Desperation: Screw Upper | 6 4 1 2 3+C+D
+Joe | Hidden: Advancing Screw | 4 6 3 2 1 4+C+D
+Mai | Kagerou no Mai | 2 _ 2+A+B+C
+Mai | Ryuuenbu | 2 1 4+C
+Mai | Kachousen | 2 3 6+C
+Mai | Hissatsu Shinobibachi | 4 1 2 3 6+C
+Mai | Desperation: Chou Hissatsu Shinobibachi | 6 1 6+C+D
+Bob | Wild Wolf | 4*60 6+D
+Bob | Bison Horn | 2*60 8+D
+Bob | Desperation: Dangerous Wolf | 2 _ 2 _ 2+B+C+D
+Bob | Hidden: Dangerous Bob | 6 _ 6 1 9+C+D
+Franco | Double Kong | 2 1 4+C
+Franco | Reaping Blow | 4 1 2 3 6+C
+Franco | Power Bicycle | 2 3 6+D
+Franco | Desperation: Armageddon Buster | 6 3 2 1 4+C+D
+Blue Mary | Spin Fall | 2 3 6 9+C
+Blue Mary | Vertical Arrow | 6 2 3+D
+Blue Mary | Straight Slicer | 4*60 6+D
+Blue Mary | Desperation: M. Typhoon | 1*60 2 3 6 9+B+D
+Blue Mary | Hidden: M. Cyclone | 4 6 3 2 1 4+C
+Geese | Reppuuken | 2 3 6+C
+Geese | Shippuuken (in the air) | 2 1 4+C
+Geese | Ja'ei Ken | 4*60 6+D
+Geese | Feint Ja'ei Ken | 2 1 4 6+B+D
+Geese | Atemi Nage (high and mid) | 4 1 2 3 6+D
+Geese | Desperation: Raging Storm | 1 6 3 2 1 4 3+C+D
+Hon Fu | Seikuu Rekka Kon | 6 2 3+C
+Hon Fu | Denkou Sekka no Ten | 1*60 6+D
+Hon Fu | Denkou Sekka no Chi | 2 1 4 7+D
+Hon Fu | Desperation: Kadentsu no Arashi | 2 1 4 1 6+B+D
+Sokaku | Makibishi | 2 3 6+A
+Sokaku | Jashin Kon | 4 1 2 3 6+C
+Sokaku | Hametsu no Honou | 2 4 1+B
+Sokaku | Hyoui Dan | 6 4 6+D
+Sokaku | Yaen Kari | 2 1 4+D
+Sokaku | Higi Rai Otoshi | 6 2 3+D
+Sokaku | Desperation: Ikazuchi | 6 3 2 3 6+C+D
+Sokaku | Hidden: Kishin Shoukan | 6 3 2 1 4+C+D
+Yamazaki | Hebi Tsukai | 2 1 4+C
+Yamazaki | Bai Kaeshi | 2 3 6+C
+Yamazaki | Sadomazo | 4 1 2 3 6+D
+Yamazaki | Desperation: Guillotine | 2*60 3 6+B+D
+Jin Chonshu | Rush Attack | 1*60 6+C
+Jin Chonshu | Spinning Upper | 6 2 3+C
+Jin Chonshu | Power Ball | 2 3 6+D
+Jin Chonshu | Desperation: Energy Drain | 2 1 4 6+C+D
+Jin Chonrei | Rush Attack | 1*60 6+C
+Jin Chonrei | Spinning Upper | 6 2 3+C
+Jin Chonrei | Energy Drain | 2 1 4 6+C
+Jin Chonrei | Power Ball | 2 3 6+D
+Jin Chonrei | Reflector | 2 1 4+D
+Jin Chonrei | Desperation: Charged Power Ball | 6 4 1 2 3+B+D
+Jin Chonrei | Hidden: Super Charged Power Ball | 6 3 2 1 4+C+D

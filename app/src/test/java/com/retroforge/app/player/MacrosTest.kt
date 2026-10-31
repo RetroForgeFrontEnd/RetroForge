@@ -158,6 +158,9 @@ class MacrosTest {
         assertEquals("Street Fighter Alpha: Warriors' Dreams", titleFor("Street Fighter Alpha - Warriors' Dreams (USA)"))
         assertEquals("Street Fighter Alpha: Warriors' Dreams", titleFor("Street Fighter Zero (Japan)"))
         assertEquals("Street Fighter Alpha", titleFor("Street Fighter Zero 3 (Japan)"))
+        assertEquals("Fatal Fury 3", titleFor("Fatal Fury 3 - Road to the Final Victory"))
+        assertEquals("Breakers", titleFor("Breakers"))
+        assertNull(titleFor("Breakers Revenge"))
     }
 
     @Test

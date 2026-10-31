@@ -1,0 +1,63 @@
+# Breakers (Neo Geo). Numpad notation for a fighter facing right: 6 forward, 2 down, 3 down-forward; *60 charges for
+# a second. A weak punch, B weak kick, C strong punch, D strong kick. Where any punch or kick works the list uses the
+# strong one. Supers need a level on the super gauge. "Close" moves are throws: do them next to the other fighter.
+title: Breakers
+match: breakers
+not: breakers revenge
+buttons: A=B B=A C=Y D=X
+checked: no
+Sho | Rekkou Ha | 2 3 6+C
+Sho | Kurenai Sandan Keri | 2 1 4+D
+Sho | Midare Kiryuu Keri | 2 3 6+D
+Sho | Shippuu Shouken Tsuki | 6 4 6+C
+Sho | Super: Seiken Shouha | 2 3 6 2 3+C
+Sho | Super: Kurenai Gansai Shuu | 2 1 4 2 1+D
+Sho | Super: Air Rekkou Ha (in the air) | 2 3 6 2 3+C
+Pielle | Bonjour Shot | 2 3 6+C
+Pielle | Ropin Runner | 6 2 3+C
+Pielle | Musshu Clash | 2 1 4+C
+Pielle | Rosa Train | 2 1 4+D
+Pielle | Une Deux Trois (in the air) | 2+A+B+C
+Pielle | Super: Andu Ropin | 2 3 6 2 3+C
+Pielle | Super: Kurauzaa Thunder | 2 1 4 2 1+C
+Pielle | Super: Super Rosa | 2 1 4 2 1+D
+Condor | Choke Hold (close) | 3+A
+Condor | Headbutts (close) | 3+C
+Condor | Bear Hug (close) | 3+D
+Condor | Tomahawk Jack | A+B+C
+Condor | Grand Buffalo Horn | 6 _ 6+D
+Condor | Sky Bridge | 2 3 6+D
+Condor | Moonlight Slam (close) | 6 3 2 1 4 7 8+C
+Condor | Super: Astra Rock Buster | 2 3 6 2 3+C
+Condor | Super: Moonlight Shake (close) | 6 3 2 1 4 7 8 6 3 2 1 4 7 8+C
+Rila | Hopping Side Kick | 6+D
+Rila | Quick Scratch | 4*60 6+C
+Rila | Wild Sabre | 2*60 8+D
+Rila | Killer Snake | 4*60 3+D
+Rila | Spinning Claw | C _ C _ C _ C _ C
+Rila | Super: Shine Beast | 4*60 6 4 6+C
+Rila | Super: Bloody Fang | 1*60 3 1 8+D
+Tia | Rapid Gale | 2 3 6+C
+Tia | Lightning Upper | 6 2 3+C
+Tia | Soul Spike | 2 1 4+D
+Tia | Mirage Spear Kick | D _ D _ D _ D _ D
+Tia | Super: Rapid Change | 2 3 6 2 3+C
+Tia | Super: Burning Revolver | 2 1 4 2 1+C
+Tia | Super: Cutlass Flasher | 2 3 6 2 3+D
+Alsion III | Poison Fang | 4 1 2 3 6+C
+Alsion III | Deadly Claw | 2 1 4+D
+Alsion III | Dash Knee | 2 3 6+D
+Alsion III | Super: Anubis Hag | 2 3 6 2 3+C
+Alsion III | Super: Pharaoh Rampage | 2 1 4 2 1+C
+Maherl | Maherl Bomb | 6+A+B+C
+Maherl | Slash Sword | 2 1 4+C
+Maherl | Punish Sword | 2 1 4+D
+Maherl | Fire Breath | 4 1 2 3 6+C
+Maherl | Super: Kadabuura Bomber | 2 3 6 2 3+C
+Maherl | Super: Shiva Dance | 2 1 4 2 1+C
+Maherl | Super: Rolling Press (close) | 6 3 2 1 4 7 8+D
+Dao-Long | Kouryuu Ga | 4*60 6+C
+Dao-Long | Senkyuu Tai | 2*60 8+C
+Dao-Long | Super: Houshin Renha | 4*60 6 4 6+C
+Dao-Long | Super: Shinkyoku Renbu | 4*60 6 4 6+D
+Dao-Long | Super: Renkyuu Tai | 1*60 3 1 8+D
