@@ -31,3 +31,19 @@ Nothing goes to GitHub until every row is ✅ (or the user agrees to leave it ou
 | Retro news | Feeds load; filters; a story opens | ✅ emulator, 31 Oct: stories load; News, Modding, Emulators and All filters right; a story opens in the browser |
 | CitraVR on Quest | A 3DS game opens in CitraVR | 📋 needs a Quest |
 | Colours | Cyan and orange in the pause menu, tabs orange to cyan | ✅ emulator, 31 Oct: pause menu cyan ✕, orange focus ring, D-pad moves; tabs orange to cyan |
+| Pause menu | Condensed menu; Back once from each sub-menu; Title Case headings | 🔲 |
+| HD texture packs | Add a pack from a game page (N64, PSP, Dreamcast, GameCube/Wii); it's used in play | 🔲 |
+| Free up memory | Settings: shows space used and clears what it says | 🔲 |
+| PS3 games | A PS3 game opens in the RetroForge PS3 Player; DLC added from the game page | 🟡 S22, 31 Oct (PS3 chat): Ultimate Marvel vs. Capcom 3 boots and logs in to RPCN |
+| PS3 Online (RPCN) | Settings → Online and friends: sign in, the status shows, sign out | 🟡 S22, 31 Oct (PS3 chat): signed in as the user, game logs in; a match needs a second player |
+| PS4 games | Dumped game folders found (title from param.sfo); open in the PS4 Player; DLC folders added | 🔲 |
+| Switch Play Online | Host a room; another device on the Wi-Fi finds and joins it; up to 4 | 📋 needs two devices |
+| Retro netplay, 4 players | Host and join on the Wi-Fi; Android 17 local network permission asked | 📋 needs two devices |
+| Settings layout | Bold section headings; Playing split into Saves, Online and Controls | ✅ emulator, 31 Oct |
+| Player icons | PS3, PS4 and Switch players show RetroForge's neon icons | 🟡 built; on devices after each player's next install |
+| Music | Phone songs and a chosen folder; albums with tag art; Play all, Shuffle, See more; Scan again | ✅ emulator, 31 Oct: 3 phone songs play; See more and Scan again shown |
+| Music from a network drive | Find on my network, pick the share, songs play | ✅ emulator, 31 Oct: PC share Retrobat, 12 songs from library\Music play |
+| Now Playing | Visuals move; round Previous / Play / Next; Shuffle, Repeat, EQ; playing in the background | ✅ emulator, 31 Oct: visuals, EQ presets and bands, Next changes song |
+| Radio | Stations near you, search, favourites, See more | ✅ emulator, 31 Oct: list loads with logos, a station plays, See more adds 12 |
+| Film player | Game-menu style controls; seek, subtitles, EQ; 3D view modes | 🔲 needs a test film |
+| Network drives kept apart | Games, Films and Music cards each list only their own drives | 🟡 emulator: Music card shows only its drive |
