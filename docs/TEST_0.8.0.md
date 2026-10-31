@@ -21,7 +21,7 @@ Nothing goes to GitHub until every row is ✅ (or the user agrees to leave it ou
 | Playtime | Charts per game, system, week | ✅ S22, 31 Oct (real playtime shown) |
 | Notes and guides | Write notes on the page and mid-game; a guide picture and a PDF open | ✅ S22 and emulator, 31 Oct: notes both ways; a guide picture scrolls and a two-page PDF opens (the Close manual button covers the PDF's first line) |
 | Files | Copy, cut, paste, rename, new folder, delete, share, open with | ✅ S22, 31 Oct, in a test folder made and deleted in Roms; Share and Open with show Android's chooser |
-| Save importer | A save from another emulator plays in the built-in player | 📋 |
+| Save importer | A save from another emulator plays in the built-in player | 🟡 emulator, 31 Oct: PS1 .mcs, N64 .eep and GB .sav imports written correctly; playing one in a real game that keeps saves still to do |
 | Save swap | Two devices pair with the code and swap a newer save | 📋 needs two devices |
 | Tournaments | All four formats to a champion | ✅ emulator, 31 Oct; S22 screen opens |
 | Kiosk mode | PIN set; Settings, ROM Manager, delete ask for it; wrong tries wait | ✅ S22, 31 Oct: PIN set, Settings locked after leaving, 5 wrong tries wait 30 s, turned off. Fixed: a page open when the PIN was set stayed open after leaving (fix checked on the S22) |
