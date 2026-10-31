@@ -16,6 +16,7 @@ import com.retroforge.app.R
 import com.retroforge.app.tournament.Match
 import com.retroforge.app.tournament.Score
 import com.retroforge.app.tournament.Slot
+import com.retroforge.app.tournament.TableRow
 import com.retroforge.app.tournament.Tournament
 import com.retroforge.app.tournament.TournamentFormat
 import com.retroforge.app.tournament.TournamentStore
@@ -86,6 +87,7 @@ private fun summary(t: Tournament): String = listOf(
 private fun formatName(f: TournamentFormat) = when (f) {
     TournamentFormat.KNOCKOUT -> stringResource(R.string.tournament_knockout)
     TournamentFormat.LEAGUE -> stringResource(R.string.tournament_league)
+    TournamentFormat.GROUPS -> stringResource(R.string.tournament_groups)
 }
 
 private fun date(at: Long) = DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(at))
@@ -117,6 +119,7 @@ private fun NewTournament(onStart: (Tournament) -> Unit) {
             when (format) {
                 TournamentFormat.KNOCKOUT -> stringResource(R.string.tournament_knockout_body)
                 TournamentFormat.LEAGUE -> stringResource(R.string.tournament_league_body)
+                TournamentFormat.GROUPS -> stringResource(R.string.tournament_groups_body)
             },
         )
         CardTitle(pluralStr(R.plurals.tournament_players, players.size, players.size))
@@ -129,11 +132,12 @@ private fun NewTournament(onStart: (Tournament) -> Unit) {
             CardBody(stringResource(R.string.tournament_players_hint))
             ChipRow { players.forEachIndexed { i, p -> FocusChip("${i + 1}. $p ✕", onClick = { players = players - p }) } }
         }
-        val ready = name.isNotBlank() && players.size >= 2
+        val enough = if (format == TournamentFormat.GROUPS) Tournaments.MIN_FOR_GROUPS else 2
+        val ready = name.isNotBlank() && players.size >= enough
         FocusChip(stringResource(R.string.tournament_start), enabled = ready, onClick = {
             onStart(Tournament(TournamentStore.newId(), name.trim(), game.trim(), format, players, rules.trim(), createdAt = System.currentTimeMillis()))
         })
-        if (!ready) CardBody(stringResource(R.string.tournament_need_two))
+        if (!ready) CardBody(if (enough > 2) stringResource(R.string.tournament_need_six, enough) else stringResource(R.string.tournament_need_two))
     }
 }
 
@@ -154,28 +158,28 @@ private fun TournamentDetail(t: Tournament, onChange: (Tournament) -> Unit, onDe
             CardTitle(stringResource(R.string.tournament_rules))
             CardBody(t.rules)
         }
-        if (t.format == TournamentFormat.LEAGUE) FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle(stringResource(R.string.tournament_table))
-            CardBody(stringResource(R.string.tournament_table_heading))
-            Tournaments.table(t).forEachIndexed { i, r ->
-                val diff = if (r.difference > 0) "+${r.difference}" else r.difference.toString()
-                CardBody(stringResource(R.string.tournament_table_row, i + 1, t.players[r.player], r.played, r.won, r.drawn, r.lost, diff, r.points))
-            }
+        @Composable
+        fun MatchCard(m: Match) {
+            if (editing == m.key) ScoreEditor(t, m, onDone = { score ->
+                editing = null
+                onChange(Tournaments.withResult(t, m.key, score))
+            }, onCancel = { editing = null })
+            else FocusCard(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = if (m.playable) ({ editing = m.key }) else null,
+            ) { Text(matchLine(t, m), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface) }
         }
+        if (t.format == TournamentFormat.LEAGUE) LeagueTable(t, null, Tournaments.table(t))
+        Tournaments.groups(t).indices.forEach { g ->
+            LeagueTable(t, stringResource(R.string.tournament_group, ('A' + g).toString()), Tournaments.groupTable(t, g))
+            Tournaments.groupRounds(t, g).flatten().forEach { MatchCard(it) }
+        }
+        if (t.format == TournamentFormat.GROUPS) CardBody(pluralStr(R.plurals.tournament_groups_through, Tournaments.QUALIFY_PER_GROUP, Tournaments.QUALIFY_PER_GROUP))
         rounds.forEachIndexed { i, round ->
             CardTitle(roundName(t.format, i, rounds.size))
-            round.forEach { m ->
-                if (editing == m.key) ScoreEditor(t, m, onDone = { score ->
-                    editing = null
-                    onChange(Tournaments.withResult(t, m.key, score))
-                }, onCancel = { editing = null })
-                else FocusCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = if (m.playable) ({ editing = m.key }) else null,
-                ) { Text(matchLine(t, m), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface) }
-            }
+            round.forEach { MatchCard(it) }
         }
-        if (t.format == TournamentFormat.KNOCKOUT && champion == null) CardBody(stringResource(R.string.tournament_knockout_hint))
+        if (t.format != TournamentFormat.LEAGUE && champion == null) CardBody(stringResource(R.string.tournament_knockout_hint))
         if (askDelete) {
             FocusCard(modifier = Modifier.fillMaxWidth()) {
                 CardTitle(stringResource(R.string.tournament_delete_title, t.name))
@@ -189,10 +193,22 @@ private fun TournamentDetail(t: Tournament, onChange: (Tournament) -> Unit, onDe
 }
 
 @Composable
+private fun LeagueTable(t: Tournament, title: String?, rows: List<TableRow>) {
+    FocusCard(modifier = Modifier.fillMaxWidth()) {
+        CardTitle(title ?: stringResource(R.string.tournament_table))
+        CardBody(stringResource(R.string.tournament_table_heading))
+        rows.forEachIndexed { i, r ->
+            val diff = if (r.difference > 0) "+${r.difference}" else r.difference.toString()
+            CardBody(stringResource(R.string.tournament_table_row, i + 1, t.players[r.player], r.played, r.won, r.drawn, r.lost, diff, r.points))
+        }
+    }
+}
+
+@Composable
 private fun roundName(format: TournamentFormat, i: Int, count: Int) = when {
-    format == TournamentFormat.KNOCKOUT && i == count - 1 -> stringResource(R.string.tournament_final)
-    format == TournamentFormat.KNOCKOUT && i == count - 2 -> stringResource(R.string.tournament_semi_finals)
-    format == TournamentFormat.KNOCKOUT && i == count - 3 -> stringResource(R.string.tournament_quarter_finals)
+    format != TournamentFormat.LEAGUE && i == count - 1 -> stringResource(R.string.tournament_final)
+    format != TournamentFormat.LEAGUE && i == count - 2 -> stringResource(R.string.tournament_semi_finals)
+    format != TournamentFormat.LEAGUE && i == count - 3 -> stringResource(R.string.tournament_quarter_finals)
     else -> stringResource(R.string.tournament_round, i + 1)
 }
 
@@ -208,7 +224,7 @@ private fun matchLine(t: Tournament, m: Match): String {
     val a = slotName(t, m.a)
     val b = slotName(t, m.b)
     val line = m.score?.let { "$a  ${it.a} – ${it.b}  $b" } ?: "$a  v  $b"
-    return if (m.winner is Slot.Player && t.format == TournamentFormat.KNOCKOUT) "$line  ✓ ${slotName(t, m.winner)}" else line
+    return if (m.winner is Slot.Player && m.key.startsWith("k-")) "$line  ✓ ${slotName(t, m.winner)}" else line
 }
 
 @Composable
@@ -224,7 +240,7 @@ private fun ScoreEditor(t: Tournament, m: Match, onDone: (Score?) -> Unit, onCan
                 FocusChip("+", onClick = { set(value + 1) })
             }
         }
-        if (t.format == TournamentFormat.KNOCKOUT && a == b) CardBody(stringResource(R.string.tournament_no_draws))
+        if (m.key.startsWith("k-") && a == b) CardBody(stringResource(R.string.tournament_no_draws))
         ChipRow {
             FocusChip(stringResource(R.string.tournament_save_result), onClick = { onDone(Score(a, b)) })
             if (m.score != null) FocusChip(stringResource(R.string.tournament_clear_result), onClick = { onDone(null) })

@@ -2074,4 +2074,12 @@
         <item quantity="one">%1$d joueur</item>
         <item quantity="other">%1$d joueurs</item>
     </plurals>
+    <string name="tournament_groups">Poules puis élimination</string>
+    <string name="tournament_groups_body">Les joueurs sont répartis en poules d\'environ quatre, en séparant les premiers saisis. Dans chaque poule, chacun affronte tous les autres ; les deux premiers de chaque poule passent en phase finale, où chaque premier de poule rencontre d\'abord le deuxième d\'une autre poule.</string>
+    <string name="tournament_need_six">Il faut un nom et au moins %1$d joueurs.</string>
+    <string name="tournament_group">Poule %1$s</string>
+    <plurals name="tournament_groups_through">
+        <item quantity="one">Le premier de chaque poule passe en phase finale ci-dessous, une fois la poule terminée.</item>
+        <item quantity="other">Les %1$d premiers de chaque poule passent en phase finale ci-dessous, une fois la poule terminée.</item>
+    </plurals>
 </resources>

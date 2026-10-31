@@ -2201,4 +2201,12 @@
         <item quantity="one">%1$d player</item>
         <item quantity="other">%1$d players</item>
     </plurals>
+    <string name="tournament_groups">Groups, then knockout</string>
+    <string name="tournament_groups_body">Players are shared into groups of about four, spreading out the first players entered. Everyone in a group plays each other; the top two of each group go into a knockout, where each group winner first plays another group\'s runner-up.</string>
+    <string name="tournament_need_six">Needs a name and at least %1$d players.</string>
+    <string name="tournament_group">Group %1$s</string>
+    <plurals name="tournament_groups_through">
+        <item quantity="one">The top %1$d of each group goes through to the knockout below, once the group has finished.</item>
+        <item quantity="other">The top %1$d of each group go through to the knockout below, once the group has finished.</item>
+    </plurals>
 </resources>

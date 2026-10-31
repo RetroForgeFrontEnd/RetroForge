@@ -1,7 +1,7 @@
 package com.retroforge.app.tournament
 
 /** How a tournament is played. */
-enum class TournamentFormat { KNOCKOUT, LEAGUE }
+enum class TournamentFormat { KNOCKOUT, LEAGUE, GROUPS }
 
 /** A match's result: games or goals won by each side. */
 data class Score(val a: Int, val b: Int)
@@ -51,16 +51,27 @@ data class TableRow(val player: Int, val played: Int, val won: Int, val drawn: I
 }
 
 object Tournaments {
+    /** Fewest players for groups then a knockout: two groups of three. */
+    const val MIN_FOR_GROUPS = 6
+    /** How many from each group go through to the knockout. */
+    const val QUALIFY_PER_GROUP = 2
+
     /**
-     * The knockout bracket, round by round. The draw is padded to a power of two with byes, placed by the usual
-     * seeding (1 v 8, 4 v 5, 2 v 7, 3 v 6…) so the first players entered get the byes and meet the latest.
+     * The knockout bracket, round by round: of all the players, or of those through from the groups (not known until
+     * each group has finished). The draw is padded to a power of two with byes, placed by the usual seeding (1 v 8,
+     * 4 v 5, 2 v 7, 3 v 6…) so the first entrants get the byes and meet the latest.
      */
     fun knockout(t: Tournament): List<List<Match>> {
-        val n = t.players.size
+        val entrants: List<Slot> = when (t.format) {
+            TournamentFormat.KNOCKOUT -> t.players.indices.map { Slot.Player(it) }
+            TournamentFormat.GROUPS -> qualifiers(t)
+            TournamentFormat.LEAGUE -> return emptyList()
+        }
+        val n = entrants.size
         if (n < 2) return emptyList()
         var size = 1
         while (size < n) size *= 2
-        var slots: List<Slot> = seeding(size).map { seed -> if (seed <= n) Slot.Player(seed - 1) else Slot.Bye }
+        var slots: List<Slot> = seeding(size).map { seed -> entrants.getOrNull(seed - 1) ?: Slot.Bye }
         val rounds = mutableListOf<List<Match>>()
         var round = 0
         while (slots.size > 1) {
@@ -85,18 +96,58 @@ object Tournaments {
         return order
     }
 
+    /**
+     * The groups, as players' places in the list: groups of about four, dealt out in a snake (A B C C B A…) so the
+     * first players entered are spread between them.
+     */
+    fun groups(t: Tournament): List<List<Int>> {
+        if (t.format != TournamentFormat.GROUPS || t.players.size < MIN_FOR_GROUPS) return emptyList()
+        val count = maxOf(2, t.players.size / 4)
+        val groups = List(count) { mutableListOf<Int>() }
+        t.players.indices.forEach { i ->
+            val row = i / count
+            val col = i % count
+            groups[if (row % 2 == 0) col else count - 1 - col] += i
+        }
+        return groups
+    }
+
+    /** A group's matches; group [g]'s keys start "g<g>-" so they don't clash with another group's. */
+    fun groupRounds(t: Tournament, g: Int): List<List<Match>> = roundRobin(t, groups(t)[g], "g$g-")
+
+    fun groupTable(t: Tournament, g: Int): List<TableRow> = table(t, groups(t)[g], "g$g-")
+
+    /**
+     * Who is through from the groups: the group winners as the top seeds (A, B, C…), then the runners-up, placed so
+     * each winner's first match is against the next group's runner-up rather than their own group's (seed k meets
+     * seed 2G+1-k). Pending for a group that hasn't finished.
+     */
+    internal fun qualifiers(t: Tournament): List<Slot> {
+        val places = groups(t).indices.map { g ->
+            val done = groupRounds(t, g).flatten().all { it.score != null }
+            val table = groupTable(t, g)
+            List(QUALIFY_PER_GROUP) { place -> if (done) Slot.Player(table[place].player) else Slot.Pending }
+        }
+        val count = places.size
+        val winners = places.map { it[0] }
+        // Winner i meets runners-up place count-1-i: put group i+1's runner-up there.
+        val runnersUp = List(count) { j -> places[(count - j) % count][1] }
+        return winners + runnersUp
+    }
+
     /** Everyone plays everyone once, in rounds where nobody plays twice (the circle method; an odd player out rests). */
-    fun leagueRounds(t: Tournament): List<List<Match>> {
-        val n = t.players.size
-        if (n < 2) return emptyList()
-        val ring: MutableList<Int?> = (0 until n).toMutableList<Int?>().also { if (n % 2 == 1) it += null }
+    fun leagueRounds(t: Tournament): List<List<Match>> = roundRobin(t, t.players.indices.toList(), "l-")
+
+    private fun roundRobin(t: Tournament, members: List<Int>, prefix: String): List<List<Match>> {
+        if (members.size < 2) return emptyList()
+        val ring: MutableList<Int?> = members.toMutableList<Int?>().also { if (it.size % 2 == 1) it += null }
         val rounds = mutableListOf<List<Match>>()
         repeat(ring.size - 1) { round ->
             val matches = (0 until ring.size / 2).mapNotNull { i ->
                 val x = ring[i] ?: return@mapNotNull null
                 val y = ring[ring.size - 1 - i] ?: return@mapNotNull null
                 val (a, b) = if (x < y) x to y else y to x
-                val key = "l-$a-$b"
+                val key = "$prefix$a-$b"
                 Match(key, round, Slot.Player(a), Slot.Player(b), t.results[key])
             }
             rounds += matches
@@ -107,8 +158,10 @@ object Tournaments {
     }
 
     /** The league table: 3 points a win, 1 a draw; ties split by score difference, then scored, then name. */
-    fun table(t: Tournament): List<TableRow> {
-        val rows = t.players.indices.associateWith { TableRow(it, 0, 0, 0, 0, 0, 0) }.toMutableMap()
+    fun table(t: Tournament): List<TableRow> = table(t, t.players.indices.toList(), "l-")
+
+    private fun table(t: Tournament, members: List<Int>, prefix: String): List<TableRow> {
+        val rows = members.associateWith { TableRow(it, 0, 0, 0, 0, 0, 0) }.toMutableMap()
         fun add(p: Int, mine: Int, theirs: Int) {
             val r = rows.getValue(p)
             rows[p] = r.copy(
@@ -120,7 +173,7 @@ object Tournaments {
                 conceded = r.conceded + theirs,
             )
         }
-        for (m in leagueRounds(t).flatten()) {
+        for (m in roundRobin(t, members, prefix).flatten()) {
             val s = m.score ?: continue
             add((m.a as Slot.Player).index, s.a, s.b)
             add((m.b as Slot.Player).index, s.b, s.a)
@@ -131,14 +184,17 @@ object Tournaments {
         )
     }
 
+    /** The knockout or league matches; for groups, the knockout after them (see [groupRounds] for the groups). */
     fun matches(t: Tournament): List<List<Match>> = when (t.format) {
-        TournamentFormat.KNOCKOUT -> knockout(t)
+        TournamentFormat.KNOCKOUT, TournamentFormat.GROUPS -> knockout(t)
         TournamentFormat.LEAGUE -> leagueRounds(t)
     }
 
+    private fun allMatches(t: Tournament): List<Match> = matches(t).flatten() + groups(t).indices.flatMap { groupRounds(t, it).flatten() }
+
     /** The winner, once every match that decides it has a result; null before then. */
     fun champion(t: Tournament): Int? = when (t.format) {
-        TournamentFormat.KNOCKOUT -> (knockout(t).lastOrNull()?.single()?.winner as? Slot.Player)?.index
+        TournamentFormat.KNOCKOUT, TournamentFormat.GROUPS -> (knockout(t).lastOrNull()?.single()?.winner as? Slot.Player)?.index
         TournamentFormat.LEAGUE -> {
             val all = leagueRounds(t).flatten()
             if (all.isEmpty() || all.any { it.score == null }) null else table(t).first().player
@@ -146,26 +202,22 @@ object Tournaments {
     }
 
     /**
-     * Enters or clears a result. In a knockout, changing a result clears the later results that depended on it,
-     * since the players in those matches may have changed.
+     * Enters or clears a result. Later results whose players changed because of it (a knockout winner, or who came
+     * through a group) are cleared, since they were played by someone else.
      */
     fun withResult(t: Tournament, key: String, score: Score?): Tournament {
         val results = t.results.toMutableMap()
         if (score == null) results.remove(key) else results[key] = score
-        var next = t.copy(results = results)
-        if (t.format == TournamentFormat.KNOCKOUT) {
-            val before = knockout(t).flatten().associateBy { it.key }
-            val stale = knockout(next).flatten().filter { m -> before[m.key]?.let { it.a != m.a || it.b != m.b } == true }.map { it.key }
-            if (stale.isNotEmpty()) next = withResults(next, next.results - stale.toSet())
-        }
-        return next
+        val before = allMatches(t).associateBy { it.key }
+        val next = t.copy(results = results)
+        val stale = allMatches(next).filter { m -> m.key != key && before[m.key]?.let { it.a != m.a || it.b != m.b } == true }.map { it.key }
+        return withResults(next, next.results - stale.toSet())
     }
 
     private fun withResults(t: Tournament, results: Map<String, Score>): Tournament {
-        // Clearing a stale result can change the matches after it in turn.
+        // Clearing a stale result can leave the matches after it without their players in turn.
         val cleaned = t.copy(results = results)
-        val now = knockout(cleaned).flatten()
-        val stale = now.filter { it.score != null && !it.playable }.map { it.key }
+        val stale = allMatches(cleaned).filter { it.score != null && !it.playable }.map { it.key }
         return if (stale.isEmpty()) cleaned else withResults(cleaned, results - stale.toSet())
     }
 }

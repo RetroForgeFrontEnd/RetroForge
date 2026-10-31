@@ -63,6 +63,40 @@ class TournamentTest {
         assertEquals(20, table.sumOf { it.played })
     }
 
+    @Test fun groupsAreDealtInASnakeAndTheTopTwoGoThrough() {
+        var t = Tournament("t", "Cup", "", TournamentFormat.GROUPS, listOf("A", "B", "C", "D", "E", "F", "G", "H"))
+        assertEquals(listOf(listOf(0, 3, 4, 7), listOf(1, 2, 5, 6)), Tournaments.groups(t))
+        // Nobody is through until a group is finished.
+        assertTrue(Tournaments.knockout(t)[0].all { !it.playable })
+
+        // The lower place in the list wins every group match.
+        fun playGroups(t0: Tournament): Tournament {
+            var x = t0
+            Tournaments.groups(x).indices.forEach { g ->
+                Tournaments.groupRounds(x, g).flatten().forEach { m -> x = Tournaments.withResult(x, m.key, Score(1, 0)) }
+            }
+            return x
+        }
+        t = playGroups(t)
+        assertEquals(listOf(0, 3), Tournaments.groupTable(t, 0).take(2).map { it.player })
+        assertEquals(listOf(1, 2), Tournaments.groupTable(t, 1).take(2).map { it.player })
+        // Winners A and B, then runners-up the other way round: A meets C (B's runner-up), B meets D.
+        val semis = Tournaments.knockout(t)[0]
+        assertEquals(setOf(setOf(Slot.Player(0), Slot.Player(2)), setOf(Slot.Player(1), Slot.Player(3))), semis.map { setOf(it.a, it.b) }.toSet())
+
+        semis.forEach { t = Tournaments.withResult(t, it.key, Score(2, 0)) }
+        val final = Tournaments.knockout(t)[1][0]
+        t = Tournaments.withResult(t, final.key, Score(3, 1))
+        assertEquals((final.a as Slot.Player).index, Tournaments.champion(t))
+
+        // Changing a group result that changes who came through clears the knockout results after it.
+        val first = Tournaments.groupRounds(t, 0).flatten().first { it.a == Slot.Player(0) && it.b == Slot.Player(3) }
+        t = Tournaments.withResult(t, first.key, Score(0, 5))
+        t = Tournaments.withResult(t, Tournaments.groupRounds(t, 0).flatten().first { it.a == Slot.Player(0) && it.b == Slot.Player(4) }.key, Score(0, 5))
+        assertTrue(t.results.keys.none { it.startsWith("k-") })
+        assertNull(Tournaments.champion(t))
+    }
+
     @Test fun aLeagueHasNoChampionUntilEveryMatchIsPlayed() {
         val t = league("A", "B", "C")
         val m = Tournaments.leagueRounds(t).flatten().first()

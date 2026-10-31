@@ -2074,4 +2074,12 @@
         <item quantity="one">%1$d jugador</item>
         <item quantity="other">%1$d jugadores</item>
     </plurals>
+    <string name="tournament_groups">Grupos y eliminatoria</string>
+    <string name="tournament_groups_body">Los jugadores se reparten en grupos de unos cuatro, separando a los primeros introducidos. En cada grupo todos juegan contra todos; los dos primeros de cada grupo pasan a una eliminatoria, donde cada primero de grupo se enfrenta antes al segundo de otro grupo.</string>
+    <string name="tournament_need_six">Necesita un nombre y al menos %1$d jugadores.</string>
+    <string name="tournament_group">Grupo %1$s</string>
+    <plurals name="tournament_groups_through">
+        <item quantity="one">El primero de cada grupo pasa a la eliminatoria de abajo cuando el grupo termina.</item>
+        <item quantity="other">Los %1$d primeros de cada grupo pasan a la eliminatoria de abajo cuando el grupo termina.</item>
+    </plurals>
 </resources>

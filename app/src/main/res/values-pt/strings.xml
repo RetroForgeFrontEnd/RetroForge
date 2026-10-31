@@ -2073,4 +2073,12 @@
         <item quantity="one">%1$d jogador</item>
         <item quantity="other">%1$d jogadores</item>
     </plurals>
+    <string name="tournament_groups">Grupos e mata-mata</string>
+    <string name="tournament_groups_body">Os jogadores são divididos em grupos de cerca de quatro, separando os primeiros informados. Em cada grupo todos jogam contra todos; os dois primeiros de cada grupo vão para um mata-mata, onde cada primeiro de grupo enfrenta antes o segundo de outro grupo.</string>
+    <string name="tournament_need_six">Precisa de um nome e pelo menos %1$d jogadores.</string>
+    <string name="tournament_group">Grupo %1$s</string>
+    <plurals name="tournament_groups_through">
+        <item quantity="one">O primeiro de cada grupo vai para o mata-mata abaixo quando o grupo termina.</item>
+        <item quantity="other">Os %1$d primeiros de cada grupo vão para o mata-mata abaixo quando o grupo termina.</item>
+    </plurals>
 </resources>

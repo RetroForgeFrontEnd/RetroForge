@@ -2073,4 +2073,12 @@
         <item quantity="one">%1$d giocatore</item>
         <item quantity="other">%1$d giocatori</item>
     </plurals>
+    <string name="tournament_groups">Gironi, poi eliminazione</string>
+    <string name="tournament_groups_body">I giocatori vengono divisi in gironi di circa quattro, separando i primi inseriti. In ogni girone tutti giocano contro tutti; i primi due di ogni girone passano a un\'eliminazione diretta, dove ogni vincitore di girone affronta prima il secondo di un altro girone.</string>
+    <string name="tournament_need_six">Servono un nome e almeno %1$d giocatori.</string>
+    <string name="tournament_group">Girone %1$s</string>
+    <plurals name="tournament_groups_through">
+        <item quantity="one">Il primo di ogni girone passa all\'eliminazione qui sotto, una volta finito il girone.</item>
+        <item quantity="other">I primi %1$d di ogni girone passano all\'eliminazione qui sotto, una volta finito il girone.</item>
+    </plurals>
 </resources>
