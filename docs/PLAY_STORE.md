@@ -29,23 +29,23 @@ can't update over the other, so they install side by side.
 
 ## Still to decide
 
-- [ ] **PS3 and PS4 buttons.** They only open the separate RetroForge PS3/PS4 Player apps, which aren't on Play.
-      Probably fine, but the first Play release could hide them too.
-- [ ] **PC → Ports** (Ship of Harkinian, Zelda 3 and others): fan ports that need the user's own game. RetroForge
-      only links to them. A reviewer could object; hide them in Play if it's rejected.
-- [ ] **Setup and guides that mention keys or firmware** (PS3 firmware, PS4 dumps). Check the Play build's text
-      doesn't explain how to get them.
-- [ ] **Search and Recently played** can still show Switch games already scanned in the Play build. Hide them there
-      too if a reviewer notices.
+- [x] **PS3 and PS4: kept** (the user's choice, 1 Nov 2026). RetroForge only opens the separate PS3/PS4 Player apps
+      (from GitHub, not Play) and doesn't explain how to get firmware or keys. If Play objects, add `ps3`, `ps4`,
+      `RETROFORGE_PS3`, `RETROFORGE_PS4` and `APS3E` to `Store.kt`.
+- [x] **PC → Ports: left out** (fan rebuilds of Nintendo games). The rest of the PC tab stays: Steam, Windows games,
+      GameNative, Winlator, the PC player, streaming from your PC, cloud gaming, free games.
+- [x] **Keys and firmware text:** the Switch setup step and the tutorial line about Switch keys and firmware are
+      left out of the Play build, as are the Ports topic and the texture pack download line.
+- [x] **Search, Recently played and Favourites** leave out Switch games in the Play build.
 
 ## Google's own requirements
 
 - [ ] Google Play developer account (one-off US$25), with identity checks.
 - [ ] New personal accounts: a **closed test with at least 12 testers for 14 days** before the app can go public.
       Start this early.
-- [ ] **Privacy policy** at a public URL (Settings → Privacy in the app already says what's kept; turn it into a page).
-- [ ] **Data safety form:** no data collected or shared; logins (Steam, RetroAchievements, ScreenScraper,
-      network drives) stay on the device; anything sent goes only to the service the user signs in to.
+- [ ] **Privacy policy** at a public URL: [PRIVACY_POLICY.md](PRIVACY_POLICY.md) is ready. Publish it (GitHub
+      Pages, or the file's GitHub link) and paste the address into Play Console → App content → Privacy policy.
+- [ ] **Data safety form:** answers below.
 - [ ] **Foreground service types:** Play asks why `FOREGROUND_SERVICE_SPECIAL_USE`, `DATA_SYNC` and
       `MEDIA_PLAYBACK` are used (music playback, save sync, Steam downloads).
 - [ ] **Target SDK:** already 37.
@@ -59,5 +59,41 @@ can't update over the other, so they install side by side.
 
 - [x] Builds, and the unit tests pass for both versions (31 Oct 2026).
 - [x] The Play APK has no `REQUEST_INSTALL_PACKAGES` and installs beside the GitHub one (emulator, 31 Oct 2026).
-- [ ] Settings has no Updates card and no Support card; Retro shows no Switch; texture packs have no download list.
-- [ ] A release `.aab` (`bundlePlayRelease`) built and checked with Play's pre-launch report.
+- [x] Settings has no Updates card and no Support card; setup skips the Switch step; the PC tab has no Ports and its
+      subtitle doesn't mention them (emulator, 31 Oct 2026).
+- [x] A release `.aab` (`bundlePlayRelease`) builds (37.8 MB).
+- [ ] Signed with the upload key and checked with Play's pre-launch report.
+
+## Data safety answers (Play Console → App content → Data safety)
+
+- Does your app collect or share any of the required user data types? **No.** Everything stays on the device;
+  logins go only to the service they're for (Steam, RetroAchievements, ScreenScraper, RPCN), which Google counts as
+  the user's own action, not collection by the app.
+- Is all user data encrypted in transit? **Yes** (HTTPS). Network drives and netplay on the user's own network are
+  the exceptions: say so if asked.
+- Do you provide a way for users to request that their data be deleted? **Not needed** (no data is collected);
+  uninstalling deletes everything.
+- Ads: **No.** Target audience: **18+** (or 13+), not children.
+
+## Store listing draft
+
+- **App name:** RetroForge (30 characters max).
+- **Short description (80):** Your own retro and modern games, films and music in one front end.
+- **Full description:**
+
+  RetroForge brings your game collection together in one place: consoles, arcade, computers and PC, with box art,
+  playlists and a built-in player for most retro systems.
+
+  • Play your own games from your phone, an SD card or a network drive on your PC.
+  • A built-in player for retro systems, with save states, cheats, bezels, filters, RetroAchievements and netplay
+    with friends.
+  • Opens games in RetroArch and other emulator apps you install yourself.
+  • Box art from libretro and ScreenScraper, scraped for the whole library at once.
+  • Your Steam and Windows games, streaming from your own PC, and cloud gaming.
+  • Films (including 3D) and music, with an equaliser, and internet radio.
+  • Controller-friendly, works as a home screen on handhelds and TV boxes, seven languages.
+
+  RetroForge doesn't include any games, BIOS or firmware. Use copies of games you own.
+
+- **Screenshots:** homebrew and free games only (Super Tilt Bro, the free games list), no console makers' logos.
+- **Category:** Tools or Entertainment (emulator front ends usually pick Tools).

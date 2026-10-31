@@ -250,16 +250,20 @@ class LibraryViewModel(
         (withGames + others).filter { it.id !in com.retroforge.app.Store.hiddenSystems }.sortedBy { it.name.lowercase() }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    /** Leaves out games of systems this build doesn't play (Switch in the Play build). */
+    private fun shown(games: List<GameEntity>) = if (com.retroforge.app.Store.hiddenSystems.isEmpty()) games else games.filter { it.system !in com.retroforge.app.Store.hiddenSystems }
+
     val hacks: StateFlow<List<GameEntity>> = repository.hacks.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     val query = MutableStateFlow("")
     val searchResults: StateFlow<List<GameEntity>> = query
         .debounce(250)
         .flatMapLatest { q -> if (q.trim().length < 2) flowOf(emptyList()) else repository.search(q.trim()) }
+        .map(::shown)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val recentlyPlayed: StateFlow<List<GameEntity>> = repository.recentlyPlayed.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-    val favourites: StateFlow<List<GameEntity>> = repository.favourites.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val recentlyPlayed: StateFlow<List<GameEntity>> = repository.recentlyPlayed.map(::shown).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val favourites: StateFlow<List<GameEntity>> = repository.favourites.map(::shown).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val playlists: StateFlow<List<PlaylistSummary>> = repository.playlists.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     fun isFavourite(game: GameEntity) = repository.isFavourite(game)
     val backlog: StateFlow<List<com.retroforge.core.library.BacklogGame>> = repository.backlog.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

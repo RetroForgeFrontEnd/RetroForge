@@ -52,7 +52,8 @@ fun PcScreen(viewModel: PcViewModel, bridge: DroidDeckBridge, library: com.retro
         Text(stringResource(R.string.pc_cloud_gaming), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
         XboxCloudCard()
         CloudAppsCard()
-        PcFold(str(R.string.pc_ports), str(R.string.pc_games_rebuilt_for_android_and_windows)) {
+        // Fan ports of other companies' games are left out of the Play build.
+        if (!com.retroforge.app.Store.play) PcFold(str(R.string.pc_ports), str(R.string.pc_games_rebuilt_for_android_and_windows)) {
             PortsSection(library)
         }
         PcFold(str(R.string.pc_free_games), str(R.string.pc_shareware_freeware_and_homebrew_games_to, FreeGames.all.size)) {

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Play build has no Ports section, so the PC tab's subtitle leaves ports out. -->
+<resources>
+    <string name="pc_your_pc_games_cloud_gaming_ports">Your PC games, cloud gaming and free games.</string>
+</resources>

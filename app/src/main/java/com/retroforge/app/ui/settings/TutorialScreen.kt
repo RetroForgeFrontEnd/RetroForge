@@ -24,7 +24,13 @@ import com.retroforge.core.ui.FocusChip
 /** One topic: a title and its steps. Kept in step with docs/USER_GUIDE.md. */
 private class Topic(val title: String, val steps: List<String>)
 
-private val topics get() = listOf(
+/** The Play build leaves out ports, Switch keys and firmware, and one-tap texture pack downloads (see Store). */
+private val topics get() = if (!com.retroforge.app.Store.play) allTopics else {
+    val hidden = setOf(str(R.string.tutorial_ps2_gamecube_wii_3ds_and_switch), str(R.string.tutorial_texture_packs_n64_settings_download_n64))
+    allTopics.filter { it.title != str(R.string.tutorial_pc_ports_of_games_you_own) }.map { Topic(it.title, it.steps - hidden) }
+}
+
+private val allTopics get() = listOf(
     Topic(str(R.string.settings_play_together_netplay), listOf(
         str(R.string.tutorial_two_players_on_two_devices_play),
         str(R.string.tutorial_to_host_open_the_game_and),
