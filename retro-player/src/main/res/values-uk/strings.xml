@@ -1,0 +1,22 @@
+<resources>
+    <string name="core_assets_libretro_answered">libretro відповів %1$s</string>
+    <string name="core_assets_couldn_t_write">не вдалося записати %1$s</string>
+    <string name="core_manager_download_failed">Помилка завантаження</string>
+    <string name="core_manager_libretro_has_no_cores_for_this">libretro не має ядер для процесора цього пристрою (%1$s)</string>
+    <string name="core_manager_libretro_s_server_answered_for">Сервер libretro відповів %1$s для %2$s</string>
+    <string name="core_manager_the_download_for_had_no_core">У завантаженні для %1$s не було ядра</string>
+    <string name="core_manager_couldn_t_save">Не вдалося зберегти %1$s</string>
+    <string name="gpu_driver_isn_t_in_the_app">%1$s немає в застосунку</string>
+    <string name="viewport_original">Оригінал</string>
+    <string name="viewport_4_3">4:3</string>
+    <string name="viewport_16_9">16:9</string>
+    <string name="viewport_stretch">Розтягнути</string>
+    <string name="viewport_pixel_perfect">Піксель у піксель</string>
+    <string name="filter_sharp">Чіткі пікселі</string>
+    <string name="filter_smooth">Згладжено</string>
+    <string name="filter_crt">Рядки CRT</string>
+    <string name="filter_lcd">Сітка LCD</string>
+    <string name="filter_crt_curved">CRT, вигнутий екран</string>
+    <string name="filter_lcd_ghosting">LCD зі шлейфом</string>
+    <string name="filter_scale2x">Згладжений піксель-арт (Scale2x)</string>
+</resources>

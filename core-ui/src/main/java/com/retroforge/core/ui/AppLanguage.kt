@@ -22,6 +22,7 @@ object AppLanguage {
         "de" to "Deutsch",
         "pt" to "Português",
         "it" to "Italiano",
+        "uk" to "Українська",
     )
 
     private const val PREFS = "app_language"

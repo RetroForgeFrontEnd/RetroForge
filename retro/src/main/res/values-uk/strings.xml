@@ -1,0 +1,18 @@
+<resources>
+    <string name="retro_arch_hotkeys_couldn_t_create_the_hotkey_file">не вдалося створити файл гарячих клавіш</string>
+    <string name="retro_arch_hotkeys_couldn_t_write">не вдалося записати</string>
+    <string name="retro_arch_launcher_retroarch_s_game_activity_wasn_t">Ігровий екран RetroArch не знайдено. Оновіть RetroArch.</string>
+    <string name="retro_arch_launcher_android_refused_to_start_retroarch">Android відмовився запустити RetroArch: %1$s</string>
+    <string name="retro_arch_launcher_couldn_t_start_retroarch">Не вдалося запустити RetroArch: %1$s</string>
+    <string name="standalone_launcher_the_emulator_s_game_screen_wasn">Ігровий екран емулятора не знайдено. Оновіть емулятор.</string>
+    <string name="standalone_launcher_android_refused_to_start_the_emulator">Android відмовився запустити емулятор: %1$s</string>
+    <string name="standalone_launcher_couldn_t_start_the_emulator">Не вдалося запустити емулятор: %1$s</string>
+    <string name="hotkey_off">Вимк.</string>
+    <string name="hotkey_start_select">Start + Select</string>
+    <string name="hotkey_hold_start">Утримувати Start</string>
+    <string name="hotkey_hold_select">Утримувати Select</string>
+    <string name="hotkey_down_select">Down + Select</string>
+    <string name="hotkey_l3_r3">L3 + R3</string>
+    <string name="hotkey_l1_r1">L1 + R1</string>
+    <string name="hotkey_l2_r2">L2 + R2</string>
+</resources>

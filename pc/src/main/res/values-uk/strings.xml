@@ -1,0 +1,20 @@
+<resources>
+    <string name="gpu_drivers_unknown_gpu">Невідомий GPU</string>
+    <string name="gpu_drivers_custom_drivers_turnip_only_work_on">Власні драйвери (Turnip) працюють лише на GPU Qualcomm Adreno. Цей GPU використовує драйвер, що постачався з телефоном; новіший можна отримати лише з оновленнями системи. Емулятори однаково працюють із цим драйвером.</string>
+    <string name="gpu_drivers_adreno_turnip_support_for_8xx_gpus">Adreno %1$s: підтримка Turnip для GPU 8xx нова. Використовуйте збірки з позначкою a8xx і залишайте власний драйвер телефона, якщо гра працює гірше.</string>
+    <string name="gpu_drivers_adreno_turnip_often_runs_switch_ps2">Adreno %1$s: Turnip часто запускає ігри Switch, PS2, GameCube і ПК краще за власний драйвер телефона. Якщо гра зламається, поверніть у цьому емуляторі системний драйвер.</string>
+    <string name="gpu_drivers_adreno_is_older_than_turnip_supports">Adreno %1$s старіший, ніж підтримує Turnip (Adreno 6xx і новіші).</string>
+    <string name="gpu_drivers_the_download_answered">завантаження відповіло %1$s</string>
+    <string name="gpu_drivers_couldn_t_save">не вдалося зберегти %1$s</string>
+    <string name="gpu_drivers_github_answered">GitHub відповів %1$s</string>
+    <string name="gpu_support_the_gpu_model_could_not_be">Не вдалося визначити модель GPU на цьому пристрої.</string>
+    <string name="gpu_support_droiddeck_needs_a_qualcomm_adreno_gpu">DroidDeck потребує GPU Qualcomm Adreno, а цей пристрій його не має.</string>
+    <string name="gpu_support_adreno_850_support_is_experimental">Підтримка Adreno 850 експериментальна.</string>
+    <string name="gpu_support_adreno_8xx_is_supported">Adreno 8xx підтримується.</string>
+    <string name="gpu_support_adreno_730_and_newer_are_supported">Adreno 730 і новіші підтримуються.</string>
+    <string name="gpu_support_adreno_has_been_tested_but_is">Adreno %1$s перевірено, але він нижчий за офіційний мінімум 730.</string>
+    <string name="gpu_support_adreno_only_has_test_drivers">Для Adreno %1$s є лише тестові драйвери.</string>
+    <string name="gpu_support_adreno_710_is_not_supported">Adreno 710 не підтримується.</string>
+    <string name="gpu_support_adreno_6xx_is_experimental_directx_11">Adreno 6xx експериментальний: ігри DirectX 11 можуть працювати, ігри DirectX 12 можуть вилітати.</string>
+    <string name="gpu_support_adreno_is_older_than_the_pc">Adreno %1$s старіший, ніж підтримує середовище ПК.</string>
+</resources>

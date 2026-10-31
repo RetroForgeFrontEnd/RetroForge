@@ -283,4 +283,8 @@
     <string name="toast_controller_type_changed">Тип геймпада може бути змінений через емуляцію датчика руху</string>
     <string name="pcview_menu_eol">Закриття сервісів NVIDIA GameStream</string>
     <string name="perf_overlay_hostprocessinglatency">Затримка обробки хостом мін./макс./середня: %1$.1f/%2$.1f/%3$.1f мс</string>
+    <!-- RetroForge -->
+    <string name="title_show_guide_button">Показувати кнопку Guide</string>
+    <string name="summary_show_guide_button">Показувати кнопку Guide на екрані</string>
+    <string name="local_network_rationale">Moonlight потребує дозволу на локальну мережу, щоб зв’язуватися з хостами поблизу</string>
 </resources>
