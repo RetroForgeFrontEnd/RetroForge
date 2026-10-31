@@ -643,7 +643,8 @@ class PlayerActivity : ComponentActivity() {
             runOnUiThread { loadingDetail = null }
         }
         // The user's emulator settings for this core, then the ones that follow the screen's orientation.
-        // N64 and PSP texture packs (Settings → Texture packs) are used as soon as one is installed.
+        // N64, PSP, Dreamcast and GameCube/Wii texture packs (the game's page, or Settings → Texture packs) are used as soon
+        // as one is installed.
         val texturePacks = when {
             coreId.startsWith("mupen64plus") && File(systemDir, "Mupen64plus/cache").list().orEmpty().any { it.endsWith(".hts", true) } ->
                 // Downloaded packs are single .hts files (GLideN64's enhanced storage), with full alpha as their authors ask.
@@ -651,6 +652,8 @@ class PlayerActivity : ComponentActivity() {
             coreId.startsWith("mupen64plus") && File(systemDir, "Mupen64plus/hires_texture").list().orEmpty().isNotEmpty() ->
                 mapOf("mupen64plus-txHiresEnable" to "True")
             coreId == "ppsspp" && File(savesDir, "TEXTURES").list().orEmpty().isNotEmpty() -> mapOf("ppsspp_texture_replacement" to "enabled")
+            coreId == "flycast" && File(systemDir, "dc/textures").list().orEmpty().isNotEmpty() -> mapOf("reicast_custom_textures" to "enabled")
+            coreId == "dolphin" && File(systemDir, "dolphin-emu/User/Load/Textures").list().orEmpty().isNotEmpty() -> mapOf("dolphin_load_custom_textures" to "enabled")
             else -> emptyMap()
         }
         vulkanOn = PlayerCores.usesVulkan(coreId, videoChoices.get("graphics.$system"))

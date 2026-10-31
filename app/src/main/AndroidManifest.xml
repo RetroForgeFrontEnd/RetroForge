@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <!-- Installing a port the user chose to download (Android asks them to allow it and to confirm each install). -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Settings → Free up memory: closes other apps idle in the background before playing. -->
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
 
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
     <uses-feature android:name="android.hardware.gamepad" android:required="false" />
@@ -20,6 +22,7 @@
         <!-- RetroForge's own players have no app icon, so the launcher query above doesn't see them. -->
         <package android:name="com.retroforge.switchplayer" />
         <package android:name="com.retroforge.ps3player" />
+        <package android:name="com.retroforge.ps4player" />
     </queries>
 
     <application

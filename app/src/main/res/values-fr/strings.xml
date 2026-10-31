@@ -2271,4 +2271,10 @@
     <string name="passport_need_details">Les genres et développeurs préférés ont besoin des infos de vos jeux : récupérez-les avec le scraper ou gardez des fichiers gamelist.xml à côté de vos jeux.</string>
     <string name="passport_years">Année par année</string>
     <string name="passport_finished_games">Finis : %1$s</string>
+    <string name="game_textures_title">Pack de textures HD</string>
+    <string name="game_textures_body">Textures haute résolution pour ce jeu dans le lecteur intégré. Un pack est un dossier nommé d\'après l\'ID du jeu (par exemple ULUS10041 ou GALE01) ou, pour la N64, son nom interne ; la page du pack l\'indique en général. Choisis ce dossier et RetroForge le copie là où l\'émulateur cherche. Il s\'active tout seul.</string>
+    <string name="free_memory_title">Libérer de la mémoire</string>
+    <string name="free_memory_body">Ferme les autres applis inactives en arrière-plan, pour que les jeux aient plus de mémoire. Android ne le permet que pour les applis que tu n\'utilises pas en ce moment, et peut en relancer certaines tout seul.</string>
+    <string name="free_memory_button">Fermer les applis en arrière-plan</string>
+    <string name="free_memory_done">%1$d applis invitées à se fermer · %2$d Mo libérés · %3$d Mo libres maintenant</string>
 </resources>

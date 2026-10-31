@@ -2270,4 +2270,10 @@
     <string name="passport_need_details">Os géneros e criadores favoritos precisam dos dados dos jogos: obtenha-os com o scraper ou guarde ficheiros gamelist.xml junto aos jogos.</string>
     <string name="passport_years">Ano a ano</string>
     <string name="passport_finished_games">Terminados: %1$s</string>
+    <string name="game_textures_title">Pacote de texturas HD</string>
+    <string name="game_textures_body">Texturas em alta resolução para este jogo no leitor integrado. Um pacote é uma pasta com o ID do jogo (por exemplo ULUS10041 ou GALE01) ou, na N64, o seu nome interno; a página do pacote costuma dizê-lo. Escolhe essa pasta e o RetroForge copia-a para onde o emulador procura. É ligado automaticamente.</string>
+    <string name="free_memory_title">Libertar memória</string>
+    <string name="free_memory_body">Fecha outras apps inativas em segundo plano, para os jogos terem mais memória. O Android só o permite para apps que não estás a usar agora, e pode voltar a abrir algumas sozinho.</string>
+    <string name="free_memory_button">Fechar apps em segundo plano</string>
+    <string name="free_memory_done">Pedido a %1$d apps para fechar · %2$d MB libertados · %3$d MB livres agora</string>
 </resources>

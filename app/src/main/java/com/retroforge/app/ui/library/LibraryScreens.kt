@@ -423,6 +423,7 @@ fun GameDetailScreen(
         FavouriteAndPlaylists(g, viewModel)
         BacklogChips(g, viewModel)
         GameNotesCard(g, viewModel.documentUri(rootsById, g.rootId, g.documentId))
+        com.retroforge.app.ui.settings.GameTexturePacks(g.system, g.title)
         FocusChip(stringResource(R.string.library_delete_this_game), onClick = { onDelete(g.id) })
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             g.description?.let { CardBody(it) }

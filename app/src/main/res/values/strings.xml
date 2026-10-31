@@ -2398,4 +2398,10 @@
     <string name="passport_need_details">Favourite genres and developers need your games\' details: scrape them, or keep gamelist.xml files beside your games.</string>
     <string name="passport_years">Year by Year</string>
     <string name="passport_finished_games">Finished: %1$s</string>
+    <string name="game_textures_title">HD Texture Pack</string>
+    <string name="game_textures_body">High-resolution textures for this game in the built-in player. A pack is a folder named after the game\'s ID (for example ULUS10041 or GALE01) or, for N64, its internal name; the pack\'s page usually says which. Pick that folder and RetroForge copies it where the emulator looks. It\'s switched on automatically.</string>
+    <string name="free_memory_title">Free Up Memory</string>
+    <string name="free_memory_body">Closes other apps sitting idle in the background, so games get more memory. Android only allows this for apps you\'re not using right now, and may start some again on its own.</string>
+    <string name="free_memory_button">Close background apps</string>
+    <string name="free_memory_done">Asked %1$d apps to close · %2$d MB freed · %3$d MB free now</string>
 </resources>
