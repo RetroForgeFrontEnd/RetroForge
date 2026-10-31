@@ -2,8 +2,10 @@
 title: Mortal Kombat
 match: mortal kombat
 not: mortal kombat ii | mortal kombat 2 | mortal kombat 3 | mortal kombat 4 | mortal kombat trilogy | mortal kombat mythologies
-buttons: HP=X LP=Y BL=R HK=A LK=B
-checked: no
+buttons: HP=Y LP=B BL=R HK=X LK=A
+# Motions are read slowly: each step held 5 frames.
+step: 5
+checked: yes
 Liu Kang | Fireball | 6 _ 6+HP
 Liu Kang | Flying Kick | 6 _ 6+HK
 Sub-Zero | Freeze | 2 3 6+LP

@@ -249,6 +249,8 @@ fun TouchControls(
      * or off rather than holding it, since both thumbs are busy with the d-pad and buttons.
      */
     fastForward: Boolean = false,
+    /** Extra buttons kept next to the controls without covering them (Moves and turbo's moves): above the pad, or bottom middle in landscape. */
+    extra: (@Composable () -> Unit)? = null,
 ) {
     val parts = remember { IntArray(20) }
     val mask = remember { mutableIntStateOf(0) }
@@ -316,12 +318,15 @@ fun TouchControls(
                     }
                 }
             }
+            extra?.let { Box(Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp * k)) { it() } }
         }
         return
     }
 
     if (compact) {
-        Row(modifier.padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
+        Column(modifier) {
+        extra?.let { Box(Modifier.fillMaxWidth().padding(top = 4.dp), contentAlignment = Alignment.Center) { it() } }
+        Row(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Bottom) {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 layout.shoulders.getOrNull(0)?.let { (label, button) ->
                     PadButton(label, RoundedCornerShape(10.dp), 64.dp, 32.dp, small = true, role = ButtonRole.SHOULDER) { down -> set(10, if (down) Pad.bit(button) else 0) }
@@ -341,10 +346,12 @@ fun TouchControls(
                 FaceButtons(layout.face, spots = layout.faceSpots, size = 46.dp) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
             }
         }
+        }
         return
     }
 
     Column(modifier.padding(horizontal = 20.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) Column@{
+        extra?.let { Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { it() } }
         if (layout.shoulders.isNotEmpty() || layout.triggers.isNotEmpty()) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {

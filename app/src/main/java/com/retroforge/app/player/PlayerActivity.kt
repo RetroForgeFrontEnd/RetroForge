@@ -529,7 +529,7 @@ class PlayerActivity : ComponentActivity() {
 
     private fun playMove(move: Macros.Move) {
         if (!loaded || netPlaying) return
-        NativePlayer.playMacro(port, Macros.frames(move.inputs, facingRight, moveButtons))
+        NativePlayer.playMacro(port, Macros.frames(move.inputs, facingRight, moveButtons, movesGame?.step ?: 3))
     }
     private var playerTwo by mutableStateOf(false)
 
@@ -1697,6 +1697,8 @@ class PlayerActivity : ComponentActivity() {
                 last = now
             }
         }
+        val touchControlsShown = touchEnabled && showTouch && !vr && phase == Phase.Playing && !menuOpen
+        val movesShown = movesOnScreen.isNotEmpty() && phase == Phase.Playing && !menuOpen && !netPlaying
         // No background here: the game surface sits behind the window, and anything painted would cover it.
         Box(Modifier.fillMaxSize()) {
             BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -1705,11 +1707,12 @@ class PlayerActivity : ComponentActivity() {
                 val aspect = video?.aspect ?: (4f / 3f)
                 val compact = portrait && maxHeight - maxWidth / aspect < touchControlsHeight(layout, compact = false)
                 val controls: @Composable (Modifier) -> Unit = { modifier ->
-                    if (touchEnabled && showTouch && !vr && phase == Phase.Playing && !menuOpen) {
+                    if (touchControlsShown) {
                         TouchControls(
                             layout, onMask = { input.setTouch(it) }, onMenu = { openMenu() }, modifier = modifier,
                             compact = compact, landscape = !portrait, fastForward = intent.getBooleanExtra(EXTRA_FAST_FORWARD_R2, false),
                             onAnalog = { stick, x, y -> if (loaded) NativePlayer.setAnalog(port, stick, (x * 32767).toInt(), (y * 32767).toInt()) },
+                            extra = if (movesShown) ({ MoveButtons(movesOnScreen, facingRight, onFlip = { facingRight = !facingRight }, onMove = ::playMove, Modifier) }) else null,
                         )
                     }
                 }
@@ -1747,8 +1750,8 @@ class PlayerActivity : ComponentActivity() {
                     CompositionLocalProvider(LocalConsoleSkin provides skin) { controls(Modifier.fillMaxSize()) }
                 }
             }
-            // Drawn last, so the console look and the controls never cover them.
-            if (movesOnScreen.isNotEmpty() && phase == Phase.Playing && !menuOpen && !netPlaying) {
+            // Drawn last, so the console look and the controls never cover them. With touch controls they sit beside those instead.
+            if (movesShown && !touchControlsShown) {
                 MoveButtons(movesOnScreen, facingRight, onFlip = { facingRight = !facingRight }, onMove = ::playMove,
                     modifier = Modifier.align(Alignment.TopCenter).padding(top = 8.dp))
             }

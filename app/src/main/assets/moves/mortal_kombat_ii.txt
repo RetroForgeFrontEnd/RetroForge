@@ -1,7 +1,9 @@
 # Mortal Kombat II. Numpad notation for a fighter facing right: 6 forward, 4 back, 2 down; _ lets go.
 title: Mortal Kombat II
 match: mortal kombat ii | mortal kombat 2
-buttons: HP=X LP=Y BL=R HK=A LK=B
+buttons: HP=Y LP=B BL=R HK=X LK=A
+# Motions are read slowly: each step held 5 frames.
+step: 5
 checked: no
 Liu Kang | High Fireball | 6 _ 6+HP
 Liu Kang | Flying Kick | 6 _ 6+HK

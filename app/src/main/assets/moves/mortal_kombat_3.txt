@@ -2,7 +2,9 @@
 # 4 back, 2 down; _ lets go. RN is Run.
 title: Mortal Kombat 3
 match: mortal kombat 3 | mortal kombat trilogy
-buttons: HP=X LP=Y BL=R HK=A LK=B RN=L
+buttons: HP=Y LP=B BL=R HK=X LK=A RN=L
+# Motions are read slowly: each step held 5 frames.
+step: 5
 checked: no
 Sub-Zero | Ice Ball | 2 3 6+LP
 Sub-Zero | Ice Clone | 2 1 4+LP

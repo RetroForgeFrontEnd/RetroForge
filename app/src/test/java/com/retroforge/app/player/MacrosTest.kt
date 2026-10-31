@@ -95,6 +95,14 @@ class MacrosTest {
     }
 
     @Test
+    fun aGameCanHoldEachStepLonger() {
+        val game = Macros.parse("title: Slow\nstep: 5\nbuttons: LP=B\nX | Y | 4 6+LP")!!
+        assertEquals(5, game.step)
+        assertEquals(5 + 5 + 1, Macros.frames(game.moves.single().inputs, true, game.buttons.toMap(), game.step).size)
+        assertEquals(3, Macros.parse("title: Fast\nX | Y | 4")!!.step)
+    }
+
+    @Test
     fun aFileWithoutMovesIsSkipped() {
         assertNull(Macros.parse("title: Nothing"))
     }
