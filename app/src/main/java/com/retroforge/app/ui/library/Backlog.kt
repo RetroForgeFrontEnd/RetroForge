@@ -167,7 +167,7 @@ fun BacklogScreen(viewModel: LibraryViewModel, onOpenGame: (Long) -> Unit) {
 
 /** One labelled bar of a chart, its length [value] out of [max]. */
 @Composable
-private fun Bar(label: String, value: Long, max: Long, valueText: String, onClick: (() -> Unit)? = null) {
+internal fun Bar(label: String, value: Long, max: Long, valueText: String, onClick: (() -> Unit)? = null) {
     FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onClick, contentPadding = 12.dp) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))

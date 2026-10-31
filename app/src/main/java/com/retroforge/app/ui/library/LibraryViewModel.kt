@@ -249,6 +249,7 @@ class LibraryViewModel(
     fun isFavourite(game: GameEntity) = repository.isFavourite(game)
     val backlog: StateFlow<List<com.retroforge.core.library.BacklogGame>> = repository.backlog.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val playedGames: StateFlow<List<com.retroforge.core.library.PlayedGame>> = repository.playedGames.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val everyGame: StateFlow<List<GameEntity>> = repository.everyGame.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     fun backlogStatus(game: GameEntity) = repository.backlogStatus(game)
     suspend fun gameFor(system: String, fileName: String): GameEntity? = repository.gameFor(system, fileName)
     fun setBacklog(game: GameEntity, status: com.retroforge.core.library.BacklogStatus?) = repository.setBacklog(game, status)

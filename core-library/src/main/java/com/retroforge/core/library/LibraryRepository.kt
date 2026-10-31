@@ -53,6 +53,9 @@ class LibraryRepository(
     val systemCounts: Flow<List<SystemCount>> = dao.systemCounts()
     val hacks: Flow<List<GameEntity>> = dao.hacks()
     fun gamesFor(system: String): Flow<List<GameEntity>> = dao.gamesFor(system)
+
+    /** Every game in the library, for collections that cut across systems. */
+    val everyGame: Flow<List<GameEntity>> = dao.everyGame()
     fun game(id: Long): Flow<GameEntity?> = dao.game(id)
     fun problems(rootId: Long): Flow<List<ProblemEntity>> = dao.problems(rootId)
     /**
