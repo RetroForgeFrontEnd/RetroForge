@@ -2209,4 +2209,9 @@
         <item quantity="one">The top %1$d of each group goes through to the knockout below, once the group has finished.</item>
         <item quantity="other">The top %1$d of each group go through to the knockout below, once the group has finished.</item>
     </plurals>
+    <string name="tournament_double">Double knockout</string>
+    <string name="tournament_double_body">Out after two defeats. A first defeat drops a player into the losers\' bracket; its winner meets the winners\' bracket champion in a grand final.</string>
+    <string name="tournament_winners_bracket">Winners\' bracket</string>
+    <string name="tournament_losers_bracket">Losers\' bracket</string>
+    <string name="tournament_grand_final">Grand final</string>
 </resources>

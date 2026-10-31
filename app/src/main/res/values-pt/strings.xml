@@ -2081,4 +2081,9 @@
         <item quantity="one">O primeiro de cada grupo vai para o mata-mata abaixo quando o grupo termina.</item>
         <item quantity="other">Os %1$d primeiros de cada grupo vão para o mata-mata abaixo quando o grupo termina.</item>
     </plurals>
+    <string name="tournament_double">Dupla eliminação</string>
+    <string name="tournament_double_body">Fora após duas derrotas. A primeira derrota leva o jogador à chave dos perdedores; o vencedor dela enfrenta o campeão da chave dos vencedores numa grande final.</string>
+    <string name="tournament_winners_bracket">Chave dos vencedores</string>
+    <string name="tournament_losers_bracket">Chave dos perdedores</string>
+    <string name="tournament_grand_final">Grande final</string>
 </resources>

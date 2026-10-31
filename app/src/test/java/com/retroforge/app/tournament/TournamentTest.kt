@@ -97,6 +97,42 @@ class TournamentTest {
         assertNull(Tournaments.champion(t))
     }
 
+    @Test fun aDoubleKnockoutNeedsTwoDefeats() {
+        var t = Tournament("t", "Cup", "", TournamentFormat.DOUBLE_KNOCKOUT, listOf("A", "B", "C", "D"))
+        assertEquals(listOf(1, 1), Tournaments.losersBracket(t).map { it.size })
+        // The first-named side wins every match until the losers' bracket is decided.
+        fun next(x: Tournament) = (Tournaments.knockout(x).flatten() + Tournaments.losersBracket(x).flatten() + listOfNotNull(Tournaments.grandFinal(x)))
+            .firstOrNull { it.playable && it.score == null }
+        while (true) {
+            val m = next(t) ?: break
+            // D beats A in the grand final, though A won the winners' bracket.
+            t = Tournaments.withResult(t, m.key, if (m.key == "gf") Score(0, 1) else Score(1, 0))
+        }
+        val gf = Tournaments.grandFinal(t)!!
+        assertEquals(Slot.Player(0), gf.a) // A won the winners' bracket
+        // D lost to A first, then beat B and C in the losers' bracket.
+        assertEquals(Slot.Player(3), gf.b)
+        assertEquals(3, Tournaments.champion(t))
+        // A v D, B v C, the winners' final, D v C, D v B and the grand final.
+        assertEquals(6, t.results.size)
+    }
+
+    @Test fun byesInADoubleKnockoutPassStraightThrough() {
+        val t = Tournament("t", "Cup", "", TournamentFormat.DOUBLE_KNOCKOUT, listOf("A", "B", "C", "D", "E"))
+        assertEquals(4, Tournaments.losersBracket(t).size)
+        // Three of the first round's matches were byes: their "losers" are byes too, and only D v E's is awaited.
+        val first = Tournaments.losersBracket(t)[0]
+        assertEquals(Slot.Pending, first[0].winner)
+        assertEquals(Slot.Bye, first[1].winner)
+        val de = Tournaments.knockout(t)[0].first { it.playable }
+        val after5 = Tournaments.withResult(t, de.key, Score(1, 0))
+        assertEquals(Slot.Player(4), Tournaments.losersBracket(after5)[0][0].winner)
+        val two = Tournament("t", "Cup", "", TournamentFormat.DOUBLE_KNOCKOUT, listOf("A", "B"))
+        val final = Tournaments.knockout(two)[0][0]
+        val after = Tournaments.withResult(two, final.key, Score(2, 0))
+        assertEquals(Slot.Player(1), Tournaments.grandFinal(after)!!.b)
+    }
+
     @Test fun aLeagueHasNoChampionUntilEveryMatchIsPlayed() {
         val t = league("A", "B", "C")
         val m = Tournaments.leagueRounds(t).flatten().first()

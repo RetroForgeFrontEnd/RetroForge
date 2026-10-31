@@ -2082,4 +2082,9 @@
         <item quantity="one">El primero de cada grupo pasa a la eliminatoria de abajo cuando el grupo termina.</item>
         <item quantity="other">Los %1$d primeros de cada grupo pasan a la eliminatoria de abajo cuando el grupo termina.</item>
     </plurals>
+    <string name="tournament_double">Doble eliminación</string>
+    <string name="tournament_double_body">Fuera tras dos derrotas. Con la primera se pasa al cuadro de perdedores; su ganador se enfrenta al campeón del cuadro de ganadores en una gran final.</string>
+    <string name="tournament_winners_bracket">Cuadro de ganadores</string>
+    <string name="tournament_losers_bracket">Cuadro de perdedores</string>
+    <string name="tournament_grand_final">Gran final</string>
 </resources>

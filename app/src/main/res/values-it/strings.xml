@@ -2081,4 +2081,9 @@
         <item quantity="one">Il primo di ogni girone passa all\'eliminazione qui sotto, una volta finito il girone.</item>
         <item quantity="other">I primi %1$d di ogni girone passano all\'eliminazione qui sotto, una volta finito il girone.</item>
     </plurals>
+    <string name="tournament_double">Doppia eliminazione</string>
+    <string name="tournament_double_body">Fuori dopo due sconfitte. Con la prima si scende nel tabellone dei perdenti; il suo vincitore sfida il campione del tabellone dei vincenti nella finalissima.</string>
+    <string name="tournament_winners_bracket">Tabellone dei vincenti</string>
+    <string name="tournament_losers_bracket">Tabellone dei perdenti</string>
+    <string name="tournament_grand_final">Finalissima</string>
 </resources>

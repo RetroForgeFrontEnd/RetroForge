@@ -1,7 +1,7 @@
 package com.retroforge.app.tournament
 
 /** How a tournament is played. */
-enum class TournamentFormat { KNOCKOUT, LEAGUE, GROUPS }
+enum class TournamentFormat { KNOCKOUT, DOUBLE_KNOCKOUT, LEAGUE, GROUPS }
 
 /** A match's result: games or goals won by each side. */
 data class Score(val a: Int, val b: Int)
@@ -36,11 +36,21 @@ data class Match(val key: String, val round: Int, val a: Slot, val b: Slot, val 
     /** Who goes through: decided by the score (a draw decides nothing), or the player facing a bye. */
     val winner: Slot
         get() = when {
+            a == Slot.Bye && b == Slot.Bye -> Slot.Bye
             a is Slot.Player && b == Slot.Bye -> a
             b is Slot.Player && a == Slot.Bye -> b
             !playable || score == null || score.a == score.b -> Slot.Pending
             score.a > score.b -> a
             else -> b
+        }
+
+    /** Who is knocked out: the other side once there's a winner; nobody (a bye) when a side had no opponent. */
+    val loser: Slot
+        get() = when {
+            a == Slot.Bye || b == Slot.Bye -> if (a is Slot.Pending || b is Slot.Pending) Slot.Pending else Slot.Bye
+            winner == Slot.Pending -> Slot.Pending
+            winner == a -> b
+            else -> a
         }
 }
 
@@ -63,7 +73,7 @@ object Tournaments {
      */
     fun knockout(t: Tournament): List<List<Match>> {
         val entrants: List<Slot> = when (t.format) {
-            TournamentFormat.KNOCKOUT -> t.players.indices.map { Slot.Player(it) }
+            TournamentFormat.KNOCKOUT, TournamentFormat.DOUBLE_KNOCKOUT -> t.players.indices.map { Slot.Player(it) }
             TournamentFormat.GROUPS -> qualifiers(t)
             TournamentFormat.LEAGUE -> return emptyList()
         }
@@ -84,6 +94,40 @@ object Tournaments {
             round++
         }
         return rounds
+    }
+
+    /**
+     * A double knockout's losers' bracket: the first round's losers play each other, then each later round of the
+     * winners' bracket drops its losers in (in reverse order, to put off rematches), with the survivors playing each
+     * other in between. Losing here is the second defeat.
+     */
+    fun losersBracket(t: Tournament): List<List<Match>> {
+        if (t.format != TournamentFormat.DOUBLE_KNOCKOUT) return emptyList()
+        val winners = knockout(t)
+        if (winners.isEmpty()) return emptyList()
+        val rounds = mutableListOf<List<Match>>()
+        fun play(pairs: List<Pair<Slot, Slot>>): List<Slot> {
+            val round = rounds.size
+            val matches = pairs.mapIndexed { i, (a, b) -> "lb-$round-$i".let { Match(it, round, a, b, t.results[it]) } }
+            rounds += matches
+            return matches.map { it.winner }
+        }
+        var alive = winners[0].map { it.loser }
+        if (alive.size > 1) alive = play(alive.chunked(2).map { (a, b) -> a to b })
+        for (w in 1 until winners.size) {
+            alive = play(alive.zip(winners[w].map { it.loser }.reversed()))
+            if (alive.size > 1) alive = play(alive.chunked(2).map { (a, b) -> a to b })
+        }
+        return rounds
+    }
+
+    /** A double knockout's last match: the winners' bracket champion against the losers' bracket one. */
+    fun grandFinal(t: Tournament): Match? {
+        if (t.format != TournamentFormat.DOUBLE_KNOCKOUT) return null
+        val top = knockout(t).lastOrNull()?.single()?.winner ?: return null
+        val bottom = losersBracket(t).lastOrNull()?.single()?.winner
+            ?: knockout(t).last().single().loser // two players: the final's loser gets a second go
+        return Match("gf", 0, top, bottom, t.results["gf"])
     }
 
     /** Seed numbers in bracket order for a draw of [size] (a power of two). */
@@ -186,15 +230,17 @@ object Tournaments {
 
     /** The knockout or league matches; for groups, the knockout after them (see [groupRounds] for the groups). */
     fun matches(t: Tournament): List<List<Match>> = when (t.format) {
-        TournamentFormat.KNOCKOUT, TournamentFormat.GROUPS -> knockout(t)
+        TournamentFormat.KNOCKOUT, TournamentFormat.DOUBLE_KNOCKOUT, TournamentFormat.GROUPS -> knockout(t)
         TournamentFormat.LEAGUE -> leagueRounds(t)
     }
 
-    private fun allMatches(t: Tournament): List<Match> = matches(t).flatten() + groups(t).indices.flatMap { groupRounds(t, it).flatten() }
+    private fun allMatches(t: Tournament): List<Match> = matches(t).flatten() +
+        groups(t).indices.flatMap { groupRounds(t, it).flatten() } + losersBracket(t).flatten() + listOfNotNull(grandFinal(t))
 
     /** The winner, once every match that decides it has a result; null before then. */
     fun champion(t: Tournament): Int? = when (t.format) {
         TournamentFormat.KNOCKOUT, TournamentFormat.GROUPS -> (knockout(t).lastOrNull()?.single()?.winner as? Slot.Player)?.index
+        TournamentFormat.DOUBLE_KNOCKOUT -> (grandFinal(t)?.winner as? Slot.Player)?.index
         TournamentFormat.LEAGUE -> {
             val all = leagueRounds(t).flatten()
             if (all.isEmpty() || all.any { it.score == null }) null else table(t).first().player

@@ -2082,4 +2082,9 @@
         <item quantity="one">Le premier de chaque poule passe en phase finale ci-dessous, une fois la poule terminée.</item>
         <item quantity="other">Les %1$d premiers de chaque poule passent en phase finale ci-dessous, une fois la poule terminée.</item>
     </plurals>
+    <string name="tournament_double">Double élimination</string>
+    <string name="tournament_double_body">Éliminé après deux défaites. Une première défaite envoie le joueur dans le tableau des perdants ; son vainqueur affronte celui du tableau des gagnants en grande finale.</string>
+    <string name="tournament_winners_bracket">Tableau des gagnants</string>
+    <string name="tournament_losers_bracket">Tableau des perdants</string>
+    <string name="tournament_grand_final">Grande finale</string>
 </resources>

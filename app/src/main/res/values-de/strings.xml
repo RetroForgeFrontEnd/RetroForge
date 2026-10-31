@@ -2049,4 +2049,9 @@
         <item quantity="one">Der Beste jeder Gruppe kommt ins K.-o.-System unten, sobald die Gruppe fertig ist.</item>
         <item quantity="other">Die besten %1$d jeder Gruppe kommen ins K.-o.-System unten, sobald die Gruppe fertig ist.</item>
     </plurals>
+    <string name="tournament_double">Doppel-K.-o.</string>
+    <string name="tournament_double_body">Ausgeschieden nach zwei Niederlagen. Nach der ersten geht es in die Verliererrunde; deren Sieger trifft im großen Finale auf den Sieger der Gewinnerrunde.</string>
+    <string name="tournament_winners_bracket">Gewinnerrunde</string>
+    <string name="tournament_losers_bracket">Verliererrunde</string>
+    <string name="tournament_grand_final">Großes Finale</string>
 </resources>

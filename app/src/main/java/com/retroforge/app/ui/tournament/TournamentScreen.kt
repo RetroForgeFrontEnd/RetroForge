@@ -86,6 +86,7 @@ private fun summary(t: Tournament): String = listOf(
 @Composable
 private fun formatName(f: TournamentFormat) = when (f) {
     TournamentFormat.KNOCKOUT -> stringResource(R.string.tournament_knockout)
+    TournamentFormat.DOUBLE_KNOCKOUT -> stringResource(R.string.tournament_double)
     TournamentFormat.LEAGUE -> stringResource(R.string.tournament_league)
     TournamentFormat.GROUPS -> stringResource(R.string.tournament_groups)
 }
@@ -118,6 +119,7 @@ private fun NewTournament(onStart: (Tournament) -> Unit) {
         CardBody(
             when (format) {
                 TournamentFormat.KNOCKOUT -> stringResource(R.string.tournament_knockout_body)
+                TournamentFormat.DOUBLE_KNOCKOUT -> stringResource(R.string.tournament_double_body)
                 TournamentFormat.LEAGUE -> stringResource(R.string.tournament_league_body)
                 TournamentFormat.GROUPS -> stringResource(R.string.tournament_groups_body)
             },
@@ -175,9 +177,27 @@ private fun TournamentDetail(t: Tournament, onChange: (Tournament) -> Unit, onDe
             Tournaments.groupRounds(t, g).flatten().forEach { MatchCard(it) }
         }
         if (t.format == TournamentFormat.GROUPS) CardBody(pluralStr(R.plurals.tournament_groups_through, Tournaments.QUALIFY_PER_GROUP, Tournaments.QUALIFY_PER_GROUP))
+        val double = t.format == TournamentFormat.DOUBLE_KNOCKOUT
+        if (double) Text(stringResource(R.string.tournament_winners_bracket), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.primary)
         rounds.forEachIndexed { i, round ->
             CardTitle(roundName(t.format, i, rounds.size))
             round.forEach { MatchCard(it) }
+        }
+        val losers = Tournaments.losersBracket(t)
+        if (losers.isNotEmpty()) {
+            Text(stringResource(R.string.tournament_losers_bracket), style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.primary)
+            losers.forEachIndexed { i, round ->
+                // Rounds where everyone had a bye have nothing to show.
+                val shown = round.filter { it.a != Slot.Bye || it.b != Slot.Bye }
+                if (shown.isNotEmpty()) {
+                    CardTitle(stringResource(R.string.tournament_round, i + 1))
+                    shown.forEach { MatchCard(it) }
+                }
+            }
+        }
+        Tournaments.grandFinal(t)?.let { gf ->
+            CardTitle(stringResource(R.string.tournament_grand_final))
+            MatchCard(gf)
         }
         if (t.format != TournamentFormat.LEAGUE && champion == null) CardBody(stringResource(R.string.tournament_knockout_hint))
         if (askDelete) {
@@ -219,12 +239,15 @@ private fun slotName(t: Tournament, s: Slot) = when (s) {
     Slot.Pending -> stringResource(R.string.tournament_to_come)
 }
 
+/** Knockout matches (either bracket, and the grand final) need a winner; league and group matches can be drawn. */
+private fun mustBeWon(m: Match) = m.key.startsWith("k-") || m.key.startsWith("lb-") || m.key == "gf"
+
 @Composable
 private fun matchLine(t: Tournament, m: Match): String {
     val a = slotName(t, m.a)
     val b = slotName(t, m.b)
     val line = m.score?.let { "$a  ${it.a} – ${it.b}  $b" } ?: "$a  v  $b"
-    return if (m.winner is Slot.Player && m.key.startsWith("k-")) "$line  ✓ ${slotName(t, m.winner)}" else line
+    return if (m.winner is Slot.Player && mustBeWon(m)) "$line  ✓ ${slotName(t, m.winner)}" else line
 }
 
 @Composable
@@ -240,7 +263,7 @@ private fun ScoreEditor(t: Tournament, m: Match, onDone: (Score?) -> Unit, onCan
                 FocusChip("+", onClick = { set(value + 1) })
             }
         }
-        if (m.key.startsWith("k-") && a == b) CardBody(stringResource(R.string.tournament_no_draws))
+        if (mustBeWon(m) && a == b) CardBody(stringResource(R.string.tournament_no_draws))
         ChipRow {
             FocusChip(stringResource(R.string.tournament_save_result), onClick = { onDone(Score(a, b)) })
             if (m.score != null) FocusChip(stringResource(R.string.tournament_clear_result), onClick = { onDone(null) })
