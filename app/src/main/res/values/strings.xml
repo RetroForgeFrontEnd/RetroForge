@@ -2093,4 +2093,8 @@
     <string name="player_swap_off_during_netplay">During netplay each device keeps its own player.</string>
     <string name="player_sound_buffer">Sound buffer: %1$d ms</string>
     <string name="player_sound_buffer_hint">Shorter: sound follows your buttons sooner. Longer: no crackling on a busy device. 64 ms suits most.</string>
+    <string name="player_layout_for_system">Layout for: every game on this system</string>
+    <string name="player_layout_for_controller">Layout for: this controller (%1$s)</string>
+    <string name="player_layout_for_game">Layout for: this game only</string>
+    <string name="player_layout_hint">Select to change where these buttons apply. A game\'s own layout wins, then the controller\'s, then the system\'s.</string>
 </resources>

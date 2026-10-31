@@ -216,7 +216,7 @@ Requests that were never fully done, or only answered:
 | Custom soundtracks and a jukebox | 📋 to do: your own music in the menus (and over games if wanted), and a jukebox for game music files |
 | Game notes, strategy guides and map viewer | 📋 to do: notes per game (also in the pause menu), guides and maps from your own files, viewable mid-game |
 | Automatic fan-translation patching | 📋 to do: spot Japanese-only games and offer known fan translations, patched like ROM hacks |
-| Smart input profiles and per-game layout swapping | 📋 to do: controller profiles picked by controller and game, with per-game button layouts |
+| Smart input profiles and per-game layout swapping | ✅ Remap buttons → "Layout for": every game on the system, this controller (by its Android id, so each pad keeps its own), or this game only; a game's layout wins, then the controller's, then the system's, and plugging in a controller brings its layout along. Tested on the emulator (system → this game, saved for the game alone); a real controller's layout not tested |
 | Retro news and modding feed | 📋 to do: a feed of retro gaming news, emulator releases and modding from public RSS feeds |
 | AI translation overlay | 📋 to do: translate on-screen text in a game (Japanese and others) and show it over the picture, like RetroArch's AI service; needs a translation service (on-device OCR and translation where possible) |
 | Virtual light-gun: touch, gyro and second-controller aiming | 📋 to do: light-gun games (arcade, Time Crisis, Duck Hunt, Saturn shooters) aimed by touch, the phone's gyroscope or another controller's cursor, with a crosshair and calibration |

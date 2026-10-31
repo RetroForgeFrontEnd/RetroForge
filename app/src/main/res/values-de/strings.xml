@@ -1933,4 +1933,8 @@
     <string name="player_swap_off_during_netplay">Beim Netzwerkspiel behält jedes Gerät seinen Spieler.</string>
     <string name="player_sound_buffer">Tonpuffer: %1$d ms</string>
     <string name="player_sound_buffer_hint">Kürzer: Der Ton folgt den Tasten schneller. Länger: kein Knistern auf einem ausgelasteten Gerät. 64 ms passt meist.</string>
+    <string name="player_layout_for_system">Belegung für: alle Spiele dieses Systems</string>
+    <string name="player_layout_for_controller">Belegung für: diesen Controller (%1$s)</string>
+    <string name="player_layout_for_game">Belegung für: nur dieses Spiel</string>
+    <string name="player_layout_hint">Auswählen, um festzulegen, wo diese Belegung gilt. Die eines Spiels geht vor, dann die des Controllers, dann die des Systems.</string>
 </resources>

@@ -147,11 +147,64 @@ class PlayerActivity : ComponentActivity() {
     private val bezels by lazy { Bezels(File(filesDir, "bezels"), "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}") }
     private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS, NETPLAY, ACHIEVEMENTS, STATES }
 
-    // Controller remapping, per system: "keyCode:button,keyCode:button".
+    // Controller remapping: "keyCode:button,keyCode:button", kept for the system, for one controller on it, or for one game.
     private var remap by mutableStateOf<Map<Int, Int>>(emptyMap())
     private var waitingFor by mutableStateOf<Int?>(null)
 
-    private fun loadRemap(): Map<Int, Int> = prefs.getString("map.$system", null).orEmpty().split(',').mapNotNull { pair ->
+    /** Where the button layout is kept. A game's own layout wins, then the controller's, then the system's. */
+    private enum class LayoutScope { SYSTEM, CONTROLLER, GAME }
+    private var layoutScope by mutableStateOf(LayoutScope.SYSTEM)
+    /** The controller in use (its name and Android's lasting id for it), or null with none connected. */
+    private var padName by mutableStateOf<String?>(null)
+    private var padId: String? = null
+
+    private fun mapKey(scope: LayoutScope) = when (scope) {
+        LayoutScope.SYSTEM -> "map.$system"
+        LayoutScope.CONTROLLER -> "map.c.$padId.$system"
+        LayoutScope.GAME -> "map.g.$system.$saveBase"
+    }
+
+    // On-screen buttons have no controller of their own: they follow the game's layout, else the system's.
+    private fun touchKey(scope: LayoutScope) = if (scope == LayoutScope.GAME) "tmap.g.$system.$saveBase" else "tmap.$system"
+
+    /** Finds the controller in use and the layout that applies to it, and puts that layout in place. */
+    private fun chooseLayout() {
+        val pad = android.view.InputDevice.getDeviceIds().asSequence().mapNotNull { android.view.InputDevice.getDevice(it) }.firstOrNull { device ->
+            !device.isVirtual && (device.sources and android.view.InputDevice.SOURCE_GAMEPAD == android.view.InputDevice.SOURCE_GAMEPAD ||
+                device.sources and android.view.InputDevice.SOURCE_JOYSTICK == android.view.InputDevice.SOURCE_JOYSTICK)
+        }
+        padName = pad?.name
+        padId = pad?.descriptor
+        layoutScope = when {
+            prefs.contains(mapKey(LayoutScope.GAME)) || prefs.contains(touchKey(LayoutScope.GAME)) -> LayoutScope.GAME
+            padId != null && prefs.contains(mapKey(LayoutScope.CONTROLLER)) -> LayoutScope.CONTROLLER
+            else -> LayoutScope.SYSTEM
+        }
+        remap = loadRemap()
+        input.remap = remap
+        touchMap = loadTouchMap()
+    }
+
+    /**
+     * Moves the current layout to the next place it can be kept (system → this controller → this game → system). The
+     * place it leaves is cleared, so "this game only" really ends when switched back.
+     */
+    private fun nextLayoutScope() {
+        val from = layoutScope
+        var to = LayoutScope.entries[(from.ordinal + 1) % LayoutScope.entries.size]
+        if (to == LayoutScope.CONTROLLER && padId == null) to = LayoutScope.GAME
+        val keep = remap
+        val keepTouch = touchMap
+        prefs.edit().apply {
+            if (from != LayoutScope.SYSTEM) remove(mapKey(from))
+            if (from == LayoutScope.GAME) remove(touchKey(from))
+        }.apply()
+        layoutScope = to
+        saveRemap(keep)
+        saveTouchMap(keepTouch)
+    }
+
+    private fun loadRemap(): Map<Int, Int> = prefs.getString(mapKey(layoutScope), null).orEmpty().split(',').mapNotNull { pair ->
         val (key, button) = pair.split(':').takeIf { it.size == 2 } ?: return@mapNotNull null
         (key.toIntOrNull() ?: return@mapNotNull null) to (button.toIntOrNull() ?: return@mapNotNull null)
     }.toMap()
@@ -159,7 +212,9 @@ class PlayerActivity : ComponentActivity() {
     private fun saveRemap(next: Map<Int, Int>) {
         remap = next
         input.remap = next
-        prefs.edit().putString("map.$system", next.entries.joinToString(",") { "${it.key}:${it.value}" }).apply()
+        // An empty layout on its own is dropped, so the next place in line (controller, then system) applies again.
+        if (next.isEmpty() && layoutScope != LayoutScope.SYSTEM) prefs.edit().remove(mapKey(layoutScope)).apply()
+        else prefs.edit().putString(mapKey(layoutScope), next.entries.joinToString(",") { "${it.key}:${it.value}" }).apply()
     }
 
     /** Waits for a controller button, then makes it press [button] in the game. */
@@ -179,14 +234,15 @@ class PlayerActivity : ComponentActivity() {
     // On-screen buttons, per system: which game button each one presses ("label=button;label=button").
     private var touchMap by mutableStateOf<Map<String, Int>>(emptyMap())
 
-    private fun loadTouchMap(): Map<String, Int> = prefs.getString("tmap.$system", null).orEmpty().split(';').mapNotNull { pair ->
+    private fun loadTouchMap(): Map<String, Int> = prefs.getString(touchKey(layoutScope), null).orEmpty().split(';').mapNotNull { pair ->
         val (label, button) = pair.split('=').takeIf { it.size == 2 } ?: return@mapNotNull null
         label to (button.toIntOrNull() ?: return@mapNotNull null)
     }.toMap()
 
     private fun saveTouchMap(next: Map<String, Int>) {
         touchMap = next
-        prefs.edit().putString("tmap.$system", next.entries.joinToString(";") { "${it.key}=${it.value}" }).apply()
+        if (next.isEmpty() && layoutScope == LayoutScope.GAME) prefs.edit().remove(touchKey(layoutScope)).apply()
+        else prefs.edit().putString(touchKey(layoutScope), next.entries.joinToString(";") { "${it.key}=${it.value}" }).apply()
     }
 
     /** The system's pad with the user's on-screen choices applied. */
@@ -410,8 +466,14 @@ class PlayerActivity : ComponentActivity() {
 
     // Controllers coming and going mid-game: touch controls hide when one connects and come back when the last one goes.
     private val controllerListener = object : android.hardware.input.InputManager.InputDeviceListener {
-        override fun onInputDeviceAdded(deviceId: Int) { if (controllerConnected()) showTouch = false }
-        override fun onInputDeviceRemoved(deviceId: Int) { if (!controllerConnected()) showTouch = hasTouch }
+        override fun onInputDeviceAdded(deviceId: Int) {
+            if (controllerConnected()) showTouch = false
+            if (::input.isInitialized) chooseLayout()  // a controller with its own layout brings it along
+        }
+        override fun onInputDeviceRemoved(deviceId: Int) {
+            if (!controllerConnected()) showTouch = hasTouch
+            if (::input.isInitialized) chooseLayout()
+        }
         override fun onInputDeviceChanged(deviceId: Int) = onInputDeviceAdded(deviceId)
     }
 
@@ -484,9 +546,7 @@ class PlayerActivity : ComponentActivity() {
             onQuit = { runOnUiThread { quit() } },
         )
 
-        remap = loadRemap()
-        input.remap = remap
-        touchMap = loadTouchMap()
+        chooseLayout()
         // Back (the gesture, the button and the Back key): Android 16's back gesture only reaches callbacks like this
         // one, never dispatchKeyEvent.
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
@@ -1990,6 +2050,19 @@ class PlayerActivity : ComponentActivity() {
                             color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
                         )
                         MenuButton(onClick = { input.capture = null; waitingFor = null; menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
+                        MenuButton(onClick = { nextLayoutScope() }, modifier = wide) {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    when (layoutScope) {
+                                        LayoutScope.SYSTEM -> stringResource(R.string.player_layout_for_system)
+                                        LayoutScope.CONTROLLER -> stringResource(R.string.player_layout_for_controller, padName.orEmpty())
+                                        LayoutScope.GAME -> stringResource(R.string.player_layout_for_game)
+                                    },
+                                    fontSize = 14.sp, textAlign = TextAlign.Center,
+                                )
+                                Text(stringResource(R.string.player_layout_hint), color = Color(0xFFAAAAB4), fontSize = 12.sp, textAlign = TextAlign.Center)
+                            }
+                        }
                         val buttons = gameButtons()
                         Text(stringResource(R.string.player_controller), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                         buttons.forEach { (label, button) ->

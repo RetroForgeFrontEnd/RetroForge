@@ -1965,4 +1965,8 @@
     <string name="player_swap_off_during_netplay">No jogo em rede cada aparelho mantém o seu jogador.</string>
     <string name="player_sound_buffer">Buffer de som: %1$d ms</string>
     <string name="player_sound_buffer_hint">Mais curto: o som acompanha os botões mais cedo. Mais longo: sem estalos num aparelho ocupado. 64 ms serve na maioria dos casos.</string>
+    <string name="player_layout_for_system">Layout para: todos os jogos deste sistema</string>
+    <string name="player_layout_for_controller">Layout para: este controle (%1$s)</string>
+    <string name="player_layout_for_game">Layout para: só este jogo</string>
+    <string name="player_layout_hint">Selecione para mudar onde estes botões valem. O do jogo vem primeiro, depois o do controle, depois o do sistema.</string>
 </resources>

@@ -1966,4 +1966,8 @@
     <string name="player_swap_off_during_netplay">Durante el juego en red cada dispositivo mantiene su jugador.</string>
     <string name="player_sound_buffer">Búfer de sonido: %1$d ms</string>
     <string name="player_sound_buffer_hint">Más corto: el sonido sigue antes a tus botones. Más largo: sin chasquidos en un dispositivo ocupado. 64 ms va bien casi siempre.</string>
+    <string name="player_layout_for_system">Distribución para: todos los juegos de este sistema</string>
+    <string name="player_layout_for_controller">Distribución para: este mando (%1$s)</string>
+    <string name="player_layout_for_game">Distribución para: solo este juego</string>
+    <string name="player_layout_hint">Selecciona para cambiar dónde se aplican estos botones. Manda la del juego, luego la del mando y luego la del sistema.</string>
 </resources>

@@ -1966,4 +1966,8 @@
     <string name="player_swap_off_during_netplay">En jeu en réseau, chaque appareil garde son joueur.</string>
     <string name="player_sound_buffer">Tampon audio : %1$d ms</string>
     <string name="player_sound_buffer_hint">Plus court : le son suit vos boutons plus vite. Plus long : pas de grésillements sur un appareil chargé. 64 ms convient le plus souvent.</string>
+    <string name="player_layout_for_system">Disposition pour : tous les jeux de ce système</string>
+    <string name="player_layout_for_controller">Disposition pour : cette manette (%1$s)</string>
+    <string name="player_layout_for_game">Disposition pour : ce jeu seulement</string>
+    <string name="player_layout_hint">Sélectionnez pour changer où ces boutons s\'appliquent. Celle du jeu passe d\'abord, puis celle de la manette, puis celle du système.</string>
 </resources>

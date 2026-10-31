@@ -1965,4 +1965,8 @@
     <string name="player_swap_off_during_netplay">Durante il gioco in rete ogni dispositivo mantiene il suo giocatore.</string>
     <string name="player_sound_buffer">Buffer audio: %1$d ms</string>
     <string name="player_sound_buffer_hint">Più corto: il suono segue prima i tasti. Più lungo: niente crepitii su un dispositivo impegnato. 64 ms va bene quasi sempre.</string>
+    <string name="player_layout_for_system">Disposizione per: tutti i giochi di questo sistema</string>
+    <string name="player_layout_for_controller">Disposizione per: questo controller (%1$s)</string>
+    <string name="player_layout_for_game">Disposizione per: solo questo gioco</string>
+    <string name="player_layout_hint">Seleziona per cambiare dove valgono questi tasti. Vale prima quella del gioco, poi quella del controller, poi quella del sistema.</string>
 </resources>
