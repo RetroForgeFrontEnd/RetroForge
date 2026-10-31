@@ -135,6 +135,7 @@ private const val COVER_ROUTE = "retro/game/{id}/cover"
 private const val EDIT_ROUTE = "retro/game/{id}/edit"
 private const val MANAGER_ROUTE = "retro/manager"
 private const val FILES_ROUTE = "retro/files"
+private const val TOURNAMENT_ROUTE = "retro/tournaments"
 private const val MANAGER_SORT_ROUTE = "retro/manager/sort"
 private const val PLAYLIST_ROUTE = "retro/playlist/{id}"
 private const val MANAGER_DELETE_ROUTE = "retro/manager/delete/{id}"
@@ -258,10 +259,12 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
                                 onOpenPatcher = { nav.navigate(PATCHER_ROUTE) },
                                 onOpenManager = { nav.navigate(MANAGER_ROUTE) },
                                 onOpenFiles = { nav.navigate(FILES_ROUTE) },
+                                onOpenTournaments = { nav.navigate(TOURNAMENT_ROUTE) },
                                 onOpenPlaylist = { nav.navigate("retro/playlist/$it") },
                             )
                         }
                         composable(FOLDERS_ROUTE) { LibraryFoldersScreen(libraryViewModel) }
+                        composable(TOURNAMENT_ROUTE) { com.retroforge.app.ui.tournament.TournamentScreen() }
                         composable(PLAYLIST_ROUTE) { entry ->
                             PlaylistScreen(
                                 libraryViewModel,

@@ -69,6 +69,7 @@ fun RetroScreen(
     onOpenPatcher: () -> Unit,
     onOpenManager: () -> Unit,
     onOpenFiles: () -> Unit = {},
+    onOpenTournaments: () -> Unit = {},
     onOpenPlaylist: (Long) -> Unit,
 ) {
     val roots by viewModel.roots.collectAsStateWithLifecycle()
@@ -201,6 +202,11 @@ fun RetroScreen(
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenFiles) {
             CardTitle(stringResource(R.string.files_title))
             CardBody(stringResource(R.string.files_card_body))
+        }
+
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenTournaments) {
+            CardTitle(stringResource(R.string.tournament_title))
+            CardBody(stringResource(R.string.tournament_card_body))
         }
 
     }
