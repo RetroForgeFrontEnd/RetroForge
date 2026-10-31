@@ -1,0 +1,73 @@
+# Fatal Fury Special (Neo Geo, SNES, Mega Drive). Numpad notation for a fighter facing right: 6 forward, 2 down,
+# 3 down-forward; *60 charges for a second. A light punch, B light kick, C heavy punch, D heavy kick. P moves use C
+# and K moves D; change to A or B for the light version. Desperation moves (DM) need the life bar flashing red;
+# "close" moves are done next to the other fighter.
+title: Fatal Fury Special
+match: fatal fury special | garou densetsu special
+buttons: A=B B=A C=Y D=X
+checked: no
+Terry | Power Wave | 2 3 6+C
+Terry | Rising Tackle | 2*60 8+C
+Terry | Crack Shoot | 2 1 4 7+D
+Terry | DM: Power Geyser | 2 1 4 1 6+B+C
+Andy | Hishouken | 2 1 4+C
+Andy | Shoryudan | 2 3 6+C
+Andy | Zanei Ken | 1*60 6+C
+Andy | Kuuha Dan | 1 9+D
+Joe | Bakuretsu Ken | C _ C _ C _ C _ C
+Joe | Hurricane Upper | 4 1 2 3 6+C
+Joe | Slash Kick | 1*60 9+D
+Joe | Tiger Kick | 2 3 6 9+D
+Joe | DM: Screw Upper | 6 4 1 2 3 6+B+C
+Mai | Kachousen | 2 3 6+C
+Mai | Ryuuenbu | 2 1 4+C
+Mai | Hissatsu Shinobi Bachi | 4 1 2 3 6+D
+Mai | Musasabi no Mai | 2*60 8+C
+Mai | DM: Cho Hissatsu Shinobi Bachi | 6 1 6+B+C
+Kim | Hienzan | 2*60 8+D
+Kim | Hangetsuzan | 2 1 4+D
+Kim | DM: Houou Kyaku | 2 1 4 4 1 2 3 6+B+D
+Billy | Sansetsukon Chuudan Uchi | 4*60 6+C
+Billy | Suzume Otoshi | 1*60 9+C
+Billy | Senpuukon | A _ A _ A _ A _ A
+Billy | Kyoushuu Hishoukon | 1 2 3 6+D
+Billy | DM: Cho Kaen Senpuukon | 2 3 6 6 3 2 1 4 7+A+C
+Axel | Tornado Upper | 2 3 6+C
+Axel | Smash Bomber | 1*60 6+C
+Axel | Axel Dance | A _ A _ A _ A _ A
+Axel | DM: Axel Rush | 4 2 1 4 1 9+B+C
+Big Bear | Giant Bomb | 1*60 6+C
+Big Bear | Bear Bomber | 6 4 2 8+C
+Big Bear | DM: Fire Breath | 6 3 2 1 6+B+C
+Cheng | Kirai Hou | 2 3 6+C
+Cheng | Dai Taikobara Uchi | 2*60 8+C
+Cheng | Hagan Geki | 4*60 6+D
+Cheng | DM: Bakurai Hou | 1*60 2 3 6+B+C
+Duck King | Headspin Attack | 4*60 6+C
+Duck King | Break Storm | 2 3 6 9+D
+Duck King | Dancing Dive | 2 1 4+D
+Duck King | Beat Rush | 6 4 6+C
+Duck King | Needle Low | 3+D
+Duck King | DM: Break Spiral (close) | 4 1 2 3 6 9 2+B+C
+Jubei | Nihon Seoi Dash | 4*60 6+D
+Jubei | Ooizuna Otoshi (close) | 2*60 8+C
+Jubei | Senbei Shuriken | 4*60 6+C
+Jubei | Neko Jarashi (close) | 6 3 2 1 4+C
+Jubei | DM: Dynamite Izuna Otoshi (close) | 1*60 2 3+B+C
+Tung Fu Rue | Senshippo | 2 1 4+C
+Tung Fu Rue | Gekihou | C _ C _ C _ C _ C
+Tung Fu Rue | Ressen Kyaku | 1*60 9+D
+Tung Fu Rue | Shou Ha | 1*60 9+C
+Tung Fu Rue | DM: Senpuu Gouken | 6 3 2 8+B+C
+Laurence | Bloody Saber | 4 1 2 3 6+C
+Laurence | Bloody Spin | 4*60 6+D
+Laurence | Bloody Cutter | 2*60 8+C
+Laurence | DM: Bloody Flash | 3 4 1 2 3 6 1 6+B+D
+Krauser | High Blitz Ball | 2 1 4+C
+Krauser | Low Blitz Ball | 2 1 4+D
+Krauser | Leg Tomahawk | 2 3 6+D
+Krauser | DM: Kaiser Wave | 4*60 9+A+C
+Geese | Reppuuken | 2 3 6+A
+Geese | Double Reppuuken | 2 3 6+C
+Geese | Atemi Nage (counter) | 4 1 2 3 6 9+D
+Geese | DM: Raging Storm | 1 6 3 2 1 4 3+B+C
