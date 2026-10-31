@@ -114,6 +114,31 @@ object Macros {
         inputs.trim().split(Regex("""\s+""")).lastOrNull { it != "_" }.orEmpty().substringBefore('*').split('+')
             .filter { it.isNotEmpty() && it.singleOrNull()?.isDigit() != true }.map { it.uppercase() }.filter { it !in fixedButtons }.toSet()
 
+    /**
+     * [inputs] as a player reads them in a move list, facing right or left: "2 3 6+HP" → "↓↘→ HP", a charge "4*60 6+HP"
+     * → "←(hold) → HP", a release "_" → ",". Turbo frame counts on buttons are dropped.
+     */
+    fun readable(inputs: String, facingRight: Boolean = true): String {
+        val arrows = if (facingRight) "↙↓↘←·→↖↑↗" else "↘↓↙→·←↗↑↖"
+        val out = StringBuilder()
+        var afterArrow = false // arrows of one motion run together: ↓↘→
+        for (step in inputs.trim().split(Regex("""\s+""")).filter { it.isNotEmpty() }) {
+            if (step == "_") { out.append(", "); afterArrow = false; continue }
+            val held = step.substringAfter('*', "").toIntOrNull()?.let { it >= 30 } == true
+            val parts = step.substringBefore('*').split('+').filter { it.isNotEmpty() }
+            val dir = parts.firstOrNull()?.singleOrNull()?.takeIf { it in '1'..'9' }
+            val buttons = parts.drop(if (dir != null) 1 else 0).joinToString("+")
+            if (dir != null) {
+                if (out.isNotEmpty() && !afterArrow) out.append(' ')
+                out.append(arrows[dir - '1'])
+                afterArrow = true
+            }
+            if (held) { out.append("(hold)"); afterArrow = false }
+            if (buttons.isNotEmpty()) { out.append(' ').append(buttons); afterArrow = false }
+        }
+        return out.toString().replace(Regex(" {2,}"), " ").trim()
+    }
+
     /** Buttons a move names directly rather than through the game's layout. */
     private val fixedButtons = mapOf("START" to Pad.START, "SELECT" to Pad.SELECT)
 

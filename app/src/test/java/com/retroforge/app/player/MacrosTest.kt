@@ -197,6 +197,17 @@ class MacrosTest {
     }
 
     @Test
+    fun movesReadAsArrows() {
+        assertEquals("↓↘→ HP", Macros.readable("2 3 6+HP"))
+        assertEquals("↓↙← HP", Macros.readable("2 3 6+HP", facingRight = false))
+        assertEquals("←(hold) → HP", Macros.readable("4*60 6+HP"))
+        assertEquals("→, → C", Macros.readable("6 _ 6+C"))
+        assertEquals("C, C, C", Macros.readable("C _ C _ C"))
+        assertEquals("A+B+C", Macros.readable("A+B+C"))
+        assertEquals("↑, ↑, START", Macros.readable("8 _ 8 _ START"))
+    }
+
+    @Test
     fun aCheatCodeListNeverMirrors() {
         assertEquals(false, Macros.parse("title: Codes\nfacing: no\nX | Y | 6 6 4")!!.facing)
         assertEquals(true, Macros.parse("title: Fight\nX | Y | 6 6 4")!!.facing)
