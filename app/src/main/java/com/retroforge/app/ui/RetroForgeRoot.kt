@@ -435,10 +435,9 @@ private fun SectionNav(sections: List<Section>, current: Section, vertical: Bool
     LaunchedEffect(Unit) {
         if (inputMode == InputMode.Keyboard) runCatching { initialFocus.requestFocus() }
     }
-    // The selected tab's colour runs from the wordmark's orange on Home to its cyan on the last tab. Where the two
-    // meet in the middle the mix turns greyish, so the labels glow cyan there, fading towards either end.
+    // The selected tab's colour runs from the wordmark's orange on Home to its cyan on the last tab; every label
+    // has the same soft cyan glow, so none stands out from the rest.
     val forge = com.retroforge.core.ui.LocalForgeColors.current
-    val middle = (sections.size - 1) / 2f
     val tab: @Composable (Section, Modifier) -> Unit = { section, modifier ->
         SectionTab(
             accent = androidx.compose.ui.graphics.lerp(forge.wordmarkRetro, forge.wordmarkForge, sections.indexOf(section) / (sections.size - 1).coerceAtLeast(1).toFloat()),
@@ -448,7 +447,7 @@ private fun SectionNav(sections: List<Section>, current: Section, vertical: Bool
             onClick = { onSelect(section) },
             modifier = if (section == current) modifier.focusRequester(initialFocus) else modifier,
             compact = !vertical,
-            glow = if (middle > 0f) 0.15f + 0.85f * (1f - kotlin.math.abs(sections.indexOf(section) - middle) / middle) else 0f,
+            glow = 0.6f,
             glowColor = forge.wordmarkForge,
         )
     }
