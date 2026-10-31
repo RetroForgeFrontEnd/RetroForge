@@ -18,4 +18,7 @@ void resetRequested();
 void addStream(const std::string &path, int fd);
 void clearStreams();
 
+/** A new descriptor for streamed [path] (the caller closes it), or -1 when it isn't streamed. */
+int duplicateStream(const std::string &path);
+
 }  // namespace vfs

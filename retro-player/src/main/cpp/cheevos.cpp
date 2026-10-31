@@ -1,4 +1,9 @@
 #include "cheevos.h"
+#include "cheevos_chd.h"
+#include "vfs.h"
+
+#include <cstdio>
+#include <unistd.h>
 
 #include <jni.h>
 #include <android/log.h>
@@ -223,6 +228,14 @@ extern "C" {
 JNIEXPORT void JNI(cheevosStart)(JNIEnv *, jobject, jboolean hardcore) {
     std::lock_guard<std::mutex> l(lock);
     if (!client) {
+        // Games streamed from their folder have no real file: rcheevos reads them through the player's streams.
+        cheevos::installChdReader([](const char *path) -> FILE * {
+            int fd = vfs::duplicateStream(path);
+            if (fd < 0) return fopen(path, "rb");
+            FILE *f = fdopen(fd, "rb");
+            if (!f) close(fd);
+            return f;
+        });
         client = rc_client_create(readMemory, serverCall);
         rc_client_set_event_handler(client, onEvent);
         rc_client_enable_logging(client, RC_CLIENT_LOG_LEVEL_WARN, [](const char *m, const rc_client_t *) { LOGI("%s", m); });

@@ -209,7 +209,7 @@ Requests that were never fully done, or only answered:
 
 | Request | Status |
 |---|---|
-| RetroAchievements | 🟡 built: rcheevos in the built-in player, sign-in in Settings → Playing, unlock pop-ups, the list in the pause menu, hardcore. Games run with it; sign-in and unlocks need the user's account to test. CHD games not hashed yet |
+| RetroAchievements | 🟡 built: rcheevos in the built-in player, sign-in in Settings → Playing, unlock pop-ups, the list in the pause menu, hardcore. CHD discs (CD, GD-ROM, DVD) and games streamed from their folder are identified too: on the emulator a PS1 and a Dreamcast CHD give the same RetroAchievements hash as their cue/bin and gdi. Sign-in and unlocks need the user's account to test |
 | Save state manager in the app | ✅ tested on the emulator: pause menu → Save states › makes as many states as you like, each with a picture, to load, overwrite or delete; the game page lists every state (quick save, resume point, numbered) with its picture and date: Play from here, Rename, Delete |
 | Smart backlog and playtime analytics | 📋 to do: a backlog (want to play, playing, finished), suggestions from it, and playtime charts per game, system and week |
 | Peer-to-peer save and memory card sync on the local network | 📋 to do: two devices find each other on the Wi-Fi and swap newer saves and memory cards when RetroForge opens, no network drive needed |

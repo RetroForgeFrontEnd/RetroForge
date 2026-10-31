@@ -242,6 +242,11 @@ void addStream(const std::string &path, int fd) {
     streams[path] = own;
 }
 
+int duplicateStream(const std::string &path) {
+    int fd = streamFd(path);
+    return fd < 0 ? -1 : dup(fd);
+}
+
 void clearStreams() {
     std::lock_guard<std::mutex> lock(streamsMutex);
     for (auto &[path, fd] : streams) close(fd);
