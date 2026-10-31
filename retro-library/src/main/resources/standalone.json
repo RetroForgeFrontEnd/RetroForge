@@ -103,6 +103,18 @@
    "obtainiumApp": "{\"id\":\"com.github.stenzek.duckstation\",\"url\":\"https://duckstation-mirror.rmacias.workers.dev\",\"author\":\"duckstation-mirror.rmacias.workers.dev\",\"name\":\"DuckStation\",\"preferredApkIndex\":0,\"additionalSettings\":\"{\\\"intermediateLink\\\":[],\\\"customLinkFilterRegex\\\":\\\"\\\",\\\"filterByLinkText\\\":false,\\\"matchLinksOutsideATags\\\":false,\\\"skipSort\\\":false,\\\"reverseSort\\\":false,\\\"sortByLastLinkSegment\\\":false,\\\"versionExtractWholePage\\\":true,\\\"requestHeader\\\":[{\\\"requestHeader\\\":\\\"User-Agent: Obtainium/1.0\\\"}],\\\"defaultPseudoVersioningMethod\\\":\\\"partialAPKHash\\\",\\\"trackOnly\\\":false,\\\"versionExtractionRegEx\\\":\\\"Version:.*?>([\\\\\\\\d][\\\\\\\\w.-]+)\\\",\\\"matchGroupToUse\\\":\\\"$1\\\",\\\"versionDetection\\\":false,\\\"releaseDateAsVersion\\\":false,\\\"useVersionCodeAsOSVersion\\\":false,\\\"apkFilterRegEx\\\":\\\"\\\",\\\"invertAPKFilter\\\":false,\\\"autoApkFilterByArch\\\":true,\\\"appName\\\":\\\"Duckstation \\\",\\\"appAuthor\\\":\\\"stenzek \\\",\\\"shizukuPretendToBeGooglePlay\\\":false,\\\"allowInsecure\\\":false,\\\"exemptFromBackgroundUpdates\\\":false,\\\"skipUpdateNotifications\\\":false,\\\"about\\\":\\\"PlayStation 1 emulator\\\",\\\"refreshBeforeDownload\\\":false,\\\"includeZips\\\":false,\\\"zippedApkFilterRegEx\\\":\\\"\\\"}\",\"overrideSource\":\"HTML\"}"
   },
   {
+   "id": "RETROFORGE_PS3",
+   "name": "RetroForge PS3 Player",
+   "page": "https://github.com/RetroForgeFrontEnd/RetroForge/releases",
+   "obtainium": null,
+   "packages": [
+    {
+     "package": "com.retroforge.ps3player",
+     "activity": "com.retroforge.ps3player.LaunchActivity"
+    }
+   ]
+  },
+  {
    "id": "RETROFORGE_SWITCH",
    "name": "RetroForge Switch Player",
    "page": "https://github.com/RetroForgeFrontEnd/RetroForge-Switch-Player/releases",
@@ -572,6 +584,16 @@
    }
   ],
   "ps3": [
+   {
+    "emulator": "RETROFORGE_PS3",
+    "label": "RetroForge PS3 Player (folder)",
+    "command": "%ACTION%=com.retroforge.ps3player.action.LAUNCH %EXTRA_game_dir%=%ROM%"
+   },
+   {
+    "emulator": "RETROFORGE_PS3",
+    "label": "RetroForge PS3 Player (ISO)",
+    "command": "%ACTION%=com.retroforge.ps3player.action.LAUNCH %EXTRA_iso_uri%=%ROMSAF%"
+   },
    {
     "emulator": "APS3E",
     "label": "aPS3e Directory",

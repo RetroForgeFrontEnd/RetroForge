@@ -2276,4 +2276,18 @@
     <string name="free_memory_body">Chiude le altre app inattive in background, così i giochi hanno più memoria. Android lo permette solo per le app che non stai usando adesso, e può riavviarne alcune da solo.</string>
     <string name="free_memory_button">Chiudi le app in background</string>
     <string name="free_memory_done">Chiesto a %1$d app di chiudersi · %2$d MB liberati · %3$d MB liberi ora</string>
+    <string name="dlc_title">DLC</string>
+    <string name="dlc_body_ps3">Contenuti aggiuntivi per questo gioco, installati nel RetroForge PS3 Player. Scegli il file .pkg del DLC, poi la sua licenza .rap se ce l\'ha (i DLC gratuiti spesso no).</string>
+    <string name="dlc_add">Aggiungi DLC (.pkg)</string>
+    <string name="dlc_choose_rap">Scegli la sua licenza .rap</string>
+    <string name="dlc_no_rap">Nessun file di licenza</string>
+    <string name="dlc_pick_rap">Ora scegli il file di licenza .rap, o tocca Nessun file di licenza.</string>
+    <string name="dlc_queued">In attesa di installare…</string>
+    <string name="dlc_installing">Installazione… %1$d%%</string>
+    <string name="dlc_done">Installato per %1$s.</string>
+    <string name="dlc_licence_added">Licenza aggiunta.</string>
+    <string name="dlc_not_a_pkg">Quel file non è un pacchetto PS3.</string>
+    <string name="dlc_bad_rap">La licenza .rap non corrisponde: non è stato installato nulla.</string>
+    <string name="dlc_no_space">Spazio libero insufficiente per installarlo.</string>
+    <string name="dlc_failed">Impossibile installarlo: %1$s</string>
 </resources>
