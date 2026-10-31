@@ -1,0 +1,14 @@
+# Street Fighter III (New Generation, 2nd Impact, 3rd Strike). Numpad notation facing right: 6 forward, 2 down.
+# Super Arts use the one picked before the round.
+title: Street Fighter III
+match: street fighter iii | street fighter 3 | sfiii
+buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
+checked: no
+Ryu / Ken | Hadouken | 2 3 6+HP
+Ryu / Ken | Shoryuken | 6 2 3+HP
+Ryu / Ken | Hurricane Kick | 2 1 4+HK
+Ryu | Super Art: Shinku Hadouken | 2 3 6 2 3 6+HP
+Ken | Super Art: Shoryureppa | 2 3 6 2 3 6+HP
+Akuma | Gou Hadouken | 2 3 6+HP
+Akuma | Gou Shoryuken | 6 2 3+HP
+Akuma | Raging Demon | LP _ LP _ 6 _ LK _ HP

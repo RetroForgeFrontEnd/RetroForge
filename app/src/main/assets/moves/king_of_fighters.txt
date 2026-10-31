@@ -1,0 +1,16 @@
+# The King of Fighters (Neo Geo, 94 to 2002). Numpad notation for a fighter facing right: 6 forward, 2 down.
+# A light punch, B light kick, C heavy punch, D heavy kick. P moves use C; change to A for the light version.
+title: The King of Fighters
+match: king of fighters | kof
+buttons: A=B B=A C=Y D=X
+checked: no
+Kyo | 100 Shiki Oniyaki | 6 2 3+C
+Iori | 108 Shiki Yami Barai | 2 3 6+C
+Iori | 100 Shiki Oniyaki | 6 2 3+C
+Iori | Super: Ya Otome | 2 3 6 3 2 1 4+C
+Terry | Power Wave | 2 3 6+A
+Terry | Burn Knuckle | 2 1 4+C
+Terry | Rising Tackle | 2*60 8+C
+Ryo | Ko-Ou Ken | 2 3 6+C
+Athena | Psycho Ball | 2 1 4+C
+Mai | Kachousen | 2 3 6+C

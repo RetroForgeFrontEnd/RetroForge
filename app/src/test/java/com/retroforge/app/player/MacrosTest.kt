@@ -68,6 +68,28 @@ class MacrosTest {
     }
 
     @Test
+    fun everyBuiltInListReadsAndMatchesOnlyItsGame() {
+        val dir = listOf("src/main/assets/moves", "app/src/main/assets/moves").map { java.io.File(it) }.first { it.isDirectory }
+        val files: List<java.io.File> = dir.listFiles()!!.filter { it.name.endsWith(".txt") }.sortedBy { it.name }
+        val games: List<Macros.Game> = files.map { f ->
+            val g = Macros.parse(f.readText())
+            assertNotNull(f.name, g)
+            g!!
+        }
+        games.forEach { g ->
+            g.moves.forEach { m -> assert(Macros.finalButtons(m.inputs).all { it in g.buttons.toMap() }) { "${g.title}: ${m.name}" } }
+        }
+        fun titleFor(name: String) = Macros.gameFor(name, games)?.title
+        assertEquals("Street Fighter II", titleFor("Super Street Fighter II Turbo (USA)"))
+        assertEquals("Street Fighter Alpha", titleFor("Street Fighter Alpha 2 (USA)"))
+        assertEquals("Street Fighter III", titleFor("Street Fighter III 3rd Strike"))
+        assertEquals("Mortal Kombat", titleFor("Mortal Kombat (USA)"))
+        assertEquals("Mortal Kombat II", titleFor("Mortal Kombat II (USA)"))
+        assertEquals("The King of Fighters", titleFor("The King of Fighters '98"))
+        assertNull(titleFor("Ultimate Mortal Kombat 3"))
+    }
+
+    @Test
     fun aFileWithoutMovesIsSkipped() {
         assertNull(Macros.parse("title: Nothing"))
     }

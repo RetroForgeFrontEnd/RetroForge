@@ -1,0 +1,19 @@
+# Street Fighter Alpha / Zero (1, 2 and 3). Numpad notation for a fighter facing right: 6 forward, 4 back, 2 down.
+# P moves use the heavy button; change HP/HK to LP/MP or LK/MK for the slower versions.
+title: Street Fighter Alpha
+match: street fighter alpha | street fighter zero
+buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
+checked: no
+Ryu / Ken | Hadouken | 2 3 6+HP
+Ryu / Ken | Shoryuken | 6 2 3+HP
+Ryu / Ken | Hurricane Kick | 2 1 4+HK
+Ryu | Super: Shinku Hadouken | 2 3 6 2 3 6+HP
+Ken | Super: Shoryureppa | 2 3 6 2 3 6+HP
+Sakura | Hadouken | 2 3 6+HP
+Sakura | Shououken | 6 2 3+HP
+Guy | Hayagake | 2 3 6+HK
+Guy | Bushin Senpukyaku | 2 1 4+HK
+Sagat | Tiger Shot | 2 3 6+HP
+Sagat | Tiger Uppercut | 6 2 3+HP
+Akuma | Gou Hadouken | 2 3 6+HP
+Akuma | Gou Shoryuken | 6 2 3+HP

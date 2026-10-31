@@ -1,0 +1,21 @@
+# Mortal Kombat II. Numpad notation for a fighter facing right: 6 forward, 4 back, 2 down; _ lets go.
+title: Mortal Kombat II
+match: mortal kombat ii | mortal kombat 2
+buttons: HP=X LP=Y BL=R HK=A LK=B
+checked: no
+Liu Kang | High Fireball | 6 _ 6+HP
+Liu Kang | Flying Kick | 6 _ 6+HK
+Sub-Zero | Freeze | 2 3 6+LP
+Sub-Zero | Slide | 4+LP+BL+LK
+Sub-Zero | Ice Puddle | 2 1 4+LK
+Scorpion | Spear | 4 _ 4+LP
+Scorpion | Teleport Punch | 2 4+HP
+Raiden | Lightning | 2 6+LP
+Raiden | Torpedo | 4 _ 4 6
+Kung Lao | Hat Throw | 4 6+LP
+Jax | Gotcha Grab (close) | 6 _ 6+LP
+Kitana | Fan Throw | 6 _ 6+HP+LP
+Mileena | Sai Throw | HP*120 _
+Reptile | Acid Spit | 6 _ 6+HP
+Shang Tsung | Fireball | 4 _ 4+HP
+Baraka | Blade Spark | 2 4+HP
