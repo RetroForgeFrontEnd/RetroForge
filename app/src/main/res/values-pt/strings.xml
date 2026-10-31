@@ -2394,4 +2394,5 @@
     <string name="settings_size_smaller">Menor</string>
     <string name="settings_size_bigger">Maior</string>
     <string name="settings_size_normal">Tamanho normal</string>
+    <string name="music_play">Reproduzir</string>
 </resources>

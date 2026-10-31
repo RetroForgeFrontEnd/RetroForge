@@ -1926,6 +1926,7 @@ class PlayerActivity : ComponentActivity() {
                     MenuPage.MAIN -> {
                         notice?.let { Text(it, color = MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center) }
                         MenuButton(onClick = { closeMenu() }, modifier = wide.focusRequester(first), primary = true) { Text(stringResource(R.string.player_resume), fontWeight = FontWeight.Bold) }
+                        PauseMusic(wide)
                         val kioskGuard = com.retroforge.app.ui.rememberKioskGuard()
                         val discs = remember(menuPage) { if (loaded) NativePlayer.discInfo() else null }
                         MenuGrid(

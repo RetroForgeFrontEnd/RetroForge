@@ -2395,4 +2395,5 @@
     <string name="settings_size_smaller">Plus petit</string>
     <string name="settings_size_bigger">Plus grand</string>
     <string name="settings_size_normal">Taille normale</string>
+    <string name="music_play">Lecture</string>
 </resources>

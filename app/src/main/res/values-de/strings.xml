@@ -2362,4 +2362,5 @@
     <string name="settings_size_smaller">Kleiner</string>
     <string name="settings_size_bigger">Größer</string>
     <string name="settings_size_normal">Normale Größe</string>
+    <string name="music_play">Abspielen</string>
 </resources>
