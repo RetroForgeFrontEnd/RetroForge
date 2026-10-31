@@ -2526,12 +2526,14 @@ private fun MenuGrid(columns: Int, vararg tiles: Tile?) {
 }
 
 /** The moves put on screen from Moves and turbo, with ⇄ for which way the fighter faces. */
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 private fun MoveButtons(moves: List<Macros.Move>, facingRight: Boolean, onFlip: (() -> Unit)?, onMove: (Macros.Move) -> Unit, modifier: Modifier) {
-    // On a dark backing, so the buttons read over bright games too.
-    androidx.compose.foundation.layout.Row(
+    // On a dark backing, so the buttons read over bright games too; long names wrap onto a second line on a phone.
+    androidx.compose.foundation.layout.FlowRow(
         modifier.background(Color.Black.copy(alpha = 0.6f), androidx.compose.foundation.shape.RoundedCornerShape(10.dp)).padding(4.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         // No ⇄ for cheat codes, whose directions don't turn round.
         if (onFlip != null) MenuButton(onClick = onFlip, contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)) {

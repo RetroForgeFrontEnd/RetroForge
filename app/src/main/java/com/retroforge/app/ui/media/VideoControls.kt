@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -54,6 +56,7 @@ private val PanelShape = RoundedCornerShape(16.dp)
  * The film player's controls, in the game player's look: dark panels with an orange edge, cyan buttons, Play filled
  * orange. Tap the film (or press a controller button) to show them; they hide again after a few seconds of playing.
  */
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun VideoControls(player: ExoPlayer, title: String, mode: ViewMode, shown: Boolean, onShown: (Boolean) -> Unit, onMode: () -> Unit, onClose: () -> Unit) {
     var position by remember { mutableLongStateOf(0L) }
@@ -99,8 +102,11 @@ fun VideoControls(player: ExoPlayer, title: String, mode: ViewMode, shown: Boole
             TextButton(onClick = onClose) { Text("✕", color = MenuCyan, fontSize = 18.sp) }
         }
         Column(
-            Modifier.align(Alignment.BottomCenter).safeDrawingPadding().padding(12.dp).widthIn(max = 720.dp).fillMaxWidth()
-                .background(Panel, PanelShape).border(1.dp, MenuOrange.copy(alpha = 0.5f), PanelShape).padding(horizontal = 16.dp, vertical = 8.dp),
+            // Top padding keeps it clear of the title bar when the EQ makes it tall.
+            Modifier.align(Alignment.BottomCenter).safeDrawingPadding().padding(12.dp).padding(top = 76.dp).widthIn(max = 720.dp).fillMaxWidth()
+                .background(Panel, PanelShape).border(1.dp, MenuOrange.copy(alpha = 0.5f), PanelShape)
+                // The EQ makes this taller than a phone held sideways, so it scrolls.
+                .verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             val shownAt = dragging ?: if (length > 0) position.toFloat() / length else 0f
@@ -115,7 +121,12 @@ fun VideoControls(player: ExoPlayer, title: String, mode: ViewMode, shown: Boole
                 Box(Modifier.weight(1f))
                 Text(time(length), color = MenuGrey, fontSize = 13.sp)
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+            // Wraps onto a second line on a narrow phone rather than squashing the last button.
+            androidx.compose.foundation.layout.FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                itemVerticalAlignment = Alignment.CenterVertically,
+            ) {
                 MenuButton(onClick = { use { player.seekTo((player.currentPosition - 10_000).coerceAtLeast(0)) } }) { Text("−10s") }
                 BigPlayButton(playing, onClick = { use { if (player.isPlaying) player.pause() else player.play() } }, modifier = Modifier.focusRequester(play), diameter = 64.dp)
                 MenuButton(onClick = { use { player.seekTo(player.currentPosition + 30_000) } }) { Text("+30s") }
