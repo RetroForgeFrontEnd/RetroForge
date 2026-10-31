@@ -15,5 +15,7 @@ Nothing goes to GitHub until every row is ✅ (or the user agrees to leave it ou
 | Moves: finishers | A Mortal Kombat II or UMK3 fatality, babality or friendship from the list | 📋 |
 | Moves: cheat codes | Contra's Konami code gives 30 lives; no ⇄ button shows for a code | 📋 |
 | Turbo | A button set to turbo repeats while held, and goes back to normal when switched off | 📋 |
-| Moves off in Play Online | Moves can't be played in a netplay game, and the page says why | 📋 |
-| Tutorials | Settings → Tutorials has the Moves topic, and Pass the controller under online play, in each language | 📋 |
+| Moves off in Play Online | Moves can't be played in a netplay game, and the page says why | 🟡 code only, 31 Oct: on-screen moves and Select + button both stop while netplay is on, and Moves and turbo shows "Moves are off during netplay". Still to try in a real netplay game on two devices |
+| Tutorials | Settings → Tutorials has the Moves topic, and Pass the controller under online play, in each language | ✅ emulator, 31 Oct: Help and about → How to use RetroForge opened in English, German, Spanish, French, Italian and Portuguese; Moves and turbo shows every point down to your own lists, and Play together has Pass the controller, each in that language |
+| Scrape all artwork | Retro tab and Settings → Covers and bezels: box art for every game without any, libretro first, then ScreenScraper | ✅ emulator, 31 Oct: Sonic and Super Mario World from libretro; a renamed copy (smw.zip) from ScreenScraper; Super Tilt Bro (homebrew) not found by either, as expected |
+| Find a walkthrough | A game's page, under Guides and maps, opens a GameFAQs search for the game | ✅ emulator, 31 Oct: Super Mario World opened the search in Chrome |
