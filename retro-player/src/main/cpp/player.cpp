@@ -218,6 +218,13 @@ struct Player {
     // netplay waiting for the other player): latched by setButtons, carried until used, read once per frame.
     std::atomic<uint32_t> latched[4]{};
     uint32_t carried[4]{}, frameButtons[4]{};
+    // Turbo: these buttons, while held, are let go every other two frames, so the game sees them pressed again and
+    // again (about 15 times a second). Macros: one joypad mask per frame, played in order and added to what's held,
+    // for special moves and combos that need exact timing.
+    std::atomic<uint32_t> turbo[4]{};
+    std::mutex macroLock;
+    std::deque<uint32_t> macro[4];
+    uint64_t inputFrame = 0;
     // What the core says player 1's joypad buttons do (id → its name for it), for the on-screen buttons.
     std::map<unsigned, std::string> buttonNames;
     std::atomic<int16_t> analog[4][2][2]{};
@@ -1115,9 +1122,18 @@ void runLoop() {
                     return true;
                 },
             };
-            for (int i = 0; i < 4; i++) {
-                p.carried[i] |= p.latched[i].exchange(0);
-                p.frameButtons[i] = p.buttons[i] | p.carried[i];
+            p.inputFrame++;
+            {
+                std::lock_guard<std::mutex> macroGuard(p.macroLock);
+                for (int i = 0; i < 4; i++) {
+                    p.carried[i] |= p.latched[i].exchange(0);
+                    p.frameButtons[i] = p.buttons[i] | p.carried[i];
+                    if (uint32_t t = p.turbo[i]; t && (p.inputFrame / 2) % 2) p.frameButtons[i] &= ~t;
+                    if (!p.macro[i].empty()) {
+                        p.frameButtons[i] |= p.macro[i].front();
+                        p.macro[i].pop_front();
+                    }
+                }
             }
             p.netInput = netplay::active();
             if (p.netInput) {
@@ -1430,6 +1446,19 @@ JNIEXPORT void JNI(setButtons)(JNIEnv *, jobject, jint port, jint mask) {
         P->buttons[port] = static_cast<uint32_t>(mask);
         P->latched[port] |= static_cast<uint32_t>(mask);
     }
+}
+
+JNIEXPORT void JNI(setTurbo)(JNIEnv *, jobject, jint port, jint mask) {
+    if (P && port >= 0 && port < 4) P->turbo[port] = static_cast<uint32_t>(mask);
+}
+
+JNIEXPORT void JNI(playMacro)(JNIEnv *env, jobject, jint port, jintArray frames) {
+    if (!P || port < 0 || port >= 4 || !frames) return;
+    jsize n = env->GetArrayLength(frames);
+    std::vector<jint> masks(static_cast<size_t>(n));
+    if (n) env->GetIntArrayRegion(frames, 0, n, masks.data());
+    std::lock_guard<std::mutex> guard(P->macroLock);
+    P->macro[port].assign(masks.begin(), masks.end());  // a new move replaces one still playing
 }
 
 JNIEXPORT void JNI(setAnalog)(JNIEnv *, jobject, jint port, jint stick, jint x, jint y) {

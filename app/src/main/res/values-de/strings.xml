@@ -2363,4 +2363,10 @@
     <string name="settings_size_bigger">Größer</string>
     <string name="settings_size_normal">Normale Größe</string>
     <string name="music_play">Abspielen</string>
+    <string name="moves_title">Moves und Turbo</string>
+    <string name="moves_turbo">Turbo: Solange du eine Turbo-Taste hältst, drückt sie sich immer wieder selbst.</string>
+    <string name="moves_none">Für dieses Spiel gibt es noch keine Move-Liste. Turbo geht in jedem Spiel.</string>
+    <string name="moves_off_netplay">Moves sind beim Netplay aus, damit es fair bleibt.</string>
+    <string name="moves_buttons">Welche deiner Tasten welche Spieltaste ist, wie in den Optionen des Spiels eingestellt (zum Ändern tippen):</string>
+    <string name="moves_pick">Tippe auf einen Move, um ihn auf den Bildschirm zu legen (bis zu 4). Tippe dort auf ⇄, wenn dein Kämpfer in die andere Richtung schaut.</string>
 </resources>

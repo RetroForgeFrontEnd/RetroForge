@@ -67,6 +67,10 @@ object NativePlayer {
     /** The core draws both eyes side by side (Virtual Boy in 3D): each eye gets its half; outside VR only the left. */
     external fun setSideBySideSource(on: Boolean)
     external fun setButtons(port: Int, mask: Int)
+    /** Buttons in [mask] fire again and again while held (turbo); 0 turns it off. */
+    external fun setTurbo(port: Int, mask: Int)
+    /** Plays a move: one joypad mask per frame, added to what's held; replaces a move still playing. */
+    external fun playMacro(port: Int, frames: IntArray)
     external fun setAnalog(port: Int, stick: Int, x: Int, y: Int)
 
     private external fun coreOptions(): Array<String>

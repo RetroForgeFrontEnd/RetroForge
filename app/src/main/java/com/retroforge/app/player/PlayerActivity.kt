@@ -147,7 +147,7 @@ class PlayerActivity : ComponentActivity() {
     private var bezelBusy by mutableStateOf(false)
     private var bezelStatus by mutableStateOf<String?>(null)
     private val bezels by lazy { Bezels(File(filesDir, "bezels"), "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}") }
-    private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS, NETPLAY, LINK, ACHIEVEMENTS, STATES, NOTES }
+    private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS, NETPLAY, LINK, ACHIEVEMENTS, STATES, NOTES, MOVES }
 
     // Controller remapping: "keyCode:button,keyCode:button", kept for the system, for one controller on it, or for one game.
     private var remap by mutableStateOf<Map<Int, Int>>(emptyMap())
@@ -489,6 +489,39 @@ class PlayerActivity : ComponentActivity() {
      * in games that give each player their own controller (Super Mario Bros.' Luigi, two-player RPG battles).
      */
     @Volatile private var port = 0
+
+    // Moves and turbo (pause menu): turbo buttons for this system; for fighting games with a move list, the moves on
+    // screen and which RetroPad button each of the game's buttons is on, kept per game.
+    private var turboMask by androidx.compose.runtime.mutableIntStateOf(0)
+    private val movesGame by lazy { Macros.gameFor(intent.getStringExtra(EXTRA_TITLE).orEmpty()) }
+    private var movesOnScreen by mutableStateOf<List<Macros.Move>>(emptyList())
+    private var moveButtons by mutableStateOf<Map<String, Int>>(emptyMap())
+    private var facingRight by mutableStateOf(true)
+
+    private fun loadMoves() {
+        turboMask = prefs.getInt("turbo.$system", 0)
+        val game = movesGame ?: return
+        val saved = prefs.getString("movebuttons.$system.${game.title}", null).orEmpty().split(',').mapNotNull { pair ->
+            pair.split('=').takeIf { it.size == 2 }?.let { (name, pad) -> pad.toIntOrNull()?.let { name to it } }
+        }.toMap()
+        moveButtons = game.layout.buttons.toMap() + saved
+        val chosen = prefs.getString("moves.$saveBase", null).orEmpty().split('\n').toSet()
+        movesOnScreen = game.moves.filter { "${it.fighter}|${it.name}" in chosen }
+    }
+
+    private fun saveMoves() {
+        prefs.edit().putInt("turbo.$system", turboMask).apply {
+            movesGame?.let { game ->
+                putString("movebuttons.$system.${game.title}", moveButtons.entries.joinToString(",") { "${it.key}=${it.value}" })
+                putString("moves.$saveBase", movesOnScreen.joinToString("\n") { "${it.fighter}|${it.name}" })
+            }
+        }.apply()
+    }
+
+    private fun playMove(move: Macros.Move) {
+        if (!loaded || netPlaying) return
+        NativePlayer.playMacro(port, Macros.frames(move.inputs, facingRight, moveButtons))
+    }
     private var playerTwo by mutableStateOf(false)
 
     private fun swapPlayers() {
@@ -623,11 +656,12 @@ class PlayerActivity : ComponentActivity() {
         filter = com.retroforge.player.ScreenFilter.of(prefs.getString("filter.$system", null))
         savesDir = File(base, "saves/$system").apply { mkdirs() }
         statesDir = File(base, "states/$system").apply { mkdirs() }
+        loadMoves()
         input = PlayerInput(
             menuCombo = HotkeyCombo.of(extras.getInt(EXTRA_MENU_COMBO, HotkeyCombo.DOWN_SELECT.value)),
             quitCombo = HotkeyCombo.of(extras.getInt(EXTRA_QUIT_COMBO, HotkeyCombo.START_SELECT.value)),
             fastForwardOnR2 = extras.getBoolean(EXTRA_FAST_FORWARD_R2, false),
-            onMask = { if (loaded) NativePlayer.setButtons(port, it) },
+            onMask = { if (loaded) { NativePlayer.setTurbo(port, turboMask); NativePlayer.setButtons(port, it) } },
             onAnalog = { stick, x, y -> if (loaded) NativePlayer.setAnalog(port, stick, x, y) },
             onFastForward = { if (loaded) NativePlayer.setFastForward(it) },
             onMenu = { runOnUiThread { openMenu() } },
@@ -1684,6 +1718,10 @@ class PlayerActivity : ComponentActivity() {
                 }
             }
             // Drawn last, so the console look and the controls never cover them.
+            if (movesOnScreen.isNotEmpty() && phase == Phase.Playing && !menuOpen && !netPlaying) {
+                MoveButtons(movesOnScreen, facingRight, onFlip = { facingRight = !facingRight }, onMove = ::playMove,
+                    modifier = Modifier.align(Alignment.TopCenter).padding(top = 8.dp))
+            }
             if (netShowStatus) {
                 Text(
                     netStatus,
@@ -1880,6 +1918,7 @@ class PlayerActivity : ComponentActivity() {
             MenuPage.ACHIEVEMENTS -> raGame?.title ?: stringResource(R.string.ra_achievements)
             MenuPage.STATES -> stringResource(R.string.states_title)
             MenuPage.NOTES -> stringResource(R.string.player_notes)
+            MenuPage.MOVES -> stringResource(R.string.moves_title)
             MenuPage.CHEATS -> stringResource(R.string.player_cheats)
             MenuPage.OPTIONS -> stringResource(R.string.player_settings, coreName)
             MenuPage.CONTROLS -> stringResource(R.string.player_remap_buttons_2)
@@ -1977,6 +2016,7 @@ class PlayerActivity : ComponentActivity() {
                             // Kiosk mode: the emulator's settings, cheats and choice need the PIN.
                             Tile(stringResource(R.string.player_emulator)) { kioskGuard { menuPage = MenuPage.EMULATOR } },
                             Tile(stringResource(R.string.player_notes)) { menuPage = MenuPage.NOTES },
+                            Tile(stringResource(R.string.moves_title)) { menuPage = MenuPage.MOVES },
                             if (Netplay.supports(system)) {
                                 Tile(if (netPlaying) stringResource(R.string.player_netplay_player, NativePlayer.netplayPlayer() + 1) else stringResource(R.string.player_netplay_2)) {
                                     menuPage = MenuPage.NETPLAY; if (netState == 0 && netHosts == null) findNetplayHosts()
@@ -2158,6 +2198,55 @@ class PlayerActivity : ComponentActivity() {
                     }
                     MenuPage.ACHIEVEMENTS -> AchievementsPage(wide)
                     MenuPage.STATES -> StatesPage(wide)
+                    MenuPage.MOVES -> {
+                        Text(stringResource(R.string.moves_turbo), color = MenuGrey, fontSize = 13.sp, textAlign = TextAlign.Center)
+                        MenuGrid(
+                            columns,
+                            *Macros.padButtons.take(6).map { (pad, label) ->
+                                val on = turboMask and Pad.bit(pad) != 0
+                                Tile("$label: ${stringResource(if (on) R.string.settings_on else R.string.player_off)}") {
+                                    turboMask = turboMask xor Pad.bit(pad)
+                                    if (loaded) NativePlayer.setTurbo(port, turboMask)
+                                    saveMoves()
+                                }
+                            }.toTypedArray(),
+                        )
+                        MenuDivider()
+                        val game = movesGame
+                        if (game == null) {
+                            Text(stringResource(R.string.moves_none), color = MenuGrey, fontSize = 13.sp, textAlign = TextAlign.Center)
+                        } else {
+                            if (netPlaying) Text(stringResource(R.string.moves_off_netplay), color = MenuOrange, fontSize = 13.sp, textAlign = TextAlign.Center)
+                            Text(stringResource(R.string.moves_buttons), color = MenuGrey, fontSize = 13.sp, textAlign = TextAlign.Center)
+                            MenuGrid(
+                                columns,
+                                *game.layout.buttons.map { (name, _) ->
+                                    val pad = moveButtons[name]
+                                    Tile("$name: ${Macros.padButtons.firstOrNull { it.first == pad }?.second ?: "?"}") {
+                                        val list = Macros.padButtons
+                                        val next = list[(list.indexOfFirst { it.first == pad } + 1) % list.size].first
+                                        moveButtons = moveButtons + (name to next)
+                                        saveMoves()
+                                    }
+                                }.toTypedArray(),
+                            )
+                            MenuDivider()
+                            Text(stringResource(R.string.moves_pick), color = MenuGrey, fontSize = 13.sp, textAlign = TextAlign.Center)
+                            game.moves.groupBy { it.fighter }.forEach { (fighter, moves) ->
+                                Text(fighter, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                                MenuGrid(
+                                    columns,
+                                    *moves.map { move ->
+                                        val shown = move in movesOnScreen
+                                        Tile(if (shown) "★ ${move.name}" else move.name) {
+                                            movesOnScreen = if (shown) movesOnScreen - move else (movesOnScreen + move).takeLast(4)
+                                            saveMoves()
+                                        }
+                                    }.toTypedArray(),
+                                )
+                            }
+                        }
+                    }
                     MenuPage.NOTES -> {
                         com.retroforge.app.ui.library.NotesMenuPage(system, intent.getStringExtra(EXTRA_FILE_NAME).orEmpty(), intent.getStringExtra(EXTRA_URI)?.let(Uri::parse)) { label, onClick ->
                             MenuButton(onClick = onClick, modifier = wide) { Text(label) }
@@ -2396,6 +2485,21 @@ private fun MenuGrid(columns: Int, vararg tiles: Tile?) {
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                     contentPadding = PaddingValues(horizontal = 6.dp, vertical = 6.dp),
                 ) { Text(tile.label, fontSize = 13.sp, textAlign = TextAlign.Center, maxLines = 2, lineHeight = 15.sp) }
+            }
+        }
+    }
+}
+
+/** The moves put on screen from Moves and turbo, with ⇄ for which way the fighter faces. */
+@Composable
+private fun MoveButtons(moves: List<Macros.Move>, facingRight: Boolean, onFlip: () -> Unit, onMove: (Macros.Move) -> Unit, modifier: Modifier) {
+    androidx.compose.foundation.layout.Row(modifier, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        MenuButton(onClick = onFlip, contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)) {
+            Text(if (facingRight) "⇄ →" else "← ⇄", fontSize = 12.sp)
+        }
+        moves.forEach { move ->
+            MenuButton(onClick = { onMove(move) }, contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)) {
+                Text(move.name.substringAfter(": "), fontSize = 12.sp, maxLines = 1)
             }
         }
     }

@@ -2523,4 +2523,10 @@
     <string name="settings_size_bigger">Bigger</string>
     <string name="settings_size_normal">Normal size</string>
     <string name="music_play">Play</string>
+    <string name="moves_title">Moves and turbo</string>
+    <string name="moves_turbo">Turbo: while you hold a turbo button, it presses itself again and again.</string>
+    <string name="moves_none">No move list for this game yet. Turbo works in every game.</string>
+    <string name="moves_off_netplay">Moves are off during netplay, to keep it fair.</string>
+    <string name="moves_buttons">Which of your buttons is each of the game\'s buttons, as set in the game\'s own options (tap to change):</string>
+    <string name="moves_pick">Tap a move to put it on screen (up to 4). On screen, tap ⇄ when your fighter faces the other way.</string>
 </resources>

@@ -2395,4 +2395,10 @@
     <string name="settings_size_bigger">Maior</string>
     <string name="settings_size_normal">Tamanho normal</string>
     <string name="music_play">Reproduzir</string>
+    <string name="moves_title">Golpes e turbo</string>
+    <string name="moves_turbo">Turbo: enquanto você segura um botão turbo, ele se aperta sozinho várias vezes.</string>
+    <string name="moves_none">Ainda não há lista de golpes para este jogo. O turbo funciona em todos.</string>
+    <string name="moves_off_netplay">Os golpes ficam desligados no jogo em rede, para ser justo.</string>
+    <string name="moves_buttons">Qual botão seu é cada botão do jogo, como definido nas opções do próprio jogo (toque para mudar):</string>
+    <string name="moves_pick">Toque num golpe para colocá-lo na tela (até 4). Na tela, toque em ⇄ quando seu lutador estiver virado para o outro lado.</string>
 </resources>

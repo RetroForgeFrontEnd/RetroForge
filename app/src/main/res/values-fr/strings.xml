@@ -2396,4 +2396,10 @@
     <string name="settings_size_bigger">Plus grand</string>
     <string name="settings_size_normal">Taille normale</string>
     <string name="music_play">Lecture</string>
+    <string name="moves_title">Coups et turbo</string>
+    <string name="moves_turbo">Turbo : tant que vous maintenez un bouton turbo, il s\'appuie tout seul encore et encore.</string>
+    <string name="moves_none">Pas encore de liste de coups pour ce jeu. Le turbo marche dans tous les jeux.</string>
+    <string name="moves_off_netplay">Les coups sont désactivés en jeu en réseau, pour rester équitable.</string>
+    <string name="moves_buttons">Quel bouton est chaque bouton du jeu, selon les options du jeu (touchez pour changer) :</string>
+    <string name="moves_pick">Touchez un coup pour l\'afficher à l\'écran (jusqu\'à 4). À l\'écran, touchez ⇄ quand votre combattant regarde de l\'autre côté.</string>
 </resources>

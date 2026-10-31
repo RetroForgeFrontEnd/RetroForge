@@ -2396,4 +2396,10 @@
     <string name="settings_size_bigger">Más grande</string>
     <string name="settings_size_normal">Tamaño normal</string>
     <string name="music_play">Reproducir</string>
+    <string name="moves_title">Movimientos y turbo</string>
+    <string name="moves_turbo">Turbo: mientras mantienes un botón turbo, se pulsa solo una y otra vez.</string>
+    <string name="moves_none">Aún no hay lista de movimientos para este juego. El turbo funciona en todos.</string>
+    <string name="moves_off_netplay">Los movimientos se desactivan en el juego en red, para que sea justo.</string>
+    <string name="moves_buttons">Qué botón tuyo es cada botón del juego, según las opciones del propio juego (toca para cambiar):</string>
+    <string name="moves_pick">Toca un movimiento para ponerlo en pantalla (hasta 4). En pantalla, toca ⇄ cuando tu luchador mire al otro lado.</string>
 </resources>
