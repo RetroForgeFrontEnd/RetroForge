@@ -45,5 +45,6 @@ Nothing goes to GitHub until every row is ✅ (or the user agrees to leave it ou
 | Music from a network drive | Find on my network, pick the share, songs play | ✅ emulator, 31 Oct: PC share Retrobat, 12 songs from library\Music play |
 | Now Playing | Visuals move; round Previous / Play / Next; Shuffle, Repeat, EQ; playing in the background | ✅ emulator, 31 Oct: visuals, EQ presets and bands, Next changes song |
 | Radio | Stations near you, search, favourites, See more | ✅ emulator, 31 Oct: list loads with logos, a station plays, See more adds 12 |
-| Film player | Game-menu style controls; seek, subtitles, EQ; 3D view modes | 🔲 needs a test film |
+| Film player | Game-menu style controls; seek, subtitles, EQ; 3D view modes | 🟡 emulator, 31 Oct: controls in game-menu colours, big Play, EQ presets and bands (a small screen-recorded clip; the emulator cannot decode a full-size one). A real film on the S22 still to do |
 | Network drives kept apart | Games, Films and Music cards each list only their own drives | 🟡 emulator: Music card shows only its drive |
+| Music during a game | Your music keeps playing in the built-in player; game volume from the pause menu | ✅ emulator, 31 Oct: music and Sonic's sound play together |

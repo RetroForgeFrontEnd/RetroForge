@@ -71,13 +71,15 @@ fun SectionTab(
             val style = if (compact) MaterialTheme.typography.labelMedium else MaterialTheme.typography.labelLarge
             // Shrinks a long label ("ROM hacks") to fit a narrow phone tab rather than clipping it.
             val glows = glow > 0f && glowColor != Color.Unspecified
-            val text = style.copy(color = content, shadow = if (glows) Shadow(glowColor.copy(alpha = glow), Offset.Zero, blurRadius = 22f) else null)
+            // Below 1, so Android draws the glow even under the see-through copy.
+            val halo = if (glows) Shadow(glowColor.copy(alpha = glow.coerceAtMost(0.95f)), Offset.Zero, blurRadius = 22f) else null
             Box(contentAlignment = Alignment.Center) {
-                // Drawn twice when glowing: one blurred shadow alone is too faint to read as neon.
-                repeat(if (glows) 2 else 1) {
+                // One blurred shadow alone is too faint to read as neon, so a see-through copy behind adds a second;
+                // the letters themselves are drawn once, the same weight as the other tabs'.
+                (if (glows) listOf(Color.Transparent, content) else listOf(content)).forEach { ink ->
                     BasicText(
                         label,
-                        style = text,
+                        style = style.copy(color = ink, shadow = halo),
                         maxLines = 1,
                         softWrap = false,
                         autoSize = TextAutoSize.StepBased(minFontSize = 6.sp, maxFontSize = style.fontSize, stepSize = 0.5.sp),
