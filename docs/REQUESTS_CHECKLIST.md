@@ -240,6 +240,7 @@ Requests that were never fully done, or only answered:
 | Advanced accessibility centre | 📋 to do: one-handed controller layouts, hold-to-toggle for buttons, adjustable game speed, colour filters and visual adjustments, and customisable vibration and audio cues, to open older games to more players |
 | Party mode: a multiplayer hub | 📋 to do: several Bluetooth controllers with players assigned automatically, a collection of multiplayer games (from the players count in game details) filtered by 2, 3 or 4 players, and a party playlist for friends, for handhelds and TV setups |
 | Smart collections | 📋 to do: collections made and kept up to date by themselves from genre, year, developer or player count (Best RPGs, 1990s arcade games, couch co-op), and filters by backlog status, playtime and last played (these last now exist from the backlog and playtime work) |
+| Big screen mode for TVs | 📋 to do: a TV home screen for televisions and Android TV boxes, with large artwork, animated backgrounds and horizontal shelves, full controller navigation and TV remote support (D-pad, OK, Back) |
 
 ## Future plans (30 October)
 
