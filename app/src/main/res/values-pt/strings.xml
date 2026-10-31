@@ -1992,4 +1992,16 @@
     <string name="kiosk_locked_body">O modo quiosque está ligado: isto precisa do PIN.</string>
     <string name="kiosk_ok">OK</string>
     <string name="kiosk_cancel">Cancelar</string>
+    <string name="notes_title">Notas</string>
+    <string name="notes_body">As suas notas para este jogo: códigos, dicas, até onde chegou. Também no menu do jogo (Notas e guias).</string>
+    <string name="notes_empty">Ainda sem notas.</string>
+    <string name="notes_write">Escrever notas</string>
+    <string name="notes_edit">Editar notas</string>
+    <string name="notes_field">As suas notas</string>
+    <string name="notes_save">Guardar notas</string>
+    <string name="notes_cancel">Cancelar</string>
+    <string name="notes_close">Fechar</string>
+    <string name="guides_title">Guias e mapas</string>
+    <string name="guides_hint">Guias e mapas: coloque imagens ou PDF cujo nome comece pelo do jogo numa pasta \"guides\" na pasta do sistema (ou numa pasta com o nome do jogo dentro dela) e aparecem aqui e no menu do jogo.</string>
+    <string name="player_notes">Notas e guias ›</string>
 </resources>

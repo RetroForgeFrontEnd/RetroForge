@@ -2120,4 +2120,16 @@
     <string name="kiosk_locked_body">Kiosk mode is on: this needs the PIN.</string>
     <string name="kiosk_ok">OK</string>
     <string name="kiosk_cancel">Cancel</string>
+    <string name="notes_title">Notes</string>
+    <string name="notes_body">Your own notes for this game: codes, tips, where you got to. Also in the game\'s menu (Notes and guides).</string>
+    <string name="notes_empty">No notes yet.</string>
+    <string name="notes_write">Write notes</string>
+    <string name="notes_edit">Edit notes</string>
+    <string name="notes_field">Your notes</string>
+    <string name="notes_save">Save notes</string>
+    <string name="notes_cancel">Cancel</string>
+    <string name="notes_close">Close</string>
+    <string name="guides_title">Guides and maps</string>
+    <string name="guides_hint">Guides and maps: put images or PDFs whose names start with the game\'s name in a \"guides\" folder in its system folder (or a folder named after the game inside it), and they show here and in the game\'s menu.</string>
+    <string name="player_notes">Notes and guides ›</string>
 </resources>

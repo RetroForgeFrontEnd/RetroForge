@@ -1992,4 +1992,16 @@
     <string name="kiosk_locked_body">La modalità kiosk è attiva: serve il PIN.</string>
     <string name="kiosk_ok">OK</string>
     <string name="kiosk_cancel">Annulla</string>
+    <string name="notes_title">Note</string>
+    <string name="notes_body">Le tue note per questo gioco: codici, consigli, dove sei arrivato. Anche nel menu del gioco (Note e guide).</string>
+    <string name="notes_empty">Ancora nessuna nota.</string>
+    <string name="notes_write">Scrivi note</string>
+    <string name="notes_edit">Modifica note</string>
+    <string name="notes_field">Le tue note</string>
+    <string name="notes_save">Salva note</string>
+    <string name="notes_cancel">Annulla</string>
+    <string name="notes_close">Chiudi</string>
+    <string name="guides_title">Guide e mappe</string>
+    <string name="guides_hint">Guide e mappe: metti immagini o PDF il cui nome inizia con quello del gioco in una cartella \"guides\" nella cartella del sistema (o in una cartella col nome del gioco al suo interno) e compariranno qui e nel menu del gioco.</string>
+    <string name="player_notes">Note e guide ›</string>
 </resources>

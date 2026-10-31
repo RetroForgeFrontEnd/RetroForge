@@ -1960,4 +1960,16 @@
     <string name="kiosk_locked_body">Der Kiosk-Modus ist an: Dafür braucht es die PIN.</string>
     <string name="kiosk_ok">OK</string>
     <string name="kiosk_cancel">Abbrechen</string>
+    <string name="notes_title">Notizen</string>
+    <string name="notes_body">Deine eigenen Notizen zu diesem Spiel: Codes, Tipps, wie weit du bist. Auch im Spielmenü (Notizen und Lösungen).</string>
+    <string name="notes_empty">Noch keine Notizen.</string>
+    <string name="notes_write">Notizen schreiben</string>
+    <string name="notes_edit">Notizen bearbeiten</string>
+    <string name="notes_field">Deine Notizen</string>
+    <string name="notes_save">Notizen speichern</string>
+    <string name="notes_cancel">Abbrechen</string>
+    <string name="notes_close">Schließen</string>
+    <string name="guides_title">Lösungen und Karten</string>
+    <string name="guides_hint">Lösungen und Karten: Lege Bilder oder PDFs, deren Name mit dem Spielnamen beginnt, in einen Ordner \"guides\" im Systemordner (oder dort in einen Ordner mit dem Namen des Spiels), dann erscheinen sie hier und im Spielmenü.</string>
+    <string name="player_notes">Notizen und Lösungen ›</string>
 </resources>

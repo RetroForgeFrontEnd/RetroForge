@@ -403,6 +403,7 @@ fun GameDetailScreen(
         FocusChip(stringResource(R.string.edit_details_edit_details), onClick = { onEditDetails(g.id) })
         FavouriteAndPlaylists(g, viewModel)
         BacklogChips(g, viewModel)
+        GameNotesCard(g, viewModel.documentUri(rootsById, g.rootId, g.documentId))
         FocusChip(stringResource(R.string.library_delete_this_game), onClick = { onDelete(g.id) })
         FocusCard(modifier = Modifier.fillMaxWidth()) {
             g.description?.let { CardBody(it) }

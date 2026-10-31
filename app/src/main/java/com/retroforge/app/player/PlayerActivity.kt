@@ -144,7 +144,7 @@ class PlayerActivity : ComponentActivity() {
     private var bezelBusy by mutableStateOf(false)
     private var bezelStatus by mutableStateOf<String?>(null)
     private val bezels by lazy { Bezels(File(filesDir, "bezels"), "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}") }
-    private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS, NETPLAY, ACHIEVEMENTS }
+    private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS, NETPLAY, ACHIEVEMENTS, NOTES }
 
     // Controller remapping, per system: "keyCode:button,keyCode:button".
     private var remap by mutableStateOf<Map<Int, Int>>(emptyMap())
@@ -1648,6 +1648,7 @@ class PlayerActivity : ComponentActivity() {
                             }
                         }
                         // The rest in three groups, so the menu stays short.
+                        MenuButton(onClick = { menuPage = MenuPage.NOTES }, modifier = wide) { Text(stringResource(R.string.player_notes)) }
                         MenuButton(onClick = { menuPage = MenuPage.PICTURE }, modifier = wide) { Text(stringResource(R.string.player_picture)) }
                         MenuButton(onClick = { menuPage = MenuPage.SOUND_CONTROLS }, modifier = wide) { Text(stringResource(R.string.player_sound_and_controls)) }
                         // Kiosk mode: the emulator's settings, cheats and choice need the PIN.
@@ -1781,6 +1782,12 @@ class PlayerActivity : ComponentActivity() {
                         }
                     }
                     MenuPage.ACHIEVEMENTS -> AchievementsPage(wide, first)
+                    MenuPage.NOTES -> {
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
+                        com.retroforge.app.ui.library.NotesMenuPage(system, intent.getStringExtra(EXTRA_FILE_NAME).orEmpty(), intent.getStringExtra(EXTRA_URI)?.let(Uri::parse)) { label, onClick ->
+                            MenuButton(onClick = onClick, modifier = wide) { Text(label) }
+                        }
+                    }
                     MenuPage.CHEATS -> {
                         Text(stringResource(R.string.player_cheats), color = Color.White, fontWeight = FontWeight.Bold)
                         Text(

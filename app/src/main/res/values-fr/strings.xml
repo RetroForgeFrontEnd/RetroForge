@@ -1993,4 +1993,16 @@
     <string name="kiosk_locked_body">Le mode kiosque est activé : il faut le code.</string>
     <string name="kiosk_ok">OK</string>
     <string name="kiosk_cancel">Annuler</string>
+    <string name="notes_title">Notes</string>
+    <string name="notes_body">Vos propres notes pour ce jeu : codes, astuces, où vous en êtes. Aussi dans le menu du jeu (Notes et guides).</string>
+    <string name="notes_empty">Pas encore de notes.</string>
+    <string name="notes_write">Écrire des notes</string>
+    <string name="notes_edit">Modifier les notes</string>
+    <string name="notes_field">Vos notes</string>
+    <string name="notes_save">Enregistrer les notes</string>
+    <string name="notes_cancel">Annuler</string>
+    <string name="notes_close">Fermer</string>
+    <string name="guides_title">Guides et cartes</string>
+    <string name="guides_hint">Guides et cartes : placez des images ou des PDF dont le nom commence par celui du jeu dans un dossier « guides » du dossier du système (ou dans un dossier au nom du jeu à l\'intérieur), et ils s\'affichent ici et dans le menu du jeu.</string>
+    <string name="player_notes">Notes et guides ›</string>
 </resources>
