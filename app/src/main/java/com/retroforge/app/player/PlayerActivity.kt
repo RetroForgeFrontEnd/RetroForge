@@ -1644,7 +1644,7 @@ class PlayerActivity : ComponentActivity() {
                     if (touchEnabled && showTouch && !vr && phase == Phase.Playing && !menuOpen) {
                         TouchControls(
                             layout, onMask = { input.setTouch(it) }, onMenu = { openMenu() }, modifier = modifier,
-                            compact = compact, landscape = !portrait,
+                            compact = compact, landscape = !portrait, fastForward = intent.getBooleanExtra(EXTRA_FAST_FORWARD_R2, false),
                             onAnalog = { stick, x, y -> if (loaded) NativePlayer.setAnalog(port, stick, (x * 32767).toInt(), (y * 32767).toInt()) },
                         )
                     }

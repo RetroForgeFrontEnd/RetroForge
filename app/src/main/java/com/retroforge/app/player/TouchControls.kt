@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -243,6 +244,11 @@ fun TouchControls(
     compact: Boolean = false,
     landscape: Boolean = false,
     onAnalog: (stick: Int, x: Float, y: Float) -> Unit = { _, _, _ -> },
+    /**
+     * A fast-forward button, for systems whose pads have no R2 (there a controller's R2 fast-forwards). A tap turns it on
+     * or off rather than holding it, since both thumbs are busy with the d-pad and buttons.
+     */
+    fastForward: Boolean = false,
 ) {
     val parts = remember { IntArray(20) }
     val mask = remember { mutableIntStateOf(0) }
@@ -251,6 +257,16 @@ fun TouchControls(
         parts[slot] = value
         mask.intValue = parts.fold(0) { acc, part -> acc or part }
         onMask(mask.intValue)
+    }
+    var fast by remember { mutableStateOf(false) }
+    // Sent as R2, which the player turns into fast-forward for these systems.
+    val fastButton: @Composable (Dp, Dp, Boolean) -> Unit = { width, height, faint ->
+        PadButton(">>", RoundedCornerShape(50), width, height, small = true, faint = faint, role = ButtonRole.PILL, on = fast) { down ->
+            if (down) {
+                fast = !fast
+                set(16, if (fast) Pad.bit(Pad.R2) else 0)
+            }
+        }
     }
 
     if (landscape) {
@@ -294,7 +310,10 @@ fun TouchControls(
                         faint = true,
                     ) { i, down -> set(1 + i, if (down) Pad.bit(layout.face[i].second) else 0) }
                     if (layout.sticks && layout.rightStick) Stick(84.dp * k, faint = true, label = layout.rightStickLabel, onMove = { x, y -> onAnalog(1, x, y) }) { set(15, if (it) Pad.bit(Pad.R3) else 0) }
-                    PadButton("Start", RoundedCornerShape(50), 60.dp * k, 26.dp * k, small = true, faint = true, role = ButtonRole.PILL) { set(9, if (it) Pad.bit(Pad.START) else 0) }
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp * k), verticalAlignment = Alignment.CenterVertically) {
+                        if (fastForward) fastButton(44.dp * k, 26.dp * k, true)
+                        PadButton("Start", RoundedCornerShape(50), 60.dp * k, 26.dp * k, small = true, faint = true, role = ButtonRole.PILL) { set(9, if (it) Pad.bit(Pad.START) else 0) }
+                    }
                 }
             }
         }
@@ -313,6 +332,7 @@ fun TouchControls(
                 if (layout.hasSelect) PadButton("Select", RoundedCornerShape(50), 64.dp, 30.dp, small = true, role = ButtonRole.PILL) { set(8, if (it) Pad.bit(Pad.SELECT) else 0) }
                 PadButton("Start", RoundedCornerShape(50), 64.dp, 30.dp, small = true, role = ButtonRole.PILL) { set(9, if (it) Pad.bit(Pad.START) else 0) }
                 PadButton("☰", CircleShape, 36.dp, 36.dp, small = true, role = ButtonRole.PILL) { if (it) onMenu() }
+                if (fastForward) fastButton(52.dp, 30.dp, false)
             }
             Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 layout.shoulders.getOrNull(1)?.let { (label, button) ->
@@ -378,6 +398,10 @@ fun TouchControls(
             PadButton("Start", RoundedCornerShape(50), 76.dp, 32.dp, small = true, role = ButtonRole.PILL) { set(9, if (it) Pad.bit(Pad.START) else 0) }
             Spacer(Modifier.width(16.dp))
             PadButton("☰", CircleShape, 40.dp, 40.dp, small = true, role = ButtonRole.PILL) { if (it) onMenu() }
+            if (fastForward) {
+                Spacer(Modifier.width(16.dp))
+                fastButton(56.dp, 32.dp, false)
+            }
         }
     }
 }
@@ -421,6 +445,8 @@ private fun PadButton(
     small: Boolean = false,
     faint: Boolean = false,
     role: ButtonRole = ButtonRole.FACE,
+    /** Shown pressed while true, for a button that stays on (fast-forward). */
+    on: Boolean = false,
     onPress: (Boolean) -> Unit,
 ) {
     val pressed = remember { mutableIntStateOf(0) }
@@ -439,14 +465,15 @@ private fun PadButton(
         role == ButtonRole.FACE && label in skin.face -> Color.White
         else -> skin.label
     }
+    val lit = pressed.intValue == 1 || on
     val alpha = when {
-        skin != null && pressed.intValue == 1 -> 0.7f
+        skin != null && lit -> 0.7f
         skin != null -> if (faint) 0.8f else 1f
-        pressed.intValue == 1 -> 0.85f
+        lit -> 0.85f
         faint -> 0.35f
         else -> 0.5f
     }
-    val down = pressed.intValue == 1
+    val down = lit
     Box(
         Modifier
             .size(width, height)
