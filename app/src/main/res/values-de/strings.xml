@@ -1912,4 +1912,19 @@
     <string name="ra_sign_in">Anmelden</string>
     <string name="ra_signing_in">Anmeldung…</string>
     <string name="player_frame_skip">Frames überspringen: %1$s</string>
+    <string name="states_menu">Spielstände ›</string>
+    <string name="states_title">Spielstände</string>
+    <string name="states_new">Neuer Spielstand</string>
+    <string name="states_quick">Schnellspeicher</string>
+    <string name="states_resume">Fortsetzungspunkt</string>
+    <string name="states_slot">Spielstand %1$d</string>
+    <string name="states_load">Laden</string>
+    <string name="states_overwrite">Überschreiben</string>
+    <string name="states_delete_sure">Sicher? Löschen</string>
+    <string name="states_none">Noch keine Spielstände für dieses Spiel.</string>
+    <string name="states_saved_as">Gespeichert als %1$s</string>
+    <string name="states_play_from_here">Von hier spielen</string>
+    <string name="states_name">Name</string>
+    <string name="states_other_emulator">Mit %1$s erstellt: lädt nur dort</string>
+    <string name="states_card_body">Spielstände aus dem eingebauten Player, jeweils mit Bild. Weitere im Pausenmenü des Spiels → Spielstände.</string>
 </resources>

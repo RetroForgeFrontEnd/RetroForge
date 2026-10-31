@@ -1944,4 +1944,19 @@
     <string name="ra_sign_in">Accedi</string>
     <string name="ra_signing_in">Accesso…</string>
     <string name="player_frame_skip">Salto fotogrammi: %1$s</string>
+    <string name="states_menu">Stati salvati ›</string>
+    <string name="states_title">Stati salvati</string>
+    <string name="states_new">Nuovo stato</string>
+    <string name="states_quick">Salvataggio rapido</string>
+    <string name="states_resume">Punto di ripresa</string>
+    <string name="states_slot">Stato %1$d</string>
+    <string name="states_load">Carica</string>
+    <string name="states_overwrite">Sovrascrivi</string>
+    <string name="states_delete_sure">Sicuro? Elimina</string>
+    <string name="states_none">Ancora nessuno stato salvato per questo gioco.</string>
+    <string name="states_saved_as">Salvato come %1$s</string>
+    <string name="states_play_from_here">Gioca da qui</string>
+    <string name="states_name">Nome</string>
+    <string name="states_other_emulator">Fatto con %1$s: si carica solo lì</string>
+    <string name="states_card_body">Stati salvati del lettore integrato, ognuno con la sua immagine. Creane altri nel menu di pausa del gioco → Stati salvati.</string>
 </resources>

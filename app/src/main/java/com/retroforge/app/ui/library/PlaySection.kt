@@ -28,6 +28,10 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.retroforge.app.player.Playtime
+import com.retroforge.app.player.SaveStates
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.draw.clip
 import com.retroforge.app.ui.CardBody
 import com.retroforge.app.ui.CardTitle
 import com.retroforge.core.library.GameEntity
@@ -192,6 +196,14 @@ private fun BuiltInCard(
         if (game.system == "saturn") CardBody(stringResource(R.string.play_saturn_in_the_built_in_player))
         if (played > 0) CardBody(stringResource(R.string.play_time_played_here, Playtime.format(played)))
     }
+    SaveStatesCard(game, core) { state ->
+        onProblem(null)
+        scope.launch {
+            val intent = viewModel.builtInIntent(context, game, root, core, loadState = state.file)
+            if (intent != null) context.startActivity(intent)
+            else onProblem(LaunchProblem.StartFailed(str(R.string.play_couldn_t_download_the_emulator_check, core.name)))
+        }
+    }
     if (main && com.retroforge.app.player.Netplay.supports(game.system)) {
         // Netplay: the same game on two devices, one hosting (player 1), the other joining (player 2).
         fun start(how: String) {
@@ -210,6 +222,75 @@ private fun BuiltInCard(
                 com.retroforge.core.ui.FocusChip(stringResource(R.string.play_join), onClick = { start(com.retroforge.app.player.PlayerActivity.NETPLAY_FIND) })
             }
         }
+    }
+}
+
+/**
+ * The game's save states from the built-in player, newest first, with their pictures: play from one (states made with
+ * this emulator), rename or delete. Read again each time the page comes back.
+ */
+@Composable
+private fun SaveStatesCard(game: GameEntity, core: PlayerCores.PlayerCore, onPlay: (SaveStates.State) -> Unit) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var states by remember(game.id) { mutableStateOf<List<SaveStates.State>>(emptyList()) }
+    var changes by remember { mutableIntStateOf(0) }
+    var renaming by remember { mutableStateOf<SaveStates.State?>(null) }
+    var deleting by remember { mutableStateOf<File?>(null) }
+    val dir = remember(game.system) { SaveStates.dir(context, game.system) }
+    val base = game.fileName.substringBeforeLast('.')
+    LifecycleResumeEffect(game.id, changes) {
+        val job = scope.launch { states = withContext(Dispatchers.IO) { SaveStates.list(dir, base) } }
+        onPauseOrDispose { job.cancel() }
+    }
+    if (states.isEmpty()) return
+    val dates = remember { DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT) }
+    FocusCard(modifier = Modifier.fillMaxWidth()) {
+        CardTitle(stringResource(R.string.states_title))
+        CardBody(stringResource(R.string.states_card_body))
+        states.forEach { s ->
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+            ) {
+                if (s.picture.isFile) coil3.compose.AsyncImage(
+                    s.picture, null,
+                    Modifier.size(width = 112.dp, height = 84.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(6.dp)),
+                )
+                androidx.compose.foundation.layout.Column(Modifier.weight(1f)) {
+                    CardTitle(SaveStates.label(context, s))
+                    CardBody(dates.format(Date(s.modified)))
+                    if (s.core != core.id) CardBody(stringResource(R.string.states_other_emulator, PlayerCores.byId(s.core)?.name ?: s.core))
+                }
+            }
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (s.core == core.id) FocusChip(stringResource(R.string.states_play_from_here), onClick = { onPlay(s) })
+                FocusChip(stringResource(R.string.files_rename), onClick = { renaming = s })
+                FocusChip(stringResource(if (deleting == s.file) R.string.states_delete_sure else R.string.files_delete), onClick = {
+                    if (deleting == s.file) {
+                        scope.launch { withContext(Dispatchers.IO) { SaveStates.delete(s) }; deleting = null; changes++ }
+                    } else deleting = s.file
+                })
+            }
+        }
+    }
+    renaming?.let { s ->
+        var name by remember(s.file) { mutableStateOf(s.name ?: SaveStates.label(context, s)) }
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { renaming = null },
+            title = { androidx.compose.material3.Text(stringResource(R.string.files_rename)) },
+            text = {
+                com.retroforge.core.ui.ControllerTextField(value = name, onValueChange = { name = it.take(60) }, singleLine = true,
+                    label = { androidx.compose.material3.Text(stringResource(R.string.states_name)) }, modifier = Modifier.fillMaxWidth())
+            },
+            confirmButton = {
+                FocusChip(stringResource(R.string.settings_save), onClick = {
+                    scope.launch { withContext(Dispatchers.IO) { SaveStates.rename(s, name) }; renaming = null; changes++ }
+                })
+            },
+            dismissButton = { FocusChip(stringResource(R.string.files_cancel), onClick = { renaming = null }) },
+        )
     }
 }
 

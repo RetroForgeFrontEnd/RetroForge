@@ -41,6 +41,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
@@ -144,7 +145,7 @@ class PlayerActivity : ComponentActivity() {
     private var bezelBusy by mutableStateOf(false)
     private var bezelStatus by mutableStateOf<String?>(null)
     private val bezels by lazy { Bezels(File(filesDir, "bezels"), "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}") }
-    private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS, NETPLAY, ACHIEVEMENTS }
+    private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS, NETPLAY, ACHIEVEMENTS, STATES }
 
     // Controller remapping, per system: "keyCode:button,keyCode:button".
     private var remap by mutableStateOf<Map<Int, Int>>(emptyMap())
@@ -545,7 +546,10 @@ class PlayerActivity : ComponentActivity() {
 
         sram().takeIf { it.isFile }?.let { NativePlayer.restoreSaveRam(it.readBytes()) }
         // Hardcore starts the game from the beginning (RetroAchievements doesn't allow states there).
-        if (resume && !raHardcoreGame) autoState().takeIf { it.isFile }?.let { NativePlayer.loadState(it.readBytes()) }
+        // A state picked on the game page (Save states → Play from here) instead of the resume point.
+        val chosenState = intent.getStringExtra(EXTRA_LOAD_STATE)?.let(::File)?.takeIf { it.isFile && !raHardcoreGame }
+        if (chosenState != null) NativePlayer.loadState(chosenState.readBytes())
+        else if (resume && !raHardcoreGame) autoState().takeIf { it.isFile }?.let { NativePlayer.loadState(it.readBytes()) }
         val av = NativePlayer.video()
         synchronized(surfaceLock) {
             loaded = true
@@ -862,8 +866,69 @@ class PlayerActivity : ComponentActivity() {
         if (resume) NativePlayer.saveState()?.let { writeSafely(autoState(), it) }
     }
 
+    /** This game's save states for this emulator (Save states in the pause menu), read again when that page opens. */
+    private var stateList by mutableStateOf<List<SaveStates.State>>(emptyList())
+    private var stateToDelete by mutableStateOf<File?>(null)
+
+    private fun refreshStates() {
+        stateList = SaveStates.list(statesDir, saveBase).filter { it.core == coreId }
+    }
+
+    /** Saves a state to [file] with a picture of the game beside it, then calls [done] on the main thread. */
+    private fun saveStateTo(file: File, done: (Boolean) -> Unit) {
+        saveStatePicture(file)
+        worker.execute {
+            val saved = NativePlayer.saveState()?.let { writeSafely(file, it); true } == true
+            runOnUiThread { done(saved) }
+        }
+    }
+
+    private fun loadStateFrom(file: File) {
+        if (netGuest) { notice = str(R.string.player_during_netplay_only_player_1_can); return }
+        if (raHardcoreGame) { notice = str(R.string.ra_hardcore_no_states); return }
+        worker.execute {
+            val done = file.isFile && NativePlayer.loadState(file.readBytes())
+            runOnUiThread { if (done) closeMenu() else notice = str(R.string.player_no_saved_state_yet) }
+        }
+    }
+
+    /** The game's picture when the menu opened, small, for the states saved from the menu. */
+    @Volatile private var menuPicture: android.graphics.Bitmap? = null
+
+    /**
+     * Copies the game's picture as the menu opens. It has to be now: once the game pauses, the surface can't be read
+     * back any more.
+     */
+    private fun grabMenuPicture() {
+        menuPicture = null
+        val view = gameView ?: return
+        if (view.width == 0 || view.height == 0) return
+        val r = picture
+        val screen = android.graphics.Bitmap.createBitmap(view.width, view.height, android.graphics.Bitmap.Config.ARGB_8888)
+        android.view.PixelCopy.request(view, screen, { result ->
+            if (result != android.view.PixelCopy.SUCCESS) return@request
+            worker.execute {
+                runCatching {
+                    val x = r.x.coerceIn(0, screen.width - 1)
+                    val y = r.y.coerceIn(0, screen.height - 1)
+                    val shot = if (r.w > 0 && r.h > 0) android.graphics.Bitmap.createBitmap(screen, x, y, r.w.coerceAtMost(screen.width - x), r.h.coerceAtMost(screen.height - y)) else screen
+                    menuPicture = android.graphics.Bitmap.createScaledBitmap(shot, 320, (320f * shot.height / shot.width).toInt().coerceAtLeast(1), true)
+                }
+            }
+        }, android.os.Handler(android.os.Looper.getMainLooper()))
+    }
+
+    /** Keeps the menu's picture of the game beside a state, for the save state lists here and on the game page. */
+    private fun saveStatePicture(state: File) {
+        val shot = menuPicture ?: return
+        worker.execute {
+            runCatching { File(state.path + ".png").outputStream().use { shot.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) } }
+        }
+    }
+
     private fun openMenu() {
         if (phase != Phase.Playing || menuOpen) return
+        grabMenuPicture()
         menuOpen = true
         menuPage = MenuPage.MAIN
         input.releaseAll()
@@ -1539,6 +1604,47 @@ class PlayerActivity : ComponentActivity() {
         }
     }
 
+    /** Save states: a new one in the next slot, and every state of this game for this emulator (load, overwrite, delete). */
+    @Composable
+    private fun StatesPage(wide: Modifier, first: FocusRequester) {
+        Text(stringResource(R.string.states_title), color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+        notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
+        MenuButton(onClick = {
+            val slot = SaveStates.nextSlot(SaveStates.list(statesDir, saveBase), coreId)
+            saveStateTo(SaveStates.slotFile(statesDir, saveBase, coreId, slot)) { saved ->
+                notice = if (saved) str(R.string.states_saved_as, str(R.string.states_slot, slot)) else str(R.string.player_this_emulator_can_t_save_states)
+                refreshStates()
+            }
+        }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.states_new)) }
+        if (stateList.isEmpty()) Text(stringResource(R.string.states_none), color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
+        val dates = remember { java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.MEDIUM, java.text.DateFormat.SHORT) }
+        stateList.forEach { s ->
+            Column(wide.background(Color(0xFF26262E), RoundedCornerShape(8.dp)).padding(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    if (s.picture.isFile) coil3.compose.AsyncImage(s.picture, null, Modifier.size(width = 96.dp, height = 72.dp).clip(RoundedCornerShape(4.dp)))
+                    Column(Modifier.weight(1f)) {
+                        Text(SaveStates.label(this@PlayerActivity, s), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text(dates.format(java.util.Date(s.modified)), color = Color(0xFFAAAAB4), fontSize = 12.sp)
+                    }
+                }
+                androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    val small = PaddingValues(horizontal = 4.dp, vertical = 6.dp)
+                    MenuButton(onClick = { loadStateFrom(s.file) }, modifier = Modifier.weight(1f), contentPadding = small) {
+                        Text(stringResource(R.string.states_load), fontSize = 13.sp, maxLines = 1)
+                    }
+                    if (s.kind != SaveStates.Kind.AUTO) MenuButton(onClick = {
+                        saveStateTo(s.file) { saved -> notice = if (saved) str(R.string.player_state_saved) else str(R.string.player_this_emulator_can_t_save_states); refreshStates() }
+                    }, modifier = Modifier.weight(1f), contentPadding = small) { Text(stringResource(R.string.states_overwrite), fontSize = 13.sp, maxLines = 1) }
+                    MenuButton(onClick = {
+                        if (stateToDelete == s.file) { SaveStates.delete(s); stateToDelete = null; refreshStates() } else stateToDelete = s.file
+                    }, modifier = Modifier.weight(1f), contentPadding = small) {
+                        Text(stringResource(if (stateToDelete == s.file) R.string.states_delete_sure else R.string.files_delete), fontSize = 13.sp, maxLines = 1)
+                    }
+                }
+            }
+        }
+    }
+
     /** The pause menu's list of this game's achievements, unlocked first. */
     @Composable
     private fun AchievementsPage(wide: Modifier, first: FocusRequester) {
@@ -1601,20 +1707,12 @@ class PlayerActivity : ComponentActivity() {
                         notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
                         MenuButton(onClick = { closeMenu() }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_resume)) }
                         MenuButton(onClick = {
-                            worker.execute {
-                                val saved = NativePlayer.saveState()?.let { writeSafely(slotState(), it); true } == true
-                                runOnUiThread { notice = if (saved) str(R.string.player_state_saved) else str(R.string.player_this_emulator_can_t_save_states) }
-                            }
+                            saveStateTo(slotState()) { saved -> notice = if (saved) str(R.string.player_state_saved) else str(R.string.player_this_emulator_can_t_save_states) }
                         }, modifier = wide) { Text(stringResource(R.string.player_save_state)) }
-                        MenuButton(onClick = {
-                            if (netGuest) { notice = str(R.string.player_during_netplay_only_player_1_can); return@MenuButton }
-                            if (raHardcoreGame) { notice = str(R.string.ra_hardcore_no_states); return@MenuButton }
-                            worker.execute {
-                                val file = slotState()
-                                val done = file.isFile && NativePlayer.loadState(file.readBytes())
-                                runOnUiThread { if (done) closeMenu() else notice = str(R.string.player_no_saved_state_yet) }
-                            }
-                        }, modifier = wide) { Text(stringResource(R.string.player_load_state)) }
+                        MenuButton(onClick = { loadStateFrom(slotState()) }, modifier = wide) { Text(stringResource(R.string.player_load_state)) }
+                        MenuButton(onClick = { refreshStates(); stateToDelete = null; notice = null; menuPage = MenuPage.STATES }, modifier = wide) {
+                            Text(stringResource(R.string.states_menu))
+                        }
                         MenuButton(onClick = {
                             if (netPlaying) { notice = str(R.string.player_fast_forward_is_off_during_netplay); return@MenuButton }
                             fastForwardOn = !fastForwardOn
@@ -1779,6 +1877,7 @@ class PlayerActivity : ComponentActivity() {
                         }
                     }
                     MenuPage.ACHIEVEMENTS -> AchievementsPage(wide, first)
+                    MenuPage.STATES -> StatesPage(wide, first)
                     MenuPage.CHEATS -> {
                         Text(stringResource(R.string.player_cheats), color = Color.White, fontWeight = FontWeight.Bold)
                         Text(
@@ -1927,6 +2026,7 @@ class PlayerActivity : ComponentActivity() {
         private const val EXTRA_QUIT_COMBO = "quit_combo"
         private const val EXTRA_COPY_FIRST = "copy_first"
         private const val EXTRA_NETPLAY = "netplay"
+        private const val EXTRA_LOAD_STATE = "load_state"
         /** EXTRA_NETPLAY: host this game; "join:address:port" joins one. */
         const val NETPLAY_HOST = "host"
         /** EXTRA_NETPLAY: open the netplay page, looking for hosts on this Wi-Fi. */
@@ -1948,8 +2048,10 @@ class PlayerActivity : ComponentActivity() {
             quitCombo: HotkeyCombo,
             copyFirst: Boolean = false,
             netplay: String? = null,
+            loadState: File? = null,
         ): Intent = Intent(context, PlayerActivity::class.java)
             .putExtra(EXTRA_COPY_FIRST, copyFirst)
+            .apply { if (loadState != null) putExtra(EXTRA_LOAD_STATE, loadState.path) }
             .apply { if (netplay != null) putExtra(EXTRA_NETPLAY, netplay) }
             .putExtra(EXTRA_CORE_PATH, corePath)
             .putExtra(EXTRA_URI, uri.toString())
@@ -1965,7 +2067,12 @@ class PlayerActivity : ComponentActivity() {
 
 /** Menu entry with an unmistakable focus outline, for controllers and TV remotes. */
 @Composable
-private fun MenuButton(onClick: () -> Unit, modifier: Modifier = Modifier, content: @Composable RowScope.() -> Unit) {
+private fun MenuButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = androidx.compose.material3.ButtonDefaults.ContentPadding,
+    content: @Composable RowScope.() -> Unit,
+) {
     val interaction = remember { MutableInteractionSource() }
     val focused by interaction.collectIsFocusedAsState()
     OutlinedButton(
@@ -1973,6 +2080,7 @@ private fun MenuButton(onClick: () -> Unit, modifier: Modifier = Modifier, conte
         modifier = modifier,
         interactionSource = interaction,
         border = BorderStroke(if (focused) 3.dp else 1.dp, if (focused) Color(0xFFFF8A1F) else Color(0xFF55555F)),
+        contentPadding = contentPadding,
         content = content,
     )
 }

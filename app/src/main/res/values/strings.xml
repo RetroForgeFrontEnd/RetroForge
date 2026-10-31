@@ -2072,4 +2072,19 @@
     <string name="ra_sign_in">Sign in</string>
     <string name="ra_signing_in">Signing in…</string>
     <string name="player_frame_skip">Frame skip: %1$s</string>
+    <string name="states_menu">Save states ›</string>
+    <string name="states_title">Save states</string>
+    <string name="states_new">New save state</string>
+    <string name="states_quick">Quick save</string>
+    <string name="states_resume">Resume point</string>
+    <string name="states_slot">State %1$d</string>
+    <string name="states_load">Load</string>
+    <string name="states_overwrite">Overwrite</string>
+    <string name="states_delete_sure">Sure? Delete</string>
+    <string name="states_none">No save states for this game yet.</string>
+    <string name="states_saved_as">Saved as %1$s</string>
+    <string name="states_play_from_here">Play from here</string>
+    <string name="states_name">Name</string>
+    <string name="states_other_emulator">Made with %1$s: it only loads there</string>
+    <string name="states_card_body">Save states from the built-in player, with a picture of each. Make more in the game\'s pause menu → Save states.</string>
 </resources>

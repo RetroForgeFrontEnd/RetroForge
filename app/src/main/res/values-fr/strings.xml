@@ -1945,4 +1945,19 @@
     <string name="ra_sign_in">Se connecter</string>
     <string name="ra_signing_in">Connexion…</string>
     <string name="player_frame_skip">Saut d\'images : %1$s</string>
+    <string name="states_menu">États sauvegardés ›</string>
+    <string name="states_title">États sauvegardés</string>
+    <string name="states_new">Nouvel état</string>
+    <string name="states_quick">Sauvegarde rapide</string>
+    <string name="states_resume">Point de reprise</string>
+    <string name="states_slot">État %1$d</string>
+    <string name="states_load">Charger</string>
+    <string name="states_overwrite">Écraser</string>
+    <string name="states_delete_sure">Sûr ? Supprimer</string>
+    <string name="states_none">Pas encore d\'état sauvegardé pour ce jeu.</string>
+    <string name="states_saved_as">Sauvegardé : %1$s</string>
+    <string name="states_play_from_here">Jouer à partir d’ici</string>
+    <string name="states_name">Nom</string>
+    <string name="states_other_emulator">Fait avec %1$s : ne se charge que là</string>
+    <string name="states_card_body">États sauvegardés du lecteur intégré, chacun avec une image. Créez-en d’autres dans le menu pause du jeu → États sauvegardés.</string>
 </resources>

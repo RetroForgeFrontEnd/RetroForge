@@ -1945,4 +1945,19 @@
     <string name="ra_sign_in">Iniciar sesión</string>
     <string name="ra_signing_in">Iniciando sesión…</string>
     <string name="player_frame_skip">Salto de fotogramas: %1$s</string>
+    <string name="states_menu">Estados guardados ›</string>
+    <string name="states_title">Estados guardados</string>
+    <string name="states_new">Nuevo estado</string>
+    <string name="states_quick">Guardado rápido</string>
+    <string name="states_resume">Punto de reanudación</string>
+    <string name="states_slot">Estado %1$d</string>
+    <string name="states_load">Cargar</string>
+    <string name="states_overwrite">Sobrescribir</string>
+    <string name="states_delete_sure">¿Seguro? Borrar</string>
+    <string name="states_none">Todavía no hay estados guardados de este juego.</string>
+    <string name="states_saved_as">Guardado como %1$s</string>
+    <string name="states_play_from_here">Jugar desde aquí</string>
+    <string name="states_name">Nombre</string>
+    <string name="states_other_emulator">Hecho con %1$s: solo se carga allí</string>
+    <string name="states_card_body">Estados guardados del reproductor integrado, cada uno con su imagen. Crea más en el menú de pausa del juego → Estados guardados.</string>
 </resources>

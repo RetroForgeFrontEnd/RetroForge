@@ -209,8 +209,8 @@ Requests that were never fully done, or only answered:
 
 | Request | Status |
 |---|---|
-| RetroAchievements | 🔨 in progress: rcheevos (RetroAchievements' own library, MIT) built into the built-in player; sign-in, unlock pop-ups and the achievement list next |
-| Save state manager in the app | 📋 to do: every state per game with its picture and date, rename, delete, load |
+| RetroAchievements | 🟡 built: rcheevos in the built-in player, sign-in in Settings → Playing, unlock pop-ups, the list in the pause menu, hardcore. Games run with it; sign-in and unlocks need the user's account to test. CHD games not hashed yet |
+| Save state manager in the app | ✅ tested on the emulator: pause menu → Save states › makes as many states as you like, each with a picture, to load, overwrite or delete; the game page lists every state (quick save, resume point, numbered) with its picture and date: Play from here, Rename, Delete |
 | Smart backlog and playtime analytics | 📋 to do: a backlog (want to play, playing, finished), suggestions from it, and playtime charts per game, system and week |
 | Peer-to-peer save and memory card sync on the local network | 📋 to do: two devices find each other on the Wi-Fi and swap newer saves and memory cards when RetroForge opens, no network drive needed |
 | Custom soundtracks and a jukebox | 📋 to do: your own music in the menus (and over games if wanted), and a jukebox for game music files |

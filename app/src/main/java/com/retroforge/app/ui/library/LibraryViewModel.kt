@@ -293,7 +293,7 @@ class LibraryViewModel(
     fun coreState(id: String) = cores.state(id)
 
     /** Downloads the core if it isn't here yet (normally it already is), then returns the player's intent. */
-    suspend fun builtInIntent(context: Context, game: GameEntity, root: RootEntity, core: PlayerCores.PlayerCore, netplay: String? = null): Intent? {
+    suspend fun builtInIntent(context: Context, game: GameEntity, root: RootEntity, core: PlayerCores.PlayerCore, netplay: String? = null, loadState: java.io.File? = null): Intent? {
         if (!cores.ensure(core.id)) return null
         val s = appSettings.value
         repository.recordPlay(game, "retroforge:${core.id}")
@@ -310,6 +310,7 @@ class LibraryViewModel(
             quitCombo = HotkeyCombo.of(s?.quitCombo ?: HotkeyCombo.START_SELECT.value),
             copyFirst = viewPrefs.getBoolean(PlayerActivity.COPY_FIRST_PREF, false),
             netplay = netplay,
+            loadState = loadState,
         )
     }
 

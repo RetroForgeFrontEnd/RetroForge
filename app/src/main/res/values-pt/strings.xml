@@ -1944,4 +1944,19 @@
     <string name="ra_sign_in">Entrar</string>
     <string name="ra_signing_in">Entrando…</string>
     <string name="player_frame_skip">Pular quadros: %1$s</string>
+    <string name="states_menu">Estados salvos ›</string>
+    <string name="states_title">Estados salvos</string>
+    <string name="states_new">Novo estado</string>
+    <string name="states_quick">Salvamento rápido</string>
+    <string name="states_resume">Ponto de retomada</string>
+    <string name="states_slot">Estado %1$d</string>
+    <string name="states_load">Carregar</string>
+    <string name="states_overwrite">Substituir</string>
+    <string name="states_delete_sure">Certeza? Apagar</string>
+    <string name="states_none">Ainda não há estados salvos deste jogo.</string>
+    <string name="states_saved_as">Salvo como %1$s</string>
+    <string name="states_play_from_here">Jogar daqui</string>
+    <string name="states_name">Nome</string>
+    <string name="states_other_emulator">Feito com %1$s: só carrega nele</string>
+    <string name="states_card_body">Estados salvos do reprodutor integrado, cada um com uma imagem. Crie mais no menu de pausa do jogo → Estados salvos.</string>
 </resources>
