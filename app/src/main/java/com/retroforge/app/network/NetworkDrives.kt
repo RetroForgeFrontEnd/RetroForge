@@ -148,6 +148,14 @@ object NetworkDrives {
 
     private val offUntil = mutableMapOf<Any, Long>()
 
+    /** The PC's answers that mean the kept connection is no good any more, so a fresh one is worth a try. */
+    private val DEAD_SESSION = setOf(
+        com.hierynomus.mserref.NtStatus.STATUS_NETWORK_NAME_DELETED,
+        com.hierynomus.mserref.NtStatus.STATUS_USER_SESSION_DELETED,
+        com.hierynomus.mserref.NtStatus.STATUS_NETWORK_SESSION_EXPIRED,
+        com.hierynomus.mserref.NtStatus.STATUS_FILE_CLOSED,
+    )
+
     /** The share's PC didn't answer at its address and wasn't found elsewhere on the network. */
     class PcUnreachable(share: NetworkShare, cause: Throwable? = null) : java.io.IOException(
         if (share.viaTailscale) "Can't reach ${share.address}. Is Tailscale switched on on this device, and is the PC switched on with Tailscale running?"
@@ -253,12 +261,18 @@ object NetworkDrives {
     /**
      * Runs [block] on [share]'s connection, once more on a fresh one when it fails: a connection kept from earlier can
      * look open after the PC's network changed and then fail every request (seen as Eden's "No game found").
-     * A file that really isn't there fails both times, so its error still comes through.
+     * The PC's own answers (a file that isn't there, no access) come straight through: the connection works, and
+     * closing it would cut off anything else reading through it, such as a game being copied to the phone.
      */
     private fun <T> withDisk(share: NetworkShare, block: (DiskShare) -> T): T = try {
         block(connect(share))
     } catch (e: PcUnreachable) {
         throw e
+    } catch (e: com.hierynomus.mssmb2.SMBApiException) {
+        if (e.status !in DEAD_SESSION) throw e
+        android.util.Log.w("NetworkDrives", "${share.name}: ${e.status}; trying a new connection")
+        synchronized(this) { open.remove(share.id)?.let { runCatching { it.close() } } }
+        block(connect(share))
     } catch (e: Exception) {
         android.util.Log.w("NetworkDrives", "${share.name}: ${e.javaClass.simpleName}: ${e.message}; trying a new connection", e)
         synchronized(this) { open.remove(share.id)?.let { runCatching { it.close() } } }
