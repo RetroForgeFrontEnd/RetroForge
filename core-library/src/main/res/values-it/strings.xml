@@ -106,4 +106,11 @@
         <item quantity="one">%1$d gioco rinominato con il nome No-Intro o Redump</item>
         <item quantity="other">%1$d giochi rinominati con il nome No-Intro o Redump</item>
     </plurals>
+    <string name="rom_manager_headers_fixing">Riparazione delle intestazioni</string>
+    <string name="rom_manager_headers_fixing_detail">%1$d giochi: una copia riparata di ciascuno, gli originali messi da parte</string>
+    <string name="rom_manager_headers_fixed_title">Intestazioni riparate</string>
+    <plurals name="rom_manager_headers_fixed_games">
+        <item quantity="one">Riparata l\'intestazione di %1$d gioco</item>
+        <item quantity="other">Riparate le intestazioni di %1$d giochi</item>
+    </plurals>
 </resources>

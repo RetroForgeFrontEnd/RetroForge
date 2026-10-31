@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.retroforge.core.library.CompressReport
 import com.retroforge.core.library.DuplicateReport
 import com.retroforge.core.library.GameEntity
+import com.retroforge.core.library.HeaderReport
 import com.retroforge.core.library.IdentifyReport
 import com.retroforge.library.manage.IdentifyOutcome
 import kotlinx.coroutines.Job
@@ -33,7 +34,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 enum class ManagerTab(private val labelId: Int) {
-    DUPLICATES(R.string.rom_manager_duplicates), IDENTIFY(R.string.rom_manager_identify), COMPRESS(R.string.rom_manager_compress_3), MULTI_DISC(R.string.rom_manager_multi_disc), SORT(R.string.rom_manager_sort), HISTORY(R.string.rom_manager_history);
+    DUPLICATES(R.string.rom_manager_duplicates), IDENTIFY(R.string.rom_manager_identify), HEADERS(R.string.rom_manager_headers), COMPRESS(R.string.rom_manager_compress_3), MULTI_DISC(R.string.rom_manager_multi_disc), SORT(R.string.rom_manager_sort), HISTORY(R.string.rom_manager_history);
 
     val label: String get() = str(labelId)
 }
@@ -58,6 +59,7 @@ sealed interface Pending {
     data class MakePlaylists(val count: Int) : Pending
     data class SortLoose(val count: Int) : Pending
     data class Rename(val count: Int) : Pending
+    data class FixHeaders(val count: Int) : Pending
 }
 
 class RomManagerViewModel(private val library: LibraryRepository, private val manager: RomManagerRepository) : ViewModel() {
@@ -132,6 +134,37 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
 
     fun askRename() { pending.value = Pending.Rename(renameJobs().size) }
 
+    val headers = MutableStateFlow<Loadable<HeaderReport>>(Loadable.Idle)
+    /** Systems whose games' headers will be fixed. */
+    val headerSystems = MutableStateFlow<Set<String>>(emptySet())
+    private var headersJob: Job? = null
+
+    fun findHeaderProblems() {
+        val root = root() ?: return
+        headersJob?.cancel()
+        headersJob = viewModelScope.launch {
+            headers.value = Loadable.Loading(0, 0)
+            headers.value = try {
+                val report = manager.findHeaderProblems(root) { done, total -> headers.value = Loadable.Loading(done, total) }
+                headerSystems.value = report.jobs.map { it.candidate.system }.toSet()
+                Loadable.Ready(report)
+            } catch (e: Exception) {
+                if (!isActive) Loadable.Idle else Loadable.Failed(e.message ?: str(R.string.rom_manager_couldn_t_look))
+            }
+        }
+    }
+
+    fun stopHeaders() {
+        headersJob?.cancel()
+        headers.value = Loadable.Idle
+    }
+
+    fun toggleHeaderSystem(system: String) { headerSystems.value = headerSystems.value.let { if (system in it) it - system else it + system } }
+
+    fun headerJobs() = (headers.value as? Loadable.Ready)?.value?.jobs.orEmpty().filter { it.candidate.system in headerSystems.value }
+
+    fun askFixHeaders() { pending.value = Pending.FixHeaders(headerJobs().size) }
+
     val loose = MutableStateFlow<Loadable<List<com.retroforge.core.library.SortJob>>>(Loadable.Idle)
 
     fun findLoose() {
@@ -177,6 +210,7 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
         compressible.value = Loadable.Idle
         multiDisc.value = Loadable.Idle
         stopIdentify()
+        stopHeaders()
         pending.value = null
     }
 
@@ -266,6 +300,10 @@ class RomManagerViewModel(private val library: LibraryRepository, private val ma
             is Pending.Rename -> {
                 manager.rename(root, renameJobs())
                 identified.value = Loadable.Idle
+            }
+            is Pending.FixHeaders -> {
+                manager.fixHeaders(root, headerJobs())
+                headers.value = Loadable.Idle
             }
             null -> Unit
         }

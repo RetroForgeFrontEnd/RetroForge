@@ -114,4 +114,11 @@
         <item quantity="one">Renamed %1$d game to its No-Intro or Redump name</item>
         <item quantity="other">Renamed %1$d games to their No-Intro or Redump names</item>
     </plurals>
+    <string name="rom_manager_headers_fixing">Fixing headers</string>
+    <string name="rom_manager_headers_fixing_detail">%1$d games: a fixed copy of each, the originals set aside</string>
+    <string name="rom_manager_headers_fixed_title">Headers fixed</string>
+    <plurals name="rom_manager_headers_fixed_games">
+        <item quantity="one">Fixed the header of %1$d game</item>
+        <item quantity="other">Fixed the headers of %1$d games</item>
+    </plurals>
 </resources>

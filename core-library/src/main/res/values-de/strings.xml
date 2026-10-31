@@ -103,4 +103,11 @@
         <item quantity="one">%1$d Spiel nach No-Intro bzw. Redump umbenannt</item>
         <item quantity="other">%1$d Spiele nach No-Intro bzw. Redump umbenannt</item>
     </plurals>
+    <string name="rom_manager_headers_fixing">Header werden repariert</string>
+    <string name="rom_manager_headers_fixing_detail">%1$d Spiele: je eine reparierte Kopie, die Originale beiseitegelegt</string>
+    <string name="rom_manager_headers_fixed_title">Header repariert</string>
+    <plurals name="rom_manager_headers_fixed_games">
+        <item quantity="one">Header von %1$d Spiel repariert</item>
+        <item quantity="other">Header von %1$d Spielen repariert</item>
+    </plurals>
 </resources>

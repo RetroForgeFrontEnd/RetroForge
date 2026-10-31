@@ -1972,4 +1972,25 @@
     </plurals>
     <string name="player_soft_patch_applied">Gespielt mit dem Patch %1$s (die Spieldatei bleibt unverändert)</string>
     <string name="player_soft_patch_doesnt_fit">Der Patch %1$s passt zu einer anderen Version dieses Spiels, daher startet es ohne ihn</string>
+    <string name="rom_manager_headers">Header</string>
+    <string name="rom_manager_headers_title">ROM-Header reparieren</string>
+    <string name="rom_manager_headers_body">Sucht Modulspiele mit Header-Problemen: SNES-Kopierer-Header, Datenmüll in NES-Headern und falsche Mega-Drive-, Game-Boy- und GBA-Prüfsummen (häufig bei Hacks und Übersetzungen; deshalb zeigen manche einen roten Bildschirm oder starten nicht). Geprüfte gute Kopien werden nie verändert. Gezippte Spiele werden in ihrer .zip repariert.</string>
+    <string name="rom_manager_headers_summary">%1$d Spiele geprüft, %2$d mit zu reparierendem Header.</string>
+    <string name="rom_manager_headers_none">Keine Header-Probleme gefunden.</string>
+    <string name="rom_manager_headers_system_count">%1$s: %2$d zu reparieren</string>
+    <string name="rom_manager_headers_confirm_body">Jedes Spiel bekommt eine reparierte Kopie, die zur Kontrolle zurückgelesen wird. Das Original kommt in den Ordner %1$s, das Spiel behält Namen und Ort (samt gamelist.xml-Eintrag und Playlists). Rückgängig unter Verlauf.</string>
+    <string name="rom_manager_headers_fixed">Header repariert</string>
+    <string name="rom_manager_header_snes_copier">Kopierer-Header</string>
+    <string name="rom_manager_header_nes_junk">Datenmüll im NES-Header</string>
+    <string name="rom_manager_header_md_checksum">falsche Mega-Drive-Prüfsumme</string>
+    <string name="rom_manager_header_gb_checksum">falsche Game-Boy-Prüfsummen</string>
+    <string name="rom_manager_header_gba">falscher GBA-Header</string>
+    <plurals name="rom_manager_headers_fix_button">
+        <item quantity="one">%1$d Spiel reparieren</item>
+        <item quantity="other">%1$d Spiele reparieren</item>
+    </plurals>
+    <plurals name="rom_manager_headers_confirm_title">
+        <item quantity="one">Header von %1$d Spiel reparieren?</item>
+        <item quantity="other">Header von %1$d Spielen reparieren?</item>
+    </plurals>
 </resources>

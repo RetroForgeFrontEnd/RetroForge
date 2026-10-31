@@ -22,6 +22,10 @@ import com.retroforge.library.manage.GameDeleter
 import com.retroforge.library.manage.GameFiles
 import com.retroforge.library.manage.Holding
 import com.retroforge.library.manage.HoldingSummary
+import com.retroforge.library.manage.HeaderFixRunner
+import com.retroforge.library.manage.HeaderFixer
+import com.retroforge.library.manage.HeaderJob
+import com.retroforge.library.manage.HeaderSkip
 import com.retroforge.library.manage.IdentifyCandidate
 import com.retroforge.library.manage.IdentifyOutcome
 import com.retroforge.library.manage.Identified
@@ -56,6 +60,9 @@ data class DuplicateReport(val sets: List<DuplicateSet>, val skipped: List<Skipp
 data class CompressReport(val jobs: List<CompressJob>, val skipped: List<CompressSkip>)
 
 data class PlaylistReport(val jobs: List<PlaylistJob>, val skipped: List<PlaylistSkip>)
+
+/** Cartridge games whose headers can be fixed, and those looked at but left alone. */
+data class HeaderReport(val checked: Int, val jobs: List<HeaderJob>, val skipped: List<HeaderSkip>)
 
 /**
  * Every game checked against its system's game list; [noList] are systems with no list to check against, [unreachable]
@@ -268,6 +275,48 @@ class RomManagerRepository(
         val summary = pluralStr(R.plurals.rom_manager_identify_renamed_games, r.renamed, r.renamed)
         journal.finish(summary)
         ManagerRun.Done(str(R.string.rom_manager_identify_renamed_title), str(R.string.rom_manager_undo_from_history_puts_them_back, summary), r.problems)
+    }
+
+    /**
+     * Looks for header problems in cartridge games (SNES copier headers, junk in iNES headers, wrong Mega Drive, Game Boy
+     * and GBA checksums). Checksums are only fixed on games that aren't verified good copies in the system's game list.
+     */
+    suspend fun findHeaderProblems(root: RootEntity, onProgress: (Int, Int) -> Unit): HeaderReport = withContext(Dispatchers.IO) {
+        val games = dao.gamesIn(root.id).filter { it.system in HeaderFixer.systems }
+            .sortedWith(compareBy({ it.system }, { it.title.lowercase() }))
+        val files = SafCollectionFiles(resolver, Uri.parse(root.treeUri))
+        val jobs = mutableListOf<HeaderJob>()
+        val skipped = mutableListOf<HeaderSkip>()
+        var done = 0
+        games.groupBy { it.system }.forEach { (system, list) ->
+            val dat = gameLists?.let { runCatching { it.forSystem(system) }.getOrNull() }
+            val verified: ((Long, Long) -> Boolean)? = dat?.let { l -> { crc, size -> l.find(crc, size) != null } }
+            for (game in list) {
+                if (!isActive) throw CancelledException()
+                onProgress(done++, games.size)
+                val candidate = IdentifyCandidate(game.system, game.relativePath, systemFolder(root, game), game.title)
+                try {
+                    when (val r = HeaderFixer.check(files, candidate, verified)) {
+                        is HeaderJob -> jobs += r
+                        is HeaderSkip -> skipped += r
+                        null -> Unit
+                    }
+                } catch (e: CancelledException) {
+                    throw e
+                } catch (e: Exception) {
+                    skipped += HeaderSkip(candidate, str(R.string.rom_manager_identify_couldn_t_read, e.message ?: e.javaClass.simpleName))
+                }
+            }
+        }
+        HeaderReport(games.size, jobs, skipped)
+    }
+
+    fun fixHeaders(root: RootEntity, jobs: List<HeaderJob>) = start(root, "headers", pluralStr(R.plurals.rom_manager_headers_fixed_games, jobs.size, jobs.size)) { files, journal ->
+        _run.value = ManagerRun.Running(str(R.string.rom_manager_headers_fixing), str(R.string.rom_manager_headers_fixing_detail, jobs.size), null)
+        val r = HeaderFixRunner(files).run(jobs, journal) { !isActive }
+        val summary = pluralStr(R.plurals.rom_manager_headers_fixed_games, r.fixed, r.fixed)
+        journal.finish(summary)
+        ManagerRun.Done(str(R.string.rom_manager_headers_fixed_title), str(R.string.rom_manager_undo_from_history_puts_them_back, summary), r.problems)
     }
 
     /** The files deleting [game] would move (an .m3u's discs, a .cue's tracks …). Reads only. */

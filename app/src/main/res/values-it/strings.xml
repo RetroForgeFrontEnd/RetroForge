@@ -2004,4 +2004,25 @@
     </plurals>
     <string name="player_soft_patch_applied">Si gioca con la patch %1$s (il file del gioco non cambia)</string>
     <string name="player_soft_patch_doesnt_fit">La patch %1$s è per un’altra versione di questo gioco, quindi è partito senza</string>
+    <string name="rom_manager_headers">Intestazioni</string>
+    <string name="rom_manager_headers_title">Ripara le intestazioni delle ROM</string>
+    <string name="rom_manager_headers_body">Cerca giochi su cartuccia con problemi di intestazione: intestazioni da copiatore SNES, dati spuri nelle intestazioni NES e checksum errati di Mega Drive, Game Boy e GBA (frequenti in hack e traduzioni; per questo alcuni mostrano uno schermo rosso o non partono). Le copie buone verificate non vengono mai modificate. I giochi zippati vengono riparati dentro il .zip.</string>
+    <string name="rom_manager_headers_summary">%1$d giochi controllati, %2$d con un’intestazione da riparare.</string>
+    <string name="rom_manager_headers_none">Nessun problema di intestazione trovato.</string>
+    <string name="rom_manager_headers_system_count">%1$s: %2$d da riparare</string>
+    <string name="rom_manager_headers_confirm_body">Ogni gioco riceve una copia riparata, riletta per controllo. L’originale va nella cartella %1$s, così il gioco mantiene nome e posizione (e la voce in gamelist.xml e le playlist). Si annulla da Cronologia.</string>
+    <string name="rom_manager_headers_fixed">Intestazioni riparate</string>
+    <string name="rom_manager_header_snes_copier">intestazione da copiatore</string>
+    <string name="rom_manager_header_nes_junk">dati spuri nell\'intestazione NES</string>
+    <string name="rom_manager_header_md_checksum">checksum Mega Drive errato</string>
+    <string name="rom_manager_header_gb_checksum">checksum Game Boy errati</string>
+    <string name="rom_manager_header_gba">intestazione GBA errata</string>
+    <plurals name="rom_manager_headers_fix_button">
+        <item quantity="one">Ripara %1$d gioco</item>
+        <item quantity="other">Ripara %1$d giochi</item>
+    </plurals>
+    <plurals name="rom_manager_headers_confirm_title">
+        <item quantity="one">Riparare l\'intestazione di %1$d gioco?</item>
+        <item quantity="other">Riparare le intestazioni di %1$d giochi?</item>
+    </plurals>
 </resources>

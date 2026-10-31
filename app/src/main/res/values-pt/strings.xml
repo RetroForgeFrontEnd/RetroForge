@@ -2004,4 +2004,25 @@
     </plurals>
     <string name="player_soft_patch_applied">Jogando com o patch %1$s (o arquivo do jogo não muda)</string>
     <string name="player_soft_patch_doesnt_fit">O patch %1$s é para outra versão deste jogo, então começou sem ele</string>
+    <string name="rom_manager_headers">Cabeçalhos</string>
+    <string name="rom_manager_headers_title">Corrigir cabeçalhos de ROM</string>
+    <string name="rom_manager_headers_body">Procura jogos de cartucho com problemas de cabeçalho: cabeçalhos de copiadora de SNES, lixo em cabeçalhos de NES e checksums errados de Mega Drive, Game Boy e GBA (comuns em hacks e traduções; por isso alguns mostram tela vermelha ou não iniciam). Cópias boas verificadas nunca são alteradas. Jogos em .zip são corrigidos dentro do .zip.</string>
+    <string name="rom_manager_headers_summary">%1$d jogos verificados, %2$d com cabeçalho a corrigir.</string>
+    <string name="rom_manager_headers_none">Nenhum problema de cabeçalho encontrado.</string>
+    <string name="rom_manager_headers_system_count">%1$s: %2$d a corrigir</string>
+    <string name="rom_manager_headers_confirm_body">Cada jogo recebe uma cópia corrigida, relida para conferir. O original vai para a pasta %1$s, então o jogo mantém nome e lugar (e sua entrada no gamelist.xml e playlists). Desfaça em Histórico.</string>
+    <string name="rom_manager_headers_fixed">Cabeçalhos corrigidos</string>
+    <string name="rom_manager_header_snes_copier">cabeçalho de copiadora</string>
+    <string name="rom_manager_header_nes_junk">lixo no cabeçalho de NES</string>
+    <string name="rom_manager_header_md_checksum">checksum de Mega Drive errado</string>
+    <string name="rom_manager_header_gb_checksum">checksums de Game Boy errados</string>
+    <string name="rom_manager_header_gba">cabeçalho de GBA errado</string>
+    <plurals name="rom_manager_headers_fix_button">
+        <item quantity="one">Corrigir %1$d jogo</item>
+        <item quantity="other">Corrigir %1$d jogos</item>
+    </plurals>
+    <plurals name="rom_manager_headers_confirm_title">
+        <item quantity="one">Corrigir o cabeçalho de %1$d jogo?</item>
+        <item quantity="other">Corrigir os cabeçalhos de %1$d jogos?</item>
+    </plurals>
 </resources>

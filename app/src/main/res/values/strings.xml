@@ -2132,4 +2132,25 @@
     </plurals>
     <string name="player_soft_patch_applied">Playing with the patch %1$s (the game file is unchanged)</string>
     <string name="player_soft_patch_doesnt_fit">The patch %1$s was made for a different version of this game, so it started without it</string>
+    <string name="rom_manager_headers">Headers</string>
+    <string name="rom_manager_headers_title">Fix ROM headers</string>
+    <string name="rom_manager_headers_body">Looks for cartridge games with header problems: SNES copier headers, junk in NES headers, and wrong Mega Drive, Game Boy and Game Boy Advance checksums (common in hacks and translations, and why some show a red screen or won\'t start). Verified good copies are never changed. Zipped games are fixed inside their .zip.</string>
+    <string name="rom_manager_headers_summary">%1$d games checked, %2$d with a header to fix.</string>
+    <string name="rom_manager_headers_none">No header problems found.</string>
+    <string name="rom_manager_headers_system_count">%1$s: %2$d to fix</string>
+    <string name="rom_manager_headers_confirm_body">Each game gets a fixed copy, which is read back to check it. The original moves to the %1$s folder, so the game keeps its name and place (and its gamelist.xml entry and playlists). Undo it from History.</string>
+    <string name="rom_manager_headers_fixed">Headers fixed</string>
+    <string name="rom_manager_header_snes_copier">copier header</string>
+    <string name="rom_manager_header_nes_junk">junk in the NES header</string>
+    <string name="rom_manager_header_md_checksum">wrong Mega Drive checksum</string>
+    <string name="rom_manager_header_gb_checksum">wrong Game Boy checksums</string>
+    <string name="rom_manager_header_gba">wrong GBA header</string>
+    <plurals name="rom_manager_headers_fix_button">
+        <item quantity="one">Fix %1$d game</item>
+        <item quantity="other">Fix %1$d games</item>
+    </plurals>
+    <plurals name="rom_manager_headers_confirm_title">
+        <item quantity="one">Fix the header of %1$d game?</item>
+        <item quantity="other">Fix the headers of %1$d games?</item>
+    </plurals>
 </resources>

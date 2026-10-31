@@ -107,4 +107,11 @@
         <item quantity="one">%1$d jeu renommé selon No-Intro ou Redump</item>
         <item quantity="other">%1$d jeux renommés selon No-Intro ou Redump</item>
     </plurals>
+    <string name="rom_manager_headers_fixing">Réparation des en-têtes</string>
+    <string name="rom_manager_headers_fixing_detail">%1$d jeux : une copie réparée de chacun, les originaux mis de côté</string>
+    <string name="rom_manager_headers_fixed_title">En-têtes réparés</string>
+    <plurals name="rom_manager_headers_fixed_games">
+        <item quantity="one">En-tête de %1$d jeu réparé</item>
+        <item quantity="other">En-têtes de %1$d jeux réparés</item>
+    </plurals>
 </resources>

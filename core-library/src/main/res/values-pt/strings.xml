@@ -106,4 +106,11 @@
         <item quantity="one">%1$d jogo renomeado com o nome No-Intro ou Redump</item>
         <item quantity="other">%1$d jogos renomeados com o nome No-Intro ou Redump</item>
     </plurals>
+    <string name="rom_manager_headers_fixing">Corrigindo cabeçalhos</string>
+    <string name="rom_manager_headers_fixing_detail">%1$d jogos: uma cópia corrigida de cada, os originais guardados</string>
+    <string name="rom_manager_headers_fixed_title">Cabeçalhos corrigidos</string>
+    <plurals name="rom_manager_headers_fixed_games">
+        <item quantity="one">Corrigido o cabeçalho de %1$d jogo</item>
+        <item quantity="other">Corrigidos os cabeçalhos de %1$d jogos</item>
+    </plurals>
 </resources>

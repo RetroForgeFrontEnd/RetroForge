@@ -37,6 +37,7 @@ import com.retroforge.core.library.RootEntity
 import com.retroforge.library.manage.CompressFormat
 import com.retroforge.library.manage.DELETED_FOLDER
 import com.retroforge.library.manage.DUPLICATES_FOLDER
+import com.retroforge.library.manage.HeaderProblem
 import com.retroforge.library.manage.IdentifyOutcome
 import com.retroforge.library.manage.KeepRule
 import com.retroforge.library.manage.ORIGINALS_FOLDER
@@ -98,6 +99,7 @@ fun RomManagerScreen(viewModel: RomManagerViewModel, deleteGameId: Long = -1) {
         when (tab) {
             ManagerTab.DUPLICATES -> DuplicatesTab(viewModel)
             ManagerTab.IDENTIFY -> IdentifyTab(viewModel)
+            ManagerTab.HEADERS -> HeadersTab(viewModel)
             ManagerTab.COMPRESS -> CompressTab(viewModel)
             ManagerTab.MULTI_DISC -> MultiDiscTab(viewModel)
             ManagerTab.SORT -> SortTab(viewModel)
@@ -181,6 +183,10 @@ private fun ConfirmCard(pending: Pending, root: RootEntity, viewModel: RomManage
                 CardBody(
                     stringResource(R.string.rom_manager_each_multi_disc_game_gets_an),
                 )
+            }
+            is Pending.FixHeaders -> {
+                CardTitle(pluralStr(R.plurals.rom_manager_headers_confirm_title, pending.count, pending.count))
+                CardBody(stringResource(R.string.rom_manager_headers_confirm_body, ORIGINALS_FOLDER))
             }
             is Pending.Rename -> {
                 CardTitle(pluralStr(R.plurals.rom_manager_identify_confirm_title, pending.count, pending.count))
@@ -420,6 +426,60 @@ private fun IdentifyTab(viewModel: RomManagerViewModel) {
 }
 
 @Composable
+private fun headerProblem(p: HeaderProblem) = when (p) {
+    HeaderProblem.SNES_COPIER_HEADER -> stringResource(R.string.rom_manager_header_snes_copier)
+    HeaderProblem.NES_HEADER_JUNK -> stringResource(R.string.rom_manager_header_nes_junk)
+    HeaderProblem.MD_CHECKSUM -> stringResource(R.string.rom_manager_header_md_checksum)
+    HeaderProblem.GB_HEADER_CHECKSUM, HeaderProblem.GB_GLOBAL_CHECKSUM -> stringResource(R.string.rom_manager_header_gb_checksum)
+    HeaderProblem.GBA_COMPLEMENT -> stringResource(R.string.rom_manager_header_gba)
+}
+
+@Composable
+private fun HeadersTab(viewModel: RomManagerViewModel) {
+    val state by viewModel.headers.collectAsStateWithLifecycle()
+    val selected by viewModel.headerSystems.collectAsStateWithLifecycle()
+    when (val s = state) {
+        Loadable.Idle -> FocusCard(modifier = Modifier.fillMaxWidth(), onClick = viewModel::findHeaderProblems) {
+            CardTitle(stringResource(R.string.rom_manager_headers_title))
+            CardBody(stringResource(R.string.rom_manager_headers_body))
+        }
+        is Loadable.Loading -> {
+            CardBody(if (s.total == 0) stringResource(R.string.rom_manager_identify_getting_lists) else stringResource(R.string.rom_manager_identify_checking, s.done + 1, s.total))
+            com.retroforge.app.ui.DownloadBar(s.share)
+            FocusChip(stringResource(R.string.library_stop), onClick = viewModel::stopHeaders)
+        }
+        is Loadable.Failed -> { StatusPill(stringResource(R.string.rom_manager_couldn_t_check), StatusTone.BAD); CardBody(s.reason); FocusChip(stringResource(R.string.rom_manager_try_again), onClick = viewModel::findHeaderProblems) }
+        is Loadable.Ready -> {
+            val report = s.value
+            CardBody(stringResource(R.string.rom_manager_headers_summary, report.checked, report.jobs.size))
+            if (report.jobs.isEmpty()) CardBody(stringResource(R.string.rom_manager_headers_none))
+            report.jobs.groupBy { it.candidate.system }.forEach { (system, jobs) ->
+                val on = system in selected
+                FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.toggleHeaderSystem(system) }, selected = on) {
+                    Text(
+                        (if (on) "☑ " else "☐ ") + stringResource(R.string.rom_manager_headers_system_count, viewModel.systemName(system), jobs.size),
+                        style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    jobs.take(4).forEach { j -> CardBody("${j.candidate.title}: " + j.problems.map { headerProblem(it) }.distinct().joinToString()) }
+                    if (jobs.size > 4) CardBody(stringResource(R.string.rom_manager_and_more, jobs.size - 4))
+                }
+            }
+            if (report.skipped.isNotEmpty()) FocusCard(modifier = Modifier.fillMaxWidth()) {
+                CardTitle(pluralStr(R.plurals.rom_manager_identify_left_alone, report.skipped.size, report.skipped.size))
+                report.skipped.groupBy { it.candidate.system to it.reason }.forEach { (key, games) ->
+                    CardBody("${viewModel.systemName(key.first)}: ${games.size} × ${key.second}")
+                }
+            }
+            val jobs = viewModel.headerJobs()
+            ChipRow {
+                FocusChip(pluralStr(R.plurals.rom_manager_headers_fix_button, jobs.size, jobs.size), onClick = viewModel::askFixHeaders, enabled = jobs.isNotEmpty())
+                FocusChip(stringResource(R.string.rom_manager_check_again), onClick = viewModel::findHeaderProblems)
+            }
+        }
+    }
+}
+
+@Composable
 private fun MultiDiscTab(viewModel: RomManagerViewModel) {
     val state by viewModel.multiDisc.collectAsStateWithLifecycle()
     when (val s = state) {
@@ -476,7 +536,7 @@ private fun HistoryTab(viewModel: RomManagerViewModel, root: RootEntity) {
     val format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
     mine.forEach { log ->
         FocusCard(modifier = Modifier.fillMaxWidth()) {
-            CardTitle(when (log.kind) { "compress" -> stringResource(R.string.rom_manager_compressed); "delete" -> stringResource(R.string.rom_manager_deleted); "playlists" -> stringResource(R.string.rom_manager_playlists_made); "rename" -> stringResource(R.string.rom_manager_identify_renamed); else -> stringResource(R.string.rom_manager_duplicates_tidied) })
+            CardTitle(when (log.kind) { "compress" -> stringResource(R.string.rom_manager_compressed); "delete" -> stringResource(R.string.rom_manager_deleted); "playlists" -> stringResource(R.string.rom_manager_playlists_made); "rename" -> stringResource(R.string.rom_manager_identify_renamed); "headers" -> stringResource(R.string.rom_manager_headers_fixed); else -> stringResource(R.string.rom_manager_duplicates_tidied) })
             CardBody(log.summary)
             CardBody(format.format(Date(log.startedAt)) + " · ${plural(log.steps.size, "change")}" + if (!log.finished) stringResource(R.string.rom_manager_interrupted) else "")
             log.undoneAt?.let { StatusPill(stringResource(R.string.rom_manager_undone, format.format(Date(it))), StatusTone.NEUTRAL) }

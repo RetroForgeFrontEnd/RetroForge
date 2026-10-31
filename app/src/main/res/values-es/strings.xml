@@ -2005,4 +2005,25 @@
     </plurals>
     <string name="player_soft_patch_applied">Jugando con el parche %1$s (el archivo del juego no cambia)</string>
     <string name="player_soft_patch_doesnt_fit">El parche %1$s es para otra versión de este juego, así que empezó sin él</string>
+    <string name="rom_manager_headers">Cabeceras</string>
+    <string name="rom_manager_headers_title">Reparar cabeceras de ROM</string>
+    <string name="rom_manager_headers_body">Busca juegos de cartucho con problemas de cabecera: cabeceras de copiadora de SNES, basura en cabeceras de NES y sumas de comprobación erróneas de Mega Drive, Game Boy y GBA (habituales en hacks y traducciones; por eso algunos muestran una pantalla roja o no arrancan). Las copias buenas verificadas nunca se cambian. Los juegos en .zip se reparan dentro del .zip.</string>
+    <string name="rom_manager_headers_summary">%1$d juegos comprobados, %2$d con una cabecera que reparar.</string>
+    <string name="rom_manager_headers_none">No se encontraron problemas de cabecera.</string>
+    <string name="rom_manager_headers_system_count">%1$s: %2$d para reparar</string>
+    <string name="rom_manager_headers_confirm_body">Cada juego recibe una copia reparada, que se vuelve a leer para comprobarla. El original pasa a la carpeta %1$s, así que el juego conserva su nombre y lugar (y su entrada de gamelist.xml y listas). Se deshace desde Historial.</string>
+    <string name="rom_manager_headers_fixed">Cabeceras reparadas</string>
+    <string name="rom_manager_header_snes_copier">cabecera de copiadora</string>
+    <string name="rom_manager_header_nes_junk">basura en la cabecera de NES</string>
+    <string name="rom_manager_header_md_checksum">suma de Mega Drive errónea</string>
+    <string name="rom_manager_header_gb_checksum">sumas de Game Boy erróneas</string>
+    <string name="rom_manager_header_gba">cabecera de GBA errónea</string>
+    <plurals name="rom_manager_headers_fix_button">
+        <item quantity="one">Reparar %1$d juego</item>
+        <item quantity="other">Reparar %1$d juegos</item>
+    </plurals>
+    <plurals name="rom_manager_headers_confirm_title">
+        <item quantity="one">¿Reparar la cabecera de %1$d juego?</item>
+        <item quantity="other">¿Reparar las cabeceras de %1$d juegos?</item>
+    </plurals>
 </resources>

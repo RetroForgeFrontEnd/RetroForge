@@ -2005,4 +2005,25 @@
     </plurals>
     <string name="player_soft_patch_applied">Partie avec le patch %1$s (le fichier du jeu reste intact)</string>
     <string name="player_soft_patch_doesnt_fit">Le patch %1$s est fait pour une autre version de ce jeu, il a donc démarré sans</string>
+    <string name="rom_manager_headers">En-têtes</string>
+    <string name="rom_manager_headers_title">Réparer les en-têtes de ROM</string>
+    <string name="rom_manager_headers_body">Cherche les jeux cartouche aux en-têtes défectueux : en-têtes de copieur SNES, données parasites dans les en-têtes NES, et sommes de contrôle Mega Drive, Game Boy et GBA fausses (fréquent dans les hacks et traductions ; certains affichent alors un écran rouge ou ne démarrent pas). Les copies correctes vérifiées ne sont jamais modifiées. Les jeux zippés sont réparés dans leur .zip.</string>
+    <string name="rom_manager_headers_summary">%1$d jeux vérifiés, %2$d avec un en-tête à réparer.</string>
+    <string name="rom_manager_headers_none">Aucun problème d’en-tête trouvé.</string>
+    <string name="rom_manager_headers_system_count">%1$s : %2$d à réparer</string>
+    <string name="rom_manager_headers_confirm_body">Chaque jeu reçoit une copie réparée, relue pour vérification. L\'original va dans le dossier %1$s, le jeu garde donc son nom et sa place (ainsi que son entrée gamelist.xml et ses listes). Annulable depuis l\'Historique.</string>
+    <string name="rom_manager_headers_fixed">En-têtes réparés</string>
+    <string name="rom_manager_header_snes_copier">en-tête de copieur</string>
+    <string name="rom_manager_header_nes_junk">données parasites dans l\'en-tête NES</string>
+    <string name="rom_manager_header_md_checksum">somme de contrôle Mega Drive fausse</string>
+    <string name="rom_manager_header_gb_checksum">sommes de contrôle Game Boy fausses</string>
+    <string name="rom_manager_header_gba">en-tête GBA faux</string>
+    <plurals name="rom_manager_headers_fix_button">
+        <item quantity="one">Réparer %1$d jeu</item>
+        <item quantity="other">Réparer %1$d jeux</item>
+    </plurals>
+    <plurals name="rom_manager_headers_confirm_title">
+        <item quantity="one">Réparer l\'en-tête de %1$d jeu ?</item>
+        <item quantity="other">Réparer les en-têtes de %1$d jeux ?</item>
+    </plurals>
 </resources>
