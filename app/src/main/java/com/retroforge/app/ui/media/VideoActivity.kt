@@ -53,7 +53,10 @@ class VideoActivity : ComponentActivity() {
             hide(WindowInsetsCompat.Type.systemBars())
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
-        val exo = ExoPlayer.Builder(this).build().also { player = it }
+        // Android's own decoders first; FFmpeg's for the sound they can't play (DTS and Dolby TrueHD on Blu-ray rips).
+        val renderers = androidx.media3.exoplayer.DefaultRenderersFactory(this)
+            .setExtensionRendererMode(androidx.media3.exoplayer.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+        val exo = ExoPlayer.Builder(this, renderers).build().also { player = it }
         // The same EQ as the music player's.
         eq = SoundEq.attach(this, exo.audioSessionId)
         gl = GLSurfaceView(this).apply { setEGLContextClientVersion(2) }
