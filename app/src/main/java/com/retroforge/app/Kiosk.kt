@@ -34,8 +34,11 @@ object Kiosk {
     fun isOn(context: Context): Boolean = read(context).getProperty("hash") != null
 
     /** True when nothing needs the PIN now: kiosk mode is off, or the PIN was given a short while ago. */
-    fun isOpen(context: Context): Boolean =
-        !isOn(context) || (unlockedAt != 0L && SystemClock.elapsedRealtime() - unlockedAt < UNLOCK_MS)
+    fun isOpen(context: Context): Boolean {
+        // Read first, every time: a page opened while kiosk mode was off must still close when a new PIN is locked.
+        val since = unlockedAt
+        return !isOn(context) || (since != 0L && SystemClock.elapsedRealtime() - since < UNLOCK_MS)
+    }
 
     /** Milliseconds left before another try is allowed, after too many wrong ones. */
     fun waitLeft(): Long = (waitUntil - SystemClock.elapsedRealtime()).coerceAtLeast(0)
