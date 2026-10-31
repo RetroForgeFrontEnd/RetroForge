@@ -83,6 +83,7 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
     fun draft() = NetworkShare(NetworkDrives.newId(), name.trim().ifBlank { folder.trim().substringAfterLast('/') }, host.trim(),
         folder.trim(), user.trim(), password)
 
+    val localNetwork = com.retroforge.app.player.rememberLocalNetwork()
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle(stringResource(R.string.network_drives_on_a_network_drive, what))
         CardBody(
@@ -91,7 +92,7 @@ fun NetworkDrivesCard(what: String, onUse: (suspend (android.net.Uri, (String, F
         if (shares.isNotEmpty()) CardBody("Added: " + shares.joinToString { "${it.name} (${it.address})" })
         if (!adding) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                FocusChip(stringResource(R.string.network_drives_add_a_network_drive), onClick = { adding = true; status = null })
+                FocusChip(stringResource(R.string.network_drives_add_a_network_drive), onClick = { localNetwork { adding = true; status = null } })
                 shares.forEach { share ->
                     FocusChip(stringResource(R.string.network_drives_remove, share.name), onClick = { NetworkDrives.remove(context, share.id); changes++ })
                 }

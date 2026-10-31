@@ -515,17 +515,20 @@ private fun PlayTogetherCard(viewModel: LibraryViewModel, onOpenGame: (Long) -> 
     var hosts by remember { mutableStateOf<List<com.retroforge.app.player.NetplayHost>?>(null) }
     var looking by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf<String?>(null) }
+    val localNetwork = com.retroforge.app.player.rememberLocalNetwork()
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle(stringResource(R.string.settings_play_together_netplay))
         CardBody(
             stringResource(R.string.library_two_players_two_devices_the_same),
         )
         FocusChip(if (looking) stringResource(R.string.library_looking) else stringResource(R.string.library_find_games_on_this_wi_fi), enabled = !looking, onClick = {
-            looking = true
-            message = null
-            scope.launch {
-                hosts = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { com.retroforge.app.player.Netplay.find(context) }
-                looking = false
+            localNetwork {
+                looking = true
+                message = null
+                scope.launch {
+                    hosts = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { com.retroforge.app.player.Netplay.find(context) }
+                    looking = false
+                }
             }
         })
         hosts?.let { found ->

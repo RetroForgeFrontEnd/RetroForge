@@ -85,7 +85,7 @@
     <string name="player_quit_to_retroforge">Voltar ao RetroForge</string>
     <string name="player_netplay">Netplay</string>
     <string name="player_leave_netplay">Sair do netplay</string>
-    <string name="player_play_this_game_with_a_friend">Jogue este jogo com um amigo em outro aparelho, cada um com o RetroForge e o mesmo arquivo do jogo. Um hospeda (jogador 1), o outro entra (jogador 2).</string>
+    <string name="player_play_this_game_with_a_friend">Jogue este jogo com amigos e família noutros aparelhos, até 4 jogadores, cada um com o RetroForge e o mesmo ficheiro do jogo. Um hospeda (jogador 1); os outros entram como jogadores 2 a 4, mesmo com o jogo a decorrer.</string>
     <string name="player_host_this_game">Hospedar este jogo</string>
     <string name="player_looking_for_games_on_this_wi">Procurando jogos nesta Wi-Fi…</string>
     <string name="player_nobody_s_hosting_on_this_wi">Ninguém está hospedando nesta Wi-Fi ainda.</string>
@@ -260,7 +260,7 @@
     <string name="library_other_copies_in_your_library">Outras cópias na sua biblioteca</string>
     <string name="library_same_game_and_tags_different_file">Mesmo jogo e etiquetas, arquivo diferente. O RetroForge não apaga nada; é só para sua informação.</string>
     <string name="library_stop">Parar</string>
-    <string name="library_two_players_two_devices_the_same">Dois jogadores, dois aparelhos, o mesmo jogo. Para hospedar: abra um jogo e escolha Jogar juntos → Hospedar. Para entrar no jogo de um amigo nesta Wi-Fi, encontre-o abaixo; pela internet, abra o jogo e escolha Jogar juntos → Entrar.</string>
+    <string name="library_two_players_two_devices_the_same">Até 4 jogadores, cada um no seu aparelho, o mesmo jogo. Para hospedar: abra um jogo e escolha Jogar juntos → Hospedar. Para entrar no jogo de um amigo nesta Wi-Fi, encontre-o abaixo; pela internet, abra o jogo e escolha Jogar juntos → Entrar.</string>
     <string name="library_nobody_s_hosting_on_this_wi">Ninguém está hospedando nesta Wi-Fi agora.</string>
     <string name="library_pick_one_to_open_your_copy">Escolha um para abrir sua cópia e depois Jogar juntos → Entrar.</string>
     <string name="library_your_consoles_arcade_and_computer_games">Seus jogos de console, arcade e computador.</string>
@@ -275,7 +275,7 @@
     <string name="play_problem">Problema</string>
     <string name="play_saturn_in_the_built_in_player">O Saturn no player integrado é experimental: alguns jogos ficam com tela preta. O RetroArch ou o Yaba Sanshiro 2 (abaixo) rodam mais deles.</string>
     <string name="play_play_together">Jogar juntos</string>
-    <string name="play_two_players_on_two_devices_each">Dois jogadores em dois aparelhos, cada um com o RetroForge e este jogo: um hospeda, o outro entra. Na mesma Wi-Fi ou pela internet.</string>
+    <string name="play_two_players_on_two_devices_each">Até 4 jogadores, cada um no seu aparelho com o RetroForge e este jogo: um hospeda, os outros entram. Na mesma Wi-Fi ou pela internet.</string>
     <string name="play_host">Hospedar</string>
     <string name="play_join">Entrar</string>
     <string name="play_other_emulators">Outros emuladores</string>
@@ -835,7 +835,7 @@
     <string name="player_netplay_player">Jogo em rede: jogador %1$s ›</string>
     <string name="player_netplay_2">Jogo em rede ›</string>
     <string name="player_during_netplay_only_player_1_can_2">Durante o jogo em rede só o jogador 1 pode reiniciar o jogo.</string>
-    <string name="player_on_the_same_wi_fi_player">Na mesma Wi-Fi, o jogador 2 abre este jogo e escolhe Jogo em rede → o teu dispositivo. Ou entra pelo endereço: %1$s (porta %2$s).</string>
+    <string name="player_on_the_same_wi_fi_player">Na mesma Wi-Fi, os outros jogadores abrem este jogo e escolhem Jogo em rede → o teu dispositivo (até 4 jogadores). Ou entram pelo endereço: %1$s (porta %2$s).</string>
     <string name="player_is_playing_open_that_game_to">%1$s está a jogar %2$s. Abre esse jogo para entrar.</string>
     <string name="player_join">Entrar com %1$s</string>
     <string name="player_console_look">Aspeto de consola: %1$s</string>
@@ -1475,7 +1475,7 @@
     <string name="themes_added_and_switched_to">Adicionado e ativado \"%1$s\".</string>
     <string name="themes_not_imported">"Não importado: "</string>
     <string name="themes_not_stated_ask_the_author_before">não indicado; pergunta ao autor antes de o partilhar</string>
-    <string name="tutorial_two_players_on_two_devices_play">Dois jogadores em dois dispositivos jogam o mesmo jogo, cada um com o RetroForge e o mesmo ficheiro do jogo (mesmo nome e tamanho). O anfitrião é o jogador 1, quem se junta é o jogador 2.</string>
+    <string name="tutorial_two_players_on_two_devices_play">Até 4 jogadores nos seus próprios aparelhos jogam o mesmo jogo, cada um com o RetroForge e o mesmo ficheiro do jogo (mesmo nome e tamanho). O anfitrião é o jogador 1; os outros são os jogadores 2 a 4 pela ordem em que entram. Jogos de 3 ou 4 jogadores podem precisar do multitap ligado nas opções do núcleo.</string>
     <string name="tutorial_to_host_open_the_game_and">Para seres anfitrião: abre o jogo e escolhe Jogar juntos → Ser anfitrião (ou Netplay → Ser anfitrião deste jogo no menu do jogo). Depois o teu amigo junta-se.</string>
     <string name="tutorial_same_wi_fi_your_friend_opens">Mesma Wi-Fi: o teu amigo abre o mesmo jogo, escolhe Jogar juntos → Juntar-se e escolhe-te na lista. Ou separador Retro → Jogar juntos → Procurar jogos nesta Wi-Fi.</string>
     <string name="tutorial_over_the_internet_when_you_host">Pela internet: quando és anfitrião, o RetroForge pede ao teu router que deixe entrar o teu amigo e mostra o teu endereço de internet em Netplay. O teu amigo escreve-o em Juntar-se por endereço. Se o router não o permitir, reencaminha a porta 55450 (TCP) para o teu dispositivo nas definições do router. Com dados móveis não é possível ser anfitrião.</string>
@@ -2303,4 +2303,5 @@
     <string name="online_join">Entrar</string>
     <string name="online_no_rooms">Ainda não há salas neste Wi-Fi. Peça a quem cria a sala para abrir o jogo com Criar sala e procure de novo.</string>
     <string name="online_join_room">Entrar com %1$s: %2$s</string>
+    <string name="local_network_denied">O jogo em rede precisa de autorização para chegar aos dispositivos da sua Wi-Fi. Permita quando pedido, ou nas Definições do Android → Apps → RetroForge → Autorizações → Dispositivos próximos.</string>
 </resources>

@@ -86,7 +86,7 @@
     <string name="player_quit_to_retroforge">Quit to RetroForge</string>
     <string name="player_netplay">Netplay</string>
     <string name="player_leave_netplay">Leave netplay</string>
-    <string name="player_play_this_game_with_a_friend">Play this game with a friend on another device, each with RetroForge and the same game file. One hosts (player 1), the other joins (player 2).</string>
+    <string name="player_play_this_game_with_a_friend">Play this game with friends and family on other devices, up to 4 players, each with RetroForge and the same game file. One hosts (player 1); the others join as players 2 to 4, even while the game is on.</string>
     <string name="player_host_this_game">Host this game</string>
     <string name="player_looking_for_games_on_this_wi">Looking for games on this Wi-Fi…</string>
     <string name="player_nobody_s_hosting_on_this_wi">Nobody\'s hosting on this Wi-Fi yet.</string>
@@ -261,7 +261,7 @@
     <string name="library_other_copies_in_your_library">Other Copies in Your Library</string>
     <string name="library_same_game_and_tags_different_file">Same game and tags, different file. RetroForge doesn\'t delete anything; this is for your information.</string>
     <string name="library_stop">Stop</string>
-    <string name="library_two_players_two_devices_the_same">Two players, two devices, the same game. To host: open a game and choose Play together → Host. To join a friend on this Wi-Fi, find their game below; over the internet, open the game and choose Play together → Join.</string>
+    <string name="library_two_players_two_devices_the_same">Up to 4 players, each on their own device, the same game. To host: open a game and choose Play together → Host. To join a friend on this Wi-Fi, find their game below; over the internet, open the game and choose Play together → Join.</string>
     <string name="library_nobody_s_hosting_on_this_wi">Nobody\'s hosting on this Wi-Fi right now.</string>
     <string name="library_pick_one_to_open_your_copy">Pick one to open your copy, then choose Play together → Join.</string>
     <string name="library_your_consoles_arcade_and_computer_games">Your consoles, arcade and computer games.</string>
@@ -276,7 +276,7 @@
     <string name="play_problem">Problem</string>
     <string name="play_saturn_in_the_built_in_player">Saturn in the built-in player is experimental: some games stay on a black screen. RetroArch or Yaba Sanshiro 2 (below) play more of them.</string>
     <string name="play_play_together">Play Together</string>
-    <string name="play_two_players_on_two_devices_each">Two players on two devices, each with RetroForge and this game: one hosts, the other joins. Same Wi-Fi or over the internet.</string>
+    <string name="play_two_players_on_two_devices_each">Up to 4 players, each on their own device with RetroForge and this game: one hosts, the others join. Same Wi-Fi or over the internet.</string>
     <string name="play_host">Host</string>
     <string name="play_join">Join</string>
     <string name="play_other_emulators">Other Emulators</string>
@@ -860,7 +860,7 @@
     <string name="player_netplay_player">Netplay: player %1$s ›</string>
     <string name="player_netplay_2">Netplay ›</string>
     <string name="player_during_netplay_only_player_1_can_2">During netplay only player 1 can restart the game.</string>
-    <string name="player_on_the_same_wi_fi_player">On the same Wi-Fi, player 2 opens this game and picks Netplay → your device. Or they join by address: %1$s (port %2$s).</string>
+    <string name="player_on_the_same_wi_fi_player">On the same Wi-Fi, the other players open this game and pick Netplay → your device (up to 4 players). Or they join by address: %1$s (port %2$s).</string>
     <string name="player_is_playing_open_that_game_to">%1$s is playing %2$s. Open that game to join.</string>
     <string name="player_join">Join %1$s</string>
     <string name="player_console_look">Console look: %1$s</string>
@@ -1618,7 +1618,7 @@
     <string name="themes_not_stated_ask_the_author_before">not stated; ask the author before sharing it</string>
 
     <!-- TutorialScreen.kt -->
-    <string name="tutorial_two_players_on_two_devices_play">Two players on two devices play the same game, each with RetroForge and the same game file (same name and size). The host is player 1, the one who joins is player 2.</string>
+    <string name="tutorial_two_players_on_two_devices_play">Up to 4 players on their own devices play the same game, each with RetroForge and the same game file (same name and size). The host is player 1; the others are players 2 to 4 in the order they join. Games with 3 or 4 players may need their multitap turned on in the core options.</string>
     <string name="tutorial_to_host_open_the_game_and">To host: open the game and choose Play together → Host (or Netplay → Host this game in the game\'s menu). Your friend then joins.</string>
     <string name="tutorial_same_wi_fi_your_friend_opens">Same Wi-Fi: your friend opens the same game and chooses Play together → Join, then picks you from the list. Or Retro tab → Play together → Find games on this Wi-Fi.</string>
     <string name="tutorial_over_the_internet_when_you_host">Over the internet: when you host, RetroForge asks your router to let your friend in and shows your internet address in Netplay. Your friend types it under Join by address. If your router doesn\'t allow it, forward port 55450 (TCP) to your device in the router\'s settings. Mobile data can\'t host.</string>
@@ -2431,4 +2431,5 @@
     <string name="online_join">Join</string>
     <string name="online_no_rooms">No rooms on this Wi-Fi yet. Ask the host to start the game with Host a room, then look again.</string>
     <string name="online_join_room">Join %1$s: %2$s</string>
+    <string name="local_network_denied">Netplay needs permission to reach devices on your Wi-Fi. Allow it when asked, or in Android Settings → Apps → RetroForge → Permissions → Nearby devices.</string>
 </resources>

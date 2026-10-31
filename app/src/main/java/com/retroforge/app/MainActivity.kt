@@ -48,7 +48,16 @@ class MainActivity : ComponentActivity() {
         com.retroforge.core.ui.UiSounds.init(this)
         com.retroforge.core.ui.UiSounds.enabled = container.viewPrefs.getBoolean(UI_SOUNDS, true)
         setContent { RetroForgeRoot(container, sectionCommands, openSection) }
+        // Android 17: asked once up front, so netplay, network drives and PC streaming on the Wi-Fi just work.
+        if (savedInstanceState == null && com.retroforge.app.player.LocalNetwork.needed(this) &&
+            !container.viewPrefs.getBoolean(ASKED_LOCAL_NETWORK, false)
+        ) {
+            container.viewPrefs.edit().putBoolean(ASKED_LOCAL_NETWORK, true).apply()
+            askLocalNetwork.launch(com.retroforge.app.player.LocalNetwork.PERMISSION)
+        }
     }
+
+    private val askLocalNetwork = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { }
 
     override fun onNewIntent(intent: android.content.Intent) {
         super.onNewIntent(intent)
@@ -143,3 +152,6 @@ class MainActivity : ComponentActivity() {
 
 /** View preference: interface sounds on or off. */
 const val UI_SOUNDS = "ui_sounds"
+
+/** In the view preferences: Android 17's local network permission was asked for at start-up once. */
+const val ASKED_LOCAL_NETWORK = "asked_local_network"

@@ -85,7 +85,7 @@
     <string name="player_quit_to_retroforge">Zurück zu RetroForge</string>
     <string name="player_netplay">Netplay</string>
     <string name="player_leave_netplay">Netplay verlassen</string>
-    <string name="player_play_this_game_with_a_friend">Spiel dieses Spiel mit einem Freund auf einem anderen Gerät, jeder mit RetroForge und derselben Spieldatei. Einer hostet (Spieler 1), der andere tritt bei (Spieler 2).</string>
+    <string name="player_play_this_game_with_a_friend">Spiel dieses Spiel mit Freunden und Familie auf anderen Geräten, bis zu 4 Spieler, jeder mit RetroForge und derselben Spieldatei. Einer hostet (Spieler 1); die anderen treten als Spieler 2 bis 4 bei, auch während des Spiels.</string>
     <string name="player_host_this_game">Dieses Spiel hosten</string>
     <string name="player_looking_for_games_on_this_wi">Suche nach Spielen in diesem WLAN…</string>
     <string name="player_nobody_s_hosting_on_this_wi">In diesem WLAN hostet noch niemand.</string>
@@ -260,7 +260,7 @@
     <string name="library_other_copies_in_your_library">Andere Kopien in deiner Bibliothek</string>
     <string name="library_same_game_and_tags_different_file">Gleiches Spiel und gleiche Tags, andere Datei. RetroForge löscht nichts; das ist nur zur Info.</string>
     <string name="library_stop">Stopp</string>
-    <string name="library_two_players_two_devices_the_same">Zwei Spieler, zwei Geräte, dasselbe Spiel. Zum Hosten: Öffne ein Spiel und wähle Zusammen spielen → Hosten. Um einem Freund in diesem WLAN beizutreten, finde sein Spiel unten; über das Internet öffne das Spiel und wähle Zusammen spielen → Beitreten.</string>
+    <string name="library_two_players_two_devices_the_same">Bis zu 4 Spieler, jeder auf seinem Gerät, dasselbe Spiel. Zum Hosten: Öffne ein Spiel und wähle Zusammen spielen → Hosten. Um einem Freund in diesem WLAN beizutreten, finde sein Spiel unten; über das Internet öffne das Spiel und wähle Zusammen spielen → Beitreten.</string>
     <string name="library_nobody_s_hosting_on_this_wi">Gerade hostet niemand in diesem WLAN.</string>
     <string name="library_pick_one_to_open_your_copy">Wähle eins, um deine Kopie zu öffnen, dann Zusammen spielen → Beitreten.</string>
     <string name="library_your_consoles_arcade_and_computer_games">Deine Konsolen-, Arcade- und Computerspiele.</string>
@@ -275,7 +275,7 @@
     <string name="play_problem">Problem</string>
     <string name="play_saturn_in_the_built_in_player">Saturn im eingebauten Player ist experimentell: Manche Spiele bleiben schwarz. RetroArch oder Yaba Sanshiro 2 (unten) spielen mehr davon.</string>
     <string name="play_play_together">Zusammen spielen</string>
-    <string name="play_two_players_on_two_devices_each">Zwei Spieler auf zwei Geräten, jeder mit RetroForge und diesem Spiel: Einer hostet, der andere tritt bei. Im selben WLAN oder über das Internet.</string>
+    <string name="play_two_players_on_two_devices_each">Bis zu 4 Spieler, jeder auf seinem Gerät mit RetroForge und diesem Spiel: Einer hostet, die anderen treten bei. Im selben WLAN oder über das Internet.</string>
     <string name="play_host">Hosten</string>
     <string name="play_join">Beitreten</string>
     <string name="play_other_emulators">Andere Emulatoren</string>
@@ -835,7 +835,7 @@
     <string name="player_netplay_player">Netplay: Spieler %1$s ›</string>
     <string name="player_netplay_2">Netplay ›</string>
     <string name="player_during_netplay_only_player_1_can_2">Beim Netplay kann nur Spieler 1 das Spiel neu starten.</string>
-    <string name="player_on_the_same_wi_fi_player">Im selben WLAN öffnet Spieler 2 dieses Spiel und wählt Netplay → dein Gerät. Oder er tritt per Adresse bei: %1$s (Port %2$s).</string>
+    <string name="player_on_the_same_wi_fi_player">Im selben WLAN öffnen die anderen Spieler dieses Spiel und wählen Netplay → dein Gerät (bis zu 4 Spieler). Oder sie treten per Adresse bei: %1$s (Port %2$s).</string>
     <string name="player_is_playing_open_that_game_to">%1$s spielt %2$s. Öffne dieses Spiel, um beizutreten.</string>
     <string name="player_join">%1$s beitreten</string>
     <string name="player_console_look">Konsolen-Look: %1$s</string>
@@ -1475,7 +1475,7 @@
     <string name="themes_added_and_switched_to">„%1$s\" hinzugefügt und aktiviert.</string>
     <string name="themes_not_imported">"Nicht importiert: "</string>
     <string name="themes_not_stated_ask_the_author_before">nicht angegeben; frag den Autor, bevor du es teilst</string>
-    <string name="tutorial_two_players_on_two_devices_play">Zwei Spieler auf zwei Geräten spielen dasselbe Spiel, jeder mit RetroForge und derselben Spieldatei (gleicher Name und gleiche Größe). Der Host ist Spieler 1, wer beitritt, ist Spieler 2.</string>
+    <string name="tutorial_two_players_on_two_devices_play">Bis zu 4 Spieler auf eigenen Geräten spielen dasselbe Spiel, jeder mit RetroForge und derselben Spieldatei (gleicher Name und gleiche Größe). Der Host ist Spieler 1; die anderen sind Spieler 2 bis 4 in der Reihenfolge des Beitritts. Spiele mit 3 oder 4 Spielern brauchen eventuell den Multitap in den Core-Optionen.</string>
     <string name="tutorial_to_host_open_the_game_and">Zum Hosten: Öffne das Spiel und wähle Zusammen spielen → Hosten (oder im Spielmenü Netplay → Dieses Spiel hosten). Dann tritt dein Freund bei.</string>
     <string name="tutorial_same_wi_fi_your_friend_opens">Gleiches WLAN: Dein Freund öffnet dasselbe Spiel, wählt Zusammen spielen → Beitreten und dann dich aus der Liste. Oder Retro-Tab → Zusammen spielen → Spiele in diesem WLAN finden.</string>
     <string name="tutorial_over_the_internet_when_you_host">Übers Internet: Wenn du hostest, bittet RetroForge deinen Router, deinen Freund hereinzulassen, und zeigt deine Internetadresse unter Netplay. Dein Freund gibt sie unter Per Adresse beitreten ein. Lässt dein Router das nicht zu, leite in den Router-Einstellungen Port 55450 (TCP) an dein Gerät weiter. Mit mobilen Daten kann man nicht hosten.</string>
@@ -2271,4 +2271,5 @@
     <string name="online_join">Beitreten</string>
     <string name="online_no_rooms">Noch keine Räume in diesem WLAN. Bitte den Host, das Spiel mit „Raum hosten“ zu starten, und suche erneut.</string>
     <string name="online_join_room">%1$s beitreten: %2$s</string>
+    <string name="local_network_denied">Netplay braucht die Erlaubnis, Geräte in deinem WLAN zu erreichen. Erlaube sie, wenn gefragt, oder in den Android-Einstellungen → Apps → RetroForge → Berechtigungen → Geräte in der Nähe.</string>
 </resources>

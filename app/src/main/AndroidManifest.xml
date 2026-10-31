@@ -4,6 +4,9 @@
     <!-- Used for hack catalogues the user adds and for cover art (libretro thumbnails, SteamGridDB). -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <!-- Android 17: reaching other devices on the Wi-Fi (netplay, link cable, online rooms, network drives) needs the
+         user's say-so; LocalNetwork asks before the first of those. -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK" />
     <!-- Installing a port the user chose to download (Android asks them to allow it and to confirm each install). -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!-- Settings → Free up memory: closes other apps idle in the background before playing. -->

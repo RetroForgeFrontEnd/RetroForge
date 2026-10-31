@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.retroforge.app.R
 import com.retroforge.app.player.Netplay
 import com.retroforge.app.player.NetplayHost
+import com.retroforge.app.player.rememberLocalNetwork
 import com.retroforge.app.ui.CardBody
 import com.retroforge.app.ui.CardTitle
 import com.retroforge.core.ui.ControllerTextField
@@ -80,16 +81,19 @@ fun GameOnlineCard(game: GameEntity, play: (List<IntentExtra>) -> Unit) {
     var password by remember { mutableStateOf("") }
     var rooms by remember { mutableStateOf<List<NetplayHost>?>(null) }
     var looking by remember { mutableStateOf(false) }
+    val localNetwork = rememberLocalNetwork()
     FocusCard(modifier = Modifier.fillMaxWidth()) {
         CardTitle(stringResource(R.string.online_title))
         CardBody(stringResource(R.string.online_body, Netplay.name(context), GameOnline.PORT))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            FocusChip(stringResource(R.string.online_host), onClick = { play(GameOnline.extras(context, game, true, "", password)) })
+            FocusChip(stringResource(R.string.online_host), onClick = { localNetwork { play(GameOnline.extras(context, game, true, "", password)) } })
             FocusChip(stringResource(if (looking) R.string.library_looking else R.string.library_find_games_on_this_wi_fi), enabled = !looking, onClick = {
-                looking = true
-                scope.launch {
-                    rooms = withContext(Dispatchers.IO) { Netplay.find(context) }.filter { it.gameId.startsWith("${game.system}|") }
-                    looking = false
+                localNetwork {
+                    looking = true
+                    scope.launch {
+                        rooms = withContext(Dispatchers.IO) { Netplay.find(context) }.filter { it.gameId.startsWith("${game.system}|") }
+                        looking = false
+                    }
                 }
             })
         }
@@ -98,7 +102,7 @@ fun GameOnlineCard(game: GameEntity, play: (List<IntentExtra>) -> Unit) {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 found.forEach { room ->
                     FocusChip(stringResource(R.string.online_join_room, room.player, room.title), onClick = {
-                        play(GameOnline.extras(context, game, false, "${room.address}:${room.port}", password))
+                        localNetwork { play(GameOnline.extras(context, game, false, "${room.address}:${room.port}", password)) }
                     })
                 }
             }
@@ -115,7 +119,7 @@ fun GameOnlineCard(game: GameEntity, play: (List<IntentExtra>) -> Unit) {
             modifier = Modifier.fillMaxWidth(),
         )
         FocusChip(stringResource(R.string.online_join), enabled = address.isNotBlank(), onClick = {
-            play(GameOnline.extras(context, game, false, address, password))
+            localNetwork { play(GameOnline.extras(context, game, false, address, password)) }
         })
     }
 }

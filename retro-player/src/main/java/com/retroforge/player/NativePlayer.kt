@@ -126,11 +126,13 @@ object NativePlayer {
     /** Connects to a host in the background; [netplayState] and [netplayStatus] say how it's going. */
     external fun netplayJoin(address: String, port: Int, gameId: String, delayFrames: Int): String?
     external fun netplayLeave()
-    /** 0 off, 1 hosting (waiting for player 2), 2 joining, 3 starting, 4 playing, 5 failed. */
+    /** 0 off, 1 hosting (waiting for players), 2 joining, 3 starting, 4 playing, 5 failed. */
     external fun netplayState(): Int
     external fun netplayStatus(): String
-    /** 0 when this device is player 1 (the host), 1 when it's player 2. */
+    /** 0 when this device is player 1 (the host), 1 to 3 for players 2 to 4. */
     external fun netplayPlayer(): Int
+    /** How many players are in the netplay game, this device included (up to 4). */
+    external fun netplayPlayers(): Int
 
     external fun stop()
     external fun close()

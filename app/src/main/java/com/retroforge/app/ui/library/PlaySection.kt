@@ -226,7 +226,7 @@ private fun BuiltInCard(
         }
     }
     if (main && com.retroforge.app.player.Netplay.supports(game.system)) {
-        // Netplay: the same game on two devices, one hosting (player 1), the other joining (player 2).
+        // Netplay: the same game on up to four devices, one hosting (player 1), the others joining (players 2 to 4).
         fun start(how: String) {
             onProblem(null)
             scope.launch {

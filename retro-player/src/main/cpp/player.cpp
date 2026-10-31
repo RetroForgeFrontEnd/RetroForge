@@ -2,6 +2,7 @@
 // and feeds it the controls Kotlin passes in. One game at a time; the player runs in its own process.
 // Only libretro.h (MIT) comes from the libretro project; cores are separate downloads loaded at run time.
 
+#include <zlib.h>
 #include <jni.h>
 #include <dlfcn.h>
 #include <fcntl.h>
@@ -1026,14 +1027,13 @@ int16_t inputState(unsigned port, unsigned device, unsigned index, unsigned id) 
     if (port >= 4) return 0;
     switch (device & RETRO_DEVICE_MASK) {
         case RETRO_DEVICE_JOYPAD: {
-            if (P->netInput && port >= 2) return 0;
             uint32_t mask = P->netInput ? P->netFrame.buttons[port] : P->frameButtons[port];
             if (id == RETRO_DEVICE_ID_JOYPAD_MASK) return static_cast<int16_t>(mask);
             return id < 16 ? static_cast<int16_t>((mask >> id) & 1u) : 0;
         }
         case RETRO_DEVICE_ANALOG:
             if (index >= 2 || id >= 2) return 0;
-            if (P->netInput) return port < 2 ? P->netFrame.analog[port][index * 2 + id] : 0;
+            if (P->netInput) return P->netFrame.analog[port][index * 2 + id];
             return P->analog[port][index][id];
         case RETRO_DEVICE_KEYBOARD:
             return id < RETROK_LAST && P->keys[id].load() ? 1 : 0;
@@ -1099,7 +1099,7 @@ void runLoop() {
             if (p.keyboardCallback) {
                 for (auto &e : events) p.keyboardCallback(e.down, e.keycode, e.character, e.modifiers);
             }
-            // Netplay: both players' buttons for this frame, or wait for the other player's (no frame this time).
+            // Netplay: every player's buttons for this frame, or wait for the others' (no frame this time).
             netplay::Hooks hooks{
                 [&p] {
                     std::vector<uint8_t> state(p.core.serialize_size());
@@ -1107,6 +1107,13 @@ void runLoop() {
                     return state;
                 },
                 [&p](const std::vector<uint8_t> &state) { return p.core.unserialize(state.data(), state.size()); },
+                [&p](uint32_t &sum) {
+                    size_t size = p.core.get_memory_size ? p.core.get_memory_size(RETRO_MEMORY_SYSTEM_RAM) : 0;
+                    void *data = size ? p.core.get_memory_data(RETRO_MEMORY_SYSTEM_RAM) : nullptr;
+                    if (!data) return false;
+                    sum = uint32_t(crc32(0L, static_cast<const Bytef *>(data), uInt(size)));
+                    return true;
+                },
             };
             for (int i = 0; i < 4; i++) {
                 p.carried[i] |= p.latched[i].exchange(0);
@@ -1117,7 +1124,7 @@ void runLoop() {
                 int16_t sticks[4] = {p.analog[0][0][0], p.analog[0][0][1], p.analog[0][1][0], p.analog[0][1][1]};
                 bool sent = false;
                 bool ready = netplay::beginFrame(p.frameButtons[0], sticks, p.netFrame, hooks, &sent);
-                if (sent) p.carried[0] = 0;  // the other player has them now
+                if (sent) p.carried[0] = 0;  // they're on their way to the other players
                 if (!ready) continue;
             } else {
                 for (uint32_t &c : p.carried) c = 0;  // this frame uses them
@@ -1625,7 +1632,7 @@ JNIEXPORT jboolean JNI(loadState)(JNIEnv *env, jobject, jbyteArray state) {
     std::lock_guard<std::mutex> lock(P->coreMutex);
     bool loaded = P->core.unserialize(data.data(), data.size());
     if (loaded) cheevos::reset();  // progress towards achievements starts again from the state
-    if (loaded) netplay::stateChanged();  // the host loaded a state: player 2 gets it too
+    if (loaded) netplay::stateChanged();  // the host loaded a state: the other players get it too
     return loaded ? JNI_TRUE : JNI_FALSE;
 }
 
@@ -1649,6 +1656,8 @@ JNIEXPORT jint JNI(netplayState)(JNIEnv *, jobject) { return static_cast<jint>(n
 JNIEXPORT jstring JNI(netplayStatus)(JNIEnv *env, jobject) { return env->NewStringUTF(netplay::status().c_str()); }
 
 JNIEXPORT jint JNI(netplayPlayer)(JNIEnv *, jobject) { return netplay::localPlayer(); }
+
+JNIEXPORT jint JNI(netplayPlayers)(JNIEnv *, jobject) { return netplay::players(); }
 
 // Stops the loop and sound. The game stays loaded so saves can still be read.
 JNIEXPORT void JNI(stop)(JNIEnv *, jobject) {

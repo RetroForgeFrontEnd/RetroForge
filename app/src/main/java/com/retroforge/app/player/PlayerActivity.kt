@@ -374,7 +374,7 @@ class PlayerActivity : ComponentActivity() {
     @Volatile private var upnp: Upnp? = null
     private var netInternet by mutableStateOf<String?>(null)
     private val netPlaying get() = netState in 3..4
-    private val netGuest get() = netPlaying && NativePlayer.netplayPlayer() == 1
+    private val netGuest get() = netPlaying && NativePlayer.netplayPlayer() != 0
 
     /** The Game Boy link cable ([LinkCable]): unplugged, hosting, or joined to [linkWith]. */
     private var linkState by mutableStateOf(LinkState.OFF)
@@ -392,7 +392,24 @@ class PlayerActivity : ComponentActivity() {
         return true
     }
 
+    // Android 17: work that reaches other devices on the Wi-Fi waits for the local network permission (LocalNetwork).
+    private var afterLocalNetwork: (() -> Unit)? = null
+    private val askLocalNetwork = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { granted ->
+        val then = afterLocalNetwork
+        afterLocalNetwork = null
+        if (granted) then?.invoke() else notice = str(R.string.local_network_denied)
+    }
+
+    /** True when the permission had to be asked for: [retry] runs once it's granted, and the caller stops for now. */
+    private fun askingForLocalNetwork(retry: () -> Unit): Boolean {
+        if (!LocalNetwork.needed(this)) return false
+        afterLocalNetwork = retry
+        askLocalNetwork.launch(LocalNetwork.PERMISSION)
+        return true
+    }
+
     private fun hostLink() {
+        if (askingForLocalNetwork { hostLink() }) return
         if (!setLinkOptions(LinkCable.hostOptions(NativePlayer.options()))) return
         linkAnnouncer?.stop()
         linkAnnouncer = LinkCable.Announcer(this, intent.getStringExtra(EXTRA_TITLE).orEmpty(), Netplay.name(this))
@@ -401,6 +418,7 @@ class PlayerActivity : ComponentActivity() {
     }
 
     private fun joinLink(address: String, who: String) {
+        if (askingForLocalNetwork { joinLink(address, who) }) return
         if (LinkCable.ipDigits(address) == null) { notice = str(R.string.link_cable_bad_address, address); return }
         if (!setLinkOptions(LinkCable.joinOptions(NativePlayer.options(), address))) return
         linkState = LinkState.JOINED
@@ -416,6 +434,7 @@ class PlayerActivity : ComponentActivity() {
     }
 
     private fun findLinkHosts() {
+        if (askingForLocalNetwork { findLinkHosts() }) return
         linkSearching = true
         worker.execute {
             val found = LinkCable.find(this)
@@ -424,6 +443,7 @@ class PlayerActivity : ComponentActivity() {
     }
 
     private fun hostNetplay() {
+        if (askingForLocalNetwork { hostNetplay() }) return
         val error = NativePlayer.netplayHost(Netplay.GAME_PORT, netGameId, Netplay.delay(this))
         if (error != null) { notice = error; return }
         connectPlayerTwo()
@@ -454,6 +474,7 @@ class PlayerActivity : ComponentActivity() {
     }
 
     private fun joinNetplay(address: String, port: Int = Netplay.GAME_PORT) {
+        if (askingForLocalNetwork { joinNetplay(address, port) }) return
         NativePlayer.netplayJoin(address, port, netGameId, Netplay.delay(this))?.let { notice = it; return }
         connectPlayerTwo()
         closeMenu()
@@ -490,6 +511,7 @@ class PlayerActivity : ComponentActivity() {
     }
 
     private fun findNetplayHosts() {
+        if (askingForLocalNetwork { findNetplayHosts() }) return
         netSearching = true
         worker.execute {
             val found = Netplay.find(this)
@@ -504,9 +526,12 @@ class PlayerActivity : ComponentActivity() {
         netStatus = NativePlayer.netplayStatus()
         if (netState == 4 && !wasPlaying) netPlayingSince = android.os.SystemClock.elapsedRealtime()
         netShowStatus = netState != 0 && netStatus.isNotBlank() &&
-            (netState != 4 || netStatus.startsWith("Waiting") || android.os.SystemClock.elapsedRealtime() - netPlayingSince < 4000)
-        // Once someone has joined, nobody else needs to find this game.
-        if (netState >= 3) { announcer?.stop(); announcer = null }
+            (netState != 4 || netStatus.startsWith("Waiting") || netStatus.startsWith("Player") ||
+                android.os.SystemClock.elapsedRealtime() - netPlayingSince < 4000)
+        // The host stays findable until the game is full (4 players); a guest never needs to be found.
+        val findable = !netGuest && netState in 1..4 && NativePlayer.netplayPlayers() < 4
+        if (!findable) { announcer?.stop(); announcer = null }
+        else if (announcer == null) announcer = Netplay.Announcer(this, intent.getStringExtra(EXTRA_TITLE).orEmpty(), netGameId, Netplay.name(this))
         if (netState != 0 && !isFinishing) window.decorView.postDelayed({ pollNetplay() }, 500)
     }
     private var coreOptions by mutableStateOf<List<CoreOption>>(emptyList())
