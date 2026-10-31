@@ -153,6 +153,8 @@ class MacrosTest {
         assertEquals("The Last Blade 2", titleFor("Last Blade 2, The"))
         assertEquals("The Last Blade 2", titleFor("Bakumatsu Roman Dai Ni Maku Gekka no Kenshi"))
         assertNull(titleFor("The Last Blade"))
+        assertEquals("The King of Fighters 2002", titleFor("The King of Fighters 2002 (NGM-2650)"))
+        assertEquals("The King of Fighters", titleFor("The King of Fighters 2001"))
     }
 
     @Test

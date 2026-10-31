@@ -2,7 +2,7 @@
 # A light punch, B light kick, C heavy punch, D heavy kick. P moves use C; change to A for the light version.
 title: The King of Fighters
 match: king of fighters | kof
-not: king of fighters 94 | kof 94
+not: king of fighters 94 | kof 94 | king of fighters 2002 | kof 2002
 buttons: A=B B=A C=Y D=X
 checked: no
 Kyo | 100 Shiki Oniyaki | 6 2 3+C

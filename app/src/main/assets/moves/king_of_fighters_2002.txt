@@ -1,0 +1,298 @@
+# The King of Fighters 2002 (Neo Geo, Dreamcast, PS2). Numpad notation for a fighter facing right: 6 forward,
+# 2 down, 3 down-forward; *60 charges for a second. A light punch, B light kick, C heavy punch, D heavy kick.
+# P moves use C and K moves D; change to A or B for the light version. DMs take one power stock, SDMs a stock in MAX
+# mode or with low life, and HSDMs need MAX mode with low life.
+title: The King of Fighters 2002
+match: king of fighters 2002 | kof 2002
+buttons: A=B B=A C=Y D=X
+checked: no
+Andy Bogard | Hishou Ken | 2 1 4+A
+Andy Bogard | Geki Hishou Ken | 2 1 4+C
+Andy Bogard | Shouryuu Dan | 6 2 3+C
+Andy Bogard | Yami Abise Geri | 4 2 1+D
+Andy Bogard | Kuuha Dan | 4 1 2 3 6+D
+Andy Bogard | Gekiheki Haisui Shou | 4 1 2 3 6+C
+Andy Bogard | Gen'ei Shiranui (in the air) | 2 3 6+D
+Andy Bogard | Zan'ei Ken | 1 6+C
+Andy Bogard | DM: Zan'ei Ryuusei Ken | 2 1 4 1 2 3 6+C
+Andy Bogard | DM: Chou Reppa Dan | 2 1 4 1 2 3 6+D
+Andy Bogard | SDM: Chou Reppa Dan | 2 1 4 1 2 3 6+B+D
+Andy Bogard | HSDM: Zan'ei Shitou Reppa Dan | 2 3 6 2 3 6+A+C
+Athena Asamiya | Psycho Ball | 2 1 4+C
+Athena Asamiya | Psycho Sword | 6 2 3+C
+Athena Asamiya | Psycho Teleport | 2 3 6+D
+Athena Asamiya | Psycho Reflector | 2 1 4+B
+Athena Asamiya | Phoenix Arrow (in the air) | 2 1 4+D
+Athena Asamiya | DM: Phoenix Fang Arrow (in the air) | 2 3 6 2 3 6+D
+Athena Asamiya | DM: Shining Crystal Bit | 6 3 2 1 4 6 3 2 1 4+C
+Athena Asamiya | SDM: Shining Crystal Bit | 6 3 2 1 4 6 3 2 1 4+A+C
+Athena Asamiya | SDM: Psychic 9 | 6 3 2 1 4 6+A+C
+Athena Asamiya | HSDM: Psycho Medley | 2 3 6+A+B+C+D
+Benimaru Nikaido | Raijin Ken | 2 3 6+A
+Benimaru Nikaido | Taikuu Raijin Ken | 2 3 6+C
+Benimaru Nikaido | Kuuchuu Raijin Ken (in the air) | 2 3 6+C
+Benimaru Nikaido | Shinkuu Katategoma | 2 1 4+C
+Benimaru Nikaido | Benimaru Corridor | 6 3 2 1 4 6+C
+Benimaru Nikaido | Iai Geri | 2 3 6+D
+Benimaru Nikaido | DM: Raikou Ken | 2 3 6 2 3 6+C
+Benimaru Nikaido | DM: Gen'ei Hurricane | 2 1 4 2 1 4+D
+Benimaru Nikaido | SDM: Raikou Ken | 2 3 6 2 3 6+A+C
+Blue Mary | Spin Fall | 2 3 6+C
+Blue Mary | Vertical Arrow | 6 2 3+D
+Blue Mary | Straight Slicer | 4*60 6+D
+Blue Mary | M. Reverse Facelock | 2 1 4+B
+Blue Mary | M. Head Buster | 2 1 4+D
+Blue Mary | Real Counter | 2 1 4+C
+Blue Mary | DM: Splash Rose | 2 3 6 3 2 1 4+C
+Blue Mary | HSDM: Typhoon | 1 2 3 6 9 8 2+B+D
+Chang Koehan | Tekkyuu Funsai Geki | 4*60 6+C
+Chang Koehan | Tekkyuu Taiko Uchi | 4 1 2 3 6+D
+Chang Koehan | Haki Kyaku | 2 _ 2+D
+Chang Koehan | Dai Hakai Nage | 6 3 2 1 4 6+C
+Chang Koehan | DM: Tekkyuu Dai Bousou | 2 3 6 3 2 1 4+C
+Chang Koehan | DM: Tekkyuu Dai Bokusatsu | 2 3 6 2 3 6+D
+Chang Koehan | DM: Tekkyuu Dai Assatsu | 2 3 6 2 3 6+C
+Chang Koehan | SDM: Tekkyuu Dai Assatsu | 2 3 6 2 3 6+A+C
+Choi Bounge | Tatsumaki Shippuu Zan | 2*60 8+C
+Choi Bounge | Kaiten Hien Zan | 2 1 4+C
+Choi Bounge | Hishou Kyaku (in the air) | 2 3 6+D
+Choi Bounge | Hien Zan | 6 2 3+D
+Choi Bounge | Senpuu Hien Zashi | 4*60 6+C
+Choi Bounge | Hishou Kurretsu Zan | 2*60 8+D
+Choi Bounge | DM: Shin! Chouzetsu Tatsumaki Shinkuu Zan | 6 3 2 1 4 6 3 2 1 4+C
+Choi Bounge | DM: Hou'ou Kyaku | 2 3 6 3 2 1 4+D
+Choi Bounge | SDM: Hou'ou Kyaku | 2 3 6 3 2 1 4+B+D
+Choi Bounge | HSDM: Shakushi (in the air) | 4 1 2 3 6 4 1 2 3 6+A+C
+Chris | Slide Touch | 2 3 6+C
+Chris | Scramble Dash | 2 3 6+D
+Chris | Direction Change | 6 2 3+C
+Chris | Hunting Air | 6 2 3+D
+Chris | Glider Stamp (in the air) | 2 3 6+D
+Chris | Shooting Dancer: Thrust | 6 3 2 1 4+C
+Chris | Shooting Dancer: Step | 6 3 2 1 4+D
+Chris | DM: Chain Slide Touch | 2 3 6 2 3 6+C
+Chris | DM: Twister Drive | 2 1 4 2 1 4+D
+Chris | SDM: Chain Slide Touch | 2 3 6 2 3 6+A+C
+Chris | SDM: Twister Drive | 2 1 4 2 1 4+B+D
+Chris | HSDM: Honoo no Sadame no Chris | 6 3 2 1 4 6 3 2 1 4+A+C
+Clark Still | Napalm Stretch | 6 2 3+C
+Clark Still | Frankensteiner | 6 2 3+D
+Clark Still | Super Argentine Backbreaker | 4 1 2 3 6+D
+Clark Still | Shining Wizard | 6 3 2 1 4+C
+Clark Still | Mount Tackle | 4 1 2 3 6+C
+Clark Still | DM: Running Three | 4 1 2 3 6 4 1 2 3 6+D
+Clark Still | DM: Ultra Argentine Backbreaker | 6 3 2 1 4 6 3 2 1 4+C
+Clark Still | SDM: Ultra Argentine Backbreaker | 6 3 2 1 4 6 3 2 1 4+A+C
+Clark Still | HSDM: Running Pirates | 4 1 2 3 6 4 1 2 3 6+B+D
+Goro Daimon | Jirai Shin | 6 2 3+A
+Goro Daimon | Jirai Shin (Fake) | 6 2 3+C
+Goro Daimon | Chou Oosotogari | 6 2 3+D
+Goro Daimon | Chou Ukemi | 2 1 4+D
+Goro Daimon | Nekko Gaeshi | 2 3 6+D
+Goro Daimon | Kumo Tsukami Nage | 4 1 2 3 6+A
+Goro Daimon | Kikikabu Gaeshi | 4 1 2 3 6+C
+Goro Daimon | Tenchi Gaeshi | 6 3 2 1 4 6+C
+Goro Daimon | Ura Nage | 6 3 2 1 4 6+D
+Goro Daimon | DM: Jigoku Gokuraku Otoshi | 6 3 2 1 4 6 3 2 1 4+C
+Goro Daimon | SDM: Jigoku Gokuraku Otoshi | 6 3 2 1 4 6 3 2 1 4+A+C
+Iori Yagami | 108 Shiki: Yami Barai | 2 3 6+C
+Iori Yagami | 212 Shiki: Kototsuki In | 6 3 2 1 4+D
+Iori Yagami | 100 Shiki: Oniyaki | 6 2 3+C
+Iori Yagami | Kuzukaze | 6 3 2 1 4 6+C
+Iori Yagami | DM: Kin 1211 Shiki: Ya Otome | 2 3 6 3 2 1 4+C
+Iori Yagami | SDM: Kin 1211 Shiki: Ya Otome | 2 3 6 3 2 1 4+A+C
+Iori Yagami | HSDM: Ura 1219 Shiki: En'ou | 2 1 4 1 2 3 6 4 6+A+C
+Joe Higashi | Hurricane Upper | 4 1 2 3 6+C
+Joe Higashi | Slash Kick | 4 1 2 3 6+D
+Joe Higashi | Tiger Kick | 6 2 3+D
+Joe Higashi | Ougon no Kakato | 2 1 4+D
+Joe Higashi | DM: Ougon no Tiger Kick | 2 3 6 9+D
+Joe Higashi | DM: Bakuretsu  Hurricane Tiger Kakato | 2 3 6 3 2 1 4+C
+Joe Higashi | DM: Screw Upper | 2 3 6 2 3 6+C
+Joe Higashi | SDM: Screw Upper | 2 3 6 2 3 6+A+C
+Joe Higashi | HSDM: Cross Gigantes | 2 3 6 2 3 6+B+D
+K9999 | Crouch D | 2+D
+K9999 | Acchihe itteroo! | 2 3 6+C
+K9999 | Kudakeroo! | 2 1 4+D
+K9999 | Wareroo! | 6 2 3+C
+K9999 | DM: Tsuki...(Moon) | 1 6 3 2 1 4 3+C
+K9999 | DM: Temee mo oucchimae!! | 1 6 3 2 1 4 3+D
+K9999 | SDM: Chikara ga...katte ni...uwaaaa!! | 2 6 3+A+B+C+D
+Kim Kaphwan | Haki Kyaku | 2 _ 2+D
+Kim Kaphwan | Hishou Kyaku (in the air) | 2 3 6+D
+Kim Kaphwan | Hien Zan | 2*60 8+D
+Kim Kaphwan | DM: Hou'ou Hiten Kyaku | 2 3 6 2 3 6+D
+Kim Kaphwan | DM: Hou'ou Kyaku | 2 1 4 1 2 3 6+D
+Kim Kaphwan | SDM: Kuuchuu Hou'ou Kyaku (in the air) | 2 1 4 1 2 3 6+B+D
+Kim Kaphwan | HSDM: Zero Kyori Hou'ou Kyaku | 2 1 4 1 2 3 6+A+B+C+D
+Kula Diamond | Diamond Breath | 2 3 6+C
+Kula Diamond | Crow Bites | 6 2 3+C
+Kula Diamond | Counter Shell | 2 1 4+C
+Kula Diamond | Ray Spin | 2 1 4+D
+Kula Diamond | DM: Diamond Edge | 2 3 6 2 3 6+C
+Kula Diamond | SDM: Freeze Execution | 6 3 2 1 4 6 3 2 1 4+A+C
+Kula Diamond | SDM: La * Cachora (in the air) | 2 3 6 2 3 6+B+D
+Kusanagi | 108 Shiki: Yami Barai | 2 3 6+C
+Kusanagi | 100 Shiki: Oniyaki | 6 2 3+C
+Kusanagi | 101 Shiki: Oboroguruma | 4 2 1+D
+Kusanagi | 75 Shiki Kai | 2 3 6+D+D
+Kusanagi | 212 Shiki: Kototsuki You | 6 3 2 1 4+D
+Kusanagi | 910 Shiki: Nue Tsumi | 2 1 4+C
+Kusanagi | DM: Ura 108 Shiki: Orochi Nagi | 2 1 4 1 2 3 6+C
+Kusanagi | SDM: Ura 108 Shiki: Orochi Nagi | 2 1 4 1 2 3 6+C
+Kusanagi | SDM: Saishuu Kessen Ougi Reishiki | 2 3 6 2 3 6+A+C
+Leona Heidern | Vortex Launcher | 4*60 6+C
+Leona Heidern | Ground Saber | 4*60 6+D
+Leona Heidern | Moon Slasher | 2*60 8+C
+Leona Heidern | X Calibur (in the air) | 2 1 4+C
+Leona Heidern | Earring Bakudan 1 | 2 1 4+D
+Leona Heidern | Earring Bakudan 2: Heart Attack | 4 2 1+D
+Leona Heidern | Kakusei | 8 2 8 2 8 2+B+D
+Leona Heidern | DM: V-Slasher (in the air) | 2 3 6 3 2 1 4+C
+Leona Heidern | DM: Rebel Spark | 2 1 4 1 2 3 6+D
+Leona Heidern | SDM: V-Slasher (in the air) | 2 3 6 3 2 1 4+A+C
+Leona Heidern | HSDM: Rebel Spark | 2 1 4 1 2 3 6+B+D
+Mai Shiranui | Kachou Sen | 2 3 6+C
+Mai Shiranui | Hissatsu Shinobi Bachi | 4 1 2 3 6+D
+Mai Shiranui | Ryuu Enbu | 2 1 4+C
+Mai Shiranui | Sayo Chidori | 2 1 4+D
+Mai Shiranui | Musasabi no Mai (Kuuchuu) (in the air) | 2 1 4+C
+Mai Shiranui | Musasabi no Mai (Chijou) | 2*60 8+C
+Mai Shiranui | DM: Hana Arashi | 2 3 6 2 3 6+C
+Mai Shiranui | DM: Chou Hissatsu Shinobi Bachi | 2 1 4 1 2 3 6+D
+Mai Shiranui | SDM: Cou Hissatsu Shinobi Bachi | 2 1 4 1 2 3 6+B+D
+Mature | Despair | 2 3 6+C
+Mature | Decide | 4 1 2 3 6+D
+Mature | Metal Massacre | 2 1 4+D
+Mature | Sacrilege | 6 2 3+C
+Mature | Ebony Tears | 2 3 6 3 2 1 4+C
+Mature | DM: Nocturnal Rites | 2 3 6 2 3 6+C
+Mature | DM: Heaven's Gate | 2 1 4 1 2 3 6+D
+Mature | SDM: Nocturnal Rites | 2 3 6 2 3 6+C
+Mature | SDM: Heaven's Gate | 2 1 4 1 2 3 6+D
+Maxima | M4 Kata: Vapour Cannon | 2 1 4+C
+Maxima | M11 Kata: Dangerous Arch | 4 1 2 3 6+D
+Maxima | M19 Kata:  Blitz Cannon | 6 2 3+D
+Maxima | Maxima Scramble | 2 3 6+C
+Maxima | System 3: Maxima Lift | 6 3 2 1 4+D
+Maxima | DM: M2 Kata: Maxima Beam | 6 4 1 2 3 6+C
+Maxima | DM: Bunker Buster | 2 3 6 3 2 1 4+C
+Maxima | DM: Maxima Revenger | 6 3 2 1 4 6 3 2 1 4+D
+Maxima | SDM: Maxima Revenger | 6 3 2 1 4 6 3 2 1 4+B+D
+Orochi Chris | Taiyou wo Iru Honoo | 2 3 6+C
+Orochi Chris | Kagami wo Hofuru Honoo | 2 1 4+C
+Orochi Chris | Tsuki wo Tsumu Honoo | 6 2 3+C
+Orochi Chris | Shishi wo Kamu Honoo | 4 1 2 3 6+D
+Orochi Chris | DM: Ankoku Orochi Nagi | 2 1 4 1 2 3 6+C
+Orochi Chris | SDM: Ankoku Orochi Nagi | 2 1 4 1 2 3 6+A+C
+Orochi Yashiro | Kujiku Daichi | 2 1 4+C
+Orochi Yashiro | Odoru Daichi | 4 1 2 3 6+D
+Orochi Yashiro | Niragu Daichi | 4 1 2 3 6+C
+Orochi Yashiro | Musebu Daichi | 6 3 2 1 4 6+C
+Orochi Yashiro | DM: Araburu Daichi | 2 3 6 2 3 6+D
+Orochi Yashiro | DM: Ankoku Jigoku Gokuraku Otoshi | 6 3 2 1 4 6 3 2 1 4+C
+Orochi Yashiro | SDM: Araburu Daichi | 2 3 6 2 3 6+B+D
+Orochi Yashiro | SDM: Ankoku Jigoku Gokuraku Otoshi | 6 3 2 1 4 6 3 2 1 4+A+C
+Ralf Jones | DM: Umanori Vulcan Punch | 2 1 4 1 2 3 6+D
+Ralf Jones | DM: Baribari Vulcan Punch | 2 3 6 3 2 1 4+C
+Ralf Jones | SDM: Baribari Vulcan Punch | 2 3 6 3 2 1 4+A+C
+Ralf Jones | SDM: Umanori Galactica Phantom | 2 1 4 1 2 3 6 2 3 6+A+D
+Robert Garcia | Ryuugeki Ken | 2 3 6+C
+Robert Garcia | Ryuuga | 6 2 3+C
+Robert Garcia | Gen'ei Kyaku | 6 4 6+D
+Robert Garcia | Kyokugen-ryuu Renbu Kyaku | 4 1 2 3 6+D
+Robert Garcia | Hien Ryuujin Kyaku (in the air) | 2 1 4+D
+Robert Garcia | DM: Haou Shoukou Ken | 6 4 1 2 3 6+C
+Robert Garcia | DM: Haiga Ryuu | 2 3 6 2 3 6+D
+Robert Garcia | DM: Ryuuko Ranbu | 2 3 6 3 2 1 4+C
+Robert Garcia | SDM: Ryuuko Ranbu | 2 3 6 3 2 1 4+A+C
+Robert Garcia | HSDM: Zetsu!! Ryuuko Ranbu | 2 3 6 3 2 1 4+B+D
+Ryo Sakazaki | Ko'ou Ken | 2 3 6+C
+Ryo Sakazaki | Mouko Rajin Setsu | 2 3 6+D
+Ryo Sakazaki | Zanretsu Ken | 6 4 6+C
+Ryo Sakazaki | Kohou | 6 2 3+C
+Ryo Sakazaki | Hien Shippuu Kyaku | 6 3 2 1 4+D
+Ryo Sakazaki | DM: Haou Shoukou Ken | 6 4 1 2 3 6+C
+Ryo Sakazaki | DM: Ryuuko Ranbu | 2 3 6 3 2 1 4+C
+Ryo Sakazaki | HSDM: Tenchi Haou Ken | 2 3 6 2 3 6+A+C
+Ryuji Yamazaki | Hebi Tsukai (Joudan) | 2 1 4+A
+Ryuji Yamazaki | Hebi Tsukai (Chuudan) | 2 1 4+B
+Ryuji Yamazaki | Hebi Tsukai (Gedan) | 2 1 4+C
+Ryuji Yamazaki | Sabaki no Aikuchi | 6 2 3+C
+Ryuji Yamazaki | Yakiire | 6 2 3+B
+Ryuji Yamazaki | Sunakake | 6 2 3+D
+Ryuji Yamazaki | Bai Gaeshi (Kyuushuu/Dan Hassha) | 2 3 6+C
+Ryuji Yamazaki | Sadomazo | 4 1 2 3 6+D
+Ryuji Yamazaki | Bakudan Pachiki | 6 3 2 1 4 6+C
+Ryuji Yamazaki | DM: Akumu...soshite kyouki | 2 3 6+A+B+C+D
+Ryuji Yamazaki | DM: Guillotine | 2 3 6 2 3 6+C
+Ryuji Yamazaki | DM: Drill | 6 3 2 1 4 6 3 2 1 4+C
+Ryuji Yamazaki | SDM: Guillotine | 2 3 6 2 3 6+A+C
+Ryuji Yamazaki | SDM: Drill | 6 3 2 1 4 6 3 2 1 4+A+C
+Seth | Sho-Yoh | 2 3 6+C
+Seth | Doh-Kuzushi | 4 1 2 3 6+D
+Seth | Ashi-Tori | 2 _ 2+C
+Seth | An-Getsu (in the air) | 2 3 6+B
+Seth | Raku-Getsu (in the air) | 2 3 6+D
+Seth | Kyu-Getsu | 6 3 2 1 4+D
+Seth | DM: "Morote"-Sho-Yoh | 2 3 6 2 3 6+C
+Seth | DM: Irimi-Nadazuki | 2 3 6 3 2 1 4+D
+Seth | SDM: Doh-Tori-Shichimonsatsu | 2 3 6 3 2 1 4+A+C
+Seth | HSDM: Sigure-Rangiku | 6 4 1 2 3 6+A+C
+Shermie | Shermie Spiral | 4 1 2 3 6+C
+Shermie | Diamond Bust | 4 1 2 3 6+D
+Shermie | Shermie Whip | 2 1 4+C
+Shermie | Axle Spin Kick | 2 1 4+D
+Shermie | F-Captured | 6 3 2 1 4 6+C
+Shermie | Shermie Clutch | 6 2 3+D
+Shermie | DM: Shermie Flash | 6 3 2 1 4 6 3 2 1 4+C
+Shermie | DM: Shermie Carnival | 4 1 2 3 6 4 1 2 3 6+C
+Shermie | SDM: Shermie Flash | 6 3 2 1 4 6 3 2 1 4+A+C
+Shermie | SDM: Shermie Carnival | 4 1 2 3 6 4 1 2 3 6+A+C
+Shermie | HSDM: Inazuma Leg Lariat | 2 3 6 2 3 6+B+D
+Takuma Sakazaki | Ko'ou Ken | 2 3 6+C
+Takuma Sakazaki | Hien Shippuu Kyaku | 6 3 2 1 4+D
+Takuma Sakazaki | Mouko Burai Gan | 2 1 4+C
+Takuma Sakazaki | Haou Shikou Ken | 6 4 1 2 3 6+C
+Takuma Sakazaki | DM: Shin Kishin Geki | 2 3 6 2 3 6+C
+Takuma Sakazaki | DM: Ryuuko Ranbu | 2 3 6 3 2 1 4+C
+Takuma Sakazaki | SDM: Ryuuko Ranbu | 2 3 6 3 2 1 4+A+C
+Takuma Sakazaki | HSDM: Kosatsu Jin | 4 6 2 3+A+C
+Terry Bogard | Power Wave | 2 3 6+A
+Terry Bogard | Round Wave | 2 3 6+C
+Terry Bogard | Burn Knuckle | 2 1 4+C
+Terry Bogard | Crack Shoot | 2 1 4+D
+Terry Bogard | Power Dunk | 6 2 3+D
+Terry Bogard | Rising Tackle | 2*60 8+C
+Terry Bogard | DM: High Angle Geyser | 2 3 6 2 3 6+D
+Terry Bogard | DM: Power Geyser | 2 1 4 1 2 3 6+C
+Terry Bogard | SDM: Power Geyser | 2 1 4 1 2 3 6+A+C
+Terry Bogard | HSDM: Rising Force | 2 3 6 2 3 6+A+C
+Vice | Outrage | 2 1 4+D
+Vice | Ravenous (in the air) | 2 1 4+D
+Vice | Decide | 4 1 2 3 6+D
+Vice | Mayhem | 2 1 4+C
+Vice | Blackend | 4 1 2 3 6+C
+Vice | Gorefest | 6 3 2 1 4 6+C
+Vice | DM: Withering Surface | 2 3 6 2 3 6+C
+Vice | DM: Negative Gain | 6 3 2 1 4 6 3 2 1 4+D
+Vice | SDM: Withering Surface | 2 3 6 2 3 6+C
+Vice | SDM: Negative Gain | 6 3 2 1 4 6 3 2 1 4+D
+Vice | HSDM: Overkill (in the air) | 1 2 3 6 9 8 2+A+C
+Whip | Strings Shot Type A "Code: Yuuetsu" | 6 3 2 1 4+A
+Whip | Strings Shot Type B "Code: Chikara" | 6 3 2 1 4+B
+Whip | Strings Shot Type C "Code: Shouri" | 6 3 2 1 4+C
+Whip | Boomerang Shot "Code: SC" | 4 1 2 3 6+C
+Whip | Hook Shot "Code: Kaze" (in the air) | 2 1 4+C
+Yashiro Nanakase | Upper Duel | 6 2 3+C
+Yashiro Nanakase | Sledgehammer | 2 1 4+D
+Yashiro Nanakase | Jet Counter | 4 1 2 3 6+C
+Yashiro Nanakase | DM: Final Impact | 2 3 6 2 3 6+C
+Yashiro Nanakase | SDM: Final Impact | 2 3 6 2 3 6+A+C
+Yashiro Nanakase | HSDM: [ERROR] CODE 2002 | 2 1 4 1 2 3 6+B+D
+Goro Daimon | DM: Arashi no Yama | 4 1 2 3 6 4 1 2 3 6+D _ 4 1 2 3 6+D _ 6 2 3+D
+Iori Yagami | 127 Shiki: Aoi Hana | 2 1 4+C _ 2 1 4+C _ 2 1 4+C
+Joe Higashi | Bakuretsu Ken | C _ C _ C _ C _ C
+Kim Kaphwan | Sanren Geki | 2 1 4+C _ 2 1 4+C _ 2 1 4+C
+Mature | Death Row | 2 1 4+C _ 2 1 4+C _ 2 1 4+C
+Whip | Assassin Strike "Code: BB" | 6 2 3+C
