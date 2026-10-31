@@ -2413,4 +2413,5 @@
     <string name="library_scrape_all_artwork">Descargar todas las carátulas</string>
     <string name="library_every_game_has_box_art">Todos los juegos ya tienen carátula.</string>
     <string name="settings_scrape_all_artwork_about">Carátulas para todos los juegos que no tienen, de todos los sistemas a la vez: primero las gratuitas de libretro y luego ScreenScraper para el resto.</string>
+    <string name="guides_find_walkthrough">Buscar una guía</string>
 </resources>

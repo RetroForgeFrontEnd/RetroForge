@@ -2540,4 +2540,5 @@
     <string name="library_scrape_all_artwork">Scrape all artwork</string>
     <string name="library_every_game_has_box_art">Every game already has box art.</string>
     <string name="settings_scrape_all_artwork_about">Box art for every game in your library that has none, all systems at once: libretro’s free covers first, then ScreenScraper for the rest.</string>
+    <string name="guides_find_walkthrough">Find a walkthrough</string>
 </resources>

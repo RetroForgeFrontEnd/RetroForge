@@ -2412,4 +2412,5 @@
     <string name="library_scrape_all_artwork">Scarica tutte le copertine</string>
     <string name="library_every_game_has_box_art">Ogni gioco ha già la copertina.</string>
     <string name="settings_scrape_all_artwork_about">Copertine per ogni gioco che non ne ha, tutti i sistemi insieme: prima quelle gratuite di libretro, poi ScreenScraper per il resto.</string>
+    <string name="guides_find_walkthrough">Cerca una guida</string>
 </resources>

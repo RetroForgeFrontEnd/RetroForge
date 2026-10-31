@@ -2413,4 +2413,5 @@
     <string name="library_scrape_all_artwork">Récupérer toutes les jaquettes</string>
     <string name="library_every_game_has_box_art">Chaque jeu a déjà sa jaquette.</string>
     <string name="settings_scrape_all_artwork_about">Une jaquette pour chaque jeu qui n’en a pas, tous les systèmes d’un coup : d’abord les jaquettes gratuites de libretro, puis ScreenScraper pour le reste.</string>
+    <string name="guides_find_walkthrough">Chercher une soluce</string>
 </resources>

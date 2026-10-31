@@ -181,6 +181,12 @@ fun GameNotesCard(game: com.retroforge.core.library.GameEntity, gameUri: Uri?) {
     } else {
         CardBody(stringResource(R.string.guides_hint))
     }
+    // Walkthroughs are their writers' own work, so they're searched for and open on the web, never copied in.
+    val context = LocalContext.current
+    FocusChip(stringResource(R.string.guides_find_walkthrough), onClick = {
+        val search = "https://gamefaqs.gamespot.com/search?game=" + java.net.URLEncoder.encode(game.title, "UTF-8")
+        runCatching { context.startActivity(android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(search))) }
+    })
     open?.let { GuideViewer(it) { open = null } }
 }
 

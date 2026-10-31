@@ -2412,4 +2412,5 @@
     <string name="library_scrape_all_artwork">Buscar todas as capas</string>
     <string name="library_every_game_has_box_art">Todos os jogos já têm capa.</string>
     <string name="settings_scrape_all_artwork_about">Capas para todos os jogos que não têm, todos os sistemas de uma vez: primeiro as capas grátis do libretro, depois o ScreenScraper para o resto.</string>
+    <string name="guides_find_walkthrough">Procurar um guia</string>
 </resources>
