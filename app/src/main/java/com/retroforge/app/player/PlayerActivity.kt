@@ -145,7 +145,7 @@ class PlayerActivity : ComponentActivity() {
     private var bezelBusy by mutableStateOf(false)
     private var bezelStatus by mutableStateOf<String?>(null)
     private val bezels by lazy { Bezels(File(filesDir, "bezels"), "RetroForge/${com.retroforge.app.BuildConfig.VERSION_NAME}") }
-    private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS, NETPLAY, ACHIEVEMENTS, STATES }
+    private enum class MenuPage { MAIN, PICTURE, SOUND_CONTROLS, EMULATOR, OPTIONS, EMULATORS, CHEATS, CONTROLS, NETPLAY, LINK, ACHIEVEMENTS, STATES, NOTES }
 
     // Controller remapping: "keyCode:button,keyCode:button", kept for the system, for one controller on it, or for one game.
     private var remap by mutableStateOf<Map<Int, Int>>(emptyMap())
@@ -359,6 +359,53 @@ class PlayerActivity : ComponentActivity() {
     private var netInternet by mutableStateOf<String?>(null)
     private val netPlaying get() = netState in 3..4
     private val netGuest get() = netPlaying && NativePlayer.netplayPlayer() == 1
+
+    /** The Game Boy link cable ([LinkCable]): unplugged, hosting, or joined to [linkWith]. */
+    private var linkState by mutableStateOf(LinkState.OFF)
+    private var linkWith by mutableStateOf("")
+    private var linkHosts by mutableStateOf<List<LinkHost>?>(null)
+    private var linkSearching by mutableStateOf(false)
+    private var linkAddress by mutableStateOf("")
+    private var linkAnnouncer: LinkCable.Announcer? = null
+
+    private enum class LinkState { OFF, HOSTING, JOINED }
+
+    private fun setLinkOptions(options: Map<String, String>?): Boolean {
+        if (options == null) { notice = str(R.string.link_cable_not_in_this_core); return false }
+        options.forEach { (k, v) -> NativePlayer.setOption(k, v) }
+        return true
+    }
+
+    private fun hostLink() {
+        if (!setLinkOptions(LinkCable.hostOptions(NativePlayer.options()))) return
+        linkAnnouncer?.stop()
+        linkAnnouncer = LinkCable.Announcer(this, intent.getStringExtra(EXTRA_TITLE).orEmpty(), Netplay.name(this))
+        linkState = LinkState.HOSTING
+        linkWith = ""
+    }
+
+    private fun joinLink(address: String, who: String) {
+        if (LinkCable.ipDigits(address) == null) { notice = str(R.string.link_cable_bad_address, address); return }
+        if (!setLinkOptions(LinkCable.joinOptions(NativePlayer.options(), address))) return
+        linkState = LinkState.JOINED
+        linkWith = who
+        closeMenu()
+    }
+
+    private fun unplugLink() {
+        linkAnnouncer?.stop()
+        linkAnnouncer = null
+        LinkCable.unplugOptions(NativePlayer.options())?.forEach { (k, v) -> NativePlayer.setOption(k, v) }
+        linkState = LinkState.OFF
+    }
+
+    private fun findLinkHosts() {
+        linkSearching = true
+        worker.execute {
+            val found = LinkCable.find(this)
+            runOnUiThread { linkHosts = found; linkSearching = false }
+        }
+    }
 
     private fun hostNetplay() {
         val error = NativePlayer.netplayHost(Netplay.GAME_PORT, netGameId, Netplay.delay(this))
@@ -1251,6 +1298,7 @@ class PlayerActivity : ComponentActivity() {
         super.onDestroy()
         raSession?.stop()
         announcer?.stop()
+        linkAnnouncer?.stop()
         closeRouterPort()
         if (isFinishing) {
             worker.shutdown()
@@ -1854,11 +1902,21 @@ class PlayerActivity : ComponentActivity() {
                             }
                         }
                         // The rest in three groups, so the menu stays short.
+                        MenuButton(onClick = { menuPage = MenuPage.NOTES }, modifier = wide) { Text(stringResource(R.string.player_notes)) }
                         MenuButton(onClick = { menuPage = MenuPage.PICTURE }, modifier = wide) { Text(stringResource(R.string.player_picture)) }
                         MenuButton(onClick = { menuPage = MenuPage.SOUND_CONTROLS }, modifier = wide) { Text(stringResource(R.string.player_sound_and_controls)) }
-                        MenuButton(onClick = { menuPage = MenuPage.EMULATOR }, modifier = wide) { Text(stringResource(R.string.player_emulator)) }
+                        // Kiosk mode: the emulator's settings, cheats and choice need the PIN.
+                        val kioskGuard = com.retroforge.app.ui.rememberKioskGuard()
+                        MenuButton(onClick = { kioskGuard { menuPage = MenuPage.EMULATOR } }, modifier = wide) { Text(stringResource(R.string.player_emulator)) }
                         if (Netplay.supports(system)) MenuButton(onClick = { menuPage = MenuPage.NETPLAY; if (netState == 0 && netHosts == null) findNetplayHosts() }, modifier = wide) {
                             Text(if (netPlaying) stringResource(R.string.player_netplay_player, NativePlayer.netplayPlayer() + 1) else stringResource(R.string.player_netplay_2))
+                        }
+                        if (::coreId.isInitialized && LinkCable.supports(system, coreId)) MenuButton(onClick = { menuPage = MenuPage.LINK; if (linkState == LinkState.OFF && linkHosts == null) findLinkHosts() }, modifier = wide) {
+                            Text(when (linkState) {
+                                LinkState.OFF -> stringResource(R.string.link_cable_menu)
+                                LinkState.HOSTING -> stringResource(R.string.link_cable_menu_hosting)
+                                LinkState.JOINED -> stringResource(R.string.link_cable_menu_joined, linkWith)
+                            })
                         }
                         MenuButton(onClick = {
                             if (netGuest) { notice = str(R.string.player_during_netplay_only_player_1_can_2); return@MenuButton }
@@ -1923,6 +1981,46 @@ class PlayerActivity : ComponentActivity() {
                                 modifier = wide,
                             )
                             MenuButton(onClick = joinAddress, modifier = wide) { Text(stringResource(R.string.player_join_this_address)) }
+                        }
+                    }
+                    MenuPage.LINK -> {
+                        Text(stringResource(R.string.link_cable_title), color = Color.White, fontWeight = FontWeight.Bold)
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
+                        val grey = Color(0xFFAAAAB4)
+                        if (linkState != LinkState.OFF) {
+                            Text(
+                                if (linkState == LinkState.HOSTING) str(R.string.link_cable_hosting, Netplay.localAddresses().firstOrNull() ?: str(R.string.player_this_device_s_ip))
+                                else str(R.string.link_cable_joined, linkWith),
+                                color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center,
+                            )
+                            MenuButton(onClick = { unplugLink() }, modifier = wide) { Text(stringResource(R.string.link_cable_unplug)) }
+                        } else {
+                            Text(stringResource(R.string.link_cable_body), color = grey, fontSize = 13.sp, textAlign = TextAlign.Center)
+                            MenuButton(onClick = { hostLink() }, modifier = wide) { Text(stringResource(R.string.link_cable_host)) }
+                            when {
+                                linkSearching -> Text(stringResource(R.string.link_cable_looking), color = grey, fontSize = 13.sp)
+                                linkHosts?.isEmpty() == true -> Text(stringResource(R.string.link_cable_none), color = grey, fontSize = 13.sp)
+                            }
+                            linkHosts.orEmpty().forEach { host ->
+                                MenuButton(onClick = { joinLink(host.address, host.player) }, modifier = wide) {
+                                    Text(stringResource(R.string.link_cable_join, host.player, host.title))
+                                }
+                            }
+                            MenuButton(onClick = { findLinkHosts() }, modifier = wide) { Text(stringResource(R.string.player_look_again)) }
+                            val joinTyped = { if (linkAddress.isNotBlank()) joinLink(linkAddress, linkAddress) }
+                            androidx.compose.material3.OutlinedTextField(
+                                value = linkAddress,
+                                onValueChange = { linkAddress = it.trim() },
+                                singleLine = true,
+                                label = { Text(stringResource(R.string.link_cable_address)) },
+                                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                                    keyboardType = androidx.compose.ui.text.input.KeyboardType.Uri,
+                                    imeAction = androidx.compose.ui.text.input.ImeAction.Go,
+                                ),
+                                keyboardActions = androidx.compose.foundation.text.KeyboardActions(onGo = { joinTyped() }),
+                                modifier = wide,
+                            )
+                            MenuButton(onClick = joinTyped, modifier = wide) { Text(stringResource(R.string.player_join_this_address)) }
                         }
                     }
                     MenuPage.PICTURE -> {
@@ -1995,6 +2093,12 @@ class PlayerActivity : ComponentActivity() {
                     }
                     MenuPage.ACHIEVEMENTS -> AchievementsPage(wide, first)
                     MenuPage.STATES -> StatesPage(wide, first)
+                    MenuPage.NOTES -> {
+                        MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
+                        com.retroforge.app.ui.library.NotesMenuPage(system, intent.getStringExtra(EXTRA_FILE_NAME).orEmpty(), intent.getStringExtra(EXTRA_URI)?.let(Uri::parse)) { label, onClick ->
+                            MenuButton(onClick = onClick, modifier = wide) { Text(label) }
+                        }
+                    }
                     MenuPage.CHEATS -> {
                         Text(stringResource(R.string.player_cheats), color = Color.White, fontWeight = FontWeight.Bold)
                         Text(

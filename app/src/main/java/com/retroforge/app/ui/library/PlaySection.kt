@@ -57,6 +57,7 @@ import java.util.Date
 
 @Composable
 fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?) {
+    val kioskGuard = com.retroforge.app.ui.rememberKioskGuard()
     val context = LocalContext.current
     // Re-check after returning from RetroArch or the store, in case RetroArch was just installed.
     var resumes by remember { mutableIntStateOf(0) }
@@ -123,7 +124,7 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
             }
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 FocusChip(stringResource(R.string.play_open_retroarch), onClick = { viewModel.openRetroArch(plan) })
-                if (builtIn != null && !retroArchChosen) FocusChip(stringResource(R.string.play_use_retroarch_by_default), onClick = { viewModel.setEmulatorChoice(game.system, RETROARCH_CHOICE) })
+                if (builtIn != null && !retroArchChosen) FocusChip(stringResource(R.string.play_use_retroarch_by_default), onClick = { kioskGuard { viewModel.setEmulatorChoice(game.system, RETROARCH_CHOICE) } })
             }
         }
         // With the built-in player (or a chosen emulator app) there, RetroArch is optional: no "can't play" card.
@@ -146,7 +147,7 @@ fun PlaySection(viewModel: LibraryViewModel, game: GameEntity, root: RootEntity?
     }
     if (builtIn != null && root != null && !builtInMain) {
         BuiltInCard(viewModel, game, root, builtIn, main = false) { problem = it }
-        if (retroArchChosen || chosen != null) FocusChip(stringResource(R.string.play_use_the_built_in_player_by), onClick = { viewModel.setEmulatorChoice(game.system, null) })
+        if (retroArchChosen || chosen != null) FocusChip(stringResource(R.string.play_use_the_built_in_player_by), onClick = { kioskGuard { viewModel.setEmulatorChoice(game.system, null) } })
     }
     if (standalone.isNotEmpty()) StandaloneSection(viewModel, game, root, standalone, choices[game.system], resumes) { problem = it }
 
@@ -315,6 +316,7 @@ private fun StandaloneSection(
     resumes: Int,
     onProblem: (LaunchProblem?) -> Unit,
 ) {
+    val kioskGuard = com.retroforge.app.ui.rememberKioskGuard()
     val context = LocalContext.current
     val multiFile = game.fileName.substringAfterLast('.').lowercase() in setOf("cue", "m3u", "gdi", "ccd", "toc")
     FocusCard(modifier = Modifier.fillMaxWidth()) {
@@ -328,8 +330,8 @@ private fun StandaloneSection(
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (installed) {
                 FocusChip(stringResource(R.string.play_play_with, option.label), onClick = { viewModel.playStandalone(context, game, root, option, emulator, onProblem) })
-                if (choice == emulator.id) FocusChip(stringResource(R.string.play_stop_using_by_default), onClick = { viewModel.setEmulatorChoice(game.system, null) })
-                else FocusChip(stringResource(R.string.play_use_by_default), onClick = { viewModel.setEmulatorChoice(game.system, emulator.id) })
+                if (choice == emulator.id) FocusChip(stringResource(R.string.play_stop_using_by_default), onClick = { kioskGuard { viewModel.setEmulatorChoice(game.system, null) } })
+                else FocusChip(stringResource(R.string.play_use_by_default), onClick = { kioskGuard { viewModel.setEmulatorChoice(game.system, emulator.id) } })
             } else {
                 FocusChip(stringResource(R.string.play_get_free, emulator.name), onClick = {
                     if (!viewModel.getEmulator(emulator)) onProblem(LaunchProblem.StartFailed(str(R.string.play_couldn_t_open, emulator.page)))

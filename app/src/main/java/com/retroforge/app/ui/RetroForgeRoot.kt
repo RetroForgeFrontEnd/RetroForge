@@ -136,6 +136,8 @@ private const val EDIT_ROUTE = "retro/game/{id}/edit"
 private const val MANAGER_ROUTE = "retro/manager"
 private const val FILES_ROUTE = "retro/files"
 private const val TOURNAMENT_ROUTE = "retro/tournaments"
+private const val BACKLOG_ROUTE = "retro/backlog"
+private const val PLAYTIME_ROUTE = "retro/playtime"
 private const val MANAGER_SORT_ROUTE = "retro/manager/sort"
 private const val PLAYLIST_ROUTE = "retro/playlist/{id}"
 private const val MANAGER_DELETE_ROUTE = "retro/manager/delete/{id}"
@@ -261,8 +263,12 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
                                 onOpenFiles = { nav.navigate(FILES_ROUTE) },
                                 onOpenTournaments = { nav.navigate(TOURNAMENT_ROUTE) },
                                 onOpenPlaylist = { nav.navigate("retro/playlist/$it") },
+                                onOpenBacklog = { nav.navigate(BACKLOG_ROUTE) },
+                                onOpenPlaytime = { nav.navigate(PLAYTIME_ROUTE) },
                             )
                         }
+                        composable(BACKLOG_ROUTE) { com.retroforge.app.ui.library.BacklogScreen(libraryViewModel, onOpenGame = { nav.navigate("retro/game/$it") }) }
+                        composable(PLAYTIME_ROUTE) { com.retroforge.app.ui.library.PlaytimeScreen(libraryViewModel, onOpenGame = { nav.navigate("retro/game/$it") }) }
                         composable(FOLDERS_ROUTE) { LibraryFoldersScreen(libraryViewModel) }
                         composable(TOURNAMENT_ROUTE) { com.retroforge.app.ui.tournament.TournamentScreen() }
                         composable(PLAYLIST_ROUTE) { entry ->
@@ -277,20 +283,20 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
                             val filesViewModel: com.retroforge.app.ui.files.FileBrowserViewModel = viewModel(factory = com.retroforge.app.ui.files.FileBrowserViewModel.factory(container.library, container.contentResolver, container.viewPrefs))
                             com.retroforge.app.ui.files.FileBrowserScreen(filesViewModel)
                         }
-                        composable(MANAGER_ROUTE) {
+                        composable(MANAGER_ROUTE) { KioskLocked(onLeave = { nav.popBackStack() }) {
                             val managerViewModel: RomManagerViewModel = viewModel(factory = RomManagerViewModel.factory(container.library, container.romManager))
                             RomManagerScreen(managerViewModel)
-                        }
-                        composable(MANAGER_SORT_ROUTE) {
+                        } }
+                        composable(MANAGER_SORT_ROUTE) { KioskLocked(onLeave = { nav.popBackStack() }) {
                             val managerViewModel: RomManagerViewModel = viewModel(factory = RomManagerViewModel.factory(container.library, container.romManager))
                             LaunchedEffect(Unit) { managerViewModel.tab.value = com.retroforge.app.ui.manager.ManagerTab.SORT }
                             RomManagerScreen(managerViewModel)
-                        }
-                        composable(MANAGER_DELETE_ROUTE) { entry ->
+                        } }
+                        composable(MANAGER_DELETE_ROUTE) { entry -> KioskLocked(onLeave = { nav.popBackStack() }) {
                             val managerViewModel: RomManagerViewModel = viewModel(factory = RomManagerViewModel.factory(container.library, container.romManager))
                             RomManagerScreen(managerViewModel, deleteGameId = entry.arguments?.getString("id")?.toLongOrNull() ?: -1)
-                        }
-                        composable(SETUP_ROUTE) {
+                        } }
+                        composable(SETUP_ROUTE) { KioskLocked(onLeave = { nav.popBackStack() }) {
                             val setupViewModel: SetupViewModel = viewModel(
                                 factory = SetupViewModel.factory(container.library, container.retroArch, container.settings, container.contentResolver, container.playerSystemDir, container.cores),
                             )
@@ -300,7 +306,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
                                 nav.popBackStack(SETUP_ROUTE, inclusive = true)
                                 nav.goTo(Section.RETRO)
                             })
-                        }
+                        } }
                         composable(SYSTEM_ROUTE) { entry ->
                             SystemGamesScreen(libraryViewModel, entry.arguments?.getString("system").orEmpty(), onOpenGame = { nav.navigate("retro/game/$it") })
                         }
@@ -359,18 +365,18 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
                             PcScreen(pcViewModel, container.droidDeck, container.library)
                         }
                         composable(Section.LINKS.route) { LinksScreen() }
-                        composable(Section.SETTINGS.route) {
+                        composable(Section.SETTINGS.route) { KioskLocked(onLeave = { nav.goTo(Section.HOME) }) {
                             val counts by container.library.systemCounts.collectAsStateWithLifecycle(initialValue = emptyList())
                             SettingsScreen(settingsViewModel,
                                 playerSystems = counts.map { it.system to container.library.systemName(it.system) }, coreChoices = container.coreChoices, viewPrefs = container.viewPrefs, onOpenSetup = { nav.navigate(SETUP_ROUTE) }, onOpenAbout = { nav.navigate(ABOUT_ROUTE) }, onOpenHotkeys = { nav.navigate(HOTKEYS_ROUTE) }, onOpenControllerTest = { nav.navigate(CONTROLLER_TEST_ROUTE) }, onOpenGpu = { nav.navigate(GPU_ROUTE) }, onOpenTexturePacks = { nav.navigate(TEXTURES_ROUTE) }, onOpenCheck = { nav.navigate(CHECK_ROUTE) }, library = container.library, onOpenApps = { nav.goTo(Section.APPS) }, onOpenTutorial = { nav.navigate(TUTORIAL_ROUTE) }, onOpenThemes = { nav.navigate(THEMES_ROUTE) },
                                 onOpenLicences = { nav.navigate(LICENCES_ROUTE) }, onOpenPrivacy = { nav.navigate(PRIVACY_ROUTE) },
                             )
-                        }
+                        } }
                         composable(ABOUT_ROUTE) { AboutScreen() }
-                        composable(HOTKEYS_ROUTE) { HotkeysScreen(settingsViewModel) }
+                        composable(HOTKEYS_ROUTE) { KioskLocked(onLeave = { nav.popBackStack() }) { HotkeysScreen(settingsViewModel) } }
                         composable(CONTROLLER_TEST_ROUTE) { com.retroforge.app.ui.settings.ControllerTestScreen() }
-                        composable(GPU_ROUTE) { GpuDriversScreen() }
-                        composable(TEXTURES_ROUTE) { com.retroforge.app.ui.settings.TexturePacksScreen() }
+                        composable(GPU_ROUTE) { KioskLocked(onLeave = { nav.popBackStack() }) { GpuDriversScreen() } }
+                        composable(TEXTURES_ROUTE) { KioskLocked(onLeave = { nav.popBackStack() }) { com.retroforge.app.ui.settings.TexturePacksScreen() } }
                         composable(CHECK_ROUTE) {
                             com.retroforge.app.ui.settings.SetupCheckScreen(container.library, container.cores, container.playerSystemDir, onOpenSetup = { nav.navigate(SETUP_ROUTE) })
                         }
@@ -382,10 +388,10 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
                         composable(TUTORIAL_ROUTE) { TutorialScreen() }
                         composable(LICENCES_ROUTE) { LicencesScreen() }
                         composable(PRIVACY_ROUTE) { PrivacyScreen() }
-                        composable(THEMES_ROUTE) {
+                        composable(THEMES_ROUTE) { KioskLocked(onLeave = { nav.popBackStack() }) {
                             val themesViewModel: ThemesViewModel = viewModel(factory = ThemesViewModel.factory(container.settings, container.themes, container.contentResolver))
                             ThemesScreen(themesViewModel)
-                        }
+                        } }
                     }
                    }
                     val override = closeOverride.value
@@ -423,8 +429,11 @@ private fun SectionNav(sections: List<Section>, current: Section, vertical: Bool
     LaunchedEffect(Unit) {
         if (inputMode == InputMode.Keyboard) runCatching { initialFocus.requestFocus() }
     }
+    // The selected tab's colour runs from the wordmark's orange on Home to its cyan on the last tab.
+    val forge = com.retroforge.core.ui.LocalForgeColors.current
     val tab: @Composable (Section, Modifier) -> Unit = { section, modifier ->
         SectionTab(
+            accent = androidx.compose.ui.graphics.lerp(forge.wordmarkRetro, forge.wordmarkForge, sections.indexOf(section) / (sections.size - 1).coerceAtLeast(1).toFloat()),
             label = section.label,
             icon = painterResource(section.icon),
             selected = section == current,

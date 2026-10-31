@@ -83,6 +83,7 @@ class LibraryRepository(
     /** Any game from the library (not a ROM hack), for "Surprise me". */
     suspend fun randomGameId(): Long? = dao.randomGameId()
     suspend fun gameIdFor(system: String, fileName: String): Long? = dao.gameIdFor(system, fileName)
+    suspend fun gameFor(system: String, fileName: String): GameEntity? = dao.gameFor(system, fileName)
 
     suspend fun duplicatesOf(game: GameEntity): List<GameEntity> = game.duplicateKey?.let { dao.duplicatesOf(it, game.id) }.orEmpty()
     suspend fun rootOf(game: GameEntity): RootEntity? = dao.root(game.rootId)
@@ -172,6 +173,20 @@ class LibraryRepository(
     suspend fun saveDetails(game: GameEntity, details: GameDetails) = dao.saveEdit(game, details, clock())
 
     suspend fun resetDetails(game: GameEntity) = dao.resetEdit(game)
+
+    val backlog: Flow<List<BacklogGame>> = dao.backlogGames()
+    val playedGames: Flow<List<PlayedGame>> = dao.playedGames()
+
+    fun backlogStatus(game: GameEntity): Flow<BacklogStatus?> =
+        dao.backlogStatus(game.rootId, game.relativePath).map { s -> BacklogStatus.entries.firstOrNull { it.name == s } }
+
+    /** Puts a game in the backlog with [status], or takes it out (null). */
+    fun setBacklog(game: GameEntity, status: BacklogStatus?) {
+        scope.launch {
+            if (status == null) dao.removeBacklog(game.rootId, game.relativePath)
+            else dao.upsertBacklog(BacklogEntity(game.rootId, game.relativePath, status.name, clock()))
+        }
+    }
 
     fun recordPlay(game: GameEntity, core: String) {
         scope.launch { dao.recordPlay(game.rootId, game.relativePath, core, clock()) }

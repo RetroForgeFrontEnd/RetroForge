@@ -54,6 +54,7 @@ import java.util.Date
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FileBrowserScreen(viewModel: FileBrowserViewModel) {
+    val kioskGuard = com.retroforge.app.ui.rememberKioskGuard()
     val places by viewModel.places.collectAsStateWithLifecycle()
     val place by viewModel.place.collectAsStateWithLifecycle()
     val path by viewModel.path.collectAsStateWithLifecycle()
@@ -148,9 +149,9 @@ fun FileBrowserScreen(viewModel: FileBrowserViewModel) {
                         FocusChip(stringResource(R.string.files_select_all), onClick = { viewModel.selectAll(shown) })
                         if (chosen.isNotEmpty()) {
                             FocusChip(stringResource(R.string.files_copy), onClick = { viewModel.copy(cut = false) })
-                            FocusChip(stringResource(R.string.files_cut), onClick = { viewModel.copy(cut = true) })
+                            FocusChip(stringResource(R.string.files_cut), onClick = { kioskGuard { viewModel.copy(cut = true) } })
                             if (chosen.size == 1) FocusChip(stringResource(R.string.files_rename), onClick = viewModel::askRename)
-                            FocusChip(stringResource(R.string.files_delete), onClick = viewModel::askDelete)
+                            FocusChip(stringResource(R.string.files_delete), onClick = { kioskGuard(viewModel::askDelete) })
                             if (chosen.any { !it.isFolder }) FocusChip(stringResource(R.string.files_share), onClick = { share(chosen) })
                             chosen.singleOrNull()?.takeIf { !it.isFolder }?.let { e -> FocusChip(stringResource(R.string.files_open_with), onClick = { open(e) }) }
                         }

@@ -57,6 +57,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+        awaitingResult = false
         // Dual-screen devices: the second display shows RetroForge's art, or the open game's box (Settings → Dual screen).
         val prefs = (application as RetroForgeApplication).container.viewPrefs
         com.retroforge.app.ui.SecondScreen.show(this, prefs.getBoolean(com.retroforge.app.ui.settings.DUAL_SCREEN_BROWSE, false))
@@ -65,6 +66,40 @@ class MainActivity : ComponentActivity() {
     override fun onPause() {
         super.onPause()
         com.retroforge.app.ui.SecondScreen.hide()
+    }
+
+    /** A picker (a file, a folder) is open for RetroForge: its answer comes back here, so that isn't leaving. */
+    private var awaitingResult = false
+
+    @Deprecated("Deprecated in ComponentActivity; still how ActivityResultLaunchers start their activity.")
+    override fun startActivityForResult(intent: android.content.Intent, requestCode: Int, options: Bundle?) {
+        awaitingResult = true
+        @Suppress("DEPRECATION")
+        super.startActivityForResult(intent, requestCode, options)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Saves swapped with the user's other devices on the Wi-Fi: served while RetroForge is on screen, and
+        // swapped with any that are open now (on opening, and on coming back from a game).
+        if (com.retroforge.app.player.PeerSync.isOn(this)) {
+            com.retroforge.app.player.PeerSync.start(this)
+            val app = applicationContext
+            kotlin.concurrent.thread(name = "peer-sync", isDaemon = true) {
+                val changed = com.retroforge.app.player.PeerSync.syncAll(app).mapNotNull { r ->
+                    r.report?.takeIf { it.pulled + it.pushed > 0 }?.let { getString(R.string.peer_sync_toast, r.name, it.pulled, it.pushed) }
+                }
+                if (changed.isNotEmpty()) runOnUiThread { android.widget.Toast.makeText(app, changed.joinToString("\n"), android.widget.Toast.LENGTH_LONG).show() }
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (!awaitingResult && !isChangingConfigurations) com.retroforge.app.player.PeerSync.stop()
+        // Kiosk mode: going Home, to another app or into a game locks it again; a picker opened from Settings
+        // doesn't, or the page would lock under it and the chosen file be lost.
+        if (!awaitingResult && !isChangingConfigurations) Kiosk.lock()
     }
 
     // Gamepad buttons the UI did not consume are translated here rather than relying on each
