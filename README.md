@@ -63,6 +63,7 @@ See [BUILD_AND_INSTALL](docs/BUILD_AND_INSTALL.md). In short: Android Studio, JD
 
 - [User guide](docs/USER_GUIDE.md) (the same guide as in the app)
 - [Emulator compatibility](docs/EMULATOR_COMPATIBILITY.md)
+- [Playing your PS4 games](docs/PS4_GAMES_GUIDE.md): dumping your own games and system files, as for shadPS4
 - [Project status](docs/PROJECT_STATUS.md)
 - [Third-party licences](docs/THIRD_PARTY_LICENCES.md): the emulators RetroForge downloads are their
   own projects under their own licences.

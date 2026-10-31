@@ -62,6 +62,28 @@ fun TexturePacksCard(playerDir: File) {
     )
 }
 
+/** Where the built-in player's emulator for a system looks for HD texture packs, one folder per game. */
+object TextureFolders {
+    fun of(playerDir: File, system: String): File? = when (system) {
+        "n64" -> File(playerDir, "system/Mupen64plus/hires_texture")
+        "psp" -> File(playerDir, "saves/psp/TEXTURES")
+        // Flycast: system/dc/textures/<game ID>; Dolphin: its user folder's Load/Textures/<game ID>.
+        "dreamcast" -> File(playerDir, "system/dc/textures")
+        "gamecube", "gc", "wii" -> File(playerDir, "system/dolphin-emu/User/Load/Textures")
+        else -> null
+    }
+}
+
+/** The game page's HD textures: a download when RetroForge knows a free pack for it (N64), and adding your own pack. */
+@Composable
+fun GameTexturePacks(system: String, title: String) {
+    val context = LocalContext.current
+    val playerDir = context.getExternalFilesDir(null) ?: context.filesDir
+    val dir = TextureFolders.of(playerDir, system) ?: return
+    if (system == "n64") DownloadPacks(File(playerDir, "system/Mupen64plus/cache"), only = title)
+    TexturePacks(stringResource(R.string.game_textures_title), stringResource(R.string.game_textures_body), dir)
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TexturePacks(title: String, body: String, packs: File) {
@@ -102,7 +124,11 @@ private fun TexturePacks(title: String, body: String, packs: File) {
 /** One-tap downloads of free N64 packs (GhostlyDark's "Reloaded" packs on GitHub). */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun DownloadPacks(cacheDir: File) {
+private fun DownloadPacks(cacheDir: File, only: String? = null) {
+    // On a game's page, only that game's pack (and nothing at all when there's none for it).
+    fun key(s: String) = s.lowercase().filter { it.isLetterOrDigit() }
+    val packs = if (only == null) TexturePackDownloads.packs else TexturePackDownloads.packs.filter { key(only).contains(key(it.game)) }
+    if (packs.isEmpty()) return
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var changes by remember { mutableIntStateOf(0) }
@@ -116,7 +142,7 @@ private fun DownloadPacks(cacheDir: File) {
         )
         CardBody(if (installed.isEmpty()) str(R.string.texture_packs_none_downloaded_yet) else "Downloaded: " + installed.joinToString { str(R.string.texture_packs_mb, it.name.removeSuffix(".hts").removeSuffix("_HIRESTEXTURES"), it.length() / 1_000_000) })
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            TexturePackDownloads.packs.forEach { pack ->
+            packs.forEach { pack ->
                 FocusChip(stringResource(R.string.pc_games_download, pack.game), enabled = !busy, onClick = {
                     busy = true
                     status = str(R.string.texture_packs_finding_s_latest_release, pack.game)

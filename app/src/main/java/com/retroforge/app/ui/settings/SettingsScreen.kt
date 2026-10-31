@@ -152,6 +152,8 @@ fun SettingsScreen(
 
                 EmulatorAppsCard()
 
+                FreeMemoryCard()
+
                 viewPrefs?.let { DualScreenCard(it) }
 
                 FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenGpu) {

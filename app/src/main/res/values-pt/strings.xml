@@ -1951,7 +1951,6 @@
     <string name="ra_signing_in">Entrando…</string>
     <string name="player_frame_skip">Pular quadros: %1$s</string>
     <string name="states_menu">Estados salvos ›</string>
-    <string name="states_menu_title">Estados salvos</string>
     <string name="states_title">Estados salvos</string>
     <string name="states_new">Novo estado</string>
     <string name="states_quick">Salvamento rápido</string>
@@ -2271,4 +2270,24 @@
     <string name="passport_need_details">Os géneros e criadores favoritos precisam dos dados dos jogos: obtenha-os com o scraper ou guarde ficheiros gamelist.xml junto aos jogos.</string>
     <string name="passport_years">Ano a ano</string>
     <string name="passport_finished_games">Terminados: %1$s</string>
+    <string name="game_textures_title">Pacote de texturas HD</string>
+    <string name="game_textures_body">Texturas em alta resolução para este jogo no leitor integrado. Um pacote é uma pasta com o ID do jogo (por exemplo ULUS10041 ou GALE01) ou, na N64, o seu nome interno; a página do pacote costuma dizê-lo. Escolhe essa pasta e o RetroForge copia-a para onde o emulador procura. É ligado automaticamente.</string>
+    <string name="free_memory_title">Libertar memória</string>
+    <string name="free_memory_body">Fecha outras apps inativas em segundo plano, para os jogos terem mais memória. O Android só o permite para apps que não estás a usar agora, e pode voltar a abrir algumas sozinho.</string>
+    <string name="free_memory_button">Fechar apps em segundo plano</string>
+    <string name="free_memory_done">Pedido a %1$d apps para fechar · %2$d MB libertados · %3$d MB livres agora</string>
+    <string name="dlc_title">DLC</string>
+    <string name="dlc_body_ps3">Conteúdos adicionais para este jogo, instalados no RetroForge PS3 Player. Escolhe o ficheiro .pkg do DLC e depois a sua licença .rap, se tiver (os DLC gratuitos muitas vezes não têm).</string>
+    <string name="dlc_add">Adicionar DLC (.pkg)</string>
+    <string name="dlc_choose_rap">Escolher a sua licença .rap</string>
+    <string name="dlc_no_rap">Sem ficheiro de licença</string>
+    <string name="dlc_pick_rap">Agora escolhe o ficheiro de licença .rap, ou toca em Sem ficheiro de licença.</string>
+    <string name="dlc_queued">À espera de instalar…</string>
+    <string name="dlc_installing">A instalar… %1$d%%</string>
+    <string name="dlc_done">Instalado para %1$s.</string>
+    <string name="dlc_licence_added">Licença adicionada.</string>
+    <string name="dlc_not_a_pkg">Esse ficheiro não é um pacote PS3.</string>
+    <string name="dlc_bad_rap">A licença .rap não corresponde: nada foi instalado.</string>
+    <string name="dlc_no_space">Sem espaço livre suficiente para o instalar.</string>
+    <string name="dlc_failed">Não foi possível instalar: %1$s</string>
 </resources>
