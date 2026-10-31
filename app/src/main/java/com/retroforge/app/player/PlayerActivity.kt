@@ -555,7 +555,7 @@ class PlayerActivity : ComponentActivity() {
 
         setContent {
             // RetroForge cyan for the menu's labels and ripples, as in the Switch and PS3 players; the focus ring stays orange.
-            MaterialTheme(colorScheme = darkColorScheme(primary = Color(0xFF3ED6FF))) {
+            MaterialTheme(colorScheme = darkColorScheme(primary = MenuCyan)) {
                 PlayerScreen(touchLayout(), extras.getString(EXTRA_TITLE).orEmpty())
             }
         }
@@ -1576,7 +1576,7 @@ class PlayerActivity : ComponentActivity() {
             if (netShowStatus) {
                 Text(
                     netStatus,
-                    color = if (netState == 4) Color(0xFF9FE3B0) else if (netState == 5) Color(0xFFFF9A8B) else Color(0xFFFFC56B),
+                    color = if (netState == 4) MenuCyan else MenuOrange,
                     fontSize = 13.sp,
                     modifier = Modifier.align(Alignment.TopEnd).padding(top = 36.dp, end = 12.dp)
                         .background(Color(0x99000000), RoundedCornerShape(6.dp)).padding(horizontal = 8.dp, vertical = 3.dp),
@@ -1586,7 +1586,7 @@ class PlayerActivity : ComponentActivity() {
                 val target = video?.fps?.toInt() ?: 60
                 Text(
                     stringResource(R.string.player_fps, shown, target),
-                    color = if (shown >= target - 2) Color(0xFF9FE3B0) else Color(0xFFFFC56B),
+                    color = if (shown >= target - 2) MenuCyan else MenuOrange,
                     fontSize = 13.sp,
                     modifier = Modifier.align(Alignment.TopStart).padding(top = 36.dp, start = 12.dp)
                         .background(Color(0x99000000), RoundedCornerShape(6.dp)).padding(horizontal = 8.dp, vertical = 3.dp),
@@ -1679,7 +1679,7 @@ class PlayerActivity : ComponentActivity() {
             if (badge.isNotEmpty()) coil3.compose.AsyncImage(badge, null, Modifier.size(48.dp).clip(RoundedCornerShape(6.dp)))
             else Text("🏆", fontSize = 30.sp)
             Column {
-                Text(line1, color = Color(0xFFFFC56B), fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                Text(line1, color = MenuOrange, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                 Text(line2, color = Color.White, fontSize = 13.sp)
             }
         }
@@ -1689,7 +1689,7 @@ class PlayerActivity : ComponentActivity() {
     @Composable
     private fun StatesPage(wide: Modifier, first: FocusRequester) {
         Text(stringResource(R.string.states_title), color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-        notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
+        notice?.let { Text(it, color = MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center) }
         MenuButton(onClick = {
             val slot = SaveStates.nextSlot(SaveStates.list(statesDir, saveBase), coreId)
             saveStateTo(SaveStates.slotFile(statesDir, saveBase, coreId, slot)) { saved ->
@@ -1735,7 +1735,7 @@ class PlayerActivity : ComponentActivity() {
             stringResource(R.string.ra_game_ready, unlocked, raList.size) + if (raAccount.hardcore) " · " + stringResource(R.string.ra_hardcore) else "",
             color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
         )
-        raSession?.richPresence()?.takeIf { it.isNotBlank() }?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
+        raSession?.richPresence()?.takeIf { it.isNotBlank() }?.let { Text(it, color = MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center) }
         MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
         if (raList.isEmpty()) Text(stringResource(R.string.ra_none_yet), color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center)
         raList.sortedByDescending { it.unlocked }.forEach { a ->
@@ -1746,9 +1746,9 @@ class PlayerActivity : ComponentActivity() {
             ) {
                 coil3.compose.AsyncImage(a.badge, null, Modifier.size(40.dp).clip(RoundedCornerShape(4.dp)))
                 Column(Modifier.weight(1f)) {
-                    Text((if (a.unlocked) "✓ " else "") + a.title, color = if (a.unlocked) Color(0xFFFFC56B) else Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text((if (a.unlocked) "✓ " else "") + a.title, color = if (a.unlocked) MenuOrange else Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     Text(a.description, color = Color(0xFFBBBBC4), fontSize = 12.sp)
-                    if (!a.unlocked && a.progress.isNotEmpty()) Text(a.progress, color = Color(0xFF3ED6FF), fontSize = 12.sp)
+                    if (!a.unlocked && a.progress.isNotEmpty()) Text(a.progress, color = MenuCyan, fontSize = 12.sp)
                 }
                 Text("${a.points}", color = Color(0xFFAAAAB4), fontSize = 13.sp)
             }
@@ -1768,11 +1768,11 @@ class PlayerActivity : ComponentActivity() {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (menuPage != MenuPage.MAIN) {
-                    androidx.compose.material3.TextButton(onClick = { menuPage = MenuPage.MAIN }) { Text(stringResource(R.string.player_back), color = Color(0xFF3ED6FF)) }
+                    androidx.compose.material3.TextButton(onClick = { menuPage = MenuPage.MAIN }) { Text(stringResource(R.string.player_back), color = MenuCyan) }
                 } else {
                     androidx.compose.foundation.layout.Spacer(Modifier.width(1.dp))
                 }
-                androidx.compose.material3.TextButton(onClick = { closeMenu() }) { Text("✕", color = Color(0xFF3ED6FF), fontSize = 20.sp) }
+                androidx.compose.material3.TextButton(onClick = { closeMenu() }) { Text("✕", color = MenuCyan, fontSize = 20.sp) }
             }
             Column(
                 Modifier.verticalScroll(rememberScrollState()).padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
@@ -1785,7 +1785,7 @@ class PlayerActivity : ComponentActivity() {
                     MenuPage.MAIN -> {
                         Text(title, color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                         Text(stringResource(R.string.player_paused, coreName), color = Color(0xFFAAAAB4), fontSize = 13.sp)
-                        notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
+                        notice?.let { Text(it, color = MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center) }
                         MenuButton(onClick = { closeMenu() }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_resume)) }
                         MenuButton(onClick = {
                             saveStateTo(slotState()) { saved -> notice = if (saved) str(R.string.player_state_saved) else str(R.string.player_this_emulator_can_t_save_states) }
@@ -1854,7 +1854,7 @@ class PlayerActivity : ComponentActivity() {
                         Text(stringResource(R.string.player_netplay), color = Color.White, fontWeight = FontWeight.Bold)
                         MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         if (netStatus.isNotBlank() && netState != 0) {
-                            Text(netStatus, color = if (netState == 5) Color(0xFFFF9A8B) else Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center)
+                            Text(netStatus, color = if (netState == 5) MenuOrange else MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center)
                         }
                         if (netState in 1..4) {
                             if (netState == 1) {
@@ -1918,7 +1918,7 @@ class PlayerActivity : ComponentActivity() {
                             } else MenuButton(onClick = { if (!bezelBusy) downloadBezels() }, modifier = wide) {
                                 Text(if (bezelBusy) stringResource(R.string.player_downloading_bezels) else stringResource(R.string.player_download_bezels_the_bezel_project))
                             }
-                            bezelStatus?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
+                            bezelStatus?.let { Text(it, color = MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center) }
                         }
                         PlayerCores.widescreenOption(coreId)?.let { (key, wideValue, _) ->
                             val on = coreOptions.firstOrNull { it.key == key }?.value == wideValue
@@ -1954,7 +1954,7 @@ class PlayerActivity : ComponentActivity() {
                             NativePlayer.setAudioBuffer(audioBuffer)
                             notice = str(R.string.player_sound_buffer_hint)
                         }, modifier = wide) { Text(stringResource(R.string.player_sound_buffer, audioBuffer)) }
-                        notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
+                        notice?.let { Text(it, color = MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center) }
                         if (hasTouch) MenuButton(onClick = { chooseTouch(!touchEnabled) }, modifier = wide) {
                             Text(stringResource(R.string.player_touch_controls, if (touchEnabled) stringResource(R.string.settings_on) else stringResource(R.string.player_off)))
                         }
@@ -1982,7 +1982,7 @@ class PlayerActivity : ComponentActivity() {
                             stringResource(R.string.player_from_libretro_s_cheat_database_cc),
                             color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
                         )
-                        cheatStatus?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
+                        cheatStatus?.let { Text(it, color = MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center) }
                         MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         // Games with their own cheat codes (Doom's id codes): the emulator takes the code as a cheat.
                         TypedCheats.forSystem(system).takeIf { it.isNotEmpty() }?.let { codes ->
@@ -1995,7 +1995,7 @@ class PlayerActivity : ComponentActivity() {
                                 }, modifier = wide) {
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                         Text(code.name, textAlign = TextAlign.Center, fontSize = 14.sp)
-                                        Text(code.code, color = Color(0xFFFF8A1F), fontSize = 13.sp)
+                                        Text(code.code, color = MenuOrange, fontSize = 13.sp)
                                     }
                                 }
                             }
@@ -2006,7 +2006,7 @@ class PlayerActivity : ComponentActivity() {
                             }, modifier = wide) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text(cheat.description, textAlign = TextAlign.Center, fontSize = 14.sp)
-                                    Text(if (cheat.enabled) stringResource(R.string.settings_on) else stringResource(R.string.player_off), color = if (cheat.enabled) Color(0xFF9FE3B0) else Color(0xFFFF8A1F), fontSize = 13.sp)
+                                    Text(if (cheat.enabled) stringResource(R.string.settings_on) else stringResource(R.string.player_off), color = if (cheat.enabled) MenuCyan else MenuOrange, fontSize = 13.sp)
                                 }
                             }
                             if (cheat.custom) {
@@ -2038,7 +2038,7 @@ class PlayerActivity : ComponentActivity() {
                             MenuButton(onClick = { chooseOption(option) }, modifier = wide) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text(option.label, textAlign = TextAlign.Center, fontSize = 14.sp)
-                                    Text(option.value, color = Color(0xFFFF8A1F), fontSize = 13.sp)
+                                    Text(option.value, color = MenuOrange, fontSize = 13.sp)
                                 }
                             }
                         }
@@ -2071,7 +2071,7 @@ class PlayerActivity : ComponentActivity() {
                                     Text(label, fontSize = 14.sp)
                                     Text(
                                         if (waitingFor == button) str(R.string.player_press_a_controller_button) else keyFor(button),
-                                        color = if (waitingFor == button) Color(0xFF9FE3B0) else Color(0xFFFF8A1F), fontSize = 13.sp,
+                                        color = if (waitingFor == button) MenuCyan else MenuOrange, fontSize = 13.sp,
                                     )
                                 }
                             }
@@ -2088,7 +2088,7 @@ class PlayerActivity : ComponentActivity() {
                             }, modifier = wide) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text(stringResource(R.string.player_on_screen, label), fontSize = 14.sp)
-                                    Text("presses " + (buttons.firstOrNull { it.second == now }?.first ?: "?"), color = Color(0xFFFF8A1F), fontSize = 13.sp)
+                                    Text("presses " + (buttons.firstOrNull { it.second == now }?.first ?: "?"), color = MenuOrange, fontSize = 13.sp)
                                 }
                             }
                         }
@@ -2100,7 +2100,7 @@ class PlayerActivity : ComponentActivity() {
                             stringResource(R.string.player_the_game_restarts_in_the_emulator),
                             color = Color(0xFFAAAAB4), fontSize = 13.sp, textAlign = TextAlign.Center,
                         )
-                        notice?.let { Text(it, color = Color(0xFF9FE3B0), fontSize = 13.sp, textAlign = TextAlign.Center) }
+                        notice?.let { Text(it, color = MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center) }
                         MenuButton(onClick = { menuPage = MenuPage.MAIN }, modifier = wide.focusRequester(first)) { Text(stringResource(R.string.player_back)) }
                         PlayerCores.choices(system).forEach { core ->
                             MenuButton(onClick = { switchEmulator(core) }, modifier = wide) {
@@ -2190,8 +2190,13 @@ private fun MenuButton(
         onClick = onClick,
         modifier = modifier,
         interactionSource = interaction,
-        border = BorderStroke(if (focused) 3.dp else 1.dp, if (focused) Color(0xFFFF8A1F) else Color(0xFF55555F)),
+        border = BorderStroke(if (focused) 3.dp else 1.dp, if (focused) MenuOrange else Color(0xFF55555F)),
         contentPadding = contentPadding,
         content = content,
     )
 }
+
+// The in-game menu's two colours, as in RetroForge's own look: cyan for news and states (saved, connected, unlocked
+// progress), orange for values, focus and things that need attention.
+private val MenuCyan = Color(0xFF3ED6FF)
+private val MenuOrange = Color(0xFFFF8A1F)

@@ -17,7 +17,9 @@
     "text": "#E6ECF7",
     "textMuted": "#AEB8CC",
     "outline": "#4A5670",
-    "focus": "#FF8A2A"
+    "focus": "#FF8A2A",
+    "good": "#3ED6FF",
+    "caution": "#FF8A2A"
   },
   "light": {
     "background": "#F6F4F2",
@@ -30,7 +32,9 @@
     "text": "#1B1C1F",
     "textMuted": "#4F4A46",
     "outline": "#8A847F",
-    "focus": "#B34700"
+    "focus": "#B34700",
+    "good": "#00708F",
+    "caution": "#B34700"
   },
   "shape": {
     "cornerRadius": 16
