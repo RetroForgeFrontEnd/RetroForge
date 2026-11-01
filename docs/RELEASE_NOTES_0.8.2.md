@@ -42,6 +42,7 @@ Fixes
 - On a fresh install, the Retro tab's tiles start as game art + console.
 - A game for a system RetroArch can't play no longer tells you to install RetroArch.
 - Switch emulator and a new N64 resolution start the game again in a fresh emulator, so the restarted game no longer crashes.
+- Netplay and the link cable say why a join or host didn't start, such as Android 17 asking for permission to reach devices on your Wi-Fi. Before, Join could look like it did nothing.
 
 You need your own games, BIOS, keys and firmware. Nothing of Sony's or Nintendo's is included.
 

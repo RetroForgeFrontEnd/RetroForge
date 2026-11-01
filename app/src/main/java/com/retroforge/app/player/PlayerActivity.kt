@@ -404,7 +404,11 @@ class PlayerActivity : ComponentActivity() {
 
     /** True when the permission had to be asked for: [retry] runs once it's granted, and the caller stops for now. */
     private fun askingForLocalNetwork(retry: () -> Unit): Boolean {
-        if (!LocalNetwork.needed(this)) return false
+        if (!LocalNetwork.needed(this)) {
+            // Allowed since (in Android Settings): the old "needs permission" line no longer applies.
+            if (notice == str(R.string.local_network_denied)) notice = null
+            return false
+        }
         afterLocalNetwork = retry
         askLocalNetwork.launch(LocalNetwork.PERMISSION)
         return true
