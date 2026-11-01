@@ -43,6 +43,7 @@ Fixes
 - A game for a system RetroArch can't play no longer tells you to install RetroArch.
 - Switch emulator and a new N64 resolution start the game again in a fresh emulator, so the restarted game no longer crashes.
 - Netplay and the link cable say why a join or host didn't start, such as Android 17 asking for permission to reach devices on your Wi-Fi. Before, Join could look like it did nothing.
+- Stream from Your PC can add and pair a PC again. In the smaller release build it failed with "no such algorithm: RSA". Steam sign-in, which uses the same kind of encryption, is fixed the same way.
 
 You need your own games, BIOS, keys and firmware. Nothing of Sony's or Nintendo's is included.
 
