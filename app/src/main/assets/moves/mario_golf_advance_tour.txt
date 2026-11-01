@@ -7,7 +7,7 @@ match: mario golf advance tour
 systems: gba
 buttons: A=A B=B
 facing: no
-checked: no
+checked: yes
 Swing | Full swing (100%) | A 5*40 A 5*59 A
 Swing | Three-quarter swing (75%) | A 5*40 A 5*44 A
 Swing | Half swing (50%) | A 5*40 A 5*29 A

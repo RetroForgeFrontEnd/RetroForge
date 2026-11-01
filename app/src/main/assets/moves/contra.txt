@@ -6,5 +6,5 @@ facing: no
 # Each press held 6 frames, so the game reads them all.
 step: 6
 buttons: B=B A=A
-checked: no
+checked: yes
 Title screen | 30 lives (Konami code) | 8 _ 8 2 _ 2 4 6 4 6 B A START

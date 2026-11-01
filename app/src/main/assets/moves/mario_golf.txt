@@ -9,7 +9,7 @@ not: mario golf advance tour | mario golf toadstool tour | mario golf world tour
 systems: gbc gb
 buttons: A=A B=B
 facing: no
-checked: no
+checked: yes
 Swing | Full swing (100%) | A 5*40 A 5*51 A 5*64 A
 Swing | Three-quarter swing (75%) | A 5*40 A 5*38 A 5*77 A
 Swing | Half swing (50%) | A 5*40 A 5*25 A 5*90 A

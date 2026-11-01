@@ -10,7 +10,7 @@ match: mario golf toadstool tour
 systems: gamecube gc
 buttons: A=A B=B
 facing: no
-checked: no
+checked: yes
 Swing | Full swing (100%) | A 5*57 A
 Swing | Three-quarter swing (75%) | A 5*42 A
 Swing | Half swing (50%) | A 5*27 A

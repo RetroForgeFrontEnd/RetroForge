@@ -11,7 +11,7 @@ not: open tee 2 | everybody s golf 2 | minna no golf portable 2
 systems: psp
 buttons: X=B O=A
 facing: no
-checked: no
+checked: yes
 Swing | Full swing (100%) | X 5*57 X 5*51 X
 Swing | Three-quarter swing (75%) | X 5*43 X 5*65 X
 Swing | Half swing (50%) | X 5*29 X 5*79 X
