@@ -6,9 +6,12 @@ buttons: HP=Y LP=B BL=R HK=X LK=A
 buttons.megadrive genesis: HP=L LP=Y BL=X HK=R LK=A
 # Motions are read slowly: each step held 5 frames.
 step: 5
-checked: yes
+# Every move here has been tried in the game except these, which come from the arcade move list: Liu Kang's
+# Cartwheel, Raiden's Torpedo and Teleport, Kano's Knife Throw and Cannonball, Sonya's Flying Punch and Leg Grab.
+checked: no
 Liu Kang | Fireball | 6 _ 6+HP
 Liu Kang | Flying Kick | 6 _ 6+HK
+Liu Kang | Fatality: Cartwheel | 6+BL 3+BL 2+BL 1+BL 4+BL 7+BL 8+BL
 Sub-Zero | Freeze | 2 3 6+LP
 Sub-Zero | Slide | 4+LP+BL+LK
 Sub-Zero | Fatality: Spine Rip (close) | 6 2 6+HP
@@ -19,6 +22,12 @@ Johnny Cage | Green Bolt | 4 6+LP
 Johnny Cage | Shadow Kick | 4 6+LK
 Johnny Cage | Fatality: Uppercut (close) | 6 _ 6 _ 6+HP
 Raiden | Lightning | 2 6+LP
+Raiden | Torpedo | 4 _ 4 _ 6
+Raiden | Teleport | 2 8
 Raiden | Fatality: Electrocution (close) | 6 4 _ 4 _ 4+HP
+Kano | Knife Throw | BL 4+BL 6+BL
+Kano | Cannonball | BL 6+BL 3+BL 2+BL 1+BL 4+BL 7+BL 8+BL
 Kano | Fatality: Heart Rip (close) | 4 2 6+LP
+Sonya | Flying Punch | 6 4+HP
+Sonya | Leg Grab | LP+BL+LK
 Sonya | Fatality: Kiss of Death | 6 _ 6 4 _ 4+BL
