@@ -44,8 +44,9 @@ can't update over the other, so they install side by side.
       (1 Nov 2026); phone number to verify once the ID is approved.
 - [ ] New personal accounts: a **closed test with at least 12 testers for 14 days** before the app can go public.
       Start this early.
-- [ ] **Privacy policy** at a public URL: [PRIVACY_POLICY.md](PRIVACY_POLICY.md) is ready. Publish it (GitHub
-      Pages, or the file's GitHub link) and paste the address into Play Console → App content → Privacy policy.
+- [x] **Privacy policy** at a public URL: https://retroforgefrontend.github.io/RetroForge/privacy/ (GitHub Pages,
+      the `gh-pages` branch, 1 Nov 2026). Paste it into Play Console → App content → Privacy policy. When
+      [PRIVACY_POLICY.md](PRIVACY_POLICY.md) changes, copy it to `privacy.md` on `gh-pages` too.
 - [ ] **Data safety form:** answers below.
 - [ ] **Foreground service types:** Play asks why `FOREGROUND_SERVICE_SPECIAL_USE`, `DATA_SYNC` and
       `MEDIA_PLAYBACK` are used (music playback, save sync, Steam downloads).
