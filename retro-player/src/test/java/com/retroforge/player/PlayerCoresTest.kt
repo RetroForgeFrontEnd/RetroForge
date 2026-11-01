@@ -2,6 +2,7 @@ package com.retroforge.player
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
@@ -50,6 +51,8 @@ class PlayerCoresTest {
         // PCSX ReARMed's Enhanced Resolution: off (native), then on (double).
         assertEquals(listOf("disabled", "enabled"), PlayerCores.resolutionChoices("pcsx_rearmed", listOf("enabled", "disabled")))
         assertEquals("pcsx_rearmed_neon_enhancement_enable", PlayerCores.resolutionOption("pcsx_rearmed")?.first)
+        // PCSX ReARMed only doubles from the next start, so a new resolution restarts the game.
+        assertTrue(PlayerCores.resolutionAtStart("pcsx_rearmed"))
     }
 
     @Test

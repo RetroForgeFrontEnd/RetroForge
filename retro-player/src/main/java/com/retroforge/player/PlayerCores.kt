@@ -406,7 +406,7 @@ object PlayerCores {
     }
 
     /** Cores that only read their internal resolution when the game starts: a new one restarts the game. */
-    fun resolutionAtStart(coreId: String) = coreId in setOf("pcsx2", "mupen64plus_next_gles3")
+    fun resolutionAtStart(coreId: String) = coreId in setOf("pcsx2", "mupen64plus_next_gles3", "pcsx_rearmed")
 
     /** A core's widescreen hack: (option, widescreen value, original value), for the pause menu's Widescreen switch. */
     fun widescreenOption(coreId: String): Triple<String, String, String>? = when (coreId) {
