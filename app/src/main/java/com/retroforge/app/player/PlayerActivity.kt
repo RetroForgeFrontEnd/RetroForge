@@ -2275,7 +2275,7 @@ class PlayerActivity : ComponentActivity() {
                                     columns,
                                     *moves.map { move ->
                                         val shown = move in movesOnScreen
-                                        Tile(if (shown) "★ ${move.name}" else move.name, Macros.readable(move.inputs, facingRight || !game.facing)) {
+                                        Tile(if (shown) "✓ ${move.name}" else move.name, Macros.readable(move.inputs, facingRight || !game.facing), selected = shown) {
                                             movesOnScreen = if (shown) movesOnScreen - move else (movesOnScreen + move).takeLast(4)
                                             saveMoves()
                                         }
@@ -2509,8 +2509,8 @@ internal fun MenuButton(
 }
 
 /** One entry in the pause menu's grid: what it says and what it does. */
-/** A menu tile; [detail] is a smaller grey line under the label (a move's inputs). */
-private class Tile(val label: String, val detail: String? = null, val onClick: () -> Unit)
+/** A menu tile; [detail] is a smaller grey line under the label (a move's inputs); [selected] fills it orange (a move on screen). */
+private class Tile(val label: String, val detail: String? = null, val selected: Boolean = false, val onClick: () -> Unit)
 
 /** Menu entries several to a row, so the menu fits on one screen; a short last row shares out the width. */
 @Composable
@@ -2522,10 +2522,11 @@ private fun MenuGrid(columns: Int, vararg tiles: Tile?) {
                     onClick = tile.onClick,
                     modifier = Modifier.weight(1f).fillMaxHeight(),
                     contentPadding = PaddingValues(horizontal = 6.dp, vertical = 6.dp),
+                    primary = tile.selected,
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(tile.label, fontSize = 13.sp, textAlign = TextAlign.Center, maxLines = 2, lineHeight = 15.sp)
-                        tile.detail?.let { Text(it, color = MenuGrey, fontSize = 12.sp, textAlign = TextAlign.Center, maxLines = 3, lineHeight = 14.sp) }
+                        Text(tile.label, fontSize = 13.sp, fontWeight = if (tile.selected) FontWeight.Bold else null, textAlign = TextAlign.Center, maxLines = 2, lineHeight = 15.sp)
+                        tile.detail?.let { Text(it, color = if (tile.selected) Color(0xFF3A2A1A) else MenuGrey, fontSize = 12.sp, textAlign = TextAlign.Center, maxLines = 3, lineHeight = 14.sp) }
                     }
                 }
             }

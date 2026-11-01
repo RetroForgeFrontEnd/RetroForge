@@ -151,7 +151,7 @@ class MacrosTest {
         assertEquals("Real Bout Fatal Fury 2", titleFor("Real Bout Fatal Fury 2 - The Newcomers"))
         assertNull(titleFor("Real Bout Fatal Fury Special"))
         assertEquals("Mario Golf", titleFor("Mario Golf (USA)"))
-        assertNull(titleFor("Mario Golf - Advance Tour (USA)"))
+        assertEquals("Mario Golf: Advance Tour", titleFor("Mario Golf - Advance Tour (USA)"))
         assertEquals("The Last Blade 2", titleFor("Last Blade 2, The"))
         assertEquals("The Last Blade 2", titleFor("Bakumatsu Roman Dai Ni Maku Gekka no Kenshi"))
         assertNull(titleFor("The Last Blade"))

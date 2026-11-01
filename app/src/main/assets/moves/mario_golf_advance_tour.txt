@@ -1,0 +1,16 @@
+# Mario Golf: Advance Tour (Game Boy Advance). Each swing does the meter for you: A to step up, A to start the meter,
+# A to set the power at the percentage in the swing's name. The game hits the ball by itself after that (AUTO under the
+# meter). Aim and pick the club first. 5*n waits n frames. Tried in the game: Full (to the end of the meter, a
+# 218-yard drive) and power waits of 5 and 50 frames (10% and 85%); the others sit on the same timing in between.
+title: Mario Golf: Advance Tour
+match: mario golf advance tour
+systems: gba
+buttons: A=A B=B
+facing: no
+checked: no
+Swing | Full swing (100%) | A 5*40 A 5*59 A
+Swing | Three-quarter swing (75%) | A 5*40 A 5*44 A
+Swing | Half swing (50%) | A 5*40 A 5*29 A
+Swing | Quarter swing (25%) | A 5*40 A 5*14 A
+Swing | Chip (10%) | A 5*40 A 5*5 A
+Swing | Tap (5%) | A 5*40 A 5*2 A
