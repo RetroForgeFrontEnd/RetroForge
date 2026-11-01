@@ -375,6 +375,8 @@ class PlayerActivity : ComponentActivity() {
     private var netInternet by mutableStateOf<String?>(null)
     private val netPlaying get() = netState in 3..4
     private val netGuest get() = netPlaying && NativePlayer.netplayPlayer() != 0
+    /** Moves are off while someone else plays too, over netplay or the link cable, to keep it fair. */
+    private val movesOff get() = netPlaying || linkState != LinkState.OFF
 
     /** The Game Boy link cable ([LinkCable]): unplugged, hosting, or joined to [linkWith]. */
     private var linkState by mutableStateOf(LinkState.OFF)
@@ -520,7 +522,7 @@ class PlayerActivity : ComponentActivity() {
 
     /** Select + a button: the first move on screen that ends with the game button on [pad]. */
     private fun playMoveEndingWith(pad: Int): Boolean {
-        if (!loaded || netPlaying) return false
+        if (!loaded || movesOff) return false
         val names = moveButtons.filterValues { it == pad }.keys
         val move = movesOnScreen.firstOrNull { m -> Macros.finalButtons(m.inputs).any { it in names } } ?: return false
         runOnUiThread { playMove(move) }
@@ -528,7 +530,7 @@ class PlayerActivity : ComponentActivity() {
     }
 
     private fun playMove(move: Macros.Move) {
-        if (!loaded || netPlaying) return
+        if (!loaded || movesOff) return
         NativePlayer.playMacro(port, Macros.frames(move.inputs, facingRight || movesGame?.facing == false, moveButtons, movesGame?.step ?: 3))
     }
     private var playerTwo by mutableStateOf(false)
@@ -1698,7 +1700,7 @@ class PlayerActivity : ComponentActivity() {
             }
         }
         val touchControlsShown = touchEnabled && showTouch && !vr && phase == Phase.Playing && !menuOpen
-        val movesShown = movesOnScreen.isNotEmpty() && phase == Phase.Playing && !menuOpen && !netPlaying
+        val movesShown = movesOnScreen.isNotEmpty() && phase == Phase.Playing && !menuOpen && !movesOff
         val flip: (() -> Unit)? = if (movesGame?.facing == false) null else ({ facingRight = !facingRight })
         // No background here: the game surface sits behind the window, and anything painted would cover it.
         Box(Modifier.fillMaxSize()) {
@@ -2250,7 +2252,7 @@ class PlayerActivity : ComponentActivity() {
                         if (game == null) {
                             Text(stringResource(R.string.moves_none), color = MenuGrey, fontSize = 13.sp, textAlign = TextAlign.Center)
                         } else {
-                            if (netPlaying) Text(stringResource(R.string.moves_off_netplay), color = MenuOrange, fontSize = 13.sp, textAlign = TextAlign.Center)
+                            if (movesOff) Text(stringResource(R.string.moves_off_netplay), color = MenuOrange, fontSize = 13.sp, textAlign = TextAlign.Center)
                             if (!game.checked) Text(stringResource(R.string.moves_unchecked), color = MenuOrange, fontSize = 13.sp, textAlign = TextAlign.Center)
                             Text(stringResource(R.string.moves_buttons), color = MenuGrey, fontSize = 13.sp, textAlign = TextAlign.Center)
                             MenuGrid(
