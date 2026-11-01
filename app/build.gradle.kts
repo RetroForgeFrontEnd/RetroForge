@@ -5,6 +5,8 @@ import java.util.Properties
 val localProps = Properties().apply { rootProject.file("local.properties").takeIf { it.isFile }?.inputStream()?.use(::load) }
 // Release signing key: your own keystore, described in keystore.properties (not in git). See docs/BUILD_AND_INSTALL.md.
 val keystoreProps = Properties().apply { rootProject.file("keystore.properties").takeIf { it.isFile }?.inputStream()?.use(::load) }
+// Google Play upload key, kept apart from the GitHub key: keystore-play.properties (not in git), same four entries.
+val playKeystoreProps = Properties().apply { rootProject.file("keystore-play.properties").takeIf { it.isFile }?.inputStream()?.use(::load) }
 
 fun quoted(key: String) = "\"" + (localProps.getProperty(key) ?: "").replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 
@@ -53,20 +55,23 @@ android {
     }
 
     signingConfigs {
-        if (keystoreProps.getProperty("storeFile") != null) {
-            create("release") {
-                storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))
-                storePassword = keystoreProps.getProperty("storePassword")
-                keyAlias = keystoreProps.getProperty("keyAlias")
-                keyPassword = keystoreProps.getProperty("keyPassword")
+        for ((name, props) in listOf("release" to keystoreProps, "playUpload" to playKeystoreProps)) {
+            if (props.getProperty("storeFile") == null) continue
+            create(name) {
+                storeFile = rootProject.file(props.getProperty("storeFile"))
+                storePassword = props.getProperty("storePassword")
+                keyAlias = props.getProperty("keyAlias")
+                keyPassword = props.getProperty("keyPassword")
             }
         }
     }
+    // Each version signs with its own key: full with the GitHub key, play with the Play upload key. Without the file
+    // its release build is unsigned (fine for testing, not for users).
+    productFlavors.getByName("full") { signingConfigs.findByName("release")?.let { signingConfig = it } }
+    productFlavors.getByName("play") { signingConfigs.findByName("playUpload")?.let { signingConfig = it } }
 
     buildTypes {
         release {
-            // Without keystore.properties the release APK is built unsigned (fine for testing, not for users).
-            signingConfigs.findByName("release")?.let { signingConfig = it }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")

@@ -40,7 +40,8 @@ can't update over the other, so they install side by side.
 
 ## Google's own requirements
 
-- [ ] Google Play developer account (one-off US$25), with identity checks.
+- [ ] Google Play developer account (one-off US$25), with identity checks: created as "Yourself", ID sent
+      (1 Nov 2026); phone number to verify once the ID is approved.
 - [ ] New personal accounts: a **closed test with at least 12 testers for 14 days** before the app can go public.
       Start this early.
 - [ ] **Privacy policy** at a public URL: [PRIVACY_POLICY.md](PRIVACY_POLICY.md) is ready. Publish it (GitHub
@@ -49,7 +50,8 @@ can't update over the other, so they install side by side.
 - [ ] **Foreground service types:** Play asks why `FOREGROUND_SERVICE_SPECIAL_USE`, `DATA_SYNC` and
       `MEDIA_PLAYBACK` are used (music playback, save sync, Steam downloads).
 - [ ] **Target SDK:** already 37.
-- [ ] **Play App Signing:** upload with a separate upload key; keep it with the GitHub release key, off GitHub.
+- [x] **Play App Signing:** upload key made (F:\RetroForge-keys, off GitHub); the play version signs only with it,
+      the full version only with the GitHub key.
 - [ ] **Store listing:** no Nintendo, Sony or other trademarks or logos in the icon, name, screenshots or text
       beyond saying which systems it plays; screenshots with homebrew games only (Super Tilt Bro and others).
 - [ ] **Content rating questionnaire** and **target audience** (not aimed at children).
@@ -62,7 +64,8 @@ can't update over the other, so they install side by side.
 - [x] Settings has no Updates card and no Support card; setup skips the Switch step; the PC tab has no Ports and its
       subtitle doesn't mention them (emulator, 31 Oct 2026).
 - [x] A release `.aab` (`bundlePlayRelease`) builds (37.8 MB).
-- [ ] Signed with the upload key and checked with Play's pre-launch report.
+- [x] Signed with the upload key (`keystore-play.properties`, not in git) (1 Nov 2026).
+- [ ] Checked with Play's pre-launch report.
 
 ## Data safety answers (Play Console → App content → Data safety)
 

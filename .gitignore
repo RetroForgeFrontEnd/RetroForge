@@ -14,5 +14,6 @@ captures/
 
 # Release signing: never commit the key or its passwords
 keystore.properties
+keystore-play.properties
 *.jks
 *.keystore
