@@ -1390,9 +1390,10 @@ class PlayerActivity : ComponentActivity() {
         closeRouterPort()
         if (isFinishing) {
             worker.shutdown()
-            // The player process exists for this one game. Ending it gives the next game a clean core. Not when switching
-            // emulator: the old core is already closed, and the new player may already be starting in this process.
-            if (!switching) Process.killProcess(Process.myPid())
+            // The player process exists for this one game. Ending it gives the next game a clean core, also when switching
+            // emulator or restarting at a new resolution: some cores (Mupen64Plus) crash if loaded twice in one process.
+            // The relauncher waits for this process to end before starting the new player.
+            Process.killProcess(Process.myPid())
         }
     }
 

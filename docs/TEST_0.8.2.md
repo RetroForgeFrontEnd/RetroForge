@@ -18,15 +18,16 @@ Nothing goes to GitHub until every row is ✅ (or the user agrees to leave it ou
 | Release build: Switch, PS3, PS4 Players | Play opens each player and Quit comes back | ⬜ |
 | **New since 0.8.1** | | |
 | PS5 games in the library | A `ps5` folder of dumped games (eboot.bin + sce_sys/param.json) shows each under PlayStation 5 by its title, -patch folders skipped; Play says no PS5 emulator for phones and tablets exists yet | ✅ emulator, 1 Nov: a dummy folder (empty eboot.bin, made-up param.json) showed as "Forge Test Five"; without RetroArch installed it had asked for RetroArch, now it says there's no PS5 emulator yet |
-| Upscaling: PS1 and N64 | PS1 (PCSX ReARMed) gets a Resolution step; N64 restarts to use a new one; each step goes up from the system's own size | 🟡 unit test passes; the upscaling session tested on the emulator, 31 Oct. Needs a PS1 or N64 game to see it |
+| Upscaling: PS1 and N64 | PS1 (PCSX ReARMed) gets a Resolution step; N64 restarts to use a new one; each step goes up from the system's own size | 🟡 emulator, 1 Nov: N64 (Flappy Bird) steps 1× to 4× (320x240 up to 1280x960), restarting each time, and back to 1×; PS1 (240p Test Suite) has Resolution 1× / 2× and switches. The first N64 restart crashed (fixed, row below). Left: PS1's doubled picture on a phone, since PCSX ReARMed's 2× drawing is ARM-only and the emulator is x86 |
 | Free games easy to find | An empty library's Home shows "No games yet?"; the Retro tab has a Free games card; both open the list, and a game goes into the library | ✅ emulator, 1 Nov (Play build, fresh install): both cards open it; Nova downloaded into the chosen folder and was added to the library |
 | Icon and splash | The launch splash and a round launcher icon show the whole RF sign | ✅ emulator, 1 Nov: whole sign with its glow on the splash and the home screen |
 | Scrape all artwork on a big system | No long stall; a full NES set's libretro index is read in seconds | ✅ emulator, 1 Nov: what took over 10 minutes took 39 seconds |
+| Restarting the player | Switch emulator or a new N64 resolution starts the game again in a fresh player | ✅ emulator, 1 Nov: had crashed (Mupen64Plus loaded twice in one process); now the old player process ends first, and four N64 restarts in a row worked |
 | Retro tiles on a fresh install | Tiles start as game art + console and fetch the game art | ✅ emulator, 1 Nov |
-| Mario Golf swings | Game Boy Color, Advance Tour and Nintendo 64: each power from full to a 5% tap lands on the impact line | 🟡 timed by the moves session on its devices; try one swing of each |
-| Moves picked show it | In Moves and turbo, moves on screen are filled orange with a tick | 🟡 moves session |
+| Mario Golf swings | Game Boy Color, Advance Tour and Nintendo 64: each power from full to a 5% tap lands on the impact line | 🟡 timed by the moves session on its devices; needs the real games (homebrew can't stand in), so one swing of each on the user's copies |
+| Moves picked show it | In Moves and turbo, moves on screen are filled orange with a tick | ✅ emulator, 1 Nov: picked Full swing and Tap showed filled orange with ✓, both went on screen, and Full swing pressed A in the game (the Mario Golf 64 list, opened with a renamed homebrew copy) |
 | **Carried over from 0.8.1** | | |
-| Pause menu music | Songs from My music: what's playing, Previous, Play/Pause and Next mid-game | 🟡 radio worked on the S22 (31 Oct); songs still to try |
+| Pause menu music | Songs from My music: what's playing, Previous, Play/Pause and Next mid-game | ✅ emulator, 1 Nov: 3 songs from a chosen folder; the pause menu named the song playing, Previous (restarts the song, then steps back), Play/Pause and Next all worked mid-game |
 | Moves: finishers | A Mortal Kombat II or UMK3 fatality, babality or friendship from the list, in a fight | 🟡 lists match in the unit test; not done in a game |
 | Moves: cheat codes | Contra's Konami code gives 30 lives | 🟡 list matches in the unit test; not done in the game |
 | Moves off in netplay | Moves can't be played in a netplay game, and the page says why | 🟡 code only |

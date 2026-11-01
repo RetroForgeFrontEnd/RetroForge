@@ -41,6 +41,7 @@ Fixes
 - The launch screen and round app icons show the whole RF sign instead of cutting off its sides.
 - On a fresh install, the Retro tab's tiles start as game art + console.
 - A game for a system RetroArch can't play no longer tells you to install RetroArch.
+- Switch emulator and a new N64 resolution start the game again in a fresh emulator, so the restarted game no longer crashes.
 
 You need your own games, BIOS, keys and firmware. Nothing of Sony's or Nintendo's is included.
 
