@@ -33,7 +33,7 @@ Upscaling
 - Every system's resolution steps now go up from the console's own size.
 
 Moves
-- Mario Golf (Game Boy Color, Advance Tour and Nintendo 64): swings from full power down to a 5% tap, each timed to land on the impact line.
+- Golf swings from full power down to a 5% tap, each timed to land on the impact line: Mario Golf (Game Boy Color, Advance Tour, Nintendo 64 and Toadstool Tour on GameCube) and Hot Shots Golf: Open Tee (PSP). Aim and pick the club first; the move does the swing meter for you.
 - Moves you've put on screen show filled orange with a tick in Moves and turbo.
 
 Fixes
