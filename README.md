@@ -6,7 +6,7 @@ A free Android frontend for retro games and PC games, all in one place.
 
 Made by Darren Glancy, built with a lot of help from AI (Claude). Tested on a Samsung Galaxy S22 as it went.
 
-**Status: beta (0.8.0).** It works well for most systems, but it's still being tested on more devices.
+**Status: beta (0.8.1).** It works well for most systems, but it's still being tested on more devices.
 Feedback and bug reports are very welcome: [open an issue](../../issues).
 
 ## What it does
