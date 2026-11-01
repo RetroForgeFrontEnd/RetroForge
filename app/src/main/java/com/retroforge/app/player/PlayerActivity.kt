@@ -737,6 +737,9 @@ class PlayerActivity : ComponentActivity() {
         // Play! keeps its memory cards and settings under $EXTERNAL_STORAGE ("/sdcard/Play Data Files"), which apps can't
         // write to any more, and stops when it can't. This process is the player's alone, so point it at our own folder.
         if (coreId == "play") runCatching { android.system.Os.setenv("EXTERNAL_STORAGE", File(systemDir, "play").apply { mkdirs() }.path, true) }
+        // LRPS2's new cards are blank, and some games' own format never works on them, so they couldn't save.
+        if (coreId == "pcsx2") runCatching { Ps2MemoryCard.prepare(systemDir) }
+            .onFailure { android.util.Log.w("RetroForgePlayer", "PS2 memory cards: ${it.message}") }
         // A Turnip driver chosen in Settings → GPU and drivers, for Vulkan cores (the device's own driver otherwise):
         // this system's choice, else what's recommended for this GPU and emulator.
         customDriverOn = com.retroforge.pc.DriverRecommendations.useCustomDriver(
