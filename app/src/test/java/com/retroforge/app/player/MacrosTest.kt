@@ -155,7 +155,7 @@ class MacrosTest {
         // Same name, different meters: the Game Boy Color and Nintendo 64 games each get their own swings.
         assertEquals(setOf("gbc", "gb"), Macros.gameFor("Mario Golf (USA)", games, "gbc")?.systems)
         assertEquals(setOf("n64"), Macros.gameFor("Mario Golf (USA)", games, "n64")?.systems)
-        assertNull(Macros.gameFor("Mario Golf - Toadstool Tour (USA)", games, "gamecube"))
+        assertEquals("Mario Golf: Toadstool Tour", Macros.gameFor("Mario Golf - Toadstool Tour (USA)", games, "gamecube")?.title)
         assertEquals("The Last Blade 2", titleFor("Last Blade 2, The"))
         assertEquals("The Last Blade 2", titleFor("Bakumatsu Roman Dai Ni Maku Gekka no Kenshi"))
         assertNull(titleFor("The Last Blade"))
