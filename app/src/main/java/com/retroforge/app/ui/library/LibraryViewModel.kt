@@ -403,6 +403,6 @@ enum class TileStyle(val label: String) {
     fun next() = entries[(ordinal + 1) % entries.size]
 
     companion object {
-        fun of(name: String?) = entries.firstOrNull { it.name == name } ?: CONSOLES
+        fun of(name: String?) = entries.firstOrNull { it.name == name } ?: ART_AND_CONSOLE
     }
 }

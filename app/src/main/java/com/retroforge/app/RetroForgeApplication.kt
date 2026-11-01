@@ -3,6 +3,7 @@ package com.retroforge.app
 import android.app.Application
 import android.content.ContentResolver
 import com.retroforge.app.ui.hacks.CatalogueFetcher
+import com.retroforge.app.ui.library.TileStyle
 import com.retroforge.core.library.LibraryDatabase
 import com.retroforge.core.library.LibraryRepository
 import com.retroforge.core.library.RomManagerRepository
@@ -108,7 +109,7 @@ class AppContainer(application: Application) {
             library.systemCounts
                 .map { counts -> counts.map { it.system }.toSortedSet() }
                 .distinctUntilChanged()
-                .collect { canvasArt.ensure(it, withGameArt = viewPrefs.getString("tile_style", null) in setOf("GAME_ART", "ART_AND_CONSOLE")) }
+                .collect { canvasArt.ensure(it, withGameArt = TileStyle.of(viewPrefs.getString("tile_style", null)).usesGameArt) }
         }
     }
     val covers = CoverRepository(
