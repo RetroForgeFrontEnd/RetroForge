@@ -16,7 +16,7 @@ UPDATING
 
 - 0.8.2 updates over 0.8.1 as usual: your library, history and settings stay.
 - From this version, RetroForge is signed with its own key instead of a development one. The update carries Android's record that the new key replaces the old one, so you don't need to uninstall. (If your phone ever says the app can't be updated, uninstall and install 0.8.2 once; that's the only fix, and it loses RetroForge's own settings.)
-- RetroForge is now a proper release build: 39 MB to download instead of 75.
+- RetroForge is now a proper release build: 40 MB to download instead of 75.
 
 WHAT'S NEW
 
