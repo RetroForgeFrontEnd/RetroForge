@@ -46,10 +46,10 @@ RetroForge appears as **RetroForge** in the phone launcher and in the Android TV
 
 ### The GitHub key and its rotation
 
-0.8.0 and 0.8.1 went out signed with this PC's debug key. From the next release, the GitHub APK is signed with RetroForge's own key, `F:\RetroForge-keysetroforge-github-release.jks`, together with a lineage (`retroforge-github-lineage.bin`) saying it replaces the debug key (kept as `retroforge-github-debug.keystore`). Android 9 and later accept the new key as an ordinary update. Older Android still checks the debug key's v2 signature, so it updates too. Every release needs all three files, so back them up together, away from this PC.
+0.8.0 and 0.8.1 went out signed with this PC's debug key. From the next release, the GitHub APK is signed with RetroForge's own key, `F:\RetroForge-keys\retroforge-github-release.jks`, together with a lineage (`retroforge-github-lineage.bin`) saying it replaces the debug key (kept as `retroforge-github-debug.keystore`). Android 9 and later accept the new key as an ordinary update. Older Android still checks the debug key's v2 signature, so it updates too. Every release needs all three files, so back them up together, away from this PC.
 
 1. `gradlew :app:assembleFullRelease` makes an unsigned APK (there is no `keystore.properties` for the full version).
-2. `powershell -ExecutionPolicy Bypass -File tools\sign-github-release.ps1` asks for the key's password in the terminal and writes `appuild\outputspkullelease\RetroForge-<version>.apk`.
+2. `powershell -ExecutionPolicy Bypass -File tools\sign-github-release.ps1` asks for the key's password in the terminal and writes `app\build\outputs\apk\full\release\RetroForge-<version>.apk`.
 
 Tested 2026-11-01 on the emulator: an APK signed this way installed over the debug-signed 0.8.1 with no uninstall, and the library and history were kept.
 
