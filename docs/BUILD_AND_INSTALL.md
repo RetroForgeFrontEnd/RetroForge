@@ -44,24 +44,16 @@ RetroForge appears as **RetroForge** in the phone launcher and in the Android TV
 
 `assembleFullRelease` (GitHub) and `bundlePlayRelease` (the .aab Google Play wants) shrink and obfuscate the code with R8 (APK about 4 MB). Tested 2026-10-28: the release build, signed with the debug key for testing, ran every main screen on the emulator without errors.
 
-### Your release key (once, keep it safe)
+### The GitHub key and its rotation
 
-Create the key yourself so only you hold it; losing it means existing installs can't be updated. In a terminal, in `F:\RetroForge`:
+0.8.0 and 0.8.1 went out signed with this PC's debug key. From the next release, the GitHub APK is signed with RetroForge's own key, `F:\RetroForge-keysetroforge-github-release.jks`, together with a lineage (`retroforge-github-lineage.bin`) saying it replaces the debug key (kept as `retroforge-github-debug.keystore`). Android 9 and later accept the new key as an ordinary update. Older Android still checks the debug key's v2 signature, so it updates too. Every release needs all three files, so back them up together, away from this PC.
 
-```
-keytool -genkeypair -v -keystore retroforge-release.jks -alias retroforge -keyalg RSA -keysize 4096 -validity 10000
-```
+1. `gradlew :app:assembleFullRelease` makes an unsigned APK (there is no `keystore.properties` for the full version).
+2. `powershell -ExecutionPolicy Bypass -File tools\sign-github-release.ps1` asks for the key's password in the terminal and writes `appuild\outputspkullelease\RetroForge-<version>.apk`.
 
-It asks for a password and your name. Then create `keystore.properties` next to it:
+Tested 2026-11-01 on the emulator: an APK signed this way installed over the debug-signed 0.8.1 with no uninstall, and the library and history were kept.
 
-```
-storeFile=retroforge-release.jks
-storePassword=YOUR_PASSWORD
-keyAlias=retroforge
-keyPassword=YOUR_PASSWORD
-```
-
-Both files are in `.gitignore`. Back them up somewhere safe (not GitHub). `gradlew assembleRelease` then signs automatically; without them the APK is unsigned.
+The Play version has its own upload key, `retroforge-upload.jks`, described in `keystore-play.properties` (in `.gitignore`). `gradlew :app:bundlePlayRelease` signs the .aab with it.
 
 ### Optional settings in local.properties
 
