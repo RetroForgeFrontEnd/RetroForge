@@ -2,6 +2,7 @@ package com.retroforge.artwork
 
 import com.retroforge.library.RomFlag
 import com.retroforge.library.RomNames
+import com.retroforge.library.matchesIn
 import java.net.URLDecoder
 import java.net.URLEncoder
 
@@ -114,8 +115,8 @@ object LibretroThumbnails {
 
     /** File names (without ".png") listed on a folder's index page. */
     fun parseIndex(html: String): List<String> =
-        Regex("""href="([^"/?]+)\.png"""").findAll(html)
-            .map { URLDecoder.decode(it.groupValues[1].replace("+", "%2B"), "UTF-8") }
+        Regex("""href="([^"/?]+)\.png"""").matchesIn(html)
+            .map { URLDecoder.decode(it.group(1).replace("+", "%2B"), "UTF-8") }
             .distinct()
             .toList()
 

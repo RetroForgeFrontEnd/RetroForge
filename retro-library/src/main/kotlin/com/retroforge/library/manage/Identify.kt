@@ -1,5 +1,6 @@
 package com.retroforge.library.manage
 
+import com.retroforge.library.matchesIn
 import org.apache.commons.compress.archivers.sevenz.SevenZFile
 import org.apache.commons.compress.archivers.zip.ZipFile
 import java.io.IOException
@@ -60,9 +61,9 @@ object DatParser {
         val roms = mutableListOf<DatRom>()
         var game = ""
         // Games and their roms in document order: each <rom> belongs to the <game> before it.
-        val tokens = Regex("""<(?:game|machine)\s[^>]*>|<rom\s[^>]*>""").findAll(text)
+        val tokens = Regex("""<(?:game|machine)\s[^>]*>|<rom\s[^>]*>""").matchesIn(text)
         for (m in tokens) {
-            val tag = m.value
+            val tag = m.group()
             if (!tag.startsWith("<rom")) { game = GamelistEditor.unescape(xmlGame.find(tag)?.groupValues?.get(1).orEmpty()); continue }
             val file = attr(tag, "name") ?: continue
             val size = attr(tag, "size")?.toLongOrNull() ?: continue

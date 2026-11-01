@@ -1,6 +1,7 @@
 package com.retroforge.library.manage
 
 import com.retroforge.library.GamelistParser
+import com.retroforge.library.matchesIn
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -105,7 +106,8 @@ object GamelistEditor {
 
     private fun find(text: String, path: String): MatchResult? {
         val want = GamelistParser.normalizePath(path)
-        return gameBlock.findAll(text).firstOrNull { m -> pathOf(m.value)?.let { GamelistParser.normalizePath(unescape(it)) == want } == true }
+        val at = gameBlock.matchesIn(text).firstOrNull { m -> pathOf(m.group())?.let { GamelistParser.normalizePath(unescape(it)) == want } == true }
+        return at?.let { gameBlock.find(text, it.start()) }
     }
 
     /**
@@ -124,8 +126,8 @@ object GamelistEditor {
     /** Removes the entry for [path] (e.g. a deleted game); undo puts it back in place. */
     fun remove(text: String, path: String): Pair<String, TextChange?> {
         val old = find(text, path) ?: return text to null
-        val previous = gameBlock.findAll(text).lastOrNull { it.range.last < old.range.first }
-        return text.removeRange(old.range) to TextChange.RemovedEntry(old.value, previous?.let { pathOf(it.value) })
+        val previous = gameBlock.matchesIn(text).lastOrNull { it.end() <= old.range.first }
+        return text.removeRange(old.range) to TextChange.RemovedEntry(old.value, previous?.let { pathOf(it.group()) })
     }
 
     fun undo(text: String, change: TextChange): String = when (change) {
