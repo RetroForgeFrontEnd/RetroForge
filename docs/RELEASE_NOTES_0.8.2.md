@@ -29,7 +29,7 @@ Free games
 
 Upscaling
 - PS1 (PCSX ReARMed) gets a Resolution setting: native or double.
-- N64 restarts the game to use a new resolution, since its emulator only reads it at the start.
+- PS1 and N64 restart the game to use a new resolution, since their emulators only read it at the start.
 - Every system's resolution steps now go up from the console's own size.
 
 Moves
