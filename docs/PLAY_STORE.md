@@ -99,5 +99,10 @@ can't update over the other, so they install side by side.
 
   RetroForge doesn't include any games, BIOS or firmware. Use copies of games you own.
 
-- **Screenshots:** homebrew and free games only (Super Tilt Bro, the free games list), no console makers' logos.
+- **Store art (made 1 Nov 2026, in `docs/play-store/`):** `icon-512.png`, `feature-graphic-1024x500.png` (drawn by
+  `tools/play_store_art.py` from the neon RF sign), and five phone screenshots (1080×2160) in `phone/`: Nova the
+  Squirrel and µCity (free GPL homebrew), the pause menu, Themes, and Looks and sounds.
+- **Kept out of screenshots:** the key art and Home (console-like drawings), the Retro tab's system logos (use
+  Tiles: plain if it's ever shown), box art (homebrew covers carry console logos too), and the Hacks tab (fan hacks
+  of Nintendo games).
 - **Category:** Tools or Entertainment (emulator front ends usually pick Tools).
