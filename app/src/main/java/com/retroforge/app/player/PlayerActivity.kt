@@ -495,7 +495,7 @@ class PlayerActivity : ComponentActivity() {
     // Moves and turbo (pause menu): turbo buttons for this system; for fighting games with a move list, the moves on
     // screen and which RetroPad button each of the game's buttons is on, kept per game.
     private var turboMask by androidx.compose.runtime.mutableIntStateOf(0)
-    private val movesGame by lazy { Macros.gameFor(intent.getStringExtra(EXTRA_TITLE).orEmpty(), Macros.load(this)) }
+    private val movesGame by lazy { Macros.gameFor(intent.getStringExtra(EXTRA_TITLE).orEmpty(), Macros.load(this), intent.getStringExtra(EXTRA_SYSTEM).orEmpty()) }
     private var movesOnScreen by mutableStateOf<List<Macros.Move>>(emptyList())
     private var moveButtons by mutableStateOf<Map<String, Int>>(emptyMap())
     private var facingRight by mutableStateOf(true)

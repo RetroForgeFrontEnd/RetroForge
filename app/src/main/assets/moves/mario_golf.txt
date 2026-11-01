@@ -1,0 +1,18 @@
+# Mario Golf (Game Boy Color). Each swing does the whole meter for you, four presses: A to step up, A to start the
+# meter, A to set the power, A on the impact line. The power stops at the percentage in the swing's name; the impact
+# lands on the line every time, so the shot goes where you aimed. Aim and pick the club first. 5*n waits n frames.
+# The N64 Mario Golf has another meter, so this list is for the Game Boy Color game only. Full, Half and Tap were tried
+# in the game (power where named, impact on the line, driver and irons); the others sit on the same timing in between.
+title: Mario Golf
+match: mario golf
+not: mario golf advance tour | mario golf toadstool tour | mario golf world tour | mario golf super rush
+systems: gbc gb
+buttons: A=A B=B
+facing: no
+checked: no
+Swing | Full swing (100%) | A 5*40 A 5*51 A 5*64 A
+Swing | Three-quarter swing (75%) | A 5*40 A 5*38 A 5*77 A
+Swing | Half swing (50%) | A 5*40 A 5*25 A 5*90 A
+Swing | Quarter swing (25%) | A 5*40 A 5*12 A 5*103 A
+Swing | Chip (10%) | A 5*40 A 5*4 A 5*111 A
+Swing | Tap (5%) | A 5*40 A 5*2 A 5*113 A

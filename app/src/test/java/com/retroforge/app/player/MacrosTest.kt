@@ -150,6 +150,8 @@ class MacrosTest {
         assertEquals("Martial Champion", titleFor("Martial Champion (ver EAB)"))
         assertEquals("Real Bout Fatal Fury 2", titleFor("Real Bout Fatal Fury 2 - The Newcomers"))
         assertNull(titleFor("Real Bout Fatal Fury Special"))
+        assertEquals("Mario Golf", titleFor("Mario Golf (USA)"))
+        assertNull(titleFor("Mario Golf - Advance Tour (USA)"))
         assertEquals("The Last Blade 2", titleFor("Last Blade 2, The"))
         assertEquals("The Last Blade 2", titleFor("Bakumatsu Roman Dai Ni Maku Gekka no Kenshi"))
         assertNull(titleFor("The Last Blade"))
@@ -205,6 +207,16 @@ class MacrosTest {
         assertEquals("C, C, C", Macros.readable("C _ C _ C"))
         assertEquals("A+B+C", Macros.readable("A+B+C"))
         assertEquals("↑, ↑, START", Macros.readable("8 _ 8 _ START"))
+        assertEquals("A (wait) A", Macros.readable("A 5*40 A"))
+        assertEquals("A (wait) A", Macros.readable("A 5*4 A"))
+    }
+
+    @Test
+    fun aListForOneSystemSkipsTheOthers() {
+        val golf = listOf(Macros.parse("title: Golf\nsystems: gbc gb\nX | Swing | A")!!)
+        assertNotNull(Macros.gameFor("Golf", golf, "gbc"))
+        assertNull(Macros.gameFor("Golf", golf, "n64"))
+        assertNotNull(Macros.gameFor("Golf", golf))
     }
 
     @Test

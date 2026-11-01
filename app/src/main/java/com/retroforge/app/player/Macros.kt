@@ -22,7 +22,8 @@ object Macros {
      * the user changes it; [checked] is false until someone has tried the moves in the game. [step] is how many frames
      * each step lasts unless it says otherwise. [systemButtons] are the layouts on systems whose version of the game
      * puts the buttons elsewhere (system id → buttons), used instead of [buttons] there. [facing] is false when forward and
-     * back are always right and left.
+     * back are always right and left. [systems] are the system ids the list is for (a golf swing timed for the Game Boy
+     * Color game, not the N64 one of the same name); empty means any.
      */
     data class Game(
         val title: String,
@@ -34,6 +35,7 @@ object Macros {
         val step: Int = 3,
         val systemButtons: Map<String, List<Pair<String, Int>>> = emptyMap(),
         val facing: Boolean = true,
+        val systems: Set<String> = emptySet(),
     ) {
         /** The game's buttons on [system]: its own layout there, or the usual one. */
         fun buttonsFor(system: String): List<Pair<String, Int>> = systemButtons[system] ?: buttons
@@ -47,6 +49,7 @@ object Macros {
      * not: (titles that look alike but are other games)
      * buttons: LP=Y MP=X HP=L LK=B MK=A HK=R
      * buttons.megadrive genesis: LP=L MP=X HP=R LK=Y MK=B HK=A
+     * systems: (only these system ids; leave out for any)
      * checked: no
      * step: 3
      * Ryu / Ken | Hadouken | 2 3 6+HP
@@ -62,6 +65,7 @@ object Macros {
         var checked = false
         var step = 3
         var facing = true
+        var systems = emptySet<String>()
         val moves = ArrayList<Move>()
         fun phrases(v: String) = v.split('|').map(::plain).filter { it.isNotBlank() }
         for (raw in text.lines()) {
@@ -77,6 +81,7 @@ object Macros {
                 '|' !in line && key == "step" -> step = value.toIntOrNull()?.coerceIn(1, 30) ?: 3
                 '|' !in line && key == "facing" -> facing = value.lowercase() !in setOf("no", "false")
                 '|' !in line && key == "buttons" -> buttons = layout(value)
+                '|' !in line && key == "systems" -> systems = value.lowercase().split(Regex("""[\s,]+""")).filter { it.isNotEmpty() }.toSet()
                 // buttons.megadrive genesis: … (one or more system ids)
                 '|' !in line && key.startsWith("buttons.") ->
                     key.removePrefix("buttons.").split(Regex("""[\s,]+""")).filter { it.isNotEmpty() }.forEach { systemButtons[it] = layout(value) }
@@ -86,7 +91,7 @@ object Macros {
         }
         if (title.isBlank() || moves.isEmpty()) return null
         if (buttons.isEmpty()) buttons = systemButtons.values.firstOrNull().orEmpty()
-        return Game(title, match.ifEmpty { listOf(plain(title)) }, not, buttons, checked, moves, step, systemButtons, facing)
+        return Game(title, match.ifEmpty { listOf(plain(title)) }, not, buttons, checked, moves, step, systemButtons, facing, systems)
     }
 
     private fun layout(value: String): List<Pair<String, Int>> = value.split(Regex("""\s+""")).mapNotNull { pair ->
@@ -94,10 +99,12 @@ object Macros {
         padButtons.firstOrNull { it.second.equals(pad, ignoreCase = true) }?.let { name.uppercase() to it.first }
     }
 
-    /** The move list among [games] for a game, from its title (any version: Turbo, Champion Edition …). */
-    fun gameFor(title: String, games: List<Game>): Game? {
+    /** The move list among [games] for a game, from its title (any version: Turbo, Champion Edition …), on [system] if known. */
+    fun gameFor(title: String, games: List<Game>, system: String = ""): Game? {
         val t = " ${plain(title)} "
-        return games.firstOrNull { g -> g.match.any { " $it " in t } && g.not.none { " $it " in t } }
+        return games.firstOrNull { g ->
+            g.match.any { " $it " in t } && g.not.none { " $it " in t } && (g.systems.isEmpty() || system.isEmpty() || system.lowercase() in g.systems)
+        }
     }
 
     /** Every move list: RetroForge's own (assets/moves) and the user's (the player's "moves" folder), theirs first. */
@@ -128,6 +135,8 @@ object Macros {
             val parts = step.substringBefore('*').split('+').filter { it.isNotEmpty() }
             val dir = parts.firstOrNull()?.singleOrNull()?.takeIf { it in '1'..'9' }
             val buttons = parts.drop(if (dir != null) 1 else 0).joinToString("+")
+            // A long neutral step is a pause (a golf swing waiting for its meter): "A (wait) A".
+            if (dir == '5' && '*' in step && buttons.isEmpty()) { out.append(" (wait)"); afterArrow = false; continue }
             if (dir != null) {
                 if (out.isNotEmpty() && !afterArrow) out.append(' ')
                 out.append(arrows[dir - '1'])
