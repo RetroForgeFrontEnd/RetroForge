@@ -1,5 +1,5 @@
 {
- "source": "Generated from RetroBat 8.3.1.1 es_systems.cfg: system ids, display names and file extensions only. Windows-only systems and extensions removed. RetroBat's own menu entry removed.",
+ "source": "Generated from RetroBat 8.3.1.1 es_systems.cfg: system ids, display names and file extensions only. Windows-only systems and extensions removed. RetroBat's own menu entry removed. ps5 added by hand (RetroBat has none).",
  "systems": [
   {
    "id": "2ship",
@@ -2001,6 +2001,14 @@
     "m3u",
     "ps4",
     "zar"
+   ],
+   "aliases": []
+  },
+  {
+   "id": "ps5",
+   "name": "PlayStation 5",
+   "extensions": [
+    "ps5"
    ],
    "aliases": []
   },

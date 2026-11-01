@@ -255,6 +255,7 @@
     <string name="library_delete_this_game">Borrar este juego…</string>
     <string name="library_no_gamelist_xml_details_for_this">No hay datos de gamelist.xml para este juego; el título sale del nombre del archivo.</string>
     <string name="library_no_gamelist_xml_title_from_param_sfo">No hay datos de gamelist.xml para este juego; el título sale de su param.sfo.</string>
+    <string name="library_no_gamelist_xml_title_from_param_json">No hay datos de gamelist.xml para este juego; el título sale de su param.json.</string>
     <string name="library_rom_hack">ROM hack</string>
     <string name="library_file">Archivo</string>
     <string name="library_other_copies_in_your_library">Otras copias en tu biblioteca</string>
@@ -980,6 +981,7 @@
     <string name="play_couldn_t_download_the_emulator_last">La última vez no se pudo descargar el emulador %1$s (%2$s). Selecciona para volver a intentarlo.</string>
     <string name="play_retroforge_plays_games_through_retroarch_a">RetroForge juega a través de RetroArch, una app gratuita que se instala aparte. Selecciona para abrir la página oficial de descarga de RetroArch (%1$s).</string>
     <string name="play_retroarch_can_t_start_games_from">RetroArch no puede iniciar juegos de %1$s desde RetroForge. Usa una de las apps de emulador de abajo (Obtener la instala) o Ajustes → Ayuda e información → Cómo usar RetroForge → Otros emuladores.</string>
+    <string name="play_no_ps5_player_yet">Todavía ningún emulador para móviles y tabletas puede jugar a juegos de PS5, así que RetroForge no puede iniciar este. Tus juegos de PS5 se quedan en la biblioteca para cuando alguno pueda.</string>
     <string name="play_this_game_is_in_a_location">Este juego está en un lugar que RetroArch no puede abrir directamente (por ejemplo, una unidad en la nube). Funcionan los juegos en el almacenamiento interno, una tarjeta SD o una unidad USB.</string>
     <string name="play_couldn_t_open">No se pudo abrir %1$s</string>
     <string name="playlists_favourite">★ Favorito</string>

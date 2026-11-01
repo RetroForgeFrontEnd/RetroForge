@@ -61,7 +61,9 @@ Realistic guesses:
 
 ## Recommendation
 
-Option 2 now, option 3 after. Don't build a PS5 player yet: on the Tab A9+ and S22 it would not play games, and
+Option 2 now, option 3 after. **Option 2 is done (2026-11-01):** a `ps5` system in `systems.json`, PS5 folders found
+by `LibraryScanner` with their title from `param.json`, and the Play card says no PS5 emulator for phones and tablets
+exists yet (`play_no_ps5_player_yet`). Don't build a PS5 player yet: on the Tab A9+ and S22 it would not play games, and
 the only Android base is one person's experiment a few weeks old.
 
 ## Sources

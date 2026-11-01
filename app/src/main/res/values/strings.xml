@@ -256,6 +256,7 @@
     <string name="library_delete_this_game">Delete this game…</string>
     <string name="library_no_gamelist_xml_details_for_this">No gamelist.xml details for this game; the title comes from its file name.</string>
     <string name="library_no_gamelist_xml_title_from_param_sfo">No gamelist.xml details for this game; the title comes from its param.sfo.</string>
+    <string name="library_no_gamelist_xml_title_from_param_json">No gamelist.xml details for this game; the title comes from its param.json.</string>
     <string name="library_rom_hack">ROM hack</string>
     <string name="library_file">File</string>
     <string name="library_other_copies_in_your_library">Other Copies in Your Library</string>
@@ -1047,6 +1048,7 @@
     <string name="play_couldn_t_download_the_emulator_last">Couldn\'t download the %1$s emulator last time (%2$s). Select to try again.</string>
     <string name="play_retroforge_plays_games_through_retroarch_a">RetroForge plays games through RetroArch, a free app installed separately. Select to open RetroArch\'s official download page (%1$s).</string>
     <string name="play_retroarch_can_t_start_games_from">RetroArch can\'t start %1$s games from RetroForge. Use one of the emulator apps below (Get installs it), or Settings → Help and about → How to use RetroForge → Other emulators.</string>
+    <string name="play_no_ps5_player_yet">No emulator for phones and tablets can play PS5 games yet, so RetroForge can\'t start this one. Your PS5 games stay in the library for when one can.</string>
     <string name="play_this_game_is_in_a_location">This game is in a location RetroArch can\'t open directly (for example a cloud drive). Games on internal storage, an SD card or a USB drive work.</string>
     <string name="play_couldn_t_open">Couldn\'t open %1$s</string>
 
