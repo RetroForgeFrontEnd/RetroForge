@@ -125,3 +125,11 @@ fun FreeGamesSection(library: com.retroforge.core.library.LibraryRepository) {
         }
     }
 }
+
+/** Free games on a screen of their own, opened from the Retro tab and from Home when the library is empty. */
+@Composable
+fun FreeGamesScreen(library: com.retroforge.core.library.LibraryRepository) {
+    com.retroforge.app.ui.ScreenFrame(title = stringResource(R.string.pc_free_games), subtitle = stringResource(R.string.pc_shareware_freeware_and_homebrew_games_to, FreeGames.all.size)) {
+        FreeGamesSection(library)
+    }
+}

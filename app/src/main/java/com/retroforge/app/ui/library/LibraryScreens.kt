@@ -75,6 +75,7 @@ fun RetroScreen(
     onOpenPlaytime: () -> Unit = {},
     onOpenSmart: () -> Unit = {},
     onOpenPassport: () -> Unit = {},
+    onOpenFreeGames: () -> Unit = {},
 ) {
     val roots by viewModel.roots.collectAsStateWithLifecycle()
     val systems by viewModel.systems.collectAsStateWithLifecycle()
@@ -174,6 +175,12 @@ fun RetroScreen(
                     CardBody(stringResource(R.string.library_select_to_add_folders_rescan_or))
                 }
             }
+        }
+
+        // Homebrew, freeware and shareware their makers let anyone share: something to play before you add your own.
+        FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenFreeGames) {
+            CardTitle(stringResource(R.string.pc_free_games))
+            CardBody(stringResource(R.string.pc_shareware_freeware_and_homebrew_games_to, com.retroforge.app.ui.pc.FreeGames.all.size))
         }
 
         if (systems.isNotEmpty()) PlayTogetherCard(viewModel, onOpenGame)

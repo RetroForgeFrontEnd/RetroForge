@@ -182,6 +182,8 @@
     <string name="home_surprise_me">🎲 Здивуй мене</string>
     <string name="home_welcome_to_retroforge">Ласкаво просимо до RetroForge</string>
     <string name="home_add_your_games_folder_in_retro">Додайте папку з іграми в Ретро (або запустіть Налаштування → Налаштувати RetroForge), і ваша колекція з’явиться тут.</string>
+    <string name="home_no_games_yet">Ще немає ігор?</string>
+    <string name="home_get_free_games">Візьміть одну з безкоштовних ігор (%1$s), якими автори дозволяють ділитися: homebrew, freeware і shareware, одразу готові до гри.</string>
     <string name="home_your_systems">Ваші системи</string>
     <string name="home_retro">Ретро</string>
     <string name="home_search_systems_playlists_rom_tools">Пошук, системи, плейлисти, інструменти для ROM.</string>

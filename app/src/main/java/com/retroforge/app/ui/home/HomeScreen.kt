@@ -60,6 +60,7 @@ fun HomeScreen(
     onOpenGame: (Long) -> Unit,
     onOpenSystem: (String) -> Unit,
     onOpenPlaylist: (Long) -> Unit = {},
+    onOpenFreeGames: () -> Unit = {},
 ) {
     // The theme decides the structure of home; the dashboard below is the default.
     when (LocalThemeSpec.current.homeLayout) {
@@ -119,6 +120,10 @@ fun HomeScreen(
             FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { onOpen(Section.RETRO) }) {
                 CardTitle(stringResource(R.string.home_welcome_to_retroforge))
                 CardBody(stringResource(R.string.home_add_your_games_folder_in_retro))
+            }
+            FocusCard(modifier = Modifier.fillMaxWidth(), onClick = onOpenFreeGames) {
+                CardTitle(stringResource(R.string.home_no_games_yet))
+                CardBody(stringResource(R.string.home_get_free_games, com.retroforge.app.ui.pc.FreeGames.all.size))
             }
         }
 

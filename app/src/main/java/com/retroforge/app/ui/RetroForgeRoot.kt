@@ -138,6 +138,7 @@ private const val FILES_ROUTE = "retro/files"
 private const val TOURNAMENT_ROUTE = "retro/tournaments"
 private const val BACKLOG_ROUTE = "retro/backlog"
 private const val PLAYTIME_ROUTE = "retro/playtime"
+private const val FREE_GAMES_ROUTE = "retro/free-games"
 private const val SMART_ROUTE = "retro/smart"
 private const val PASSPORT_ROUTE = "retro/passport"
 private const val MANAGER_SORT_ROUTE = "retro/manager/sort"
@@ -258,6 +259,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
                                 onOpenApps = { nav.goTo(Section.APPS) },
                                 onOpenGame = { nav.navigate("retro/game/$it") }, onOpenSystem = { nav.navigate("retro/system/$it") },
                                 onOpenPlaylist = { nav.navigate("retro/playlist/$it") },
+                                onOpenFreeGames = { nav.navigate(FREE_GAMES_ROUTE) },
                             )
                         }
                         composable(Section.RETRO.route) {
@@ -273,6 +275,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
                                 onOpenPlaylist = { nav.navigate("retro/playlist/$it") },
                                 onOpenBacklog = { nav.navigate(BACKLOG_ROUTE) },
                                 onOpenPlaytime = { nav.navigate(PLAYTIME_ROUTE) },
+                                onOpenFreeGames = { nav.navigate(FREE_GAMES_ROUTE) },
                                 onOpenSmart = { nav.navigate(SMART_ROUTE) },
                                 onOpenPassport = { nav.navigate(PASSPORT_ROUTE) },
                             )
@@ -280,6 +283,7 @@ fun RetroForgeRoot(container: AppContainer, sectionCommands: Flow<NavCommand>, o
                         composable(BACKLOG_ROUTE) { com.retroforge.app.ui.library.BacklogScreen(libraryViewModel, onOpenGame = { nav.navigate("retro/game/$it") }) }
                         composable(PASSPORT_ROUTE) { com.retroforge.app.ui.library.PassportScreen(libraryViewModel, onOpenGame = { nav.navigate("retro/game/$it") }) }
                         composable(SMART_ROUTE) { com.retroforge.app.ui.library.SmartCollectionsScreen(libraryViewModel, onOpenGame = { nav.navigate("retro/game/$it") }) }
+                        composable(FREE_GAMES_ROUTE) { com.retroforge.app.ui.pc.FreeGamesScreen(container.library) }
                         composable(PLAYTIME_ROUTE) { com.retroforge.app.ui.library.PlaytimeScreen(libraryViewModel, onOpenGame = { nav.navigate("retro/game/$it") }) }
                         composable(FOLDERS_ROUTE) { LibraryFoldersScreen(libraryViewModel) }
                         composable(TOURNAMENT_ROUTE) { com.retroforge.app.ui.tournament.TournamentScreen() }

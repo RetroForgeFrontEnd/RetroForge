@@ -184,6 +184,8 @@
     <string name="home_surprise_me">🎲 Surprise me</string>
     <string name="home_welcome_to_retroforge">Welcome to RetroForge</string>
     <string name="home_add_your_games_folder_in_retro">Add your games folder in Retro (or run Settings → Set up RetroForge), and your collection shows up here.</string>
+    <string name="home_no_games_yet">No games yet?</string>
+    <string name="home_get_free_games">Get one of %1$s free games their makers let anyone share: homebrew, freeware and shareware, ready to play.</string>
     <string name="home_your_systems">Your Systems</string>
     <string name="home_retro">Retro</string>
     <string name="home_search_systems_playlists_rom_tools">Search, systems, playlists, ROM tools.</string>
