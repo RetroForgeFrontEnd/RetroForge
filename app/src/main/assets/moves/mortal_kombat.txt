@@ -3,7 +3,9 @@ title: Mortal Kombat
 match: mortal kombat
 not: mortal kombat ii | mortal kombat 2 | mortal kombat 3 | mortal kombat 4 | mortal kombat trilogy | mortal kombat mythologies | mortal kombat gold | mortal kombat advance | deadly alliance | tournament edition | deception | armageddon | shaolin monks | special forces
 buttons: HP=Y LP=B BL=R HK=X LK=A
-buttons.megadrive genesis: HP=L LP=Y BL=X HK=R LK=A
+# On the Mega Drive the game plays with three buttons: A low punch, B low kick, C high kick, Start block, back + A high
+# punch. HP presses A.
+buttons.megadrive genesis: HP=Y LP=Y BL=Start HK=A LK=B
 # Motions are read slowly: each step held 5 frames.
 step: 5
 # Every move here has been tried in the game except these, which come from the arcade move list: Liu Kang's

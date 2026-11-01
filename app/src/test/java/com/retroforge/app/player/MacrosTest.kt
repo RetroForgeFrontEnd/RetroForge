@@ -190,6 +190,9 @@ class MacrosTest {
         assertEquals(listOf("LP" to Pad.Y), game.buttonsFor("snes"))
         assertEquals(listOf("LP" to Pad.L), game.buttonsFor("megadrive"))
         assertEquals(listOf("LP" to Pad.L), game.buttonsFor("genesis"))
+        // Mortal Kombat II on the Mega Drive reads a three-button pad: block is Start, high kick C.
+        val mk2 = Macros.parse("title: MK\nbuttons.megadrive: BL=Start HK=A\nX | Y | BL")!!
+        assertEquals(listOf("BL" to Pad.START, "HK" to Pad.A), mk2.buttonsFor("megadrive"))
     }
 
     @Test

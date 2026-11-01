@@ -2,7 +2,10 @@
 title: Mortal Kombat II
 match: mortal kombat ii | mortal kombat 2
 buttons: HP=Y LP=B BL=R HK=X LK=A
-buttons.megadrive genesis: HP=L LP=Y BL=X HK=R LK=A
+# On the Mega Drive the game plays with three buttons even on a six-button pad (X, Y and Z only work with a Game Genie
+# code): A low punch, B low kick, C high kick, Start block, back + A high punch. HP presses A, as the Mega Drive move
+# lists give the High Fireball (forward, forward, low punch).
+buttons.megadrive genesis: HP=Y LP=Y BL=Start HK=A LK=B
 # Motions are read slowly: each step held 5 frames.
 step: 5
 # Finishers come after "Finish him": a Fatality where the note says; a Babality or Friendship only if you used

@@ -192,6 +192,12 @@ object Macros {
         }
     }
 
-    /** Short names for the RetroPad buttons a fighting-game button can sit on. */
-    val padButtons = listOf(Pad.B to "B", Pad.A to "A", Pad.Y to "Y", Pad.X to "X", Pad.L to "L", Pad.R to "R", Pad.L2 to "L2", Pad.R2 to "R2")
+    /**
+     * Short names for the RetroPad buttons a fighting-game button can sit on. Start is last: Mortal Kombat on a
+     * three-button Mega Drive pad blocks with it.
+     */
+    val padButtons = listOf(
+        Pad.B to "B", Pad.A to "A", Pad.Y to "Y", Pad.X to "X", Pad.L to "L", Pad.R to "R", Pad.L2 to "L2", Pad.R2 to "R2",
+        Pad.START to "Start",
+    )
 }
