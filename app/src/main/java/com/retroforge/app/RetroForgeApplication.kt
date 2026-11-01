@@ -41,7 +41,8 @@ class AppContainer(application: Application) {
     val contentResolver: ContentResolver = application.contentResolver
     val catalogues = CatalogueStore(
         dir = File(application.filesDir, "catalogues"),
-        builtIn = { application.assets.open("catalogues/retroforge-starter.json").bufferedReader().use { it.readText() } },
+        // The Play build has no starter catalogue (fan hacks of other companies' games); users can add their own.
+        builtIn = if (Store.play) null else { { application.assets.open("catalogues/retroforge-starter.json").bufferedReader().use { it.readText() } } },
     )
     val catalogueFetcher = CatalogueFetcher("RetroForge/${BuildConfig.VERSION_NAME}")
     val library = LibraryRepository(LibraryDatabase.create(application), application.contentResolver).apply {

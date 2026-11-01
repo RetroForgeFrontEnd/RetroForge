@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The Play build has no Ports section, so the PC tab's subtitle leaves ports out. -->
+<!-- The Play build has no Ports section, so the PC tab's subtitle and Home's PC card leave ports out. -->
 <resources>
     <string name="pc_your_pc_games_cloud_gaming_ports">Tus juegos de PC, juego en la nube y juegos gratis.</string>
+    <string name="home_ports_of_your_games_and_windows">Tus juegos de Windows, streaming desde tu PC y juego en la nube.</string>
 </resources>

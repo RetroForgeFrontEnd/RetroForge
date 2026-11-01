@@ -236,12 +236,13 @@ fun SetupScreen(viewModel: SetupViewModel, onOpenSort: () -> Unit = {}, systems:
         }
 
         // 4. Switch keys and firmware, installed in the Switch Player itself, when there are Switch games or the player is installed.
-        if (!com.retroforge.app.Store.play && ("switch" in systemIds || com.retroforge.app.ui.settings.SwitchPlayer.installed(context))) {
+        val switchStep = !com.retroforge.app.Store.play && ("switch" in systemIds || com.retroforge.app.ui.settings.SwitchPlayer.installed(context))
+        if (switchStep) {
             com.retroforge.app.ui.settings.SwitchSettingsCard(stringResource(R.string.setup_4_switch_keys_and_firmware), setup = true)
         }
 
-        // 5. Bezels round the game in landscape, for every system the scan found.
-        com.retroforge.app.ui.settings.BezelsCard(systems, title = stringResource(R.string.setup_4_bezels_optional))
+        // 5. (or 4. without the Switch step) Bezels round the game in landscape, for every system the scan found.
+        com.retroforge.app.ui.settings.BezelsCard(systems, title = stringResource(R.string.setup_4_bezels_optional, if (switchStep) 5 else 4))
 
         FocusCard(modifier = Modifier.fillMaxWidth(), onClick = { viewModel.finish(); onDone() }) {
             CardTitle(stringResource(R.string.setup_done))

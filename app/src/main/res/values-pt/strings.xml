@@ -599,7 +599,7 @@
     <string name="setup_missing">Faltando</string>
     <string name="setup_games_for_these_won_t_start">Os jogos destes sistemas não vão iniciar no player integrado até a BIOS estar na sua pasta de BIOS:</string>
     <string name="setup_three_steps_from_your_game_folder">Poucos passos da sua pasta de jogos até jogar; quase tudo acontece sozinho. Você pode voltar aqui quando quiser pelas Configurações.</string>
-    <string name="setup_4_bezels_optional">5. Molduras (opcional)</string>
+    <string name="setup_4_bezels_optional">%1$d. Molduras (opcional)</string>
     <string name="vr_how_it_works">Como funciona</string>
     <string name="vr_any_game_can_be_shown_once">Qualquer jogo pode ser mostrado uma vez por olho: pause (ou deslize de uma borda) e ative o Cardboard VR. O celular vira de lado e os botões de toque somem, então um controle Bluetooth é o jeito de jogar. A maioria dos jogos parece uma grande tela flutuante; os de Virtual Boy são 3D de verdade.</string>
     <string name="vr_start_every_game_in_cardboard_vr">Iniciar todo jogo em Cardboard VR</string>

@@ -26,9 +26,9 @@ sealed interface AddResult {
 
 /**
  * Keeps user-added catalogues as validated JSON files in RetroForge's private storage. The built-in catalogue is
- * passed in by the app and can't be removed. Nothing here touches the network.
+ * passed in by the app and can't be removed; null means there is none. Nothing here touches the network.
  */
-class CatalogueStore(private val dir: File, private val builtIn: () -> String, private val clock: () -> Long = System::currentTimeMillis) {
+class CatalogueStore(private val dir: File, private val builtIn: (() -> String)?, private val clock: () -> Long = System::currentTimeMillis) {
 
     private val json = Json { ignoreUnknownKeys = true; prettyPrint = true }
     private val index = File(dir, "sources.json")
@@ -41,9 +41,10 @@ class CatalogueStore(private val dir: File, private val builtIn: () -> String, p
     fun load(): Pair<List<LoadedCatalogue>, List<String>> {
         val loaded = mutableListOf<LoadedCatalogue>()
         val problems = mutableListOf<String>()
-        when (val parsed = CatalogueParser.parse(builtIn())) {
+        when (val parsed = builtIn?.let { CatalogueParser.parse(it()) }) {
             is ParseResult.Valid -> loaded += LoadedCatalogue(null, parsed.catalogue, parsed.warnings)
             is ParseResult.Invalid -> problems += "Built-in catalogue: ${parsed.reason}"
+            null -> {}
         }
         for (source in sources()) {
             val text = runCatching { fileFor(source.id).readText() }.getOrNull()
@@ -61,7 +62,7 @@ class CatalogueStore(private val dir: File, private val builtIn: () -> String, p
         val parsed = CatalogueParser.parse(text)
         if (parsed is ParseResult.Invalid) return AddResult.Rejected(parsed.reason)
         val catalogue = (parsed as ParseResult.Valid).catalogue
-        if (CatalogueParser.parse(builtIn()).let { it is ParseResult.Valid && it.catalogue.id == catalogue.id }) {
+        if (builtIn?.let { CatalogueParser.parse(it()) }.let { it is ParseResult.Valid && it.catalogue.id == catalogue.id }) {
             return AddResult.Rejected("This catalogue has the same id as the built-in one.")
         }
         val existing = sources()

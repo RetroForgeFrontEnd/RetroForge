@@ -98,6 +98,16 @@ class CatalogueTest {
     }
 
     @Test
+    fun withoutABuiltInOnlyTheUsersOwnCatalogues() {
+        val store = CatalogueStore(tmp.newFolder("cat"), builtIn = null)
+        assertTrue(store.load().first.isEmpty())
+        assertTrue(store.add(catalogue("mine", hack("y")), null) is AddResult.Added)
+        val (loaded, problems) = store.load()
+        assertTrue(problems.isEmpty())
+        assertEquals(listOf("mine"), loaded.map { it.catalogue.id })
+    }
+
+    @Test
     fun mergeShowsTheSameOfficialPageOnce() {
         val a = LoadedCatalogue(null, valid(catalogue("a", hack("one", pageUrl = "https://example.org/h/1/"))).catalogue, emptyList())
         val b = LoadedCatalogue(null, valid(catalogue("b", hack("uno", pageUrl = "https://EXAMPLE.org/h/1"))).catalogue, emptyList())

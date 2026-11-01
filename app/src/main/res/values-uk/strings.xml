@@ -598,7 +598,7 @@
     <string name="setup_missing">Бракує</string>
     <string name="setup_games_for_these_won_t_start">Ігри для цих систем не запустяться у вбудованому плеєрі, доки BIOS не буде у вашій папці BIOS:</string>
     <string name="setup_three_steps_from_your_game_folder">Кілька кроків від папки з іграми до гри; більшість відбувається саме собою. Сюди можна повернутися будь-коли з Налаштувань.</string>
-    <string name="setup_4_bezels_optional">5. Рамки (необов’язково)</string>
+    <string name="setup_4_bezels_optional">%1$d. Рамки (необов’язково)</string>
     <string name="vr_how_it_works">Як це працює</string>
     <string name="vr_any_game_can_be_shown_once">Будь-яку гру можна показати окремо для кожного ока: поставте її на паузу (або проведіть від краю) і ввімкніть Cardboard VR. Телефон повертається боком, а сенсорні кнопки ховаються, тож грати найкраще з контролером Bluetooth. Більшість ігор виглядає як великий екран у повітрі; ігри Virtual Boy — справжнє 3D.</string>
     <string name="vr_start_every_game_in_cardboard_vr">Запускати кожну гру в Cardboard VR</string>

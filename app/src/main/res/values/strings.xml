@@ -600,7 +600,7 @@
     <string name="setup_missing">Missing</string>
     <string name="setup_games_for_these_won_t_start">Games for these won\'t start in the built-in player until the BIOS is in your BIOS folder:</string>
     <string name="setup_three_steps_from_your_game_folder">A few steps from your game folder to playing; most of it happens by itself. You can come back here any time from Settings.</string>
-    <string name="setup_4_bezels_optional">5. Bezels (Optional)</string>
+    <string name="setup_4_bezels_optional">%1$d. Bezels (Optional)</string>
     <string name="vr_how_it_works">How It Works</string>
     <string name="vr_any_game_can_be_shown_once">Any game can be shown once per eye: pause it (or swipe in from an edge) and switch on Cardboard VR. The phone turns sideways and the touch buttons hide, so a Bluetooth controller is the way to play. Most games look like a big floating screen; Virtual Boy games are real 3D.</string>
     <string name="vr_start_every_game_in_cardboard_vr">Start Every Game in Cardboard VR</string>
