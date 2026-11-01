@@ -42,8 +42,9 @@ class RetroArchLauncher(private val context: Context) {
     }
 
     fun plan(system: String, treeUri: String, documentId: String): LaunchPlan {
-        val install = findInstall() ?: return LaunchPlan.NotPossible(LaunchProblem.RetroArchNotInstalled)
+        // A system RetroArch can't play says so before "install RetroArch", which wouldn't help it.
         val cores = RetroArchCores.coresFor(system).ifEmpty { return LaunchPlan.NotPossible(LaunchProblem.SystemNotSupported(system)) }
+        val install = findInstall() ?: return LaunchPlan.NotPossible(LaunchProblem.RetroArchNotInstalled)
         val path = StoragePaths.filePath(treeUri, documentId) ?: return LaunchPlan.NotPossible(LaunchProblem.LocationNotSupported)
         return LaunchPlan.Ready(install, path, cores)
     }
