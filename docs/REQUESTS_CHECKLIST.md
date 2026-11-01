@@ -287,3 +287,19 @@ Requests that were never fully done, or only answered:
 | Big logo export (for the GitHub page and posts) | 📋 optional |
 | PS3 games offered to the PS3 Player from RetroForge | ❌ after the player runs a game properly |
 | Promotion: Reddit post, sharing guide | 🟡 r/EmulationOnAndroid post drafted; where-to-share.md in the release folder |
+
+## Moves: more kinds of games (1 November)
+
+Moves play a fixed button sequence or a fixed timing with one tap, off during netplay and the link cable. These games have the same kind of mechanics.
+
+| Item | Status |
+|---|---|
+| Golf swing meters | 🟡 Mario Golf (Game Boy Color), Mario Golf: Advance Tour (GBA) and Mario Golf (N64): six swings each, from full down to a 5% tap, timed in the games. Next: Mario Golf: Toadstool Tour (GameCube), Hot Shots Golf Open Tee (PSP), Tee Off (Dreamcast) |
+| Skateboarding specials | 📋 to do: Tony Hawk's Pro Skater 1–4 tricks are direction + button sequences, just like fighting moves |
+| Wrestling finishers | 📋 to do: WWF No Mercy, WrestleMania 2000 and SmackDown use the same kind of sequences |
+| Bowling | 📋 to do: Ten Pin Alley and Brunswick have power and spin meters |
+| Pool and snooker | 📋 to do: Jimmy White's and Side Pocket have power meters |
+| Darts | 📋 to do: these have power meters too |
+| Track & field | 📋 to do: Track & Field and International Track & Field have mash-then-angle events. Turbo does the mashing, and a move could hold for the angle |
+| Charge shots in shooters | 📋 to do: R-Type and Gradius need a held button |
+| Cheat codes on title screens | ✅ already work (lists with `facing: no`) |
