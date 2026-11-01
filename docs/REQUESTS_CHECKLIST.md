@@ -294,7 +294,7 @@ Moves play a fixed button sequence or a fixed timing with one tap, off during ne
 
 | Item | Status |
 |---|---|
-| Golf swing meters | 🟡 Mario Golf (Game Boy Color), Mario Golf: Advance Tour (GBA), Mario Golf (N64) and Mario Golf: Toadstool Tour (GameCube): six swings each, from full down to a 5% tap, timed in the games. Next: Hot Shots Golf Open Tee (PSP), Hot Shots Golf Fore! (PS2), Tee Off (Dreamcast), Mario Golf: World Tour (3DS) |
+| Golf swing meters | 🟡 Mario Golf (Game Boy Color), Mario Golf: Advance Tour (GBA), Mario Golf (N64), Mario Golf: Toadstool Tour (GameCube) and Hot Shots Golf: Open Tee (PSP): six swings each, from full down to a 5% tap, timed in the games. Next: Hot Shots Golf Fore! (PS2), Tee Off (Dreamcast), Mario Golf: World Tour (3DS) |
 | Skateboarding specials | 📋 to do: Tony Hawk's Pro Skater 1–4 tricks are direction + button sequences, just like fighting moves |
 | Wrestling finishers | 📋 to do: WWF No Mercy, WrestleMania 2000 and SmackDown use the same kind of sequences |
 | Bowling | 📋 to do: Ten Pin Alley and Brunswick have power and spin meters |

@@ -1,0 +1,20 @@
+# Hot Shots Golf: Open Tee (PSP), Everybody's Golf in Europe. Each swing does the three-press meter for you: X (cross)
+# starts it, X sets the power at the percentage in the swing's name, and X hits as the cursor comes back to the start
+# mark. Aim and pick the club first. 5*n waits n frames.
+# Timed on South Alps hole 1 in Training (Try Again returns to the tee): power is about 1.82% per frame of the first
+# wait minus 3.5% (W10 = 15%, W30 = 52%, W45 = 78%, W55 = 96%), and the impact comes 108 frames after the first
+# press at any power. The impact window is about three frames wide (K77 to K79 after W30 all hit cleanly). From the
+# list with the 214-yard driver: Full 219 yards, Half 127, Chip 22, Tap 14.
+title: Hot Shots Golf: Open Tee
+match: hot shots golf open tee | everybody s golf | minna no golf portable
+not: open tee 2 | everybody s golf 2 | minna no golf portable 2
+systems: psp
+buttons: X=B O=A
+facing: no
+checked: no
+Swing | Full swing (100%) | X 5*57 X 5*51 X
+Swing | Three-quarter swing (75%) | X 5*43 X 5*65 X
+Swing | Half swing (50%) | X 5*29 X 5*79 X
+Swing | Quarter swing (25%) | X 5*16 X 5*92 X
+Swing | Chip (10%) | X 5*7 X 5*101 X
+Swing | Tap (5%) | X 5*5 X 5*103 X
