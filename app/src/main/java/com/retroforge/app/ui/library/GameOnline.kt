@@ -71,11 +71,15 @@ object GameOnline {
 /**
  * The game page's online card: host a room, join one found on this Wi-Fi, or join a friend's by address.
  * [play] starts the game with the extras. [copying] is the percent copied while a game on a network drive is copied
- * to the phone first, shown here too since Play's own progress is further up the page, out of sight.
+ * to the phone first, shown here too when the copy started from this card, since Play's own progress is further up the
+ * page, out of sight.
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GameOnlineCard(game: GameEntity, copying: Int?, play: (List<IntentExtra>) -> Unit) {
+    // Set when a room is hosted or joined from here, so tapping Play doesn't show the copy progress twice.
+    var startedHere by remember(game.id) { mutableStateOf(false) }
+    val start: (List<IntentExtra>) -> Unit = { startedHere = true; play(it) }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var address by remember { mutableStateOf(GameOnline.lastAddress(context)) }
@@ -87,7 +91,7 @@ fun GameOnlineCard(game: GameEntity, copying: Int?, play: (List<IntentExtra>) ->
         CardTitle(stringResource(R.string.online_title))
         CardBody(stringResource(R.string.online_body, Netplay.name(context), GameOnline.PORT))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            FocusChip(stringResource(R.string.online_host), onClick = { localNetwork { play(GameOnline.extras(context, game, true, "", password)) } })
+            FocusChip(stringResource(R.string.online_host), onClick = { localNetwork { start(GameOnline.extras(context, game, true, "", password)) } })
             FocusChip(stringResource(if (looking) R.string.library_looking else R.string.library_find_games_on_this_wi_fi), enabled = !looking, onClick = {
                 localNetwork {
                     looking = true
@@ -98,7 +102,7 @@ fun GameOnlineCard(game: GameEntity, copying: Int?, play: (List<IntentExtra>) ->
                 }
             })
         }
-        copying?.let { percent ->
+        copying?.takeIf { startedHere }?.let { percent ->
             CardBody(stringResource(R.string.play_copying_from_network, percent))
             androidx.compose.material3.LinearProgressIndicator(progress = { percent / 100f }, modifier = Modifier.fillMaxWidth())
         }
@@ -107,7 +111,7 @@ fun GameOnlineCard(game: GameEntity, copying: Int?, play: (List<IntentExtra>) ->
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 found.forEach { room ->
                     FocusChip(stringResource(R.string.online_join_room, room.player, room.title), onClick = {
-                        localNetwork { play(GameOnline.extras(context, game, false, "${room.address}:${room.port}", password)) }
+                        localNetwork { start(GameOnline.extras(context, game, false, "${room.address}:${room.port}", password)) }
                     })
                 }
             }
@@ -124,7 +128,7 @@ fun GameOnlineCard(game: GameEntity, copying: Int?, play: (List<IntentExtra>) ->
             modifier = Modifier.fillMaxWidth(),
         )
         FocusChip(stringResource(R.string.online_join), enabled = address.isNotBlank(), onClick = {
-            localNetwork { play(GameOnline.extras(context, game, false, address, password)) }
+            localNetwork { start(GameOnline.extras(context, game, false, address, password)) }
         })
     }
 }
