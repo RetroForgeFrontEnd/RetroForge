@@ -15,5 +15,7 @@ captures/
 # Release signing: never commit the key or its passwords
 keystore.properties
 keystore-play.properties
+# Notepad sometimes saves these as .txt
+keystore*.properties.txt
 *.jks
 *.keystore
