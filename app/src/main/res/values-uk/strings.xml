@@ -254,6 +254,7 @@
     <string name="library_delete_this_game">Видалити цю гру…</string>
     <string name="library_no_gamelist_xml_details_for_this">Для цієї гри немає даних gamelist.xml; назву взято з імені файлу.</string>
     <string name="library_no_gamelist_xml_title_from_param_sfo">Для цієї гри немає даних gamelist.xml; назву взято з її param.sfo.</string>
+    <string name="library_no_gamelist_xml_title_from_param_json">Для цієї гри немає даних gamelist.xml; назву взято з її param.json.</string>
     <string name="library_rom_hack">ROM-хак</string>
     <string name="library_file">Файл</string>
     <string name="library_other_copies_in_your_library">Інші копії у вашій бібліотеці</string>
@@ -979,6 +980,7 @@
     <string name="play_couldn_t_download_the_emulator_last">Минулого разу не вдалося завантажити емулятор %1$s (%2$s). Виберіть, щоб спробувати ще раз.</string>
     <string name="play_retroforge_plays_games_through_retroarch_a">RetroForge запускає ігри через RetroArch, безкоштовний застосунок, що встановлюється окремо. Виберіть, щоб відкрити офіційну сторінку завантаження RetroArch (%1$s).</string>
     <string name="play_retroarch_can_t_start_games_from">RetroArch не може запускати ігри %1$s з RetroForge. Скористайтеся одним з емуляторів нижче («Отримати» встановить його) або Налаштування → Довідка й інформація → Як користуватися RetroForge → Інші емулятори.</string>
+    <string name="play_no_ps5_player_yet">Жоден емулятор для телефонів і планшетів поки не може запускати ігри PS5, тож RetroForge не може запустити цю гру. Ваші ігри PS5 лишаються в бібліотеці, доки такий емулятор не з’явиться.</string>
     <string name="play_this_game_is_in_a_location">Ця гра лежить там, куди RetroArch не може дістатися напряму (наприклад, у хмарному сховищі). Ігри у внутрішній пам’яті, на SD-карті чи USB-накопичувачі працюють.</string>
     <string name="play_couldn_t_open">Не вдалося відкрити %1$s</string>
     <string name="playlists_favourite">★ В обраному</string>

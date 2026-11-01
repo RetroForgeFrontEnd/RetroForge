@@ -255,6 +255,7 @@
     <string name="library_delete_this_game">Apagar este jogo…</string>
     <string name="library_no_gamelist_xml_details_for_this">Sem dados de gamelist.xml para este jogo; o título vem do nome do arquivo.</string>
     <string name="library_no_gamelist_xml_title_from_param_sfo">Sem dados do gamelist.xml para este jogo; o título vem do seu param.sfo.</string>
+    <string name="library_no_gamelist_xml_title_from_param_json">Sem dados do gamelist.xml para este jogo; o título vem do seu param.json.</string>
     <string name="library_rom_hack">ROM hack</string>
     <string name="library_file">Arquivo</string>
     <string name="library_other_copies_in_your_library">Outras cópias na sua biblioteca</string>
@@ -980,6 +981,7 @@
     <string name="play_couldn_t_download_the_emulator_last">Da última vez não foi possível baixar o emulador %1$s (%2$s). Selecione para tentar de novo.</string>
     <string name="play_retroforge_plays_games_through_retroarch_a">O RetroForge joga pelo RetroArch, um app grátis instalado à parte. Selecione para abrir a página oficial de download do RetroArch (%1$s).</string>
     <string name="play_retroarch_can_t_start_games_from">O RetroArch não consegue iniciar jogos de %1$s a partir do RetroForge. Use um dos apps de emulador abaixo (Obter o instala) ou Configurações → Ajuda e sobre → Como usar o RetroForge → Outros emuladores.</string>
+    <string name="play_no_ps5_player_yet">Ainda nenhum emulador para celulares e tablets consegue rodar jogos de PS5, então o RetroForge não pode iniciar este. Seus jogos de PS5 ficam na biblioteca para quando algum conseguir.</string>
     <string name="play_this_game_is_in_a_location">Este jogo está num local que o RetroArch não consegue abrir diretamente (por exemplo, uma unidade na nuvem). Funcionam jogos no armazenamento interno, num cartão SD ou numa unidade USB.</string>
     <string name="play_couldn_t_open">Não foi possível abrir %1$s</string>
     <string name="playlists_favourite">★ Favorito</string>

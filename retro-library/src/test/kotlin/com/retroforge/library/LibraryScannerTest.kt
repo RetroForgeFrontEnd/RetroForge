@@ -116,6 +116,29 @@ class LibraryScannerTest {
     }
 
     @Test
+    fun ps5GamesAreDumpedFoldersWithTheirTitleFromParamJson() {
+        val param = """
+            {"contentId": "XX0000-PPSA99999_00-0000000000000000", "titleId": "PPSA99999",
+             "localizedParameters": {"defaultLanguage": "en-GB", "en-US": {"titleName": "Test Game US"},
+                                     "en-GB": {"titleName": "Test Game"}}}
+        """.trimIndent()
+        val roms = dir(
+            "roms",
+            dir(
+                "ps5",
+                dir("PPSA99999", file("eboot.bin"), dir("sce_sys", file("param.json", param))),
+                dir("PPSA99999-patch", file("eboot.bin"), dir("sce_sys")),
+                dir("PPSA99998", file("eboot.bin"), dir("sce_sys", file("param.json", "not json"))),
+                dir("Not a game", dir("sce_sys", file("param.json", param))),
+            ),
+        )
+        val games = scanner.scan(roms).games.filter { it.system == "ps5" }.sortedBy { it.relativePath }
+        assertEquals(listOf("ps5/PPSA99998", "ps5/PPSA99999"), games.map { it.relativePath })
+        assertEquals("Test Game", games.single { it.fileName == "PPSA99999" }.displayTitle)
+        assertEquals("PPSA99998", games.single { it.fileName == "PPSA99998" }.displayTitle)
+    }
+
+    @Test
     fun paramSfoReadsTextAndNumbersAndShrugsOffJunk() {
         val sfo = ParamSfo.parse(paramSfo("TITLE" to "Gravity Rush", "TITLE_ID" to "CUSA01113"))
         assertEquals("Gravity Rush", sfo["TITLE"])

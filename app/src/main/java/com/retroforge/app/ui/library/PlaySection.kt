@@ -326,6 +326,8 @@ private fun SaveStatesCard(game: GameEntity, core: PlayerCores.PlayerCore, onPla
 private fun describe(problem: LaunchProblem, viewModel: LibraryViewModel): String = when (problem) {
     LaunchProblem.RetroArchNotInstalled ->
         str(R.string.play_retroforge_plays_games_through_retroarch_a, RetroArchLauncher.DOWNLOAD_URL)
+    // No PS5 emulator runs on Android yet (docs/PS5_RESEARCH.md), so there's no app below to point to.
+    is LaunchProblem.SystemNotSupported if problem.system == "ps5" -> str(R.string.play_no_ps5_player_yet)
     is LaunchProblem.SystemNotSupported ->
         str(R.string.play_retroarch_can_t_start_games_from, viewModel.systemName(problem.system))
     LaunchProblem.LocationNotSupported ->

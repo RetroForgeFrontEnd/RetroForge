@@ -386,8 +386,27 @@ object PlayerCores {
         "ppsspp" -> "ppsspp_internal_resolution" to 10
         "flycast" -> "reicast_internal_resolution" to 10
         "mupen64plus_next_gles3" -> "mupen64plus-43screensize" to 4
+        // PCSX ReARMed's Enhanced Resolution is off or double; SwanStation scales when it draws with the GPU.
+        "pcsx_rearmed" -> "pcsx_rearmed_neon_enhancement_enable" to 2
+        "swanstation" -> "swanstation_GPU_ResolutionScale" to 16
         else -> null
     }
+
+    /**
+     * A resolution option's values from native upwards. The plain option list puts the core's default first
+     * (Mupen64Plus-Next's 640x480 before 320x240, PCSX ReARMed's enabled before disabled), so values that all hold a
+     * number are ordered by it, and an on/off option starts with off. Flycast's list starts below the Dreamcast's own
+     * 640x480, so it starts there.
+     */
+    fun resolutionChoices(coreId: String, choices: List<String>): List<String> {
+        val numbers = choices.map { Regex("\\d+").find(it)?.value?.toIntOrNull() }
+        if (numbers.any { it == null }) return choices.sortedBy { it.lowercase() !in setOf("disabled", "off", "false") }
+        val native = if (coreId == "flycast") 640 else 0
+        return choices.zip(numbers).filter { it.second!! >= native }.sortedBy { it.second }.map { it.first }
+    }
+
+    /** Cores that only read their internal resolution when the game starts: a new one restarts the game. */
+    fun resolutionAtStart(coreId: String) = coreId in setOf("pcsx2", "mupen64plus_next_gles3")
 
     /** A core's widescreen hack: (option, widescreen value, original value), for the pause menu's Widescreen switch. */
     fun widescreenOption(coreId: String): Triple<String, String, String>? = when (coreId) {

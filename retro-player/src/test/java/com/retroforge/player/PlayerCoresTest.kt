@@ -35,6 +35,24 @@ class PlayerCoresTest {
     }
 
     @Test
+    fun resolutionsRunFromNativeUpwardsWhateverTheDefault() {
+        // Mupen64Plus-Next's plain option list: its default, 640x480, comes first.
+        assertEquals(
+            listOf("320x240", "640x480", "960x720", "1280x960"),
+            PlayerCores.resolutionChoices("mupen64plus_next_gles3", listOf("640x480", "320x240", "960x720", "1280x960")),
+        )
+        // Flycast starts at the Dreamcast's own 640x480, not its smaller 320x240.
+        assertEquals(
+            listOf("640x480", "800x600", "960x720"),
+            PlayerCores.resolutionChoices("flycast", listOf("640x480", "320x240", "800x600", "960x720")),
+        )
+        assertEquals(listOf("1x (Native)", "2x", "10x"), PlayerCores.resolutionChoices("citra", listOf("1x (Native)", "2x", "10x")))
+        // PCSX ReARMed's Enhanced Resolution: off (native), then on (double).
+        assertEquals(listOf("disabled", "enabled"), PlayerCores.resolutionChoices("pcsx_rearmed", listOf("enabled", "disabled")))
+        assertEquals("pcsx_rearmed_neon_enhancement_enable", PlayerCores.resolutionOption("pcsx_rearmed")?.first)
+    }
+
+    @Test
     fun aChosenEmulatorIsUsedOnlyWhenTheSystemHasIt() {
         assertEquals("gpsp", PlayerCores.forGame("gba", "Advance Wars.gba", preferred = "gpsp")?.id)
         assertEquals("mgba", PlayerCores.forGame("gba", "Advance Wars.gba", preferred = "snes9x")?.id)

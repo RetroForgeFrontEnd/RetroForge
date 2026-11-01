@@ -255,6 +255,7 @@
     <string name="library_delete_this_game">Supprimer ce jeu…</string>
     <string name="library_no_gamelist_xml_details_for_this">Pas d\'infos gamelist.xml pour ce jeu ; le titre vient du nom du fichier.</string>
     <string name="library_no_gamelist_xml_title_from_param_sfo">Aucune info gamelist.xml pour ce jeu ; le titre vient de son param.sfo.</string>
+    <string name="library_no_gamelist_xml_title_from_param_json">Aucune info gamelist.xml pour ce jeu ; le titre vient de son param.json.</string>
     <string name="library_rom_hack">ROM hack</string>
     <string name="library_file">Fichier</string>
     <string name="library_other_copies_in_your_library">Autres copies dans votre bibliothèque</string>
@@ -980,6 +981,7 @@
     <string name="play_couldn_t_download_the_emulator_last">Le téléchargement de l\'émulateur %1$s a échoué la dernière fois (%2$s). Sélectionne pour réessayer.</string>
     <string name="play_retroforge_plays_games_through_retroarch_a">RetroForge fait jouer via RetroArch, une appli gratuite installée à part. Sélectionne pour ouvrir la page officielle de téléchargement de RetroArch (%1$s).</string>
     <string name="play_retroarch_can_t_start_games_from">RetroArch ne peut pas lancer les jeux %1$s depuis RetroForge. Utilise une des applis d\'émulateur ci-dessous (Obtenir l\'installe), ou Réglages → Aide et à propos → Comment utiliser RetroForge → Autres émulateurs.</string>
+    <string name="play_no_ps5_player_yet">Aucun émulateur pour téléphones et tablettes ne peut encore lancer les jeux PS5, donc RetroForge ne peut pas démarrer celui-ci. Tes jeux PS5 restent dans la bibliothèque en attendant qu\'un émulateur le puisse.</string>
     <string name="play_this_game_is_in_a_location">Ce jeu est à un endroit que RetroArch ne peut pas ouvrir directement (par exemple un stockage cloud). Les jeux en mémoire interne, sur carte SD ou clé USB fonctionnent.</string>
     <string name="play_couldn_t_open">Impossible d\'ouvrir %1$s</string>
     <string name="playlists_favourite">★ Favori</string>

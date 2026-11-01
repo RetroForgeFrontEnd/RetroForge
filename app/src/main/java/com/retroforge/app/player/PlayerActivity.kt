@@ -991,7 +991,7 @@ class PlayerActivity : ComponentActivity() {
     /** The internal resolution chosen for this system: the Nth value of the core's own resolution option. */
     private fun applyScale() {
         val (key, _) = PlayerCores.resolutionOption(coreId) ?: return
-        val choices = NativePlayer.options().firstOrNull { it.key == key }?.choices ?: return
+        val choices = NativePlayer.options().firstOrNull { it.key == key }?.choices?.let { PlayerCores.resolutionChoices(coreId, it) } ?: return
         if (choices.isEmpty()) return
         NativePlayer.setOption(key, choices[(scale.coerceAtLeast(1) - 1).coerceAtMost(choices.size - 1)])
     }
@@ -1035,8 +1035,7 @@ class PlayerActivity : ComponentActivity() {
         applyScale()
         coreOptions = NativePlayer.options()
         refreshVideo(10)
-        // PCSX2 only reads its resolution at start.
-        if (coreId == "pcsx2") {
+        if (PlayerCores.resolutionAtStart(coreId)) {
             notice = str(R.string.player_restarting_at, scale)
             restartWith(Intent(intent))
         }

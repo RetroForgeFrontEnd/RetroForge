@@ -3,6 +3,10 @@ package com.retroforge.library
 import com.retroforge.library.manage.HOLDING_FOLDERS
 import java.io.IOException
 import java.io.InputStream
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * A read-only view of a folder tree. Implemented over Android's Storage Access Framework in the app and over
@@ -249,10 +253,10 @@ class LibraryScanner(private val rules: SystemRules) {
                     child.isDirectory && child.name.lowercase() in HOLDING_FOLDERS -> Unit
                     // EmulationStation treats a folder named like a game ("Skate (EUR).ps3", "XCOM.pc") as one game.
                     child.isDirectory && !inMedia && ext.isNotEmpty() && ext in rule.extensions -> romFiles += FileEntry(childPath, child)
-                    // PS4 games are dumped folders, named anything: one with an eboot.bin is a game. Updates, patches and
-                    // mods sit beside the game as "<ID>-UPDATE" / "-patch" / "-mods" and are the player's, not games.
-                    child.isDirectory && !inMedia && rule.id == "ps4" && ps4Extra.containsMatchIn(child.name) -> Unit
-                    child.isDirectory && !inMedia && rule.id == "ps4" && hasEboot(child) -> romFiles += FileEntry(childPath, child)
+                    // PS4 and PS5 games are dumped folders, named anything: one with an eboot.bin is a game. Updates, patches
+                    // and mods sit beside the game as "<ID>-UPDATE" / "-patch" / "-mods" and are the player's, not games.
+                    child.isDirectory && !inMedia && rule.id in dumpedFolderSystems && ps4Extra.containsMatchIn(child.name) -> Unit
+                    child.isDirectory && !inMedia && rule.id in dumpedFolderSystems && hasEboot(child) -> romFiles += FileEntry(childPath, child)
                     child.isDirectory -> {
                         val media = inMedia || child.name.lowercase() in mediaFolders
                         if (depth < maxDepth) walk(child, childPath, depth + 1, media) else tooDeep++
@@ -284,8 +288,13 @@ class LibraryScanner(private val rules: SystemRules) {
         val hidden = referencedByPlaylists(romFiles, prefix, problems)
         return romFiles.filter { it.path.lowercase() !in hidden && !isSwitchAddOn(rule.id, it.node.name) }.map { entry ->
             // Arcade romsets are named by short names ("sf2.zip"): shown by their full titles. PS4 folders take the title
-            // inside their param.sfo, so a folder named "CUSA12345" still shows the game's name.
-            val sfoTitle = if (rule.id == "ps4" && entry.node.isDirectory) ps4Title(entry.node) else null
+            // inside their param.sfo (PS5: param.json), so a folder named "CUSA12345" still shows the game's name.
+            val sfoTitle = when {
+                !entry.node.isDirectory -> null
+                rule.id == "ps4" -> ps4Title(entry.node)
+                rule.id == "ps5" -> ps5Title(entry.node)
+                else -> null
+            }
             val name = ArcadeNames.named(rule.id, entry.node.name, RomNames.parse(sfoTitle ?: entry.node.name))
             // A playlist RetroForge (or the user) made has no gamelist entry of its own: borrow its first disc's.
             val meta = metadata[entry.path.lowercase()] ?: if (isPlaylist(entry)) firstDisc(entry)?.let { metadata[it] } else null
@@ -401,6 +410,24 @@ private fun ps4Title(folder: ScanNode): String? = runCatching {
     val sfo = sys.children().firstOrNull { !it.isDirectory && it.name.equals("param.sfo", ignoreCase = true) } ?: return null
     if (sfo.size > ParamSfo.MAX_BYTES) return null
     ParamSfo.parse(sfo.open().use { it.readBytes() })["TITLE"]?.lines()?.first()?.trim()?.takeIf { it.isNotEmpty() }
+}.getOrNull()
+
+private val dumpedFolderSystems = setOf("ps4", "ps5")
+
+/**
+ * The game's title from sce_sys/param.json, or null: localizedParameters holds a defaultLanguage ("en-US") and an
+ * object per language with its titleName.
+ */
+private fun ps5Title(folder: ScanNode): String? = runCatching {
+    val sys = folder.children().firstOrNull { it.isDirectory && it.name.equals("sce_sys", ignoreCase = true) } ?: return null
+    val param = sys.children().firstOrNull { !it.isDirectory && it.name.equals("param.json", ignoreCase = true) } ?: return null
+    // A title in every language makes these far bigger than a param.sfo.
+    if (param.size > 1024 * 1024) return null
+    val localized = Json.parseToJsonElement(param.open().use { it.readBytes().decodeToString() })
+        .jsonObject["localizedParameters"]?.jsonObject ?: return null
+    val language = localized["defaultLanguage"]?.jsonPrimitive?.content ?: "en-US"
+    val titles = listOfNotNull(localized[language]) + localized.values
+    titles.firstNotNullOfOrNull { (it as? JsonObject)?.get("titleName")?.jsonPrimitive?.content?.trim()?.takeIf(String::isNotEmpty) }
 }.getOrNull()
 
 fun isSwitchAddOn(system: String, fileName: String): Boolean =

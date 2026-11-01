@@ -441,7 +441,11 @@ fun GameDetailScreen(
                 g.discs?.let { "Discs: $it" },
                 g.tags.lines().filter { it.isNotBlank() && it != g.regions }.ifEmpty { null }?.let { "Tags: ${it.joinToString()}" },
             ).forEach { CardBody(it) }
-            if (g.description == null && g.developer == null) CardBody(stringResource(if (g.system == "ps4" && !g.relativePath.endsWith(".pkg", true)) R.string.library_no_gamelist_xml_title_from_param_sfo else R.string.library_no_gamelist_xml_details_for_this))
+            if (g.description == null && g.developer == null) CardBody(stringResource(when {
+                g.system == "ps4" && !g.relativePath.endsWith(".pkg", true) -> R.string.library_no_gamelist_xml_title_from_param_sfo
+                g.system == "ps5" && !g.relativePath.endsWith(".ps5", true) -> R.string.library_no_gamelist_xml_title_from_param_json
+                else -> R.string.library_no_gamelist_xml_details_for_this
+            }))
         }
         media.patch?.let { patch ->
             FocusCard(modifier = Modifier.fillMaxWidth()) {
