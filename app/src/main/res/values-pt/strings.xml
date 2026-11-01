@@ -883,7 +883,7 @@
     <string name="network_drives_connected_to_looking_for_your_a">Conectado a %1$s. Procurando seus %2$s… (uma coleção grande pode levar alguns minutos)</string>
     <string name="network_drives_connected_has_items_choose_it_in">Conectado: %1$s tem %2$s itens. Escolha-o agora no seletor de pastas.</string>
     <string name="network_drives_less_than_a_minute_left">Falta menos de um minuto</string>
-    <string name="network_drives_couldn_t_connect">Não foi possível ligar: %1$s</string>
+    <string name="network_drives_couldn_t_connect">Não foi possível conectar: %1$s</string>
     <string name="network_drives_working_out_how_long">A calcular quanto falta…</string>
     <string name="retro_forge_root_back">Voltar</string>
     <string name="screen_less">Menos</string>
@@ -1617,7 +1617,7 @@
     <string name="tutorial_settings_themes_colours_shapes_type_and">Configurações → Temas: cores, formas, fontes e layouts de lista de jogos com prévias. Importe os seus, ou as cores e a arte de sistemas de um tema do ES-DE ou do RetroBat.</string>
     <string name="tutorial_interface_sounds_a_tick_when_moving">Sons da interface: um tique ao mover, sinos ao selecionar e voltar (desligue nas Configurações; usam o volume de mídia).</string>
     <string name="tutorial_settings_report_a_problem_shares_the">Configurações → Relatar um problema compartilha os dados do app e do aparelho (sem dados pessoais) para que os problemas possam ser corrigidos.</string>
-    <string name="tutorial_links_has_the_youtube_channels_and">Ligações tem os canais de YouTube e sites por trás de muito disto: Retro Game Corps, Modern Vintage Gamer, Digital Foundry, My Life in Gaming, The Gaming Historian e mais.</string>
+    <string name="tutorial_links_has_the_youtube_channels_and">Links tem os canais de YouTube e sites por trás de muito disto: Retro Game Corps, Modern Vintage Gamer, Digital Foundry, My Life in Gaming, The Gaming Historian e mais.</string>
     <string name="update_retroforge_is_out_update_from_home">O RetroForge %1$s já saiu: atualiza a partir do Início</string>
     <string name="update_couldn_t_check">Não foi possível verificar: %1$s</string>
     <string name="update_you_have_the_newest_version">Você tem a versão mais recente.</string>
@@ -1813,7 +1813,7 @@
     <string name="section_media">Mídia</string>
     <string name="section_vr">VR</string>
     <string name="section_apps">Android</string>
-    <string name="section_links">Ligações</string>
+    <string name="section_links">Links</string>
     <string name="section_settings">Configurações</string>
     <string name="player_this_device_s_ip">o IP deste dispositivo</string>
     <string name="library_your_theme">seu tema</string>
@@ -2216,16 +2216,16 @@
     <string name="news_more">Ver mais</string>
     <string name="link_cable_menu">Cabo link</string>
     <string name="link_cable_menu_hosting">Cabo link: conectado, aguardando</string>
-    <string name="link_cable_menu_joined">Cabo link: ligado a %1$s</string>
+    <string name="link_cable_menu_joined">Cabo link: conectado a %1$s</string>
     <string name="link_cable_title">Cabo link</string>
     <string name="link_cable_body">Ligue este Game Boy ao de outro aparelho no mesmo Wi-Fi, para trocas e batalhas (Pokémon Red e Blue, Tetris frente a frente). Os jogos não precisam de ser iguais. Um liga aqui o cabo; o outro encontra-o em baixo e junta-se. Depois usem nos dois o menu de troca ou de 2 jogadores do jogo.</string>
     <string name="link_cable_host">Ligar o cabo aqui</string>
     <string name="link_cable_looking">Procurando Game Boys neste Wi-Fi…</string>
     <string name="link_cable_none">Ainda ninguém ligou o cabo neste Wi-Fi.</string>
-    <string name="link_cable_join">Ligar a %1$s: %2$s</string>
+    <string name="link_cable_join">Conectar a %1$s: %2$s</string>
     <string name="link_cable_address">Ou o endereço do outro aparelho (192.168.…)</string>
     <string name="link_cable_hosting">O cabo está ligado. No outro aparelho, abra o jogo de Game Boy, depois Cabo link, e escolha este (ou escreva %1$s). Depois vá ao menu de troca ou de 2 jogadores do jogo.</string>
-    <string name="link_cable_joined">Ligado a %1$s. Vão nos dois ao menu de troca ou de 2 jogadores do jogo.</string>
+    <string name="link_cable_joined">Conectado a %1$s. Vão nos dois ao menu de troca ou de 2 jogadores do jogo.</string>
     <string name="link_cable_unplug">Desligar o cabo</string>
     <string name="link_cable_bad_address">%1$s não é um endereço como 192.168.1.23.</string>
     <string name="link_cable_not_in_this_core">Este emulador não tem cabo link em rede. Escolha Gambatte em Emulador → Mudar de emulador.</string>

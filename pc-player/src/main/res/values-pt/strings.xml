@@ -70,7 +70,7 @@
     <string name="pc_lan_connecting">Conectando</string>
     <string name="pc_lan_player">Jogador %1$s</string>
     <string name="pc_lan_the_host_didn_t_let_this">O anfitrião não deixou entrar este dispositivo</string>
-    <string name="pc_lan_connection_lost_reconnecting">Ligação perdida. A religar</string>
+    <string name="pc_lan_connection_lost_reconnecting">Conexão perdida. Reconectando</string>
     <string name="pc_lan_the_connection_to_the_host_was">A conexão com quem hospeda caiu</string>
     <string name="pc_lan_no_free_port_for_the_relay">Não há porta livre para o relé</string>
     <string name="play_together_service_playing_together">Jogando juntos</string>
