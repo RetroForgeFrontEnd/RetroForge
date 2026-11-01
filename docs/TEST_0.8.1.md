@@ -1,6 +1,8 @@
 # 0.8.1 beta test list
 
-Nothing goes to GitHub until every row is ✅ (or the user agrees to leave it out). Device and date with each result. 0.8.1 follows 0.8.0, which waits for the PS3 player.
+Nothing goes to GitHub until every row is ✅ (or the user agrees to leave it out).
+
+Released 1 Nov 2026 with the user's go-ahead while the 🟡 rows (pause menu songs, a finisher and the Konami code in a real game, moves off in a real netplay game) were still open; they carry over to the next release. Device and date with each result. 0.8.1 follows 0.8.0, which waits for the PS3 player.
 
 | Feature | What to check | Status |
 |---|---|---|
