@@ -23,8 +23,8 @@ android {
         applicationId = "com.retroforge.app"
         minSdk = 26
         targetSdk = 37
-        versionCode = 11
-        versionName = "0.8.1-beta"
+        versionCode = 12
+        versionName = "0.8.2-beta"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "SCREENSCRAPER_DEV_ID", quoted("screenscraper.devid"))
         buildConfigField("String", "SCREENSCRAPER_DEV_PASSWORD", quoted("screenscraper.devpassword"))
