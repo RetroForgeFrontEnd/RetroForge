@@ -2080,6 +2080,8 @@ class PlayerActivity : ComponentActivity() {
                         )
                     }
                     MenuPage.NETPLAY -> {
+                        // Why a join or host didn't start (no local network permission, a different game, no answer).
+                        notice?.let { Text(it, color = MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center) }
                         if (netStatus.isNotBlank() && netState != 0) {
                             Text(netStatus, color = if (netState == 5) MenuOrange else MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center)
                         }
@@ -2134,7 +2136,8 @@ class PlayerActivity : ComponentActivity() {
                         }
                     }
                     MenuPage.LINK -> {
-                                                if (linkState != LinkState.OFF) {
+                        notice?.let { Text(it, color = MenuCyan, fontSize = 13.sp, textAlign = TextAlign.Center) }
+                        if (linkState != LinkState.OFF) {
                             Text(
                                 if (linkState == LinkState.HOSTING) str(R.string.link_cable_hosting, Netplay.localAddresses().firstOrNull() ?: str(R.string.player_this_device_s_ip))
                                 else str(R.string.link_cable_joined, linkWith),
